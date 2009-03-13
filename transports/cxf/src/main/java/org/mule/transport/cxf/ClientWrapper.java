@@ -83,6 +83,7 @@ public class ClientWrapper
 
     protected boolean proxy;
     private boolean applyTransformersToProtocol;
+    private boolean enableHeaders;
     
     public Client getClient()
     {
@@ -118,18 +119,23 @@ public class ClientWrapper
         addInterceptors(client.getOutInterceptors(), (List<Interceptor>) endpoint.getProperty(CxfConstants.OUT_INTERCEPTORS));
         addInterceptors(client.getOutFaultInterceptors(), (List<Interceptor>) endpoint.getProperty(CxfConstants.OUT_FAULT_INTERCEPTORS));
 
+        MuleUniversalConduit conduit = (MuleUniversalConduit)client.getConduit();
+        conduit.setMuleEndpoint(endpoint);
+        
         if (proxy)
         {
             client.getInInterceptors().add(new CopyAttachmentInInterceptor());
             client.getInInterceptors().add(new StreamClosingInterceptor());
             client.getOutInterceptors().add(new OutputPayloadInterceptor());
             client.getOutInterceptors().add(new CopyAttachmentOutInterceptor());
-            ((MuleUniversalConduit)client.getConduit()).setCloseInput(false);
-            
-            String value = (String) endpoint.getProperty(CxfConstants.APPLY_TRANSFORMERS_TO_PROTOCOL);
-            applyTransformersToProtocol = value == null || BooleanUtils.toBoolean((String)value); 
-            ((MuleUniversalConduit)client.getConduit()).setApplyTransformersToProtocol(applyTransformersToProtocol);
+            conduit.setCloseInput(false);
         }
+        
+        String value = (String) endpoint.getProperty(CxfConstants.APPLY_TRANSFORMERS_TO_PROTOCOL);
+        applyTransformersToProtocol = isTrue(value, true); 
+        conduit.setApplyTransformersToProtocol(applyTransformersToProtocol);
+        
+        enableHeaders = isTrue((String) endpoint.getProperty(CxfConstants.ENABLE_MULE_SOAP_HEADERS), true); 
         
         List<AbstractFeature> features = (List<AbstractFeature>) endpoint.getProperty(CxfConstants.OUT_FAULT_INTERCEPTORS);
         
@@ -152,6 +158,13 @@ public class ClientWrapper
         }
         
         addMuleInterceptors();
+    }
+
+    private boolean isTrue(String value, boolean def)
+    {
+        if (value == null) return def;
+        
+        return BooleanUtils.toBoolean((String)value);
     }
 
     @SuppressWarnings("unchecked")
@@ -382,8 +395,11 @@ public class ClientWrapper
     {
         client.getInInterceptors().add(new MuleHeadersInInterceptor());
         client.getInFaultInterceptors().add(new MuleHeadersInInterceptor());
-        client.getOutInterceptors().add(new MuleHeadersOutInterceptor());
-        client.getOutFaultInterceptors().add(new MuleHeadersOutInterceptor());
+        if (enableHeaders)
+        {
+            client.getOutInterceptors().add(new MuleHeadersOutInterceptor());
+            client.getOutFaultInterceptors().add(new MuleHeadersOutInterceptor());
+        }
         client.getOutInterceptors().add(new MuleProtocolHeadersOutInterceptor());
         client.getOutFaultInterceptors().add(new MuleProtocolHeadersOutInterceptor());
     }
@@ -493,5 +509,5 @@ public class ClientWrapper
     {
         return applyTransformersToProtocol;
     }
-    
+
 }

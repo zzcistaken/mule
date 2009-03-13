@@ -584,7 +584,7 @@ public class CoreMessages extends MessageFactory
         return factory.createMessage(BUNDLE_PATH, 145, string);
     }
 
-    public static Message exceptionOnConnectorNotExceptionListener(String name)
+    public static Message exceptionOnConnectorNoExceptionListener(String name)
     {
         return factory.createMessage(BUNDLE_PATH, 146, name);
     }
@@ -1170,5 +1170,10 @@ public class CoreMessages extends MessageFactory
     public static Message rollbackTxButNoResource(Transaction tx)
     {
         return factory.createMessage(BUNDLE_PATH, 301, tx);
+    }
+    
+    public static Message cannotCopyStreamPayload(String streamType)
+    {
+        return factory.createMessage(BUNDLE_PATH, 302, streamType);
     }
 }

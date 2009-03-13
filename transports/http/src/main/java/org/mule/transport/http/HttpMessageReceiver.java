@@ -50,6 +50,7 @@ import java.util.Map;
 import javax.resource.spi.work.Work;
 
 import edu.emory.mathcs.backport.java.util.concurrent.TimeUnit;
+
 import org.apache.commons.httpclient.Cookie;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpVersion;
@@ -214,11 +215,8 @@ public class HttpMessageReceiver extends TcpMessageReceiver
             RequestLine requestLine = request.getRequestLine();
             String method = requestLine.getMethod();
 
-            if (method.equals(HttpConstants.METHOD_HEAD))
-            {
-                return doHead(requestLine);
-            }
-            else if (method.equals(HttpConstants.METHOD_GET)
+            if (method.equals(HttpConstants.METHOD_GET)
+                    || method.equals(HttpConstants.METHOD_HEAD)
                     || method.equals(HttpConstants.METHOD_POST)
                     || method.equals(HttpConstants.METHOD_OPTIONS)
                     || method.equals(HttpConstants.METHOD_PUT)
@@ -234,15 +232,6 @@ public class HttpMessageReceiver extends TcpMessageReceiver
             }
         }
 
-        protected HttpResponse doHead(RequestLine requestLine) throws MuleException
-        {
-            MuleMessage message = new DefaultMuleMessage(NullPayload.getInstance());
-            MuleEvent event = new DefaultMuleEvent(message, endpoint, new DefaultMuleSession(message, new NullSessionHandler(), connector.getMuleContext()), true);
-            OptimizedRequestContext.unsafeSetEvent(event);
-            HttpResponse response = new HttpResponse();
-            response.setStatusLine(requestLine.getHttpVersion(), HttpConstants.SC_OK);
-            return transformResponse(response);
-        }
 
         protected HttpResponse doRequest(HttpRequest request,
                                          RequestLine requestLine) throws IOException, MuleException

@@ -21,6 +21,7 @@ import org.mule.util.UUID;
 
 import java.io.IOException;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -48,6 +49,8 @@ public class HttpRequestMessageAdapter extends AbstractMessageAdapter
             setPayload((HttpServletRequest) message);
             setContentEncoding((HttpServletRequest) message);
 
+            Map headers = new HashMap();
+            
             final Map parameterMap = request.getParameterMap();
             if (parameterMap != null && parameterMap.size() > 0)
             {
@@ -60,11 +63,11 @@ public class HttpRequestMessageAdapter extends AbstractMessageAdapter
                     {
                         if (value.getClass().isArray() && ((Object[]) value).length == 1)
                         {
-                            setProperty(key, ((Object[]) value)[0]);
+                            headers.put(key, ((Object[]) value)[0]);
                         }
                         else
                         {
-                            setProperty(key, value);
+                            headers.put(key, value);
                         }
                     }
                 }
@@ -73,7 +76,7 @@ public class HttpRequestMessageAdapter extends AbstractMessageAdapter
             for (Enumeration e = request.getAttributeNames(); e.hasMoreElements();)
             {
                 key = (String) e.nextElement();
-                properties.setProperty(key, request.getAttribute(key));
+                headers.put(key, request.getAttribute(key));
             }
             String realKey;
             for (Enumeration e = request.getHeaderNames(); e.hasMoreElements();)
@@ -98,8 +101,10 @@ public class HttpRequestMessageAdapter extends AbstractMessageAdapter
                     }
                 }
                 
-                setProperty(realKey, value);
+                headers.put(realKey, value);
             }
+            
+            addInboundProperties(headers);
         }
         else
         {
@@ -136,13 +141,16 @@ public class HttpRequestMessageAdapter extends AbstractMessageAdapter
 
     public Object getPayload()
     {
-        try
+        try 
         {
             if ("GET".equalsIgnoreCase(request.getMethod())) 
             {
-                return getProperty(HttpConnector.HTTP_REQUEST_PROPERTY);
+                return request.getRequestURI().toString();
             }
-            return request.getInputStream();
+            else 
+            {
+                return request.getInputStream();
+            }
         }
         catch (IOException e)
         {

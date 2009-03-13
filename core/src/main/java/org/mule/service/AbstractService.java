@@ -45,6 +45,7 @@ import org.mule.routing.outbound.OutboundPassThroughRouter;
 import org.mule.routing.response.DefaultResponseRouterCollection;
 import org.mule.transport.AbstractConnector;
 import org.mule.transport.NullPayload;
+import org.mule.util.ClassUtils;
 import org.mule.util.concurrent.WaitableBoolean;
 
 import java.beans.ExceptionListener;
@@ -249,13 +250,6 @@ public abstract class AbstractService implements Service
 
             // Unregister Listeners for the service
             unregisterListeners();
-
-            // Resume if paused. (This is required so that stop() doesn't hand and so
-            // message aren't lost in SedaQueue when service is stopped.
-            if (isPaused())
-            {
-                resume();
-            }
 
             doStop();
             
@@ -532,14 +526,9 @@ public abstract class AbstractService implements Service
         return name;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.lang.Object#toString()
-     */
     public String toString()
     {
-        return getName();
+        return String.format("%s{%s}", ClassUtils.getSimpleName(this.getClass()), getName());
     }
 
     public boolean isStopped()
@@ -905,6 +894,13 @@ public abstract class AbstractService implements Service
                 {
                     result = outboundReturnMessage;
                 }
+                else if (getComponent() instanceof PassThroughComponent)
+                {
+                    // If there was no component, then we really want to return the response from
+                    // the outbound router as the actual payload - even if it's null.
+                    return new DefaultMuleMessage(NullPayload.getInstance(), result);
+                }
+                
                 if (stats.isEnabled())
                 {
                     stats.incSentEventSync();

@@ -73,6 +73,7 @@ import java.beans.ExceptionListener;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -342,14 +343,7 @@ public abstract class AbstractConnector
             ((DefaultExceptionStrategy)exceptionListener).initialise();
         }
 
-        try
-        {
-            initWorkManagers();
-        }
-        catch (MuleException e)
-        {
-            throw new InitialisationException(e, this);
-        }
+
         initialised.set(true);
     }
 
@@ -390,6 +384,7 @@ public abstract class AbstractConnector
         {
             scheduler.set(this.getScheduler());
         }
+        initWorkManagers();
 
         this.doStart();
         started.set(true);
@@ -461,6 +456,11 @@ public abstract class AbstractConnector
         // shutdown our scheduler service
         ((ScheduledExecutorService) scheduler.get()).shutdown();
 
+        // Dispose work managers here to ensure that all jobs that are currently
+        // processing or waiting can complete so that all message flow completes in
+        // stop phase.  See MULE-4521
+        disposeWorkManagers();
+        
         this.doStop();
         started.set(false);
 
@@ -494,9 +494,6 @@ public abstract class AbstractConnector
 
         // make sure the scheduler is gone
         scheduler.set(null);
-
-        // we do not need to stop the work managers because they do no harm (will just be idle)
-        // and will be reused on restart without problems.
 
         //TODO RM* THis shouldn't be here this.initialised.set(false);
         // started=false already issued above right after doStop()
@@ -540,7 +537,6 @@ public abstract class AbstractConnector
         this.disposeReceivers();
         this.disposeDispatchers();
         this.disposeRequesters();
-        this.disposeWorkManagers();
 
         this.doDispose();
         disposed.set(true);
@@ -677,6 +673,14 @@ public abstract class AbstractConnector
     
     public void handleException(Exception exception, Connectable failed)
     {
+        // unwrap any exception caused by using reflection apis, but only the top layer
+        if (exception instanceof InvocationTargetException)
+        {
+            Throwable target = exception.getCause();
+            // just because API accepts Exception, not Throwable :\
+            exception = target instanceof Exception ? (Exception) target : new Exception(target);
+        }
+        
         if (isConnected() &&
             exception instanceof ConnectException &&      
             !(retryPolicyTemplate instanceof NoRetryPolicyTemplate))
@@ -700,7 +704,7 @@ public abstract class AbstractConnector
                 }
                 else
                 {
-                    throw new MuleRuntimeException(CoreMessages.exceptionOnConnectorNotExceptionListener(this.getName()), exception);
+                    throw new MuleRuntimeException(CoreMessages.exceptionOnConnectorNoExceptionListener(this.getName()), exception);
                 }
                 
                 // Store some info. about the receiver/dispatcher which threw the ConnectException so 
@@ -727,7 +731,7 @@ public abstract class AbstractConnector
             {
                 if (exceptionListener == null)
                 {
-                    throw new MuleRuntimeException(CoreMessages.exceptionOnConnectorNotExceptionListener(this.getName()), e);
+                    throw new MuleRuntimeException(CoreMessages.exceptionOnConnectorNoExceptionListener(this.getName()), e);
                 }
                 else
                 {
@@ -743,7 +747,7 @@ public abstract class AbstractConnector
             }
             else
             {
-                throw new MuleRuntimeException(CoreMessages.exceptionOnConnectorNotExceptionListener(this.getName()), exception);
+                throw new MuleRuntimeException(CoreMessages.exceptionOnConnectorNoExceptionListener(this.getName()), exception);
             }
         }
     }
@@ -1166,7 +1170,6 @@ public abstract class AbstractConnector
             if (receiver != null)
             {
                 destroyReceiver(receiver, endpoint);
-                receiver.dispose();
             }
         }
     }
