@@ -22,7 +22,7 @@ import junit.framework.TestCase;
 
 import org.mockito.Matchers;
 
-public class JmsConnectorTest extends TestCase
+public class JmsConnectorTestCase extends TestCase
 {
     private static final String CLIENT_ID1 = "client1";
     private static final String CLIENT_ID2 = "client2";
