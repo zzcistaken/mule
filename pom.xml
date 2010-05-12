@@ -139,7 +139,7 @@
         <jugVersion>2.0.0</jugVersion>
         <jxlVersion>2.6.3</jxlVersion>
         <log4jVersion>1.2.14</log4jVersion>
-        <mockitoVersion>1.8.0</mockitoVersion>
+        <mockitoVersion>1.8.4</mockitoVersion>
         <multithreadedtcVersion>1.01</multithreadedtcVersion>
         <!-- TODO EE-1395 -->
         <mqSeriesVersion>6.0</mqSeriesVersion>
