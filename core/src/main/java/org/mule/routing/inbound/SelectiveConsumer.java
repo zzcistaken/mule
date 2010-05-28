@@ -75,9 +75,9 @@ public class SelectiveConsumer extends AbstractRouter implements InboundRouter
 
         if (logger.isDebugEnabled())
         {
-        }
-        logger.debug("MuleEvent " + event.getId() + (result ? " passed filter " : " did not pass filter ")
+            logger.debug("MuleEvent " + event.getId() + (result ? " passed filter " : " did not pass filter ")
                             + filter.getClass().getName());
+        }
 
         return result;
     }
