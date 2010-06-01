@@ -45,25 +45,28 @@ public class RouteableExceptionStrategy extends AbstractExceptionListener
         MuleEvent event = null;
         MuleMessage msg = null;
 
+        StringBuffer logInfo = new StringBuffer();
+        
         try
         {
-            logger.info("****++******Alternate Exception Strategy******++*******");
-            logger.info("Current Thread = " + Thread.currentThread().toString());
+            logInfo.append("****++******Alternate Exception Strategy******++*******\n");
+            logInfo.append("Current Thread = " + Thread.currentThread().toString() + "\n");
 
             event = RequestContext.getEvent();
             if (event != null && event.getService() != null)
             {
                 String serviceName = event.getService().getName();
-                logger.info("serviceName = " + serviceName);
+                logInfo.append("serviceName = " + serviceName + "\n");
 
                 int eventHashCode = event.hashCode();
-                logger.info("eventHashCode = " + eventHashCode);
+                logInfo.append("eventHashCode = " + eventHashCode + "\n");
             }
 
             if (event != null && event.isStopFurtherProcessing())
             {
-                logger.info("MuleEvent stop further processing has been set, This is probably the same exception being routed again. no Exception routing will be performed.\n"
-                            + e);
+                logInfo.append("MuleEvent stop further processing has been set, This is probably the same exception being routed again. no Exception routing will be performed.\n"
+                            + e
+                            + "\n");
                 return;
             }
 
@@ -75,17 +78,18 @@ public class RouteableExceptionStrategy extends AbstractExceptionListener
             if (msg != null)
             {
                 int msgHashCode = msg.hashCode();
-                logger.info("msgHashCode = " + msgHashCode);
+                logInfo.append("msgHashCode = " + msgHashCode + "\n");
 
                 if (msg.getExceptionPayload() != null)
                 {
                     Throwable t = msg.getExceptionPayload().getRootException();
                     if (t != null && t.hashCode() == currentRootExceptionHashCode)
                     {
-                        logger.info("*#*#*#*#*");
-                        logger.info("This error has already been handeled, returning without doing anything: "
-                                    + e.getMessage());
-                        logger.info("*#*#*#*#*");
+                        logInfo.append("*#*#*#*#*\n");
+                        logInfo.append("This error has already been handeled, returning without doing anything: "
+                                    + e.getMessage()
+                                    + "\n");
+                        logInfo.append("*#*#*#*#*\n");
                         originalRootExceptionHashCode = currentRootExceptionHashCode;
                         return;
                     }
@@ -93,8 +97,8 @@ public class RouteableExceptionStrategy extends AbstractExceptionListener
 
                 originalRootExceptionHashCode = msg.getIntProperty("RootExceptionHashCode", 0);
 
-                logger.info("Original RootExceptionHashCode: " + originalRootExceptionHashCode);
-                logger.info("Current  RootExceptionHashCode: " + currentRootExceptionHashCode);
+                logInfo.append("Original RootExceptionHashCode: " + originalRootExceptionHashCode + "\n");
+                logInfo.append("Current  RootExceptionHashCode: " + currentRootExceptionHashCode + "\n");
 
                 if (originalRootExceptionHashCode == 0)
                 {
@@ -103,10 +107,11 @@ public class RouteableExceptionStrategy extends AbstractExceptionListener
                 }
                 else if (originalRootExceptionHashCode == currentRootExceptionHashCode)
                 {
-                    logger.info("*#*#*#*#*");
-                    logger.info("This error has already been handeled, returning without doing anything: "
-                                + e.getMessage());
-                    logger.info("*#*#*#*#*");
+                    logInfo.append("*#*#*#*#*\n");
+                    logInfo.append("This error has already been handeled, returning without doing anything: "
+                                + e.getMessage()
+                                + "\n");
+                    logInfo.append("*#*#*#*#*\n");
                     return;
                 }
                 else
@@ -115,16 +120,18 @@ public class RouteableExceptionStrategy extends AbstractExceptionListener
                 }
             }
 
-            logger.debug(e.getMessage());
+            logInfo.append(e.getMessage());
 
             StackTraceElement[] st = e.getStackTrace();
             for (int i = 0; i < st.length; i++)
             {
                 if (st[i].getClassName().equals("org.mule.AlternateExceptionStrategy"))
                 {
-                    logger.warn("*#*#*#*#*");
-                    logger.warn("Recursive error in AlternateExceptionStrategy " + e);
-                    logger.warn("*#*#*#*#*");
+                    logger.warn("*#*#*#*#*\n"
+                        + "Recursive error in AlternateExceptionStrategy " 
+                        + e
+                        + "\n"
+                        + "*#*#*#*#*");
                     return;
                 }
                 logger.debug(st[i].toString());
@@ -144,7 +151,8 @@ public class RouteableExceptionStrategy extends AbstractExceptionListener
                 && currentRootExceptionHashCode != originalRootExceptionHashCode)
                 msg.setIntProperty("RootExceptionHashCode", currentRootExceptionHashCode);
 
-            logger.info("****__******Alternate Exception Strategy******__*******");
+            logInfo.append("****__******Alternate Exception Strategy******__*******\n");
+            logger.debug(logInfo.toString());
         }
     }
 
