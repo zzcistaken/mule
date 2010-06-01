@@ -202,6 +202,11 @@
                 <version>${version}</version>
             </dependency>
             <dependency>
+                <groupId>org.mule.modules</groupId>
+                <artifactId>mule-module-scripting</artifactId>
+                <version>${version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.mule.transports</groupId>
                 <artifactId>mule-transport-bpm</artifactId>
                 <version>${version}</version>
