@@ -18,7 +18,7 @@ import org.mule.tck.AbstractMuleTestCase;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AbstractExceptionListenerTestCase extends AbstractMuleTestCase
+public class ExceptionListenerTestCase extends AbstractMuleTestCase
 {
 
     public void testAddGoodEndpoint() throws Exception
