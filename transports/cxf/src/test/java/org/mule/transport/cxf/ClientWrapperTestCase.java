@@ -17,6 +17,7 @@ import static org.mockito.Mockito.when;
 
 import org.mule.api.endpoint.ImmutableEndpoint;
 import org.mule.endpoint.MuleEndpointURI;
+import org.mule.tck.AbstractMuleTestCase;
 import org.mule.transport.cxf.transport.MuleUniversalConduit;
 
 import java.lang.reflect.InvocationHandler;
@@ -30,8 +31,6 @@ import javax.xml.namespace.QName;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.Service;
 import javax.xml.ws.WebEndpoint;
-
-import junit.framework.TestCase;
 
 import org.apache.cxf.Bus;
 import org.apache.cxf.binding.Binding;
@@ -52,7 +51,7 @@ import org.apache.cxf.transport.DestinationFactory;
 import org.apache.cxf.transport.DestinationFactoryManager;
 import org.apache.cxf.transport.MessageObserver;
 
-public class ClientWrapperTestCase extends TestCase
+public class ClientWrapperTestCase extends AbstractMuleTestCase
 {
     private Bus bus;
     private ImmutableEndpoint immutableEndpoint;
@@ -68,9 +67,9 @@ public class ClientWrapperTestCase extends TestCase
     private MuleUniversalConduit conduit;
 
     @Override
-    protected void setUp() throws Exception
+    protected void doSetUp() throws Exception
     {
-        super.setUp();
+        super.doSetUp();
 
         bus = mock(Bus.class);
         immutableEndpoint = mock(ImmutableEndpoint.class);

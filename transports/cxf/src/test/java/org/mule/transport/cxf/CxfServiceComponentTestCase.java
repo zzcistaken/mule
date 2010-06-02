@@ -26,6 +26,7 @@ import org.mule.api.MuleMessage;
 import org.mule.api.config.MuleProperties;
 import org.mule.api.endpoint.InboundEndpoint;
 import org.mule.api.transport.OutputHandler;
+import org.mule.tck.AbstractMuleTestCase;
 import org.mule.transport.DefaultMessageAdapter;
 import org.mule.transport.cxf.support.DelegatingOutputStream;
 import org.mule.transport.http.HttpConnector;
@@ -34,8 +35,6 @@ import org.mule.transport.soap.SoapConstants;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-
-import junit.framework.TestCase;
 
 import org.apache.cxf.Bus;
 import org.apache.cxf.endpoint.Server;
@@ -49,16 +48,16 @@ import org.mockito.InOrder;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-public class CxfServiceComponentTestCase extends TestCase
+public class CxfServiceComponentTestCase extends AbstractMuleTestCase
 {
     private CxfServiceComponent cxfServiceComponent;
     private CxfMessageReceiver receiver;
     private Message outMessage;
 
     @Override
-    protected void setUp() throws Exception
+    protected void doSetUp() throws Exception
     {
-        super.setUp();
+        super.doSetUp();
 
         outMessage = new MessageImpl();
 

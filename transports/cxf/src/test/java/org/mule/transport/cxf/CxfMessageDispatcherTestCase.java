@@ -23,11 +23,10 @@ import org.mule.api.endpoint.OutboundEndpoint;
 import org.mule.api.retry.RetryCallback;
 import org.mule.api.retry.RetryPolicyTemplate;
 import org.mule.api.transformer.TransformerException;
+import org.mule.tck.AbstractMuleTestCase;
 import org.mule.transport.NullPayload;
 
-import junit.framework.TestCase;
-
-public class CxfMessageDispatcherTestCase extends TestCase
+public class CxfMessageDispatcherTestCase extends AbstractMuleTestCase
 {
     private CxfMessageDispatcher cxfMessageDispatcher;
     private RetryPolicyTemplate retryPolicyTemplate;
@@ -35,9 +34,9 @@ public class CxfMessageDispatcherTestCase extends TestCase
     private OutboundEndpoint endpoint;
 
     @Override
-    protected void setUp() throws Exception
+    protected void doSetUp() throws Exception
     {
-        super.setUp();
+        super.doSetUp();
 
         endpoint = mock(OutboundEndpoint.class);
         connector = new CxfConnector();
