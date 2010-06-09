@@ -53,7 +53,7 @@ public class MuleClientInThreadTestCase extends FunctionalTestCase
             }
             catch (Exception e)
             {
-                // empty
+                fail(e.getMessage());
             }
         }        
     };
