@@ -65,6 +65,9 @@ org.mule.test.integration.messaging.meps.SynchronousResponseExceptionTestCase
 # MULE-4638
 org.mule.test.integration.transaction.XABridgeJmsJdbcTestCase
 
+# MULE-4904
+org.mule.test.integration.client.MuleClientInThreadTestCase
+
 ##########################################################################
 # The following tests will fail if run off-line
 ##########################################################################
