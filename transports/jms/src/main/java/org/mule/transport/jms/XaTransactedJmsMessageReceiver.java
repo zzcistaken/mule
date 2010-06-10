@@ -49,7 +49,7 @@ public class XaTransactedJmsMessageReceiver extends TransactedPollingMessageRece
     protected boolean reuseSession;
     protected final ThreadContextLocal context = new ThreadContextLocal();
     protected final long timeout;
-    protected final RedeliveryHandler redeliveryHandler;
+    protected RedeliveryHandler redeliveryHandler;
 
     /**
      * Holder receiving the session and consumer for this thread.
@@ -122,16 +122,6 @@ public class XaTransactedJmsMessageReceiver extends TransactedPollingMessageRece
         // If we're using topics we don't want to use multiple receivers as we'll get
         // the same message multiple times
         this.setUseMultipleTransactedReceivers(!topic);
-
-        try
-        {
-            redeliveryHandler = this.connector.getRedeliveryHandlerFactory().create();
-            redeliveryHandler.setConnector(this.connector);
-        }
-        catch (Exception e)
-        {
-            throw new CreateException(e, this);
-        }
     }
 
     @Override
@@ -143,7 +133,11 @@ public class XaTransactedJmsMessageReceiver extends TransactedPollingMessageRece
     @Override
     protected void doConnect() throws Exception
     {
-        // template method
+        if (redeliveryHandler == null)
+        {
+            redeliveryHandler = this.connector.getRedeliveryHandlerFactory().create();
+            redeliveryHandler.setConnector(this.connector);
+        }
     }
 
     @Override
