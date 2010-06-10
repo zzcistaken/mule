@@ -48,7 +48,9 @@ public class CustomClassLoadingLengthProtocol extends LengthProtocol
             catch (ClassNotFoundException e)
             {
                 logger.warn(e.getMessage());
-                throw new IOException(e.getMessage());
+                IOException iox = new IOException();
+                iox.initCause(e);
+                throw iox;
             }
             finally
             {
