@@ -17,8 +17,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.mule.tck.AbstractMuleTestCase;
+import org.mule.tck.testmodels.fruit.BananaFactory;
+import org.mule.tck.testmodels.fruit.Orange;
 
 import java.io.IOException;
+import java.io.NotSerializableException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
@@ -52,11 +55,6 @@ public class JmsMessageUtilsTestCase extends AbstractMuleTestCase
 {
     public static final String ENCODING = "UTF-8";
     private static final String OBJECT_ID = "id1234";
-    private static final Integer NUMBER_VALUE = Integer.valueOf(7);
-    private static final String STRING_VALUE = "Hello";
-    private static final String OBJECT_KEY = "object";
-    private static final String NUMBER_KEY = "number";
-    private static final String STRING_KEY = "string";
 
     public void testHeaders()
     {
@@ -185,45 +183,77 @@ public class JmsMessageUtilsTestCase extends AbstractMuleTestCase
         assertNull(map.get("null"));
     }
 
+
     /**
      * Tests that is able to convert a Map which only contains simple values into a
      * MapMessage.
      */
-    public void testConvertsValidMapToMapMessage() throws JMSException
+    public void testConvertsValidMapWithSimpleValuesToMapMessage() throws JMSException
     {
-        Map<String, Object> message = new HashMap<String, Object>();
-        message.put(STRING_KEY, STRING_VALUE);
-        message.put(NUMBER_KEY, NUMBER_VALUE);
-
         Session session = mock(Session.class);
         when(session.createMapMessage()).thenReturn(new ActiveMQMapMessage());
 
-        MapMessage result = (MapMessage) JmsMessageUtils.toMessage(message, session);
+        // Creates a test Map with data
+        Map data = new HashMap();
+        data.put("value1", new Float(4));
+        data.put("value2", new byte[]{1, 2, 3});
+        data.put("value3", "value3");
+        data.put("value4", new Double(67.9));
+        data.put("value5", true);
 
-        assertEquals(STRING_VALUE, result.getString(STRING_KEY));
-        assertEquals(7, result.getInt(NUMBER_KEY));
+        Message message = JmsMessageUtils.toMessage(data, session);
+        assertTrue(message instanceof MapMessage);
+
+        MapMessage mapMessage = (MapMessage) message;
+        assertEquals(new Float(4), mapMessage.getFloat("value1"));
+        assertTrue(Arrays.equals(new byte[]{1, 2, 3}, mapMessage.getBytes("value2")));
+        assertEquals("value3", mapMessage.getString("value3"));
+        assertEquals(new Double(67.9), mapMessage.getDouble("value4"));
+        assertTrue(mapMessage.getBoolean("value5"));
     }
 
     /**
-     * Tests that trying to convert a Map which contains a non valid value throws an
-     * exception.
+     * Tests that is able to convert a Map which contains a serializable value into
+     * an ObjectMessage.
      */
-    public void testConvertingMapIncludingNotValidValueThrowsException() throws JMSException
+    public void testConvertsMapWithSerializableValueIntoObjectMessage() throws Exception
     {
-        Map<String, Object> message = new HashMap<String, Object>();
-        message.put(STRING_KEY, STRING_VALUE);
-        message.put(OBJECT_KEY, new Object());
-
         Session session = mock(Session.class);
-        when(session.createMapMessage()).thenReturn(new ActiveMQMapMessage());
+        when(session.createObjectMessage()).thenReturn(new ActiveMQObjectMessage());
+
+        // Creates a test Map containing a serializable object
+        Map data = new HashMap();
+        data.put("orange", new Orange());
+
+        Message message = JmsMessageUtils.toMessage(data, session);
+        assertTrue(message instanceof ObjectMessage);
+
+        ObjectMessage objectMessage = (ObjectMessage) message;
+        Map values = (Map) objectMessage.getObject();
+        assertEquals(new Orange(), values.get("orange"));
+    }
+
+    /**
+     * Tests that trying to convert a Map which contains a non valid non serializable
+     * value throws an exception.
+     */
+    public void testConvertingMapIncludingNotValidNotSerializableValueThrowsException() throws Exception
+    {
+        Session session = mock(Session.class);
+        when(session.createObjectMessage()).thenReturn(new ActiveMQObjectMessage());
+
+        // Creates a test Map containing a non serializable object
+        Map data = new HashMap();
+        data.put("notserializable", new BananaFactory());
 
         try
         {
-            JmsMessageUtils.toMessage(message, session);
-            fail("Able to convert an invalid Map instance: contains a non valid value");
+            JmsMessageUtils.toMessage(data, session);
+            fail("Attempt to send a non-serializable object in a map should fail");
         }
-        catch (MessageFormatException expected)
+        catch (Exception expected)
         {
+            assertTrue(expected.getCause() instanceof NotSerializableException);
         }
     }
 
