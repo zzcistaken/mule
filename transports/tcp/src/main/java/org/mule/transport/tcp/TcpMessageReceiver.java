@@ -226,6 +226,12 @@ public class TcpMessageReceiver extends AbstractMessageReceiver implements Work
         private NextMessageExceptionPolicy nextMessageExceptionPolicy;
         
         public TcpWorker(Socket socket,
+                         AbstractMessageReceiver receiver) throws IOException
+        {
+            this(socket, receiver, new DefaultMessageExceptionPolicy());
+        }
+        
+        public TcpWorker(Socket socket,
                          AbstractMessageReceiver receiver,
                          NextMessageExceptionPolicy nextMessageExceptionPolicy) throws IOException
         {
