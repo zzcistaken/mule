@@ -38,6 +38,7 @@ import javax.jms.MessageConsumer;
 import javax.jms.Session;
 
 import edu.emory.mathcs.backport.java.util.concurrent.TimeUnit;
+import edu.emory.mathcs.backport.java.util.concurrent.atomic.AtomicReference;
 
 public class XaTransactedJmsMessageReceiver extends TransactedPollingMessageReceiver
 {
@@ -49,7 +50,7 @@ public class XaTransactedJmsMessageReceiver extends TransactedPollingMessageRece
     protected boolean reuseSession;
     protected final ThreadContextLocal context = new ThreadContextLocal();
     protected final long timeout;
-    protected RedeliveryHandler redeliveryHandler;
+    private final AtomicReference/*<RedeliveryHandler>*/ redeliveryHandler = new AtomicReference();
 
     /**
      * Holder receiving the session and consumer for this thread.
@@ -133,10 +134,9 @@ public class XaTransactedJmsMessageReceiver extends TransactedPollingMessageRece
     @Override
     protected void doConnect() throws Exception
     {
-        if (redeliveryHandler == null)
+        if (redeliveryHandler.compareAndSet(null, connector.getRedeliveryHandlerFactory().create()))
         {
-            redeliveryHandler = this.connector.getRedeliveryHandlerFactory().create();
-            redeliveryHandler.setConnector(this.connector);
+            ((RedeliveryHandler) redeliveryHandler.get()).setConnector(this.connector);
         }
     }
 
@@ -262,7 +262,7 @@ public class XaTransactedJmsMessageReceiver extends TransactedPollingMessageRece
                 logger.debug("Message with correlationId: " + message.getJMSCorrelationID()
                              + " is redelivered. handing off to Exception Handler");
             }
-            redeliveryHandler.handleRedelivery(message);
+            ((RedeliveryHandler) redeliveryHandler.get()).handleRedelivery(message);
         }
 
         MessageAdapter adapter = connector.getMessageAdapter(message);
