@@ -24,10 +24,9 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 
 /**
- * <code>LocalSocketTcpMessageDispatcher</code> will send transformed Mule events over TCP.
- * It contains a local socket that reuses on each message dispatch
+ * <code>LocalSocketTcpMessageDispatcher</code> will send transformed Mule events
+ * over TCP. It contains a local socket that reuses on each message dispatch
  * 
- * @author estebanroblesluna
  * @since 2.2.6
  */
 public class LocalSocketTcpMessageDispatcher extends TcpMessageDispatcher
@@ -41,7 +40,7 @@ public class LocalSocketTcpMessageDispatcher extends TcpMessageDispatcher
         super(endpoint);
         this.socketFactory = this.getConnector().getSocketFactory();
     }
-    
+
     @Override
     public TcpConnector getConnector()
     {
@@ -69,7 +68,7 @@ public class LocalSocketTcpMessageDispatcher extends TcpMessageDispatcher
                     {
                         return new DefaultMuleMessage(NullPayload.getInstance());
                     }
-                    
+
                     if (result instanceof MuleMessage)
                     {
                         return (MuleMessage) result;
@@ -115,7 +114,7 @@ public class LocalSocketTcpMessageDispatcher extends TcpMessageDispatcher
         }
     }
 
-    private void dispatchToSocket(MuleEvent event) throws Exception
+    protected void dispatchToSocket(MuleEvent event) throws Exception
     {
         if (socket == null || socket.isClosed())
         {
