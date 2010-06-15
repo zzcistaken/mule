@@ -17,6 +17,7 @@ public class CxfConstants
     public static final String FRONTEND = "frontend";
     public static final String JAX_WS_FRONTEND = "jaxws";
     public static final String SIMPLE_FRONTEND = "simple";
+    public static final String AEGIS_FRONTEND = "aegis";
     public static final String WSDL_LOCATION = "wsdlLocation";
     public static final String NAMESPACE = "namespace";
     public static final String SERVICE_NAME = "serviceName";

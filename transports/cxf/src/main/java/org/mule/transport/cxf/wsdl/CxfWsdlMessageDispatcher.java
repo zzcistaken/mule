@@ -35,6 +35,7 @@ public class CxfWsdlMessageDispatcher extends CxfMessageDispatcher
     }
 
     // @Override
+    @Override
     protected void doConnect() throws Exception
     {
         try
@@ -89,7 +90,7 @@ public class CxfWsdlMessageDispatcher extends CxfMessageDispatcher
             
             try
             {
-                this.client = createClient(bus, wsdlUrl, serviceName, portName);
+                this.client = CxfWsdlMessageDispatcher.this.createClient(bus, wsdlUrl, serviceName, portName);
 
                 addMuleInterceptors();
             }
