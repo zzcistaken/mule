@@ -17,6 +17,8 @@ import org.mule.transport.file.FileConnector;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -57,5 +59,24 @@ public class FileFunctionalTestCase extends AbstractFileFunctionalTestCase
         MuleMessage message = client.request(url, 100000);
         checkReceivedMessage(message);
     }
+    
+    public void testRecursive() throws Exception
+    {
+        File directory = new File("./.mule/in");
+        File subDirectory = new File(directory.getAbsolutePath() + "/sub");
+        boolean success = subDirectory.mkdir();
+        assertTrue(success);
+        subDirectory.deleteOnExit();
 
+        File target = File.createTempFile("mule-file-test-", ".txt", subDirectory);
+        Writer out = new FileWriter(target);
+        out.write(TEST_MESSAGE);
+        out.close();
+        target.deleteOnExit();
+
+        MuleClient client = new MuleClient();
+        Thread.sleep(1000);
+        MuleMessage message = client.request("vm://receive?connector=vmQueue", 100000);
+        assertEquals(TEST_MESSAGE, message.getPayloadAsString());
+    }
 }
