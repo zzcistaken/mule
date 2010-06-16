@@ -137,7 +137,7 @@ public class FileMessageReceiver extends AbstractPollingMessageReceiver
             List<File> files = this.listFiles();
             if (logger.isDebugEnabled())
             {
-                logger.debug("Files: " + Arrays.toString(files.toArray()));
+                logger.debug("Files: " + files.toString());
             }
             Comparator comparator = getComparator();
             if (comparator != null)
@@ -433,7 +433,7 @@ public class FileMessageReceiver extends AbstractPollingMessageReceiver
         }
     }
 
-    protected void basicListFiles(File currentDirectory, List<File> foundedFiles)
+    protected void basicListFiles(File currentDirectory, List<File> discoveredFiles)
     {
         File[] files;
         if (fileFilter != null)
@@ -449,13 +449,13 @@ public class FileMessageReceiver extends AbstractPollingMessageReceiver
         {
             if (!file.isDirectory())
             {
-                foundedFiles.add(file);
+                discoveredFiles.add(file);
             }
             else
             {
                 if (((FileConnector) this.getConnector()).isRecursive())
                 {
-                    this.basicListFiles(file, foundedFiles);
+                    this.basicListFiles(file, discoveredFiles);
                 }
             }
         }
