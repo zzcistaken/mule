@@ -296,6 +296,23 @@
                 </xsd:documentation>
             </xsd:annotation>
         </xsd:attribute>
+        <xsd:attribute name="payloadToArguments" default="nullPayloadAsParameter">
+            <xsd:annotation>
+                <xsd:documentation>
+                    This indicates how to treat the payload during the building of the parameters for the cxf call. 
+                    It has 2 possible values: "nullPayloadAsParameter" and "nullPayloadAsVoid". They only behave differently if
+                    the payload is of type NullPayload. This could change in the future if we add more possible values here.
+                    "nullPayloadAsParameter" is the default and indicates that if the payload is a NullPayload, it will be sent in the service call as a parameter.
+                    "nullPayloadAsVoid" indicates that if the payload is a NullPayload, then the call will be done as if no parameters were supplied.
+                </xsd:documentation>
+            </xsd:annotation>
+            <xsd:simpleType>
+                <xsd:restriction base="xsd:NMTOKEN">
+                    <xsd:enumeration value="nullPayloadAsParameter" />
+                    <xsd:enumeration value="nullPayloadAsVoid" />
+                </xsd:restriction>
+            </xsd:simpleType>
+        </xsd:attribute>
     </xsd:attributeGroup>
 
     <xsd:complexType name="databindingType">

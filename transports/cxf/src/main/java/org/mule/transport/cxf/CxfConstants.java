@@ -47,4 +47,9 @@ public class CxfConstants
     public static final String PAYLOAD = "payload";
     public static final String PAYLOAD_BODY = "body";
     public static final String PAYLOAD_ENVELOPE = "envelope";
+
+    public static final String PAYLOAD_TO_ARGUMENTS = "payloadToArguments";
+    public static final String PAYLOAD_TO_ARGUMENTS_NULL_PAYLOAD_AS_PARAMETER = "nullPayloadAsParameter";
+    public static final String PAYLOAD_TO_ARGUMENTS_NULL_PAYLOAD_AS_VOID = "nullPayloadAsVoid";
+    public static final String PAYLOAD_TO_ARGUMENTS_BY_DEFAULT = PAYLOAD_TO_ARGUMENTS_NULL_PAYLOAD_AS_PARAMETER;
 }

@@ -15,6 +15,7 @@ import org.mule.api.MuleEvent;
 import org.mule.api.MuleMessage;
 import org.mule.api.config.MuleProperties;
 import org.mule.api.endpoint.EndpointURI;
+import org.mule.api.endpoint.MalformedEndpointException;
 import org.mule.api.endpoint.OutboundEndpoint;
 import org.mule.api.transformer.TransformerException;
 import org.mule.message.DefaultExceptionPayload;
@@ -60,11 +61,13 @@ public class CxfMessageDispatcher extends AbstractMessageDispatcher
     protected final CxfConnector connector;
     protected ClientWrapper wrapper;
     private final TemplateParser soapActionTemplateParser = TemplateParser.createMuleStyleParser();
+    protected final CxfPayloadToArguments payloadToArguments;
 
-    public CxfMessageDispatcher(OutboundEndpoint endpoint)
+    public CxfMessageDispatcher(OutboundEndpoint endpoint) throws MalformedEndpointException
     {
         super(endpoint);
         this.connector = (CxfConnector) endpoint.getConnector();
+        payloadToArguments = CxfPayloadToArguments.getPayloadToArgumentsForEndpoint(endpoint);
     }
 
     /*
@@ -111,16 +114,7 @@ public class CxfMessageDispatcher extends AbstractMessageDispatcher
             return new Object[] { event.getMessage() };
         }
         
-        Object[] args;
-
-        if (payload instanceof Object[])
-        {
-            args = (Object[])payload;
-        }
-        else
-        {
-            args = new Object[]{payload};
-        }
+        Object[] args = payloadToArguments.payloadToArrayOfArguments(payload);
 
         MuleMessage message = event.getMessage();
         Set<?> attachmentNames = message.getAttachmentNames();
@@ -143,6 +137,7 @@ public class CxfMessageDispatcher extends AbstractMessageDispatcher
         return args;
     }
 
+    @Override
     protected MuleMessage doSend(MuleEvent event) throws Exception
     {
         ((ClientImpl)wrapper.getClient()).setSynchronousTimeout(event.getTimeout());
@@ -156,7 +151,7 @@ public class CxfMessageDispatcher extends AbstractMessageDispatcher
         {
             res = doSendWithProxy(event);
         }
-        
+
         return res;
     }
 
@@ -186,7 +181,7 @@ public class CxfMessageDispatcher extends AbstractMessageDispatcher
         }
         catch (InvocationTargetException e)
         {
-            Throwable ex = ((InvocationTargetException) e).getTargetException();
+            Throwable ex = e.getTargetException();
 
             if (ex != null && ex.getMessage().contains("Security"))
             {
@@ -298,6 +293,7 @@ public class CxfMessageDispatcher extends AbstractMessageDispatcher
         return result;
     }
     
+    @Override
     protected void doDispatch(MuleEvent event) throws Exception
     {
         doSend(event);
@@ -340,3 +336,5 @@ public class CxfMessageDispatcher extends AbstractMessageDispatcher
         return soapAction;
     }
 }
+
+
