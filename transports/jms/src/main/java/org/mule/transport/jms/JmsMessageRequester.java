@@ -13,6 +13,8 @@ package org.mule.transport.jms;
 import org.mule.DefaultMuleMessage;
 import org.mule.api.MuleMessage;
 import org.mule.api.endpoint.InboundEndpoint;
+import org.mule.api.transaction.Transaction;
+import org.mule.transaction.TransactionCoordination;
 import org.mule.transport.AbstractMessageRequester;
 import org.mule.transport.jms.filters.JmsSelectorFilter;
 import org.mule.util.StringUtils;
@@ -151,7 +153,7 @@ public class JmsMessageRequester extends AbstractMessageRequester
         finally
         {
             connector.closeQuietly(consumer);
-            connector.closeQuietly(session);
+            connector.closeSessionIfNoTransactionActive(session);
         }
     }
 
