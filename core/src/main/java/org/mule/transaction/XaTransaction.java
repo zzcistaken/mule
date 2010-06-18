@@ -15,16 +15,12 @@ import org.mule.api.transaction.TransactionException;
 import org.mule.config.i18n.CoreMessages;
 import org.mule.config.i18n.MessageFactory;
 
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import javax.transaction.HeuristicRollbackException;
-import javax.transaction.InvalidTransactionException;
-import javax.transaction.RollbackException;
-import javax.transaction.SystemException;
-import javax.transaction.Transaction;
-import javax.transaction.TransactionManager;
+import javax.transaction.*;
 import javax.transaction.xa.XAResource;
 
 /**
@@ -43,10 +39,12 @@ public class XaTransaction extends AbstractTransaction
     private Map resources = new HashMap();
 
     private TransactionManager txManager;
+    private boolean isExternal;
 
-    public XaTransaction(TransactionManager txManager)
+    public XaTransaction(TransactionManager txManager, boolean isExternal)
     {
         this.txManager = txManager;
+        this.isExternal = isExternal;
     }
     
     protected void doBegin() throws TransactionException
@@ -59,10 +57,13 @@ public class XaTransaction extends AbstractTransaction
 
         try
         {
-            txManager.begin();
+            if (!isExternal)
+                txManager.begin();
             synchronized (this)
             {
                 transaction = txManager.getTransaction();
+                if (isExternal)
+                    transaction.registerSynchronization(new ExternalTransaction());
             }
         }
         catch (Exception e)
@@ -463,4 +464,93 @@ public class XaTransaction extends AbstractTransaction
         String CLOSE_METHOD_NAME = "close";
     }
 
+    /**
+     * This class is notified when an external transaction is complete and cleans up
+     * Mule-specific resources
+     */
+    class ExternalTransaction extends AbstractTransaction implements Synchronization
+    {
+        /** Nothing to do */
+        public void beforeCompletion()
+        {
+        }
+
+        /** Clean up mule resources */
+        public void afterCompletion(int status)
+        {
+            boolean commit = status == Status.STATUS_COMMITTED;
+
+            try
+            {
+                if (commit)
+                {
+                    commit();
+                }
+                else
+                {
+                    rollback();
+                }
+            }
+            catch (TransactionException ex)
+            {
+                logger.warn(MessageFormat.format(
+                    "Exception while {0} an external transaction", commit ? "committing" : "rolling back"), ex);
+            }
+        }
+
+        @Override
+        protected void doCommit()
+        {
+            delistResources();
+            closeResources();
+            transaction = null;
+        }
+
+        @Override
+        protected void doRollback()
+        {
+            closeResources();
+            transaction = null;
+        }
+
+        @Override
+        protected void unbindTransaction()
+        {
+            // no-op -- already unbound in TransactionTemplate
+        }
+
+        @Override
+        protected void doBegin()
+        {
+        }
+
+        @Override
+        public boolean isRollbackOnly() throws TransactionException
+        {
+            return XaTransaction.this.isRollbackOnly();
+        }
+
+        public int getStatus() throws TransactionException
+        {
+            return XaTransaction.this.getStatus();
+        }
+
+        public Object getResource(Object key)
+        {
+            return XaTransaction.this.getResource(key);
+        }
+
+        public boolean hasResource(Object key)
+        {
+            return XaTransaction.this.hasResource(key);
+        }
+
+        public void bindResource(Object key, Object resource) throws TransactionException
+        {
+        }
+
+        public void setRollbackOnly() throws TransactionException
+        {
+        }
+    }
 }
