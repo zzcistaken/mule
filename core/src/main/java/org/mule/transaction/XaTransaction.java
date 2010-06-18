@@ -58,7 +58,14 @@ public class XaTransaction extends AbstractTransaction
         try
         {
             if (!isExternal)
+            {
+                if (logger.isDebugEnabled())
+                {
+                    boolean nested = txManager.getTransaction() != null;
+                    logger.debug((nested ? "nested" : "top-level") + " transaction being started...");
+                }
                 txManager.begin();
+            }
             synchronized (this)
             {
                 transaction = txManager.getTransaction();

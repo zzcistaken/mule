@@ -48,6 +48,10 @@ public class TransactionTemplate
         Transaction joinedExternal = null;
         byte action = (config != null) ? config.getAction() : TransactionConfig.ACTION_DEFAULT;
         Transaction tx = TransactionCoordination.getInstance().getTransaction();
+        if (logger.isDebugEnabled())
+        {
+            logger.debug((tx == null ? "did not " : "did ") + "see Mule transaction");
+        }
         if (tx == null && context != null  && config != null)
         {
             TransactionManagerProperties tmProperties = context.getTransactionManagerProperties();
@@ -55,6 +59,10 @@ public class TransactionTemplate
             {
                 joinedExternal = tx = config.getFactory().joinExternalTransaction(context);
             }
+        }
+        if (logger.isDebugEnabled())
+        {
+            logger.debug((joinedExternal == null ? "did not " : "did ") + "join external transaction");
         }
         Transaction suspendedXATx = null;
         
@@ -105,11 +113,18 @@ public class TransactionTemplate
 
         try
         {
+            logger.debug("Calling callback...");
             Object result = callback.doInTransaction();
+            logger.debug("Returned from callback");
             if (tx != null)
             {
                 //verify that transaction is still active
                 tx = TransactionCoordination.getInstance().getTransaction();
+                logger.debug("Returned from callback");
+                if (logger.isDebugEnabled())
+                {
+                    logger.debug((tx == null ? "did not " : "did ") + "find active transaction");
+                }
             }
             if (tx != null)
             {
