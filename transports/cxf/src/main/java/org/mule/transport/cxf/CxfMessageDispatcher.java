@@ -97,11 +97,15 @@ public class CxfMessageDispatcher extends AbstractMessageDispatcher
     }
 
     @Override
-    public void passivate() {
+    public void passivate()
+    {
         // MULE-4899: cleans up client's request and response context to avoid a memory leak.
-        try {
+        try
+        {
             super.passivate();
-        } finally {
+        }
+        finally
+        {
             Map<String, Object> requestContext = wrapper.client.getRequestContext();
             requestContext.clear();
             Map<String, Object> responseContext = wrapper.client.getResponseContext();
