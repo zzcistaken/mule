@@ -41,7 +41,6 @@ import org.mule.expression.DefaultExpressionManager;
 import org.mule.management.stats.AllStatistics;
 import org.mule.registry.DefaultRegistryBroker;
 import org.mule.registry.MuleRegistryHelper;
-import org.mule.transaction.TransactionManagerProperties;
 import org.mule.util.ServerShutdownSplashScreen;
 import org.mule.util.ServerStartupSplashScreen;
 import org.mule.util.SplashScreen;
@@ -360,7 +359,7 @@ public class DefaultMuleContext implements MuleContext
 
     /**
      * Fires a server notification to all registered
-     * {@link org.mule.api.context.notification.CustomNotificationListener} notificationManager.
+     * {@link org.mule.api.context.notification.listener.CustomNotificationListener} notificationManager.
      *
      * @param notification the notification to fire. This must be of type
      *                     {@link org.mule.context.notification.CustomNotification} otherwise an
@@ -527,14 +526,7 @@ public class DefaultMuleContext implements MuleContext
         return transactionManager;
     }
 
-    public TransactionManagerProperties getTransactionManagerProperties()
-    {
-        Collection temp = registryBroker.lookupObjects(TransactionManagerProperties.class);
-        if (temp.size() > 0)
-            return (TransactionManagerProperties) temp.iterator().next();
-        else
-            return new TransactionManagerProperties(); // use default properties
-    }
+
 
     public void register() throws RegistrationException
     {
