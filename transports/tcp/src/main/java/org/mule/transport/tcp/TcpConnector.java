@@ -414,12 +414,12 @@ public class TcpConnector extends AbstractConnector
         this.sendTcpNoDelay = sendTcpNoDelay;
     }
 
-    protected void setSocketFactory(AbstractTcpSocketFactory socketFactory)
+    public void setSocketFactory(AbstractTcpSocketFactory socketFactory)
     {
         this.socketFactory = socketFactory;
     }
 
-    protected AbstractTcpSocketFactory getSocketFactory()
+    public AbstractTcpSocketFactory getSocketFactory()
     {
         return socketFactory;
     }
