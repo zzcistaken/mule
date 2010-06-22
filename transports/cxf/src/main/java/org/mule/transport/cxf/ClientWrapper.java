@@ -221,23 +221,54 @@ public class ClientWrapper
         return null;
     }
 
-    protected BindingOperationInfo getOperation(String opName) throws Exception
+    protected BindingOperationInfo getOperation(final String opName) throws Exception
     {
         // Normally its not this hard to invoke the CXF Client, but we're
         // sending along some exchange properties, so we need to use a more advanced
         // method
         Endpoint ep = client.getEndpoint();
-        QName q = new QName(ep.getService().getName().getNamespaceURI(), opName);
-        BindingOperationInfo bop = ep.getBinding().getBindingInfo().getOperation(q);
+        BindingOperationInfo bop = getBindingOperationFromEndpoint(ep, opName);
         if (bop == null)
         {
-            throw new Exception("No such operation: " + opName);
+            bop = tryToGetTheOperationInDotNetNamingConvention(ep, opName);
+            if (bop == null)
+            {
+                throw new Exception("No such operation: " + opName);
+            }
         }
 
         if (bop.isUnwrappedCapable())
         {
             bop = bop.getUnwrappedOperation();
         }
+        return bop;
+    }
+
+    /**
+     * This method tries to call
+     * {@link #getBindingOperationFromEndpoint(Endpoint, String)} with the .net
+     * naming convention for .net webservices (method names start with a capital
+     * letter).
+     * <p>
+     * CXF generates method names compliant with Java naming so if the WSDL operation
+     * names starts with uppercase letter, matching with method name does not work -
+     * thus the work around.
+     * 
+     * @param opName
+     * @param ep
+     * @return
+     */
+    protected BindingOperationInfo tryToGetTheOperationInDotNetNamingConvention(Endpoint ep,
+                                                                                final String opName)
+    {
+        final String capitalizedOpName = opName.substring(0, 1).toUpperCase() + opName.substring(1);
+        return getBindingOperationFromEndpoint(ep, capitalizedOpName);
+    }
+
+    protected BindingOperationInfo getBindingOperationFromEndpoint(Endpoint ep, final String operationName)
+    {
+        QName q = new QName(ep.getService().getName().getNamespaceURI(), operationName);
+        BindingOperationInfo bop = ep.getBinding().getBindingInfo().getOperation(q);
         return bop;
     }
 

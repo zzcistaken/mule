@@ -42,6 +42,7 @@ import org.apache.cxf.endpoint.Endpoint;
 import org.apache.cxf.endpoint.EndpointImpl;
 import org.apache.cxf.frontend.ClientProxy;
 import org.apache.cxf.service.model.BindingInfo;
+import org.apache.cxf.service.model.BindingOperationInfo;
 import org.apache.cxf.service.model.EndpointInfo;
 import org.apache.cxf.transport.ChainInitiationObserver;
 import org.apache.cxf.transport.ConduitInitiator;
@@ -180,6 +181,72 @@ public class ClientWrapperTestCase extends AbstractMuleTestCase
         verify(conduit).setMessageObserver(any(MessageObserver.class));
         verify(conduit).setCloseInput(false);
         commonPostExecutionVerifications();
+    }
+
+    public void testGetOperation_correctOperation() throws Exception
+    {
+        String validOperationName = "someOperation";
+        String actualOperationName = "someOperation";
+
+        assertResults(validOperationName, actualOperationName);
+    }
+
+    public void testGetOperation_correctOperationWithCapitalFistLetter() throws Exception
+    {
+        String validOperationName = "SomeOperation";
+        String actualOperationName = "someOperation";
+
+        assertResults(validOperationName, actualOperationName);
+    }
+
+    private void assertResults(String validOperationName, String actualOperationName) throws Exception
+    {
+        ClientWrapper clientWrapper = new ClientWrapper(this.immutableEndpoint);
+        BindingInfo bindingInfo = configureExpectationsForBindingInfo(clientWrapper);
+
+        BindingOperationInfo expectedOperation = mock(BindingOperationInfo.class);
+        when(bindingInfo.getOperation(new QName(validOperationName))).thenReturn(expectedOperation);
+
+        BindingOperationInfo operation = clientWrapper.getOperation(actualOperationName);
+        assertSame(expectedOperation, operation);
+    }
+
+    public void testGetOperation_incorrectOperation() throws Exception
+    {
+        String validOperationName = "someOperation";
+        String actualOperationName = "someOtherOperation";
+
+        ClientWrapper clientWrapper = new ClientWrapper(this.immutableEndpoint);
+        BindingInfo bindingInfo = configureExpectationsForBindingInfo(clientWrapper);
+
+        BindingOperationInfo expectedOperation = mock(BindingOperationInfo.class);
+        when(bindingInfo.getOperation(new QName(validOperationName))).thenReturn(expectedOperation);
+
+        try
+        {
+            clientWrapper.getOperation(actualOperationName);
+            fail("It should have thrown exception");
+        }
+        catch (Exception e)
+        {
+            assertNotNull(e.getMessage());
+            assertTrue(e.getMessage().contains(actualOperationName));
+        }
+    }
+
+    private BindingInfo configureExpectationsForBindingInfo(ClientWrapper clientWrapper)
+    {
+        clientWrapper.client = mock(Client.class);
+        org.apache.cxf.service.Service service = mock(org.apache.cxf.service.Service.class);
+        Binding binding = mock(Binding.class);
+        BindingInfo bindingInfo = mock(BindingInfo.class);
+
+        when(clientWrapper.client.getEndpoint()).thenReturn(this.endpoint);
+        when(this.endpoint.getService()).thenReturn(service);
+        when(service.getName()).thenReturn(new QName("someLocalPart"));
+        when(this.endpoint.getBinding()).thenReturn(binding);
+        when(binding.getBindingInfo()).thenReturn(bindingInfo);
+        return bindingInfo;
     }
 }
 
