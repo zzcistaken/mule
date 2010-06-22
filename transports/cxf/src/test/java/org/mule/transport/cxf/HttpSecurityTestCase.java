@@ -1,5 +1,5 @@
 /*
- * $Id: HttpSecurityTestCase.java 11449 2008-03-20 12:27:50Z dandiep $
+ * $Id$
  * --------------------------------------------------------------------------------------
  * Copyright (c) MuleSource, Inc.  All rights reserved.  http://www.mulesource.com
  *

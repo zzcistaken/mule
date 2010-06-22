@@ -1,5 +1,5 @@
 /*
- * $Id: SxcFilterTestCase.java 12264 2008-07-09 22:24:04Z dandiep $
+ * $Id$
  * --------------------------------------------------------------------------------------
  * Copyright (c) MuleSource, Inc.  All rights reserved.  http://www.mulesource.com
  *

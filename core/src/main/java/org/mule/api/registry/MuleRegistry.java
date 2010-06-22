@@ -1,5 +1,5 @@
 /*
- * $Id: Registry.java 10529 2008-01-25 05:58:36Z dfeist $
+ * $Id$
  * --------------------------------------------------------------------------------------
  * Copyright (c) MuleSource, Inc.  All rights reserved.  http://www.mulesource.com
  *

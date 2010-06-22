@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderService.java 11549 2008-04-09 05:12:30Z dirk.olmes $
+ * $Id$
  * --------------------------------------------------------------------------------------
  * Copyright (c) MuleSource, Inc.  All rights reserved.  http://www.mulesource.com
  *

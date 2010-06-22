@@ -1,5 +1,5 @@
 /*
- * $Id: EndpointBridgingTestCase.java 10662 2008-02-01 13:10:14Z romikk $
+ * $Id$
  * --------------------------------------------------------------------------------------
  * Copyright (c) MuleSource, Inc.  All rights reserved.  http://www.mulesource.com
  *
