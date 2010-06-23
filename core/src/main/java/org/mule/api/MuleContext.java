@@ -25,7 +25,6 @@ import org.mule.api.security.SecurityManager;
 import org.mule.context.notification.NotificationException;
 import org.mule.context.notification.ServerNotificationManager;
 import org.mule.management.stats.AllStatistics;
-import org.mule.transaction.TransactionManagerProperties;
 import org.mule.util.queue.QueueManager;
 
 import javax.resource.spi.work.WorkListener;
@@ -49,11 +48,6 @@ public interface MuleContext extends Lifecycle
      *         null if a transaction manager has not been set
      */
     TransactionManager getTransactionManager();
-
-    /**
-     * @return a set of properties that modify the transaction manager's behavior
-     */
-    TransactionManagerProperties getTransactionManagerProperties();
 
     ServerNotificationManager getNotificationManager();
 
