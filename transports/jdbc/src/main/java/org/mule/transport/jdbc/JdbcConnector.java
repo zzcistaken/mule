@@ -34,6 +34,7 @@ import org.mule.util.TemplateParser;
 
 import java.sql.Connection;
 import java.text.MessageFormat;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -72,6 +73,9 @@ public class JdbcConnector extends AbstractConnector
     protected ResultSetHandler resultSetHandler;
     protected QueryRunner queryRunner;
     
+    private final Map<Integer, ExtendedQueryRunner> extendedQueryRunnerCache = new HashMap<Integer, ExtendedQueryRunner>();
+    private int queryTimeout;
+    
     /** 
      * Should each DB record be received in a separate transaction or should 
      * there be a single transaction for the entire ResultSet? 
@@ -92,7 +96,14 @@ public class JdbcConnector extends AbstractConnector
         }
         if (queryRunner == null)
         {
-            queryRunner = new QueryRunner();
+            if (this.queryTimeout >= 0)
+            {
+                queryRunner = new ExtendedQueryRunner(this.queryTimeout);
+            }
+            else
+            {
+                queryRunner = new QueryRunner();
+            }
         }
     }
 
@@ -435,6 +446,43 @@ public class JdbcConnector extends AbstractConnector
         this.resultSetHandler = resultSetHandler;
     }
 
+    public QueryRunner getQueryRunnerFor(ImmutableEndpoint endpoint)
+    {
+        String queryTimeoutAsString = (String) endpoint.getProperty("queryTimeout");
+        Integer queryTimeout = -1;
+        
+        try
+        {
+            queryTimeout = Integer.valueOf(queryTimeoutAsString);
+        }
+        catch (Exception e)
+        {
+
+        }
+        
+        if (queryTimeout >= 0)
+        {
+            return this.getExtendedQueryRunner(queryTimeout);
+        }
+        else
+        {
+            return queryRunner;
+        }
+    }
+
+    private ExtendedQueryRunner getExtendedQueryRunner(Integer queryTimeout)
+    {
+        synchronized (this.extendedQueryRunnerCache)
+        {
+            if (!this.extendedQueryRunnerCache.containsKey(queryTimeout))
+            {
+                ExtendedQueryRunner endpointQueryRunner = new ExtendedQueryRunner(queryTimeout);
+                this.extendedQueryRunnerCache.put(queryTimeout, endpointQueryRunner);
+            }
+            return this.extendedQueryRunnerCache.get(queryTimeout);
+        }
+    }
+    
     public QueryRunner getQueryRunner()
     {
         return queryRunner;
@@ -502,5 +550,15 @@ public class JdbcConnector extends AbstractConnector
         }
 
         return writeStmt;
+    }
+
+    public int getQueryTimeout()
+    {
+        return queryTimeout;
+    }
+
+    public void setQueryTimeout(int queryTimeout)
+    {
+        this.queryTimeout = queryTimeout;
     }
 }

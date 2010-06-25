@@ -66,7 +66,7 @@ public  class SimpleUpdateSqlStatementStrategy implements SqlStatementStrategy
                 logger.debug("SQL UPDATE: " + sql + ", params = " + ArrayUtils.toString(paramValues));
             }
             
-            int nbRows = connector.getQueryRunner().update(con, sql, paramValues);
+            int nbRows = connector.getQueryRunnerFor(endpoint).update(con, sql, paramValues);
             if (logger.isInfoEnabled())
             {
                 logger.info("Executing SQL statement: " + nbRows + " row(s) updated");

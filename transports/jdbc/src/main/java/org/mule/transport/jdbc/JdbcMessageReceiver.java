@@ -131,7 +131,7 @@ public class JdbcMessageReceiver extends TransactedPollingMessageReceiver
                     {
                         logger.debug("SQL UPDATE: " + ackStmt + ", params = " + ArrayUtils.toString(ackParams));
                     }
-                    int[] nbRows = connector.getQueryRunner().batch(con, this.ackStmt, paramValuesArray);
+                    int[] nbRows = connector.getQueryRunnerFor(endpoint).batch(con, this.ackStmt, paramValuesArray);
                     if (nbRows[0] == 0)
                     {
                         logger.warn(".ack statement did not update any rows");
@@ -146,7 +146,7 @@ public class JdbcMessageReceiver extends TransactedPollingMessageReceiver
                     {
                         logger.debug("SQL UPDATE: " + ackStmt + ", params = " + ArrayUtils.toString(paramValues));
                     }
-                    int nbRows = connector.getQueryRunner().update(con, this.ackStmt, paramValues);
+                    int nbRows = connector.getQueryRunnerFor(endpoint).update(con, this.ackStmt, paramValues);
                     if (nbRows == 0)
                     {
                         logger.warn(".ack statement did not update any rows");
@@ -198,7 +198,7 @@ public class JdbcMessageReceiver extends TransactedPollingMessageReceiver
             {
                 logger.debug("SQL QUERY: " + readStmt + ", params = " + ArrayUtils.toString(readParams));
             }
-            Object results = connector.getQueryRunner().query(con, this.readStmt, readParams,
+            Object results = connector.getQueryRunnerFor(endpoint).query(con, this.readStmt, readParams,
                     connector.getResultSetHandler());
 
             List resultList = (List) results;
