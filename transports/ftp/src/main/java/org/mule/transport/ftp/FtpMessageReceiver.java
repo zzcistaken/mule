@@ -185,6 +185,9 @@ public class FtpMessageReceiver extends AbstractPollingMessageReceiver
 
             message.setProperty(FileConnector.PROPERTY_ORIGINAL_FILENAME, file.getName());
             message.setProperty(FileConnector.PROPERTY_FILE_SIZE, file.getSize());
+            // MULE-3478: the created message has no encoding set, so force it to endpoint's encoding.             
+            message.setEncoding(endpoint.getEncoding());
+
             routeMessage(message);
 
             postProcess(client, file, message);
