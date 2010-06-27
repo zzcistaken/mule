@@ -258,6 +258,9 @@ public class FileMessageReceiver extends AbstractPollingMessageReceiver
 
         msgAdapter.setProperty(FileConnector.PROPERTY_ORIGINAL_FILENAME, sourceFileOriginalName);
 
+        // MULE-4274: the created msgAdapter has no encoding set, so force it to endpoint's encoding.
+        msgAdapter.setEncoding(endpoint.getEncoding());
+
         if (!fileConnector.isStreaming())
         {
             moveAndDelete(sourceFile, destinationFile, sourceFileOriginalName, msgAdapter);
