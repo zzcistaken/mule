@@ -18,16 +18,6 @@ import java.net.URL;
 
 public class ProxyServiceConfigurationTestCase extends AbstractMuleTestCase
 {
-
-    private ProxyServiceConfiguration proxyServiceConfiguration;
-
-    @Override
-    protected void doSetUp() throws Exception
-    {
-        super.doSetUp();
-        proxyServiceConfiguration = new ProxyServiceConfiguration();
-    }
-
     public void testGetEndpointName_CorrectNameSpace()
     {
         String configFilePath = "/org/mule/transport/cxf/support/test-proxy-mule-config-correct-namespace.xml";
