@@ -105,10 +105,9 @@ public class MessagePropertiesContext implements Serializable
 
     protected Map getScopedProperties(PropertyScope scope)
     {
-        Map map = (Map) scopedMap.get(scope);
+        Map map = scopedMap.get(scope);
         if (map == null)
         {
-            map = null;
             throw new IllegalArgumentException("Scope not registered: " + scope);
         }
         return map;
