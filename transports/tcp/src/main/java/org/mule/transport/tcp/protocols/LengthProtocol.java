@@ -86,7 +86,7 @@ public class LengthProtocol extends DirectProtocol
         return buffer;
     }
 
-    // @Override
+    @Override
     protected void writeByteArray(OutputStream os, byte[] data) throws IOException
     {
         // Write the length and then the data.
@@ -100,7 +100,6 @@ public class LengthProtocol extends DirectProtocol
             // only flush if the sizes don't match up
             dos.flush();
         }
-        dos.close();
     }
 
     /**
@@ -110,7 +109,7 @@ public class LengthProtocol extends DirectProtocol
      * @param available Amount available
      * @return true if the transfer should continue
      */
-    // @Override
+    @Override
     protected boolean isRepeat(int len, int available)
     {
         return true;
