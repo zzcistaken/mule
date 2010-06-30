@@ -11,6 +11,7 @@ package org.mule.transport.tcp;
 
 import org.mule.tck.FunctionalTestCase;
 import org.mule.transport.tcp.TcpConnector;
+import org.mule.transport.tcp.protocols.AbstractByteProtocol;
 import org.mule.transport.tcp.protocols.CustomClassLoadingLengthProtocol;
 
 import java.io.IOException;
@@ -65,6 +66,7 @@ public class TcpNamespaceHandlerTestCase extends FunctionalTestCase
         assertEquals(c.getNextMessageExceptionPolicy().getClass(), DefaultMessageExceptionPolicy.class);
         assertEquals(c.getSocketPoolFactory().getClass(), DefaultSocketPoolFactory.class);
         assertEquals(c.getSocketFactory().getClass(), TcpSocketFactory.class);
+        assertFalse(((AbstractByteProtocol) c.getTcpProtocol()).isRethrowExceptionOnRead());
     }
     
     public void testSeparateTimeouts() throws Exception
@@ -112,6 +114,7 @@ public class TcpNamespaceHandlerTestCase extends FunctionalTestCase
         CustomClassLoadingLengthProtocol protocol = (CustomClassLoadingLengthProtocol) c.getTcpProtocol();
         assertEquals(protocol.getClass(), CustomClassLoadingLengthProtocol.class);
         assertEquals(protocol.getClassLoader(), muleContext.getRegistry().get("classLoader"));
+        assertTrue(((AbstractByteProtocol) c.getTcpProtocol()).isRethrowExceptionOnRead());
     }
     
     public void testMessageDispatcherFactoryConnector() throws Exception {
