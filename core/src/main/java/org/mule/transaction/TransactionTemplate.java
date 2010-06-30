@@ -10,8 +10,6 @@
 
 package org.mule.transaction;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.mule.api.MuleContext;
 import org.mule.api.transaction.ExternalTransactionAwareTransactionFactory;
 import org.mule.api.transaction.Transaction;
@@ -22,6 +20,9 @@ import org.mule.api.transaction.TransactionFactory;
 import org.mule.config.i18n.CoreMessages;
 
 import java.beans.ExceptionListener;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class TransactionTemplate
 {
@@ -130,7 +131,7 @@ public class TransactionTemplate
         catch (Exception e)
         {
             tx = TransactionCoordination.getInstance().getTransaction();
-            if (exceptionListener != null)
+            if (isExceptionHandledAtThisLevel(tx))
             {
                 logger.info("Exception Caught in Transaction template.  Handing off to exception handler: "
                     + exceptionListener);
@@ -163,9 +164,10 @@ public class TransactionTemplate
                 // the context delimited by XA's ALWAYS_BEGIN
                 return null;
             }
-            else if (exceptionListener != null && tx != null)
+            else if (isExceptionHandledAtThisLevel(tx))
             {
-                // if there's an exception listener, it has been handled already, don't loop
+                // if exception is handled at this level, it has been handled
+                // already, don't loop
                 return null;
             }
             else
@@ -187,6 +189,18 @@ public class TransactionTemplate
             if (joinedExternal != null)
                 TransactionCoordination.getInstance().unbindTransaction(joinedExternal);
         }
+    }
+
+    /**
+     * The exception must be handled at this level if there is an
+     * {@link #exceptionListener} and there is a transaction.
+     * 
+     * @param tx
+     * @return
+     */
+    protected boolean isExceptionHandledAtThisLevel(Transaction tx)
+    {
+        return exceptionListener != null && tx != null;
     }
 
     protected void resolveTransaction(Transaction tx) throws TransactionException
