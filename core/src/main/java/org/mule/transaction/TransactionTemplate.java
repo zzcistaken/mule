@@ -198,7 +198,7 @@ public class TransactionTemplate
      * @param tx
      * @return
      */
-    protected boolean isExceptionHandledAtThisLevel(Transaction tx)
+    private boolean isExceptionHandledAtThisLevel(Transaction tx)
     {
         return exceptionListener != null && tx != null;
     }
