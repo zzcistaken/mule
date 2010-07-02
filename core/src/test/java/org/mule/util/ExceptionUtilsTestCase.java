@@ -12,11 +12,11 @@ package org.mule.util;
 
 import static org.mule.util.ExceptionUtils.containsType;
 
+import org.mule.tck.AbstractMuleTestCase;
+
 import java.io.IOException;
 
-import junit.framework.TestCase;
-
-public class ExceptionUtilsTestCase extends TestCase
+public class ExceptionUtilsTestCase extends AbstractMuleTestCase
 {
 
     public void testContainsType()
