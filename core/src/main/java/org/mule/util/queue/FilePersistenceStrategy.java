@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -54,15 +55,23 @@ public class FilePersistenceStrategy implements QueuePersistenceStrategy, MuleCo
         this.muleContext = context;
     }
 
-    protected String getId(Object obj)
+    /**
+     * Generates incremental an unique ids.
+     * 
+     * @return an id that will be different from the previous ones.
+     */
+    protected String generateId()
     {
-        String id = gen.generateRandomBasedUUID().toString();
+        // The timeBasedUUID will generate strictly incremental unique ids.
+        // Sorting all the ids will give us the ids in the order that were
+        // generated.
+        String id = gen.generateTimeBasedUUID().toString();
         return id;
     }
 
     public Object store(String queue, Object obj) throws IOException
     {
-        String id = getId(obj);
+        String id = generateId();
         File file = FileUtils.newFile(store, queue + File.separator + id + EXTENSION);
         file.getParentFile().mkdirs();
         ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file));
@@ -137,6 +146,9 @@ public class FilePersistenceStrategy implements QueuePersistenceStrategy, MuleCo
         {
             return;
         }
+        // sort the files so they are in the order in which
+        // their ids were generated in method generateId().
+        Arrays.sort(files);
 
         for (int i = 0; i < files.length; i++)
         {
