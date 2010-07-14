@@ -46,7 +46,7 @@ import org.mule.routing.response.DefaultResponseRouterCollection;
 import org.mule.transport.AbstractConnector;
 import org.mule.transport.NullPayload;
 import org.mule.util.ClassUtils;
-import org.mule.util.ExceptionUtils;
+import org.mule.util.MuleExceptionHandlingUtil;
 import org.mule.util.concurrent.WaitableBoolean;
 
 import java.beans.ExceptionListener;
@@ -54,7 +54,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.emory.mathcs.backport.java.util.concurrent.atomic.AtomicBoolean;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -526,7 +525,6 @@ public abstract class AbstractService implements Service
         return name;
     }
 
-    @Override
     public String toString()
     {
         return String.format("%s{%s}", ClassUtils.getSimpleName(this.getClass()), getName());
@@ -544,7 +542,7 @@ public abstract class AbstractService implements Service
 
     protected void handleException(Exception e)
     {
-        exceptionListener.exceptionThrown(e);
+        MuleExceptionHandlingUtil.handledExceptionIfNeeded(exceptionListener, e);
     }
 
     protected void doForceStop() throws MuleException
@@ -858,24 +856,12 @@ public abstract class AbstractService implements Service
         {
             if (getOutboundRouter().hasEndpoints())
             {
-                // Here we can use the same message instance because there is no
-                // inbound response.
+                // Here we can use the same message instance because there is no inbound response.
                 if (stats.isEnabled())
                 {
                     stats.incSentEventASync();
                 }
-                try
-                {
-                    getOutboundRouter().route(result, event.getSession());
-                }
-                catch (MessagingException e)
-                {
-                    if (!ExceptionUtils.containsType(e, DispatchException.class))
-                    {
-                        // DispatchExceptions are handled in the dispatcher.
-                        throw e;
-                    }
-                }
+                getOutboundRouter().route(result, event.getSession());
             }
         }
     }

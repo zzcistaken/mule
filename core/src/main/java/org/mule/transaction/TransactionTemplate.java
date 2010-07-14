@@ -18,6 +18,7 @@ import org.mule.api.transaction.TransactionConfig;
 import org.mule.api.transaction.TransactionException;
 import org.mule.api.transaction.TransactionFactory;
 import org.mule.config.i18n.CoreMessages;
+import org.mule.util.MuleExceptionHandlingUtil;
 
 import java.beans.ExceptionListener;
 
@@ -135,7 +136,8 @@ public class TransactionTemplate
             {
                 logger.info("Exception Caught in Transaction template.  Handing off to exception handler: "
                     + exceptionListener);
-                exceptionListener.exceptionThrown(e);
+
+                MuleExceptionHandlingUtil.handledExceptionIfNeeded(exceptionListener, e);
             }
             else
             {

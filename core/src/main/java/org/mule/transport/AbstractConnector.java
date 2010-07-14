@@ -66,6 +66,7 @@ import org.mule.transport.service.TransportServiceDescriptor;
 import org.mule.transport.service.TransportServiceException;
 import org.mule.util.ClassUtils;
 import org.mule.util.CollectionUtils;
+import org.mule.util.MuleExceptionHandlingUtil;
 import org.mule.util.ObjectNameHelper;
 import org.mule.util.ObjectUtils;
 import org.mule.util.StringUtils;
@@ -792,7 +793,7 @@ public abstract class AbstractConnector
                 // Log or otherwise handle exception
                 if (exceptionListener != null)
                 {
-                    exceptionListener.exceptionThrown(exception);
+                    MuleExceptionHandlingUtil.handledExceptionIfNeeded(exceptionListener, exception);
                 }
                 else
                 {
@@ -827,7 +828,7 @@ public abstract class AbstractConnector
                 }
                 else
                 {
-                    exceptionListener.exceptionThrown(e);
+                    MuleExceptionHandlingUtil.handledExceptionIfNeeded(exceptionListener, e);
                 }
             }
         }
@@ -835,7 +836,7 @@ public abstract class AbstractConnector
         {
             if (exceptionListener != null)
             {
-                exceptionListener.exceptionThrown(exception);
+                MuleExceptionHandlingUtil.handledExceptionIfNeeded(exceptionListener, exception);
             }
             else
             {
@@ -2044,6 +2045,7 @@ public abstract class AbstractConnector
         {
             DelegatingInputStream is = new DelegatingInputStream((InputStream)result.getPayload())
             {
+                @Override
                 public void close() throws IOException
                 {
                     try
@@ -2105,6 +2107,7 @@ public abstract class AbstractConnector
         {
             DelegatingInputStream is = new DelegatingInputStream((InputStream)result.getPayload())
             {
+                @Override
                 public void close() throws IOException
                 {
                     try
@@ -2399,6 +2402,7 @@ public abstract class AbstractConnector
     }
 
     // @Override
+    @Override
     public String toString()
     {
         final StringBuffer sb = new StringBuffer(120);

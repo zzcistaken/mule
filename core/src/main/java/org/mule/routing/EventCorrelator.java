@@ -22,6 +22,7 @@ import org.mule.config.i18n.CoreMessages;
 import org.mule.context.notification.RoutingNotification;
 import org.mule.routing.inbound.EventGroup;
 import org.mule.util.MapUtils;
+import org.mule.util.MuleExceptionHandlingUtil;
 import org.mule.util.concurrent.Latch;
 import org.mule.util.monitor.Expirable;
 import org.mule.util.monitor.ExpiryMonitor;
@@ -130,6 +131,7 @@ public class EventCorrelator
      * @return
      * @deprecated this is used by a test, but I would like to remove this method
      */
+    @Deprecated
     public Map getResponseMessages()
     {
         return Collections.unmodifiableMap(responseMessages);
@@ -550,9 +552,12 @@ public class EventCorrelator
                         {
                             context.fireNotification(new RoutingNotification(group.toMessageCollection(), null,
                                                                              RoutingNotification.CORRELATION_TIMEOUT));
-                            service.getExceptionListener().exceptionThrown(
-                                    new CorrelationTimeoutException(CoreMessages.correlationTimedOut(group.getGroupId()),
-                                                                    group.toMessageCollection()));
+
+                            MuleExceptionHandlingUtil.handledExceptionIfNeeded(
+                                service.getExceptionListener(),
+                                new CorrelationTimeoutException(
+                                    CoreMessages.correlationTimedOut(group.getGroupId()),
+                                    group.toMessageCollection()));
                         }
                         else
                         {
@@ -586,7 +591,8 @@ public class EventCorrelator
                             }
                             catch (Exception e)
                             {
-                                service.getExceptionListener().exceptionThrown(e);
+                                MuleExceptionHandlingUtil.handledExceptionIfNeeded(
+                                    service.getExceptionListener(), e);
                             }
                         }
                     }

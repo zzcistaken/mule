@@ -46,8 +46,8 @@ import org.mule.model.seda.SedaService;
 import org.mule.module.spring.i18n.SpringMessages;
 import org.mule.object.SingletonObjectFactory;
 import org.mule.routing.filters.WildcardFilter;
-import org.mule.transport.AbstractConnector;
 import org.mule.util.ClassUtils;
+import org.mule.util.MuleExceptionHandlingUtil;
 
 import java.beans.ExceptionListener;
 import java.util.ArrayList;
@@ -58,6 +58,7 @@ import java.util.Set;
 
 import edu.emory.mathcs.backport.java.util.concurrent.CopyOnWriteArraySet;
 import edu.emory.mathcs.backport.java.util.concurrent.ExecutorService;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
@@ -306,7 +307,7 @@ public class MuleEventMulticaster
                 }
                 catch (ApplicationEventException e1)
                 {
-                    exceptionListener.exceptionThrown(e1);
+                    MuleExceptionHandlingUtil.handledExceptionIfNeeded(exceptionListener, e1);
                 }
                 return;
             }
@@ -740,7 +741,7 @@ public class MuleEventMulticaster
         }
         catch (Exception e)
         {
-            exceptionListener.exceptionThrown(e);
+            MuleExceptionHandlingUtil.handledExceptionIfNeeded(exceptionListener, e);
             return new WildcardFilter(pattern);
         }
     }
