@@ -41,7 +41,7 @@ public class JXPathExpressionEvaluator implements ExpressionEvaluator, MuleConte
 
     public static final String NAME = "jxpath";
 
-    private transient Log logger = LogFactory.getLog(getClass());
+    protected transient Log logger = LogFactory.getLog(getClass());
     private NamespaceManager namespaceManager;
 
     public void setMuleContext(MuleContext context)
