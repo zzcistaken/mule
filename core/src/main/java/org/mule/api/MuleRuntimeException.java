@@ -11,6 +11,7 @@
 package org.mule.api;
 
 import org.mule.config.i18n.Message;
+import org.mule.util.MuleExceptionHandleStatus;
 
 /**
  * <code>MuleRuntimeException</code> Is the base runtime exception type for the
@@ -18,12 +19,13 @@ import org.mule.config.i18n.Message;
  * on this exception. Runtime exceptions in mule are only ever thrown where the
  * method is not declared to throw an exception and the exception is serious.
  */
-public class MuleRuntimeException extends RuntimeException
+public class MuleRuntimeException extends RuntimeException implements MuleExceptionHandleStatus
 {
     /**
      * Serial version
      */
     private static final long serialVersionUID = 6728041560892553159L;
+    private boolean exceptionAlreadyHandled;
 
     /**
      * @param message the exception message
@@ -40,5 +42,21 @@ public class MuleRuntimeException extends RuntimeException
     public MuleRuntimeException(Message message, Throwable cause)
     {
         super(message.getMessage(), cause);
+    }
+
+    /**
+     * @return the exceptionAlreadyHandled
+     */
+    public boolean isExceptionAlreadyHandled()
+    {
+        return exceptionAlreadyHandled;
+    }
+
+    /**
+     * @param exceptionAlreadyHandled the exceptionAlreadyHandled to set
+     */
+    public void setExceptionAlreadyHandled(boolean exceptionAlreadyHandled)
+    {
+        this.exceptionAlreadyHandled = exceptionAlreadyHandled;
     }
 }

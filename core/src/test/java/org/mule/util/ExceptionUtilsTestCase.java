@@ -11,7 +11,9 @@
 package org.mule.util;
 
 import static org.mule.util.ExceptionUtils.containsType;
+import static org.mule.util.ExceptionUtils.getDeepestOccurenceOfType;
 
+import org.mule.api.transport.DispatchException;
 import org.mule.tck.AbstractMuleTestCase;
 
 import java.io.IOException;
@@ -36,8 +38,48 @@ public class ExceptionUtilsTestCase extends AbstractMuleTestCase
 
         assertFalse(containsType(new Exception(new IllegalArgumentException(new NullPointerException())),
             IOException.class));
+
+        // see if we can detect an interface implemented by the exception
+        assertTrue(containsType(
+            new Exception(new IllegalArgumentException(new DispatchException(null, null))),
+            MuleExceptionHandleStatus.class));
     }
 
+    public void testLastIndexOfType_deepestIsTheOneWeWant() throws Exception
+    {
+        IllegalArgumentException expected = new IllegalArgumentException("something");
+        assertExpectationsForDeepestOccurence(expected);
+    }
+
+    public void testLastIndexOfType_theOneWeWantIsNotTheDeepest() throws Exception
+    {
+        IllegalArgumentException expected = new IllegalArgumentException("something",
+            new NullPointerException("somenull"));
+        assertExpectationsForDeepestOccurence(expected);
+
+    }
+
+    private void assertExpectationsForDeepestOccurence(IllegalArgumentException expected)
+    {
+        assertSame(expected, getDeepestOccurenceOfType(expected, IllegalArgumentException.class));
+
+        assertSame(expected, getDeepestOccurenceOfType(new Exception(expected), IllegalArgumentException.class));
+
+        assertSame(
+            expected,
+            getDeepestOccurenceOfType(new IllegalArgumentException(new Exception(expected)),
+                IllegalArgumentException.class));
+
+        assertNull(getDeepestOccurenceOfType(new IllegalArgumentException(new Exception(expected)),
+            IOException.class));
+    }
+
+    public void testLastIndexOfType_nullParameters() throws Exception
+    {
+        assertNull(getDeepestOccurenceOfType(null, null));
+
+        assertNull(getDeepestOccurenceOfType(new Exception(), null));
+
+        assertNull(getDeepestOccurenceOfType(null, Exception.class));
+    }
 }
-
-

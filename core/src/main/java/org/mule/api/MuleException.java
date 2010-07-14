@@ -14,6 +14,7 @@ import org.mule.config.ExceptionHelper;
 import org.mule.config.i18n.CoreMessages;
 import org.mule.config.i18n.Message;
 import org.mule.config.i18n.MessageFactory;
+import org.mule.util.MuleExceptionHandleStatus;
 import org.mule.util.StringUtils;
 import org.mule.util.SystemUtils;
 
@@ -28,12 +29,13 @@ import java.util.Map;
  * <code>MuleException</code> is the base exception type for the Mule server any
  * other exceptions thrown by Mule code will be based on this exception,
  */
-public abstract class MuleException extends Exception
+public abstract class MuleException extends Exception implements MuleExceptionHandleStatus
 {
     private Map info = new HashMap();
     private int errorCode = -1;
     private String message = null;
     private Message i18nMessage;
+    private boolean exceptionAlreadyHandled;
 
     /**
      * @param message the exception message
@@ -128,6 +130,7 @@ public abstract class MuleException extends Exception
         errorCode = code;
     }
 
+    @Override
     public final String getMessage()
     {
         return message;
@@ -200,6 +203,7 @@ public abstract class MuleException extends Exception
         return buf.toString();
     }
 
+    @Override
     public boolean equals(Object o)
     {
         if (this == o)
@@ -230,6 +234,7 @@ public abstract class MuleException extends Exception
         return true;
     }
 
+    @Override
     public int hashCode()
     {
         int result;
@@ -243,4 +248,21 @@ public abstract class MuleException extends Exception
     {
         return info;
     }
+
+    /**
+     * @return the exceptionAlreadyHandled
+     */
+    public boolean isExceptionAlreadyHandled()
+    {
+        return exceptionAlreadyHandled;
+    }
+
+    /**
+     * @param exceptionAlreadyHandled the exceptionAlreadyHandled to set
+     */
+    public void setExceptionAlreadyHandled(boolean exceptionAlreadyHandled)
+    {
+        this.exceptionAlreadyHandled = exceptionAlreadyHandled;
+    }
+
 }

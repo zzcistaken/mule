@@ -10,6 +10,8 @@
 
 package org.mule.util.monitor;
 
+import org.mule.util.MuleExceptionHandlingUtil;
+
 import java.beans.ExceptionListener;
 import java.io.File;
 import java.io.IOException;
@@ -149,6 +151,7 @@ public class FileMonitor
             this.exceptionListener = exceptionListener;
         }
 
+        @Override
         public void run()
         {
             // Loop over the registered files and see which have changed.
@@ -190,7 +193,7 @@ public class FileMonitor
                                 // TODO MULE-863: What should we do if null?
                                 if (exceptionListener != null)
                                 {
-                                    exceptionListener.exceptionThrown(e);
+                                    MuleExceptionHandlingUtil.handledExceptionIfNeeded(exceptionListener, e);
                                 }
                             }
                         }

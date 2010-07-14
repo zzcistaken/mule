@@ -22,7 +22,7 @@ import org.mule.api.endpoint.ImmutableEndpoint;
 import org.mule.api.retry.RetryCallback;
 import org.mule.api.retry.RetryPolicyTemplate;
 import org.mule.endpoint.MuleEndpointURI;
-import org.mule.transport.TestAbstractConnectableTestCase.MethodInvocation.MethodPart;
+import org.mule.transport.MuleAbstractConnectableTestCase.MethodInvocation.MethodPart;
 
 import java.util.List;
 import java.util.Vector;
@@ -43,16 +43,16 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 /**
- * This test tests class {@link AbstractConnectable} but its name starts with "Test"
+ * This test tests class {@link AbstractConnectable} but its name starts with "Mule"
  * because there is an exclusion rule in parent pom for test classes that have their
  * names starting with "Abstract".
  */
-public class TestAbstractConnectableTestCase
+public class MuleAbstractConnectableTestCase
 {
     /**
      * The logger used for this class
      */
-    private static Log log = LogFactory.getLog(TestAbstractConnectableTestCase.class);
+    private static Log log = LogFactory.getLog(MuleAbstractConnectableTestCase.class);
 
     @Test
     public void testStartRethrowsMuleExceptionCorrectly() throws Exception
@@ -105,7 +105,7 @@ public class TestAbstractConnectableTestCase
 
     /**
      * This inner class will do the work of
-     * {@link TestAbstractConnectableTestCase#testStartIsThreadSafe()
+     * {@link MuleAbstractConnectableTestCase#testStartIsThreadSafe()
      * testStartIsThreadSafe()}.
      */
     @Ignore

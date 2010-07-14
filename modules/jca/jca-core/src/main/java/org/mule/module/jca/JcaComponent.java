@@ -22,6 +22,7 @@ import org.mule.component.AbstractJavaComponent;
 import org.mule.config.i18n.CoreMessages;
 import org.mule.config.i18n.Message;
 import org.mule.module.jca.i18n.JcaMessages;
+import org.mule.util.MuleExceptionHandlingUtil;
 import org.mule.work.AbstractMuleEventWork;
 
 import javax.resource.spi.UnavailableException;
@@ -60,6 +61,7 @@ public class JcaComponent extends AbstractJavaComponent implements WorkListener
     }
 
     // @Override
+    @Override
     public Object doInvoke(MuleEvent event)
     {
         try
@@ -73,12 +75,14 @@ public class JcaComponent extends AbstractJavaComponent implements WorkListener
         return null;
     }
 
+    @Override
     public Class getObjectType()
     {
         return MessageEndpoint.class;
     }
 
     // @Override
+    @Override
     protected LifecycleAdapter borrowComponentLifecycleAdaptor() throws Exception
     {
         // Template method unused because doOnCall and doOnEvent have been overridden
@@ -86,12 +90,14 @@ public class JcaComponent extends AbstractJavaComponent implements WorkListener
     }
 
     // @Override
+    @Override
     protected void returnComponentLifecycleAdaptor(LifecycleAdapter lifecycleAdapter)
     {
         // Template method unused because doOnCall and doOnEvent have been overridden
     }
 
     // @Override
+    @Override
     protected void doInitialise() throws InitialisationException
     {
         // no-op no object-factory
@@ -105,6 +111,7 @@ public class JcaComponent extends AbstractJavaComponent implements WorkListener
             super(event);
         }
 
+        @Override
         public void doRun()
         {
 
@@ -123,16 +130,17 @@ public class JcaComponent extends AbstractJavaComponent implements WorkListener
                 {
                     Message message = JcaMessages.cannotAllocateManagedInstance();
                     logger.error(message);
-                    service.getExceptionListener().exceptionThrown(new MessagingException(message, e));
+                    MuleExceptionHandlingUtil.handledExceptionIfNeeded(service.getExceptionListener(),
+                        new MessagingException(message, e));
                 }
                 else if (e instanceof MessagingException)
                 {
                     logger.error("Failed to execute  JCAEndPoint " + e.getMessage(), e);
-                    service.getExceptionListener().exceptionThrown(e);
+                    MuleExceptionHandlingUtil.handledExceptionIfNeeded(service.getExceptionListener(), e);
                 }
                 else
                 {
-                    service.getExceptionListener().exceptionThrown(
+                    MuleExceptionHandlingUtil.handledExceptionIfNeeded(service.getExceptionListener(),
                         new MessagingException(CoreMessages.eventProcessingFailedFor(service.getName()), e));
                 }
             }

@@ -168,6 +168,12 @@ public class JmsConnector extends AbstractConnector implements ConnectionNotific
      */
     private boolean embeddedMode;
 
+    /**
+     * Overrides XaResource.isSameRM() result. Needed for IBM WMQ XA
+     * implementation (set to 'false'). Default value is null (don't override).
+     */
+    private Boolean sameRMOverrideValue;
+
     ////////////////////////////////////////////////////////////////////////
     // Methods
     ////////////////////////////////////////////////////////////////////////
@@ -397,7 +403,7 @@ public class JmsConnector extends AbstractConnector implements ConnectionNotific
         {
             if (cf instanceof XAConnectionFactory && muleContext.getTransactionManager() != null)
             {
-                cf = new ConnectionFactoryWrapper(cf);
+                cf = new ConnectionFactoryWrapper(cf, sameRMOverrideValue);
             }
         }
         catch (Exception e)
@@ -1283,5 +1289,15 @@ public class JmsConnector extends AbstractConnector implements ConnectionNotific
     public void setEmbeddedMode(boolean embeddedMode)
     {
         this.embeddedMode = embeddedMode;
+    }
+
+    public Boolean getSameRMOverrideValue()
+    {
+        return sameRMOverrideValue;
+    }
+
+    public void setSameRMOverrideValue(Boolean sameRMOverrideValue)
+    {
+        this.sameRMOverrideValue = sameRMOverrideValue;
     }
 }

@@ -27,6 +27,7 @@ import org.mule.api.transport.MessageDispatcher;
 import org.mule.context.notification.EndpointMessageNotification;
 import org.mule.context.notification.SecurityNotification;
 import org.mule.transaction.TransactionCoordination;
+import org.mule.util.MuleExceptionHandlingUtil;
 
 import java.util.List;
 
@@ -153,7 +154,8 @@ public abstract class AbstractMessageDispatcher extends AbstractConnectable impl
             catch (Exception e)
             {
                 handleException(e);
-                throw new DispatchException(event.getMessage(), event.getEndpoint(), e);
+                throw MuleExceptionHandlingUtil.markExceptionAsHandled(new DispatchException(
+                    event.getMessage(), event.getEndpoint(), e));
             }
         }
 
@@ -198,13 +200,15 @@ public abstract class AbstractMessageDispatcher extends AbstractConnectable impl
         catch (Exception e)
         {
             handleException(e);
-            throw new DispatchException(event.getMessage(), event.getEndpoint(), e);
+            throw MuleExceptionHandlingUtil.markExceptionAsHandled(new DispatchException(event.getMessage(),
+                event.getEndpoint(), e));
         }
     }
 
     /**
      * @deprecated
      */
+    @Deprecated
     protected boolean returnResponse(MuleEvent event)
     {
         // Pass through false to conserve the existing behavior of this method but
@@ -302,6 +306,7 @@ public abstract class AbstractMessageDispatcher extends AbstractConnectable impl
         }
     }
     
+    @Override
     public OutboundEndpoint getEndpoint()
     {
         return (OutboundEndpoint) super.getEndpoint();
