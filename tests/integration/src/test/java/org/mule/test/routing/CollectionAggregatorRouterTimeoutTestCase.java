@@ -25,6 +25,7 @@ import edu.emory.mathcs.backport.java.util.concurrent.atomic.AtomicInteger;
 public class CollectionAggregatorRouterTimeoutTestCase extends FunctionalTestCase
 {
 
+    @Override
     protected String getConfigResources()
     {
         return "collection-aggregator-router-timeout-test.xml";
@@ -48,12 +49,12 @@ public class CollectionAggregatorRouterTimeoutTestCase extends FunctionalTestCas
 
         FunctionalTestComponent vortex = (FunctionalTestComponent) getComponent("vortex");
         FunctionalTestComponent aggregator = (FunctionalTestComponent) getComponent("aggregator");
-        
+
         MuleClient client = new MuleClient();
         List list = Arrays.asList("first", "second");
         client.dispatch("vm://splitter", list, null);
 
-        Thread.sleep(3000);
+        Thread.sleep(4000);
 
         // no correlation timeout should ever fire
         assertEquals("Correlation timeout should not have happened.", 0, correlationTimeoutCount.intValue());
@@ -63,14 +64,17 @@ public class CollectionAggregatorRouterTimeoutTestCase extends FunctionalTestCas
         assertEquals("Wrong message received", "second", vortex.getLastReceivedMessage());
 
         // should receive only the first part
-        assertEquals("Aggregator received wrong number of messages.", 1, aggregator.getReceivedMessagesCount());
+        assertEquals("Aggregator received wrong number of messages.", 1,
+            aggregator.getReceivedMessagesCount());
         assertEquals("Wrong message received", Arrays.asList("first"), aggregator.getLastReceivedMessage());
 
-        // wait for the vortex timeout (6000ms for vortext + 2000ms for aggregator timeout + some extra for a test)
+        // wait for the vortex timeout (6000ms for vortext + 2000ms for
+        // aggregator timeout + some extra for a test)
         Thread.sleep(9000);
 
         // now get the messages which were lagging behind
-        // it will receive only one (first) as second will be discarded by the worker because it has already dispatched one with the same group id
+        // it will receive only one (first) as second will be discarded by the
+        // worker because it has already dispatched one with the same group id
         assertEquals("Other messages never received by aggregator.", 1, aggregator.getReceivedMessagesCount());
         assertNotNull(client.request("vm://out?connector=queue", 10000));
     }
