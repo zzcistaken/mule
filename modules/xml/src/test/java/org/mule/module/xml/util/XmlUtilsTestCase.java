@@ -10,93 +10,84 @@
 
 package org.mule.module.xml.util;
 
-import org.mule.DefaultMuleMessage;
-import org.mule.module.xml.expression.JXPathExpressionEvaluator;
 import org.mule.tck.AbstractMuleTestCase;
 import org.mule.util.IOUtils;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
 
-import org.dom4j.DocumentException;
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 public class XmlUtilsTestCase extends AbstractMuleTestCase
 {
 
-    private static final String SIMPLE_XML = "simple.xml";
+    private static final String SIMPLE_XML_RESOURCE = "simple.xml";
+    private static final String SIMPLE_XML_CONTENT = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                                                     + "<just>testing</just>";
 
-    public void testResolvesSimpleXmlFromDom4jDocument() throws IOException, DocumentException
+    public void testConvertsToW3cDocumentFromDom4jDocument() throws Exception
     {
-        org.dom4j.Document document = XMLTestUtils.toDom4jDocument(SIMPLE_XML);
-        doSimpleTest(document);
+        org.dom4j.Document document = XMLTestUtils.toDom4jDocument(SIMPLE_XML_RESOURCE);
+        assertToW3cDocumentSuccessfullyConvertsPayload(document);
     }
 
-    public void testResolvesSimpleXmlFromW3cDocument() throws IOException, SAXException, ParserConfigurationException
+    public void testConvertsToW3cDocumentFromW3cDocument() throws Exception
     {
-        org.w3c.dom.Document document = XMLTestUtils.toW3cDocument(SIMPLE_XML);
-        doSimpleTest(document);
+        org.w3c.dom.Document document = XMLTestUtils.toW3cDocument(SIMPLE_XML_RESOURCE);
+        assertToW3cDocumentSuccessfullyConvertsPayload(document);
     }
 
-    public void testResolvesSimpleXmlFromInputSource() throws IOException
+    public void testConvertsToW3cDocumentFromInputSource() throws Exception
     {
-        InputSource payload = XMLTestUtils.toInputSource(SIMPLE_XML);
-        doSimpleTest(payload);
+        InputSource payload = XMLTestUtils.toInputSource(SIMPLE_XML_RESOURCE);
+        assertToW3cDocumentSuccessfullyConvertsPayload(payload);
     }
 
-    public void testResolvesSimpleXmlFromSource() throws Exception
+    public void testConvertsToW3cDocumentFromSource() throws Exception
     {
-        Source payload = XMLTestUtils.toSource(SIMPLE_XML);
-        doSimpleTest(payload);
+        Source payload = XMLTestUtils.toSource(SIMPLE_XML_RESOURCE);
+        assertToW3cDocumentSuccessfullyConvertsPayload(payload);
     }
 
-    public void testResolvesSimpleXmlFromXmlStreamReader() throws XMLStreamException, IOException
+    public void testConvertsToW3cDocumentFromXmlStreamReader() throws Exception
     {
-        XMLStreamReader payload = XMLTestUtils.toXmlStreamReader(SIMPLE_XML);
-        doSimpleTest(payload);
+        XMLStreamReader payload = XMLTestUtils.toXmlStreamReader(SIMPLE_XML_RESOURCE);
+        assertToW3cDocumentSuccessfullyConvertsPayload(payload);
     }
 
-    public void testResolvesSimpleXmlFromInputStream() throws IOException
+    public void testConvertsToW3cDocumentFromInputStream() throws Exception
     {
-        InputStream payload = XMLTestUtils.toInputStream(SIMPLE_XML);
-        doSimpleTest(payload);
+        InputStream payload = XMLTestUtils.toInputStream(SIMPLE_XML_RESOURCE);
+        assertToW3cDocumentSuccessfullyConvertsPayload(payload);
     }
 
-    public void testResolvesSimpleXmlFromString() throws IOException, SAXException, ParserConfigurationException
+    public void testConvertsToW3cDocumentFromString() throws Exception
     {
-        String payload = XMLTestUtils.toString(SIMPLE_XML);
-        doSimpleTest(payload);
+        String payload = XMLTestUtils.toString(SIMPLE_XML_RESOURCE);
+        assertToW3cDocumentSuccessfullyConvertsPayload(payload);
     }
 
-    public void testResolvesSimpleXmlFromByteArray() throws IOException
+    public void testConvertsToW3cDocumentFromByteArray() throws Exception
     {
-        byte[] payload = XMLTestUtils.toString(SIMPLE_XML).getBytes();
-        doSimpleTest(payload);
+        byte[] payload = XMLTestUtils.toString(SIMPLE_XML_RESOURCE).getBytes();
+        assertToW3cDocumentSuccessfullyConvertsPayload(payload);
     }
 
-    public void testResolvesSimpleXmlFromFile() throws IOException
+    public void testConvertsToW3cDocumentFromFile() throws Exception
     {
-        URL asUrl = IOUtils.getResourceAsUrl(SIMPLE_XML, getClass());
+        URL asUrl = IOUtils.getResourceAsUrl(SIMPLE_XML_RESOURCE, getClass());
         File payload = new File(asUrl.getFile());
-        doSimpleTest(payload);
+        assertToW3cDocumentSuccessfullyConvertsPayload(payload);
     }
 
-    private void doSimpleTest(Object payload)
+    private void assertToW3cDocumentSuccessfullyConvertsPayload(Object payload) throws Exception
     {
-        DefaultMuleMessage msg = new DefaultMuleMessage(payload);
-
-        JXPathExpressionEvaluator e = new JXPathExpressionEvaluator();
-        Object value = e.evaluate("/just", msg);
-
-        assertTrue(value instanceof String);
-        assertEquals("testing", (String) value);
+        org.w3c.dom.Document document = XMLUtils.toW3cDocument(payload);
+        String actualXml = XMLUtils.toXml(document);
+        assertEquals(SIMPLE_XML_CONTENT, actualXml);
     }
 }
