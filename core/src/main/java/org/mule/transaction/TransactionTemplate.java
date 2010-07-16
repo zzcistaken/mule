@@ -18,6 +18,8 @@ import org.mule.api.transaction.TransactionConfig;
 import org.mule.api.transaction.TransactionException;
 import org.mule.api.transaction.TransactionFactory;
 import org.mule.config.i18n.CoreMessages;
+import org.mule.transport.ConnectException;
+import org.mule.util.ExceptionUtils;
 import org.mule.util.MuleExceptionHandlingUtil;
 
 import java.beans.ExceptionListener;
@@ -132,65 +134,85 @@ public class TransactionTemplate
         catch (Exception e)
         {
             tx = TransactionCoordination.getInstance().getTransaction();
-            if (isExceptionHandledAtThisLevel(tx))
-            {
-                logger.info("Exception Caught in Transaction template.  Handing off to exception handler: "
-                    + exceptionListener);
-
-                MuleExceptionHandlingUtil.handledExceptionIfNeeded(exceptionListener, e);
-            }
-            else
-            {
-                logger.info("Exception Caught in Transaction template without any exception listeners defined, exception is rethrown.");
-                if (tx != null)
-                {
-                    tx.setRollbackOnly();
-                }
-            }
-            if (tx != null)
-            {
-                // The exception strategy can choose to route exception
-                // messages as part of the current transaction. So only rollback the
-                // tx if it has been marked for rollback (which is the default
-                // case in the AbstractExceptionListener)
-                if (tx.isRollbackOnly())
-                {
-                    logger.debug("Exception caught: rollback transaction", e);
-                }
-                resolveTransaction(tx);
-            }
-            if (suspendedXATx != null)
-            {
-                resumeXATransaction(suspendedXATx);
-                // we've handled this exception above. just return null now, this way we isolate
-                // the context delimited by XA's ALWAYS_BEGIN
-                return null;
-            }
-            else if (isExceptionHandledAtThisLevel(tx))
-            {
-                // if exception is handled at this level, it has been handled
-                // already, don't loop
-                return null;
-            }
-            else
-            {
-                throw e;
-            }
+            return handleException(e, tx, suspendedXATx);
         }
         catch (Error e)
         {
-            if (tx != null)
-            {
-                logger.info("Error caught, rolling back TX " + tx, e);
-                tx.rollback();
-            }
-            throw e;
+            return handleError(e, tx);
         }
         finally
         {
             if (joinedExternal != null)
                 TransactionCoordination.getInstance().unbindTransaction(joinedExternal);
         }
+    }
+
+
+    Object handleException(Exception e, Transaction tx, Transaction suspendedXATx)
+        throws TransactionException, Exception
+    {
+        if (isExceptionHandledAtThisLevel(tx))
+        {
+            logger.info("Exception Caught in Transaction template.  Handing off to exception handler: "
+                + exceptionListener);
+
+            MuleExceptionHandlingUtil.handledExceptionIfNeeded(exceptionListener, e);
+        }
+        else
+        {
+            logger.info("Exception Caught in Transaction template without any exception listeners defined, exception is rethrown.");
+            if (tx != null)
+            {
+                tx.setRollbackOnly();
+            }
+        }
+        if (tx != null)
+        {
+            // The exception strategy can choose to route exception
+            // messages as part of the current transaction. So only rollback the
+            // tx if it has been marked for rollback (which is the default
+            // case in the AbstractExceptionListener)
+            if (tx.isRollbackOnly())
+            {
+                logger.debug("Exception caught: rollback transaction", e);
+            }
+            resolveTransaction(tx);
+        }
+        if (suspendedXATx != null)
+        {
+            resumeXATransaction(suspendedXATx);
+            // we've handled this exception above. just return null now, this way we isolate
+            // the context delimited by XA's ALWAYS_BEGIN
+            return null;
+        }
+        else if (ExceptionUtils.containsType(e, ConnectException.class))
+        {
+            // If the exception is caused by a Connection problem, we need to rethrow
+            // the exception so any retry logic
+            // that we may have can pick this up and start retrying.
+            int exceptionIndex = ExceptionUtils.indexOfType(e, ConnectException.class);
+            throw (ConnectException) ExceptionUtils.getThrowableList(e).get(exceptionIndex);
+        }
+        else if (isExceptionHandledAtThisLevel(tx))
+        {
+            // if exception is handled at this level, it has been handled
+            // already, don't loop
+            return null;
+        }
+        else
+        {
+            throw e;
+        }
+    }
+
+    Object handleError(Error e, Transaction tx) throws TransactionException, Error
+    {
+        if (tx != null)
+        {
+            logger.info("Error caught, rolling back TX " + tx, e);
+            tx.rollback();
+        }
+        throw e;
     }
 
     /**
