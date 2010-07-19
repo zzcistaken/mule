@@ -23,9 +23,9 @@ public final class TransactionCoordination
 
     private static final TransactionCoordination instance = new TransactionCoordination();
 
-    private static final ThreadLocal<Transaction> transactions = new ThreadLocal<Transaction>();
+    private final ThreadLocal<Transaction> transactions = new ThreadLocal<Transaction>();
 
-    // @GuardedBy("this")
+    private final Object txCounterLock = new Object();
     private int txCounter = 0;
 
     /** Do not instanciate. */
@@ -44,7 +44,7 @@ public final class TransactionCoordination
         return transactions.get();
     }
 
-    public void unbindTransaction(Transaction transaction) throws TransactionException
+    public void unbindTransaction(final Transaction transaction) throws TransactionException
     {
         Transaction oldTx = transactions.get();
 
@@ -67,18 +67,28 @@ public final class TransactionCoordination
         finally
         {
             transactions.set(null);
-
-            synchronized (this)
-            {
-                if (txCounter > 0)
-                {
-                    txCounter--;
-                }
-            }
+            logTransactionUnbinded(transaction);
         }
     }
 
-    public void bindTransaction(Transaction transaction) throws TransactionException
+    private void logTransactionUnbinded(final Transaction transaction)
+    {
+        int txCounter = 0;
+        synchronized (txCounterLock)
+        {
+            if (this.txCounter > 0)
+            {
+                txCounter = --this.txCounter;
+            }
+        }
+
+        if (logger.isDebugEnabled())
+        {
+            logger.debug("Unbinding transaction (" + txCounter + ") " + transaction);
+        }
+    }
+
+    public void bindTransaction(final Transaction transaction) throws TransactionException
     {
         Transaction oldTx = transactions.get();
         // special handling for transaction collection
@@ -102,19 +112,21 @@ public final class TransactionCoordination
         }
 
         transactions.set(transaction);
+        logTransactionBinded(transaction);
+    }
 
-        synchronized (this)
+    private void logTransactionBinded(final Transaction transaction)
+    {
+        int txCounter;
+        synchronized (txCounterLock)
         {
-            txCounter++;
-
-            if (logger.isDebugEnabled())
-            {
-                logger.debug("Binding new transaction (" + txCounter + ") " + transaction);
-            }
+            txCounter = ++this.txCounter;
         }
 
-
-        //
+        if (logger.isDebugEnabled())
+        {
+            logger.debug("Binding new transaction (" + txCounter + ") " + transaction);
+        }
     }
 
 }

@@ -42,6 +42,15 @@ public class TransactionTemplateHandleExceptionTestCase extends AbstractMuleTest
         transactionTemplate = new TransactionTemplate(config, listener, context);
     }
 
+    @Override
+    protected void doTearDown() throws Exception
+    {
+        // It is important to unbind the transaction because it is a global object
+        // and will affect other tests.
+        TransactionCoordination tc = TransactionCoordination.getInstance();
+        tc.unbindTransaction(tc.getTransaction());
+    }
+
     public void testHandleException_withTransactionSuspendedTransactionAndExceptionLister()
         throws TransactionException, Exception
     {
