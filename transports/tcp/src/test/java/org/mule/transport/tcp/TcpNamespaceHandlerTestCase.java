@@ -10,39 +10,13 @@
 package org.mule.transport.tcp;
 
 import org.mule.tck.FunctionalTestCase;
-import org.mule.transport.tcp.TcpConnector;
-import org.mule.transport.tcp.protocols.AbstractByteProtocol;
 import org.mule.transport.tcp.protocols.CustomClassLoadingLengthProtocol;
-
-import java.io.IOException;
-import java.net.Socket;
-
-import org.apache.commons.pool.KeyedObjectPool;
-import org.apache.commons.pool.impl.GenericKeyedObjectPool;
 
 /**
  * TODO
  */
 public class TcpNamespaceHandlerTestCase extends FunctionalTestCase
 {
-    
-    public static class StubSocketFactory extends AbstractTcpSocketFactory
-    {
-        @Override
-        protected Socket createSocket(TcpSocketKey key) throws IOException
-        {
-            return new Socket();
-        }
-    }
-    
-    public static class StubSocketPoolFactory implements SocketPoolFactory
-    {
-        public KeyedObjectPool createSocketPool(TcpConnector connector)
-        {
-            return new GenericKeyedObjectPool();
-        }
-    }
-    
     protected String getConfigResources()
     {
         return "tcp-namespace-config.xml";
@@ -64,9 +38,6 @@ public class TcpNamespaceHandlerTestCase extends FunctionalTestCase
         assertTrue(c.isConnected());
         assertTrue(c.isStarted());
         assertEquals(c.getNextMessageExceptionPolicy().getClass(), DefaultMessageExceptionPolicy.class);
-        assertEquals(c.getSocketPoolFactory().getClass(), DefaultSocketPoolFactory.class);
-        assertEquals(c.getSocketFactory().getClass(), TcpSocketFactory.class);
-        assertFalse(((AbstractByteProtocol) c.getTcpProtocol()).isRethrowExceptionOnRead());
     }
     
     public void testSeparateTimeouts() throws Exception
@@ -78,8 +49,6 @@ public class TcpNamespaceHandlerTestCase extends FunctionalTestCase
         assertTrue(c.isConnected());
         assertTrue(c.isStarted());
         assertEquals(c.getNextMessageExceptionPolicy().getClass(), DefaultMessageExceptionPolicy.class);
-        assertEquals(c.getSocketPoolFactory().getClass(), StubSocketPoolFactory.class);
-        assertEquals(c.getSocketFactory().getClass(), StubSocketFactory.class);
     }
     
     public void testPollingConnector()
@@ -114,7 +83,6 @@ public class TcpNamespaceHandlerTestCase extends FunctionalTestCase
         CustomClassLoadingLengthProtocol protocol = (CustomClassLoadingLengthProtocol) c.getTcpProtocol();
         assertEquals(protocol.getClass(), CustomClassLoadingLengthProtocol.class);
         assertEquals(protocol.getClassLoader(), muleContext.getRegistry().get("classLoader"));
-        assertTrue(((AbstractByteProtocol) c.getTcpProtocol()).isRethrowExceptionOnRead());
     }
     
     public void testMessageDispatcherFactoryConnector() throws Exception {
