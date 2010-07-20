@@ -23,9 +23,19 @@ public final class TransactionCoordination
 
     private static final TransactionCoordination instance = new TransactionCoordination();
 
+    /**
+     * This field could be static because it is a {@link ThreadLocal} and this class
+     * is a singleton but, as it is used as an instance field by methods
+     * {@link #getTransaction()}, {@link #unbindTransaction(Transaction)} and
+     * {@link #bindTransaction(Transaction)}, it may be more consistent to have it as
+     * an instance variable.
+     */
     private final ThreadLocal<Transaction> transactions = new ThreadLocal<Transaction>();
 
+    /** Lock variable that is used to access {@link #txCounter}. */
     private final Object txCounterLock = new Object();
+
+    /** The access to this field is guarded by {@link #txCounterLock}. */
     private int txCounter = 0;
 
     /** Do not instanciate. */
@@ -67,12 +77,13 @@ public final class TransactionCoordination
         finally
         {
             transactions.set(null);
-            logTransactionUnbinded(transaction);
+            logTransactionUnbound(transaction);
         }
     }
 
-    private void logTransactionUnbinded(final Transaction transaction)
+    private void logTransactionUnbound(final Transaction transaction)
     {
+        // We store the txCounter in a local variable to minimize locking
         int txCounter = 0;
         synchronized (txCounterLock)
         {
@@ -112,11 +123,12 @@ public final class TransactionCoordination
         }
 
         transactions.set(transaction);
-        logTransactionBinded(transaction);
+        logTransactionBound(transaction);
     }
 
-    private void logTransactionBinded(final Transaction transaction)
+    private void logTransactionBound(final Transaction transaction)
     {
+        // We store the txCounter in a local variable to minimize locking
         int txCounter;
         synchronized (txCounterLock)
         {
