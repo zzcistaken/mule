@@ -17,6 +17,7 @@ import org.mule.transport.tcp.protocols.CustomClassLoadingLengthProtocol;
  */
 public class TcpNamespaceHandlerTestCase extends FunctionalTestCase
 {
+    @Override
     protected String getConfigResources()
     {
         return "tcp-namespace-config.xml";
@@ -37,7 +38,7 @@ public class TcpNamespaceHandlerTestCase extends FunctionalTestCase
         assertTrue(c.isKeepAlive());
         assertTrue(c.isConnected());
         assertTrue(c.isStarted());
-        assertEquals(c.getNextMessageExceptionPolicy().getClass(), DefaultMessageExceptionPolicy.class);
+
     }
     
     public void testSeparateTimeouts() throws Exception
@@ -48,7 +49,6 @@ public class TcpNamespaceHandlerTestCase extends FunctionalTestCase
         assertEquals(3000, c.getClientSoTimeout());
         assertTrue(c.isConnected());
         assertTrue(c.isStarted());
-        assertEquals(c.getNextMessageExceptionPolicy().getClass(), DefaultMessageExceptionPolicy.class);
     }
     
     public void testPollingConnector()
@@ -59,21 +59,6 @@ public class TcpNamespaceHandlerTestCase extends FunctionalTestCase
         assertEquals(3000, c.getClientSoTimeout());
         assertTrue(c.isConnected());
         assertTrue(c.isStarted());
-        assertEquals(c.getNextMessageExceptionPolicy().getClass(), DefaultMessageExceptionPolicy.class);
-    }
-    
-    public void testDefaultExceptionPolicy() throws Exception
-    {
-        TcpConnector c = (TcpConnector)muleContext.getRegistry().lookupConnector("defaultExceptionPolicyConnector");
-        assertNotNull(c);
-        assertEquals(c.getNextMessageExceptionPolicy().getClass(), DefaultMessageExceptionPolicy.class);
-    }
-
-    public void testRewriteExceptionPolicy() throws Exception
-    {
-        TcpConnector c = (TcpConnector)muleContext.getRegistry().lookupConnector("rewriteExceptionPolicyConnector");
-        assertNotNull(c);
-        assertEquals(c.getNextMessageExceptionPolicy().getClass(), RewriteMessageExceptionPolicy.class);
     }
     
     public void testCustomClassLoadingProtocol() throws Exception

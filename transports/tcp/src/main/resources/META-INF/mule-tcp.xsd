@@ -2,7 +2,6 @@
 <xsd:schema xmlns="http://www.mulesource.org/schema/mule/tcp/2.2"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
             xmlns:mule="http://www.mulesource.org/schema/mule/core/2.2"
-            xmlns:spring="http://www.springframework.org/schema/beans"
             xmlns:schemadoc="http://www.mulesource.org/schema/mule/schemadoc/2.2"
             targetNamespace="http://www.mulesource.org/schema/mule/tcp/2.2"
             elementFormDefault="qualified"
@@ -11,8 +10,6 @@
     <xsd:import namespace="http://www.w3.org/XML/1998/namespace"/>
     <xsd:import namespace="http://www.mulesource.org/schema/mule/core/2.2"
                 schemaLocation="http://www.mulesource.org/schema/mule/core/2.2/mule.xsd" />
-    <xsd:import namespace="http://www.springframework.org/schema/beans"
-                schemaLocation="http://www.springframework.org/schema/beans/spring-beans-2.5.xsd"/>
     <xsd:import namespace = "http://www.mulesource.org/schema/mule/schemadoc/2.2"
                 schemaLocation = "http://www.mulesource.org/schema/mule/schemadoc/2.2/mule-schemadoc.xsd"/>
 
@@ -157,13 +154,6 @@
                             </xsd:documentation>
                         </xsd:annotation>
                     </xsd:element>
-                    <xsd:element ref="abstract-next-message-exception-policy" minOccurs="0" maxOccurs="1">
-                        <xsd:annotation>
-                            <xsd:documentation>
-                                The exception policy to be used when trying to receive the next message
-                            </xsd:documentation>
-                        </xsd:annotation>
-                    </xsd:element>
                 </xsd:sequence>
                 <xsd:attribute name="dispatcherFactory-ref" type="xsd:string">
                     <xsd:annotation>
@@ -175,25 +165,6 @@
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>
-    
-    <xsd:element name="abstract-next-message-exception-policy" abstract="true" type="abstractNextMessageExceptionPolicyType"/>
-    <xsd:complexType name="abstractNextMessageExceptionPolicyType"/>
-
-    <xsd:element name="default-exception-policy" type="abstractNextMessageExceptionPolicyType" substitutionGroup="abstract-next-message-exception-policy">
-        <xsd:annotation>
-            <xsd:documentation>
-                An exception policy that returns null when the exception is thrown
-            </xsd:documentation>
-        </xsd:annotation>
-    </xsd:element>
-    
-    <xsd:element name="rewrite-exception-policy" type="abstractNextMessageExceptionPolicyType" substitutionGroup="abstract-next-message-exception-policy">
-        <xsd:annotation>
-            <xsd:documentation>
-                An exception policy that rewrites the exception
-            </xsd:documentation>
-        </xsd:annotation>
-    </xsd:element>
 
     <xsd:element name="abstract-protocol" type="abstractProtocolType"/>
     <xsd:complexType name="abstractProtocolType">
@@ -297,7 +268,7 @@
             </xsd:documentation>
         </xsd:annotation>
     </xsd:element>
-    
+
     <xsd:complexType name="lengthProtocolType">
         <xsd:complexContent>
             <xsd:extension base="byteOrMessageProtocolType">
