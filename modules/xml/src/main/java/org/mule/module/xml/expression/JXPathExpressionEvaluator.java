@@ -32,16 +32,13 @@ import org.w3c.dom.Document;
 
 /**
  * Will extract properties based on Xpath expressions. Will work on Xml/Dom and beans
- *
- * @deprecated Developers should use xpath, bean or groovy instead of this expression evaluator since there are some
- *             quirks with JXPath and the performance is not good.
  */
 public class JXPathExpressionEvaluator implements ExpressionEvaluator, MuleContextAware
 {
 
     public static final String NAME = "jxpath";
 
-    private transient Log logger = LogFactory.getLog(getClass());
+    protected transient Log logger = LogFactory.getLog(getClass());
     private NamespaceManager namespaceManager;
 
     public void setMuleContext(MuleContext context)

@@ -99,7 +99,6 @@ import edu.emory.mathcs.backport.java.util.concurrent.ThreadFactory;
 import edu.emory.mathcs.backport.java.util.concurrent.TimeUnit;
 import edu.emory.mathcs.backport.java.util.concurrent.atomic.AtomicBoolean;
 import edu.emory.mathcs.backport.java.util.concurrent.atomic.AtomicReference;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.pool.KeyedPoolableObjectFactory;
@@ -168,7 +167,12 @@ public abstract class AbstractConnector
     /**
      * A pool of dispatchers for this connector, keyed by endpoint
      */
-    protected final GenericKeyedObjectPool dispatchers = new GenericKeyedObjectPool();
+    protected volatile ConfigurableKeyedObjectPool dispatchers;
+
+    /**
+     * A factory for creating the pool of dispatchers for this connector.
+     */
+    protected volatile ConfigurableKeyedObjectPoolFactory dispatcherPoolFactory;
 
     /**
      * A pool of requesters for this connector, keyed by endpoint
@@ -248,7 +252,7 @@ public abstract class AbstractConnector
     protected volatile Properties serviceOverrides;
 
     /**
-     * The strategy used for reading and writing session information to and fromt he
+     * The strategy used for reading and writing session information to and from the
      * transport
      */
     protected volatile SessionHandler sessionHandler = new MuleSessionHandler();
@@ -284,8 +288,6 @@ public abstract class AbstractConnector
         // NOTE: testOnBorrow MUST be FALSE. this is a bit of a design bug in
         // commons-pool since validate is used for both activation and passivation,
         // but has no way of knowing which way it is going.
-        dispatchers.setTestOnBorrow(false);
-        dispatchers.setTestOnReturn(true);
         requesters.setTestOnBorrow(false);
         requesters.setTestOnReturn(true);
     }
@@ -316,8 +318,6 @@ public abstract class AbstractConnector
         {
             InitialisationException e = new AlreadyInitialisedException("Connector '" + getProtocol() + "." + getName() + "'", this);
             throw e;
-            // Just log a warning since initializing twice is bad but might not be the end of the world.
-            //logger.warn(e);
         }
 
         if (logger.isInfoEnabled())
@@ -330,10 +330,16 @@ public abstract class AbstractConnector
             retryPolicyTemplate = (RetryPolicyTemplate) muleContext.getRegistry().lookupObject(MuleProperties.OBJECT_DEFAULT_RETRY_POLICY_TEMPLATE);
         }
 
-        // Use lazy-init (in get() methods) for this instead.
-        //dispatcherThreadingProfile = muleContext.getDefaultMessageDispatcherThreadingProfile();
-        //requesterThreadingProfile = muleContext.getDefaultMessageRequesterThreadingProfile();
-        //receiverThreadingProfile = muleContext.getDefaultMessageReceiverThreadingProfile();
+        if (dispatcherPoolFactory == null)
+        {
+            dispatcherPoolFactory = new DefaultConfigurableKeyedObjectPoolFactory();
+        }
+
+        dispatchers = dispatcherPoolFactory.createObjectPool();
+        if (dispatcherFactory != null)
+        {
+            dispatchers.setFactory(getWrappedDispatcherFactory(dispatcherFactory));
+        }
 
         // Initialise the structure of this connector
         this.initFromServiceDescriptor();
@@ -351,7 +357,6 @@ public abstract class AbstractConnector
             ((DefaultExceptionStrategy)exceptionListener).setMuleContext(muleContext);
             ((DefaultExceptionStrategy)exceptionListener).initialise();
         }
-
 
         initialised.set(true);
     }
@@ -468,7 +473,7 @@ public abstract class AbstractConnector
     }
 
     /**
-     * @param stopWorkManagers - This is a hack for 2.2.x so that we can implement the fix for MULE-4251 
+     * @param disposeWorkManagers - This is a hack for 2.2.x so that we can implement the fix for MULE-4251 
      * without breaking retry and without making large changes to the connector lifecycle.
      * It should be removed for 3.x.
      */
@@ -886,8 +891,21 @@ public abstract class AbstractConnector
      */
     public void setDispatcherFactory(MessageDispatcherFactory dispatcherFactory)
     {
-        KeyedPoolableObjectFactory poolFactory;
+        KeyedPoolableObjectFactory poolFactory = getWrappedDispatcherFactory(dispatcherFactory);
 
+        if (dispatchers != null)
+        {
+            this.dispatchers.setFactory(poolFactory);
+        }
+
+        // we keep a reference to the unadapted factory, otherwise people might end
+        // up with ClassCastExceptions on downcast to their implementation (sigh)
+        this.dispatcherFactory = dispatcherFactory;
+    }
+
+    private KeyedPoolableObjectFactory getWrappedDispatcherFactory(MessageDispatcherFactory dispatcherFactory)
+    {
+        KeyedPoolableObjectFactory poolFactory;
         if (dispatcherFactory instanceof KeyedPoolableObjectFactory)
         {
             poolFactory = (KeyedPoolableObjectFactory) dispatcherFactory;
@@ -897,12 +915,7 @@ public abstract class AbstractConnector
             // need to adapt the factory for use by commons-pool
             poolFactory = new KeyedPoolMessageDispatcherFactoryAdapter(dispatcherFactory);
         }
-
-        this.dispatchers.setFactory(poolFactory);
-
-        // we keep a reference to the unadapted factory, otherwise people might end
-        // up with ClassCastExceptions on downcast to their implementation (sigh)
-        this.dispatcherFactory = dispatcherFactory;
+        return poolFactory;
     }
 
     /**
@@ -945,9 +958,22 @@ public abstract class AbstractConnector
      */
     public int getMaxDispatchersActive()
     {
+        checkDispatchersInitialised();
         return this.dispatchers.getMaxActive();
     }
- 
+
+    /**
+     * Checks if the connector was initialised or not. Some connectors fields are created
+     * during connector's initialization so this check should be used before accessing them.
+     */
+    private void checkDispatchersInitialised()
+    {
+        if (dispatchers == null)
+        {
+            throw new IllegalStateException("Dispatchers pool was not initialised");
+        }
+    }
+
     /**
      * Returns the maximum number of dispatchers that can be concurrently active for
      * all endpoints.
@@ -956,6 +982,7 @@ public abstract class AbstractConnector
      */
     public int getMaxTotalDispatchers()
     {
+        checkDispatchersInitialised();
         return this.dispatchers.getMaxTotal();
     }
 
@@ -967,6 +994,7 @@ public abstract class AbstractConnector
      */
     public void setMaxDispatchersActive(int maxActive)
     {
+        checkDispatchersInitialised();
         this.dispatchers.setMaxActive(maxActive);
         // adjust maxIdle in tandem to avoid thrashing
         this.dispatchers.setMaxIdle(maxActive);
@@ -2461,6 +2489,7 @@ public abstract class AbstractConnector
      */
     public void setDispatcherPoolWhenExhaustedAction(byte whenExhaustedAction)
     {
+        checkDispatchersInitialised();
         dispatchers.setWhenExhaustedAction(whenExhaustedAction);
     }
 
@@ -2470,6 +2499,7 @@ public abstract class AbstractConnector
      */
     public void setDispatcherPoolMaxWait(int maxWait)
     {
+        checkDispatchersInitialised();
         dispatchers.setMaxWait(maxWait);
     }
 
@@ -2490,7 +2520,24 @@ public abstract class AbstractConnector
     {
         requesters.setMaxWait(maxWait);
     }
-    
+
+    /**
+     * Allows to define a factory to create the dispatchers pool that will be used in the connector
+     */
+    public void setDispatcherPoolFactory(ConfigurableKeyedObjectPoolFactory dispatcherPoolFactory)
+    {
+        if (initialised.get())
+        {
+            throw new IllegalStateException("Connector was already initialized cannot change the dispatcherPoolFactory");   
+        }
+        this.dispatcherPoolFactory = dispatcherPoolFactory;
+    }
+
+    public ConfigurableKeyedObjectPoolFactory getDispatcherPoolFactory()
+    {
+        return dispatcherPoolFactory;
+    }
+
     private class DispatchWorker extends AbstractMuleEventWork
     {
         private OutboundEndpoint endpoint;

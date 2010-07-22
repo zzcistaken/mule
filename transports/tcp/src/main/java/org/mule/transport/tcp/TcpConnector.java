@@ -20,6 +20,7 @@ import org.mule.api.transport.MessageDispatcherFactory;
 import org.mule.config.i18n.CoreMessages;
 import org.mule.model.streaming.CallbackOutputStream;
 import org.mule.transport.AbstractConnector;
+import org.mule.transport.ConfigurableKeyedObjectPool;
 import org.mule.transport.tcp.protocols.SafeProtocol;
 import org.mule.util.monitor.ExpiryMonitor;
 
@@ -32,7 +33,7 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.URI;
 
-import org.apache.commons.pool.KeyedObjectPool;
+import org.apache.commons.pool.impl.GenericKeyedObjectPool;
 
 /**
  * <code>TcpConnector</code> can bind or sent to a given TCP port on a given host.
@@ -66,11 +67,9 @@ public class TcpConnector extends AbstractConnector
     private TcpProtocol tcpProtocol;
     private AbstractTcpSocketFactory socketFactory;
     private SimpleServerSocketFactory serverSocketFactory;
-    private KeyedObjectPool socketsPool;
+    private GenericKeyedObjectPool socketsPool = new GenericKeyedObjectPool();
     private int keepAliveTimeout = 0;
     private ExpiryMonitor keepAliveMonitor;
-    private NextMessageExceptionPolicy nextMessageExceptionPolicy;
-    private SocketPoolFactory socketPoolFactory;
 
     /** 
      * If set, the socket is not closed after sending a message.  This attribute 
@@ -147,12 +146,18 @@ public class TcpConnector extends AbstractConnector
         return parameter != Connector.INT_VALUE_NOT_SET && parameter != socketValue;
     }
 
+    @Override
     protected void doInitialise() throws InitialisationException
     {
-        socketsPool = this.getSocketPoolFactory().createSocketPool(this);
         socketsPool.setFactory(getSocketFactory());
+        socketsPool.setTestOnBorrow(true);
+        socketsPool.setTestOnReturn(true);
+        //There should only be one pooled instance per socket (key)
+        socketsPool.setMaxActive(1);
+        socketsPool.setWhenExhaustedAction(GenericKeyedObjectPool.WHEN_EXHAUSTED_BLOCK);
     }
 
+    @Override
     protected void doDispose()
     {
         logger.debug("Closing TCP connector");
@@ -241,21 +246,25 @@ public class TcpConnector extends AbstractConnector
         }
     }
 
+    @Override
     protected void doConnect() throws Exception
     {
         // template method
     }
 
+    @Override
     protected void doDisconnect() throws Exception
     {
         socketsPool.clear();
     }
 
+    @Override
     protected void doStart() throws MuleException
     {
         // template method
     }
 
+    @Override
     protected void doStop() throws MuleException
     {
         // template method
@@ -283,6 +292,7 @@ public class TcpConnector extends AbstractConnector
      *
      * @deprecated The time out should be set explicitly for each
      */
+    @Deprecated
     public void setTimeout(int timeout)
     {
         setClientSoTimeout(timeout);
@@ -310,12 +320,14 @@ public class TcpConnector extends AbstractConnector
     }
 
     /** @deprecated Should use {@link #getSendBufferSize()} or {@link #getReceiveBufferSize()} */
+    @Deprecated
     public int getBufferSize()
     {
         return sendBufferSize;
     }
 
     /** @deprecated Should use {@link #setSendBufferSize(int)} or {@link #setReceiveBufferSize(int)} */
+    @Deprecated
     public void setBufferSize(int bufferSize)
     {
         sendBufferSize = valueOrDefault(bufferSize, 1, DEFAULT_BUFFER_SIZE);
@@ -365,6 +377,7 @@ public class TcpConnector extends AbstractConnector
      * @return
      * @deprecated should use {@link #getReceiveBacklog()}
      */
+    @Deprecated
     public int getBacklog()
     {
         return receiveBacklog;
@@ -374,6 +387,7 @@ public class TcpConnector extends AbstractConnector
      * @param backlog
      * @deprecated should use {@link #setReceiveBacklog(int)}
      */
+    @Deprecated
     public void setBacklog(int backlog)
     {
         this.receiveBacklog = backlog;
@@ -389,6 +403,7 @@ public class TcpConnector extends AbstractConnector
         this.tcpProtocol = tcpProtocol;
     }
 
+    @Override
     public boolean isResponseEnabled()
     {
         return true;
@@ -414,12 +429,12 @@ public class TcpConnector extends AbstractConnector
         this.sendTcpNoDelay = sendTcpNoDelay;
     }
 
-    public void setSocketFactory(AbstractTcpSocketFactory socketFactory)
+    protected void setSocketFactory(AbstractTcpSocketFactory socketFactory)
     {
         this.socketFactory = socketFactory;
     }
 
-    public AbstractTcpSocketFactory getSocketFactory()
+    protected AbstractTcpSocketFactory getSocketFactory()
     {
         return socketFactory;
     }
@@ -489,27 +504,6 @@ public class TcpConnector extends AbstractConnector
     {
         this.keepAliveTimeout = keepAliveTimeout;
     }
-
-    /**
-     * @return the exception policy to be used when trying to receive the next message
-     */
-    public NextMessageExceptionPolicy getNextMessageExceptionPolicy()
-    {
-        if (this.nextMessageExceptionPolicy == null) {
-            this.nextMessageExceptionPolicy = new DefaultMessageExceptionPolicy();
-        }
-        return nextMessageExceptionPolicy;
-    }
-
-    /**
-     * Set the exception policy to be used when trying to receive the next message
-     * 
-     * @param nextMessageExceptionPolicy the exception policy to be used
-     */
-    public void setNextMessageExceptionPolicy(NextMessageExceptionPolicy nextMessageExceptionPolicy)
-    {
-        this.nextMessageExceptionPolicy = nextMessageExceptionPolicy;
-    }
     
     @Override
     public void setDispatcherFactory(MessageDispatcherFactory dispatcherFactory)
@@ -519,17 +513,8 @@ public class TcpConnector extends AbstractConnector
         }
     }
 
-    public SocketPoolFactory getSocketPoolFactory()
+    public ConfigurableKeyedObjectPool getDispatchers()
     {
-        if (socketPoolFactory == null)
-        {
-            this.socketPoolFactory = new DefaultSocketPoolFactory();
-        }
-        return socketPoolFactory;
-    }
-
-    public void setSocketPoolFactory(SocketPoolFactory socketPoolFactory)
-    {
-        this.socketPoolFactory = socketPoolFactory;
+        return dispatchers;
     }
 }

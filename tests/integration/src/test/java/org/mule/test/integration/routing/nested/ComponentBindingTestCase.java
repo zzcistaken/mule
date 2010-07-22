@@ -14,6 +14,8 @@ import org.mule.api.MuleMessage;
 import org.mule.module.client.MuleClient;
 import org.mule.tck.FunctionalTestCase;
 
+import java.util.Date;
+
 public class ComponentBindingTestCase extends FunctionalTestCase
 {
     private static final int RECEIVE_TIMEOUT = 7000;
@@ -36,6 +38,16 @@ public class ComponentBindingTestCase extends FunctionalTestCase
         assertEquals("Received: Hello " + message + " " + number, reply.getPayload());
     }
 
+    private void internalNullTest(String prefix) throws Exception
+    {
+        MuleClient client = new MuleClient();
+        Date message = new Date();
+        client.dispatch(prefix + "invoker.in", message, null);
+        MuleMessage reply = client.request(prefix + "invoker.out", RECEIVE_TIMEOUT);
+        assertNotNull(reply);
+        assertNull(reply.getExceptionPayload());
+    }
+
     public void testBinding() throws Exception
     {
         internalTest("vm://");
@@ -50,4 +62,19 @@ public class ComponentBindingTestCase extends FunctionalTestCase
     {
         internalTest("jms://topic:t");
     }
+
+    public void testVmBindingReturnNull() throws Exception
+    {
+        internalNullTest("vm://");
+    }
+
+    public void testJmsQueueBindingReturnNull() throws Exception
+    {
+        internalNullTest("jms://");
+    }
+
+    public void testJmsTopicBindingReturnNull() throws Exception
+    {
+        internalNullTest("jms://topic:t");
+    }    
 }

@@ -24,6 +24,7 @@ import org.mule.transport.AbstractConnector;
 import org.mule.transport.AbstractMessageAdapter;
 import org.mule.transport.AbstractMessageDispatcherFactory;
 import org.mule.transport.AbstractMessageReceiver;
+import org.mule.transport.ConfigurableKeyedObjectPool;
 import org.mule.transport.service.TransportServiceDescriptor;
 
 /**
@@ -153,6 +154,11 @@ public class TestConnector extends AbstractConnector
     public void destroyReceiver(MessageReceiver receiver, InboundEndpoint endpoint) throws Exception
     {
         // nothing to do
+    }
+
+    public ConfigurableKeyedObjectPool getDispatchers()
+    {
+        return dispatchers;
     }
 
     public class DummyMessageAdapter extends AbstractMessageAdapter
