@@ -8,20 +8,13 @@
  * LICENSE.txt file.
  */
 
-package org.mule.transport.udp.functional;
-
-import org.mule.transport.ConfigurableKeyedObjectPool;
-import org.mule.transport.udp.UdpConnector;
+package org.mule.transport;
 
 /**
- * Allows access to the dispatchers pool so we can ensure they're disposed
+ * Simple factory for {@link ConfigurableKeyedObjectPool} instances.
  */
-public class CustomUdpConnector extends UdpConnector
+public interface ConfigurableKeyedObjectPoolFactory
 {
-    public ConfigurableKeyedObjectPool getDispatchers() 
-    {
-        return dispatchers;
-    }
+
+    ConfigurableKeyedObjectPool createObjectPool();
 }
-
-
