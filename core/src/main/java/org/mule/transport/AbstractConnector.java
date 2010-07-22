@@ -330,12 +330,14 @@ public abstract class AbstractConnector
             retryPolicyTemplate = (RetryPolicyTemplate) muleContext.getRegistry().lookupObject(MuleProperties.OBJECT_DEFAULT_RETRY_POLICY_TEMPLATE);
         }
 
-        if (dispatcherPoolFactory == null) {
+        if (dispatcherPoolFactory == null)
+        {
             dispatcherPoolFactory = new DefaultConfigurableKeyedObjectPoolFactory();
         }
 
         dispatchers = dispatcherPoolFactory.createObjectPool();
-        if (dispatcherFactory != null) {
+        if (dispatcherFactory != null)
+        {
             dispatchers.setFactory(getWrappedDispatcherFactory(dispatcherFactory));
         }
 
@@ -2524,8 +2526,9 @@ public abstract class AbstractConnector
      */
     public void setDispatcherPoolFactory(ConfigurableKeyedObjectPoolFactory dispatcherPoolFactory)
     {
-        if (initialised.get()) {
-
+        if (initialised.get())
+        {
+            throw new IllegalStateException("Connector was already initialized cannot change the dispatcherPoolFactory");   
         }
         this.dispatcherPoolFactory = dispatcherPoolFactory;
     }
