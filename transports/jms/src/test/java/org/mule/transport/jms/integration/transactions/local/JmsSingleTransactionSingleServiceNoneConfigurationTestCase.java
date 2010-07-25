@@ -21,11 +21,15 @@ import org.junit.Test;
 public class JmsSingleTransactionSingleServiceNoneConfigurationTestCase extends
     AbstractJmsSingleTransactionSingleServiceTestCase
 {
+    @Override
     protected String getConfigResources()
     {
         return "integration/transactions/local/jms-single-tx-single-service-none.xml";
     }
 
+    protected final String connectorName = "jmsConnector1";
+
+    @Override
     @Test
     public void testAlwaysJoin() throws Exception
     {
@@ -36,6 +40,6 @@ public class JmsSingleTransactionSingleServiceNoneConfigurationTestCase extends
         scenarioRollback.setOutputDestinationName(JMS_QUEUE_OUTPUT_CONF_D);
         scenarioNotReceive.setOutputDestinationName(JMS_QUEUE_OUTPUT_CONF_D);
 
-        runTransactionFail("testAlwaysJoin");
+        runTransactionFail("testAlwaysJoin", connectorName);
     }
 }
