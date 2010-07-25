@@ -20,10 +20,15 @@ import org.junit.Test;
 public class JmsSingleTransactionSingleServiceAlwaysJoinConfigurationTestCase extends
     AbstractJmsSingleTransactionSingleServiceTestCase
 {
+    @Override
     protected String getConfigResources()
     {
         return "integration/transactions/local/jms-single-tx-single-service-always-join.xml";
     }
+
+    protected final String connectorName = "jmsConnector1";
+
+    @Override
     @Test
     public void testNone() throws Exception
     {
@@ -34,9 +39,10 @@ public class JmsSingleTransactionSingleServiceAlwaysJoinConfigurationTestCase ex
         scenarioRollback.setOutputDestinationName(JMS_QUEUE_OUTPUT_CONF_A);
         scenarioNotReceive.setOutputDestinationName(JMS_QUEUE_OUTPUT_CONF_A);
 
-        runTransactionFail("testNone");
+        runTransactionFail("testNone", connectorName);
     }
 
+    @Override
     @Test
     public void testAlwaysBegin() throws Exception
     {
@@ -47,9 +53,10 @@ public class JmsSingleTransactionSingleServiceAlwaysJoinConfigurationTestCase ex
         scenarioRollback.setOutputDestinationName(JMS_QUEUE_OUTPUT_CONF_B);
         scenarioNotReceive.setOutputDestinationName(JMS_QUEUE_OUTPUT_CONF_B);
 
-        runTransactionFail("testAlwaysBegin");
+        runTransactionFail("testAlwaysBegin", connectorName);
     }
 
+    @Override
     @Test
     public void testBeginOrJoin() throws Exception
     {
@@ -60,9 +67,10 @@ public class JmsSingleTransactionSingleServiceAlwaysJoinConfigurationTestCase ex
         scenarioRollback.setOutputDestinationName(JMS_QUEUE_OUTPUT_CONF_C);
         scenarioNotReceive.setOutputDestinationName(JMS_QUEUE_OUTPUT_CONF_C);
 
-        runTransactionFail("testBeginOrJoin");
+        runTransactionFail("testBeginOrJoin", connectorName);
     }
 
+    @Override
     @Test
     public void testAlwaysJoin() throws Exception
     {
@@ -73,9 +81,10 @@ public class JmsSingleTransactionSingleServiceAlwaysJoinConfigurationTestCase ex
         scenarioRollback.setOutputDestinationName(JMS_QUEUE_OUTPUT_CONF_D);
         scenarioNotReceive.setOutputDestinationName(JMS_QUEUE_OUTPUT_CONF_D);
 
-        runTransactionFail("testAlwaysJoin");
+        runTransactionFail("testAlwaysJoin", connectorName);
     }
 
+    @Override
     @Test
     public void testJoinIfPossible() throws Exception
     {
@@ -86,6 +95,6 @@ public class JmsSingleTransactionSingleServiceAlwaysJoinConfigurationTestCase ex
         scenarioRollback.setOutputDestinationName(JMS_QUEUE_OUTPUT_CONF_E);
         scenarioNotReceive.setOutputDestinationName(JMS_QUEUE_OUTPUT_CONF_E);
 
-        runTransactionFail("testJoinIfPossible");
+        runTransactionFail("testJoinIfPossible", connectorName);
     }
 }

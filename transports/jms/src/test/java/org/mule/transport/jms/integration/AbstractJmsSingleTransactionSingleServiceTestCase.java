@@ -12,6 +12,7 @@ package org.mule.transport.jms.integration;
 
 import org.mule.tck.testmodels.mule.TestExceptionStrategy;
 import org.mule.tck.testmodels.mule.TestExceptionStrategy.ExceptionCallback;
+import org.mule.util.ExceptionUtils;
 
 import java.util.Properties;
 
@@ -131,25 +132,33 @@ public abstract class AbstractJmsSingleTransactionSingleServiceTestCase extends 
      * @param serviceName
      * @throws Exception
      */
-    protected void runTransactionFail(String serviceName) throws Exception
+    protected void runTransactionFail(String serviceName, String connectorName) throws Exception
     {
         final CountDownLatch exceptionLatch = new CountDownLatch(1);
 
         send(scenarioCommit);
 
-        TestExceptionStrategy exceptionStrategy = (TestExceptionStrategy) 
-            muleContext.getRegistry().lookupService(serviceName).getExceptionListener();
-        exceptionStrategy.setExceptionCallback(new ExceptionCallback()
+        final ExceptionCallback exceptionCallback = new ExceptionCallback()
         {
             public void onException(Throwable t)
             {
-                assertTrue(t.getCause().getCause().getCause() instanceof org.mule.transaction.IllegalTransactionStateException);
+                assertTrue(ExceptionUtils.containsType(t,
+                    org.mule.transaction.IllegalTransactionStateException.class));
                 assertEquals(1, exceptionLatch.getCount()); // make sure this
                                                             // exception doesn't
                                                             // happen more than once
                 exceptionLatch.countDown();
             }
-        });
+        };
+        TestExceptionStrategy exceptionStrategy = (TestExceptionStrategy) muleContext.getRegistry()
+            .lookupService(serviceName)
+            .getExceptionListener();
+        exceptionStrategy.setExceptionCallback(exceptionCallback);
+
+        TestExceptionStrategy connectorExceptionStrategy = (TestExceptionStrategy) muleContext.getRegistry()
+            .lookupConnector(connectorName)
+            .getExceptionListener();
+        connectorExceptionStrategy.setExceptionCallback(exceptionCallback);
 
         assertTrue(exceptionLatch.await(10, TimeUnit.SECONDS));
         receive(scenarioNotReceive);
