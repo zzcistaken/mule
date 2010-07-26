@@ -42,7 +42,7 @@ public class HttpSessionHandler implements SessionHandler
         MuleSession session = null;
         
         Cookie[] cookies = (Cookie[]) message.getProperty(HttpConnector.HTTP_COOKIES_PROPERTY);
-        if (cookies != null && cookies.length > 0)
+        if (cookies != null && cookies.length > 0 && cookies[0] != null && cookies[0].getValue() != null)
         {
             byte[] serializedSession = Base64.decode(cookies[0].getValue());
             
@@ -57,6 +57,7 @@ public class HttpSessionHandler implements SessionHandler
     /**
      * @deprecated Use retrieveSessionInfoFromMessage(MuleMessage message) instead
      */
+    @Deprecated
     public void retrieveSessionInfoFromMessage(MuleMessage message, MuleSession session) throws MuleException
     {
         session = retrieveSessionInfoFromMessage(message);
@@ -88,6 +89,7 @@ public class HttpSessionHandler implements SessionHandler
     /**
      * @deprecated This method is no longer needed and will be removed in the next major release
      */
+    @Deprecated
     public String getSessionIDKey()
     {
         return "ID";
