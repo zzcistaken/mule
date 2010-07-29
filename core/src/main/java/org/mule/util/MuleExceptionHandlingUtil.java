@@ -11,7 +11,6 @@
 package org.mule.util;
 
 import java.beans.ExceptionListener;
-import java.util.List;
 
 /**
  * This utility class should be used whenever you want to call
@@ -21,61 +20,54 @@ import java.util.List;
  */
 public class MuleExceptionHandlingUtil
 {
+    final static ThreadLocal<Throwable> lastHandledExceptionThreadLocal = new ThreadLocal<Throwable>();
 
     /**
      * Determines if the exception was already handled. And exception is considered
-     * "handled" if it or any of its causes implements
-     * {@link MuleExceptionHandleStatus} and its
-     * {@link MuleExceptionHandleStatus#isExceptionAlreadyHandled()} returns true.
-     * This means that if you wrap an already handled exception, it will still be
-     * considered handed by this method.
+     * "handled" if it (or any of its wrapper or wrapped exceptions) was sent to
+     * {@link #markExceptionAsHandled(Exception)} or
+     * {@link #handledExceptionIfNeeded(ExceptionListener, Exception)}. This means
+     * that if you wrap an already handled exception, it will still be considered
+     * handed by this method.
      * 
-     * @param e
+     * @param currentException
      * @return
      */
-    public static boolean isExceptionHandled(Exception e)
+    public static boolean isExceptionHandled(Exception currentException)
     {
-
-        @SuppressWarnings("unchecked")
-        List<Throwable> throwableList = ExceptionUtils.getThrowableList(e);
-        for (Throwable throwable : throwableList)
+        Throwable lastHandledException = lastHandledExceptionThreadLocal.get();
+        if (lastHandledException == null)
         {
-            if (throwable instanceof MuleExceptionHandleStatus)
+            return false;
+        }
+        else
+        {
+            Throwable[] lastHandledExceptionCauses = ExceptionUtils.getThrowables(lastHandledException);
+            Throwable[] currentExceptionCauses = ExceptionUtils.getThrowables(currentException);
+            for (int i = lastHandledExceptionCauses.length - 1; i >= 0; i--)
             {
-                MuleExceptionHandleStatus handleStatus = (MuleExceptionHandleStatus) throwable;
-                if (handleStatus.isExceptionAlreadyHandled())
+                for (int j = currentExceptionCauses.length - 1; j >= 0; j--)
                 {
-                    return true;
+                    if (lastHandledExceptionCauses[i] == currentExceptionCauses[j])
+                    {
+                        return true;
+                    }
                 }
             }
+            return false;
+
         }
-        return false;
     }
 
     /**
-     * Marks the exception as handled by calling the
-     * {@link MuleExceptionHandleStatus#setExceptionAlreadyHandled(boolean)} on the
-     * exception that implements {@link MuleExceptionHandleStatus} and it is closes
-     * to the root cause. If no exception in all the causes of the exception
-     * implement the {@link MuleExceptionHandleStatus}, then this method does
-     * nothing.
+     * Marks the exception as handled.
      * 
      * @param e
      */
     public static <E extends Exception> E markExceptionAsHandled(E e)
     {
-        MuleExceptionHandleStatus handleStatus = getMuleExceptionHandleStatus(e);
-        if (handleStatus != null)
-        {
-            handleStatus.setExceptionAlreadyHandled(true);
-        }
+        lastHandledExceptionThreadLocal.set(e);
         return e;
-    }
-
-    private static MuleExceptionHandleStatus getMuleExceptionHandleStatus(Exception e)
-    {
-        return (MuleExceptionHandleStatus) ExceptionUtils.getDeepestOccurenceOfType(
-            e, MuleExceptionHandleStatus.class);
     }
 
     /**

@@ -13,7 +13,6 @@ package org.mule.util;
 import static org.mule.util.ExceptionUtils.containsType;
 import static org.mule.util.ExceptionUtils.getDeepestOccurenceOfType;
 
-import org.mule.api.transport.DispatchException;
 import org.mule.tck.AbstractMuleTestCase;
 
 import java.io.IOException;
@@ -39,10 +38,6 @@ public class ExceptionUtilsTestCase extends AbstractMuleTestCase
         assertFalse(containsType(new Exception(new IllegalArgumentException(new NullPointerException())),
             IOException.class));
 
-        // see if we can detect an interface implemented by the exception
-        assertTrue(containsType(
-            new Exception(new IllegalArgumentException(new DispatchException(null, null))),
-            MuleExceptionHandleStatus.class));
     }
 
     public void testLastIndexOfType_deepestIsTheOneWeWant() throws Exception
