@@ -25,26 +25,17 @@ import java.beans.ExceptionListener;
 
 public class MuleExceptionHandlingUtilTestCase extends AbstractMuleTestCase
 {
-    public void testMuleExceptionsImplementMuleExceptionHandleStatus() throws Exception
-    {
-        assertTrue(MuleExceptionHandleStatus.class.isAssignableFrom(MuleException.class));
-        assertTrue(MuleExceptionHandleStatus.class.isAssignableFrom(MuleRuntimeException.class));
-    }
-
     public void testIsExceptionHandled_FalseForNonMuleExceptionHandleStatus() throws Exception
     {
         Exception e = new Exception();
         assertFalse(MuleExceptionHandlingUtil.isExceptionHandled(e));
-        assertFalse(ExceptionUtils.containsType(e, MuleExceptionHandleStatus.class));
     }
 
     public void testIsExceptionHandled_simplestCase() throws Exception
     {
         MuleException e = new DispatchException(null, null);
-        MuleExceptionHandleStatus eHandleStatus = e;
-        eHandleStatus.setExceptionAlreadyHandled(false);
         assertFalse(MuleExceptionHandlingUtil.isExceptionHandled(e));
-        eHandleStatus.setExceptionAlreadyHandled(true);
+        MuleExceptionHandlingUtil.markExceptionAsHandled(e);
         assertTrue(MuleExceptionHandlingUtil.isExceptionHandled(e));
     }
 
@@ -52,23 +43,16 @@ public class MuleExceptionHandlingUtilTestCase extends AbstractMuleTestCase
     {
         MuleException cause = new DispatchException(null, null);
         MuleException wrapper = new DispatchException(null, null, cause);
-        MuleExceptionHandleStatus eHandleStatusForCause = cause;
-        MuleExceptionHandleStatus eHandleStatusForWrapper = wrapper;
 
-        eHandleStatusForCause.setExceptionAlreadyHandled(false);
-        eHandleStatusForWrapper.setExceptionAlreadyHandled(false);
+        MuleExceptionHandlingUtil.lastHandledExceptionThreadLocal.set(null);
         assertFalse(MuleExceptionHandlingUtil.isExceptionHandled(wrapper));
 
-        eHandleStatusForCause.setExceptionAlreadyHandled(false);
-        eHandleStatusForWrapper.setExceptionAlreadyHandled(true);
+        MuleExceptionHandlingUtil.lastHandledExceptionThreadLocal.set(null);
+        MuleExceptionHandlingUtil.markExceptionAsHandled(wrapper);
         assertTrue(MuleExceptionHandlingUtil.isExceptionHandled(wrapper));
 
-        eHandleStatusForCause.setExceptionAlreadyHandled(true);
-        eHandleStatusForWrapper.setExceptionAlreadyHandled(false);
-        assertTrue(MuleExceptionHandlingUtil.isExceptionHandled(wrapper));
-
-        eHandleStatusForCause.setExceptionAlreadyHandled(true);
-        eHandleStatusForWrapper.setExceptionAlreadyHandled(true);
+        MuleExceptionHandlingUtil.lastHandledExceptionThreadLocal.set(null);
+        MuleExceptionHandlingUtil.markExceptionAsHandled(cause);
         assertTrue(MuleExceptionHandlingUtil.isExceptionHandled(wrapper));
     }
 
@@ -76,9 +60,8 @@ public class MuleExceptionHandlingUtilTestCase extends AbstractMuleTestCase
     {
         MuleException e = new DispatchException(null, null);
 
-        assertFalse(e.isExceptionAlreadyHandled());
+        assertFalse(MuleExceptionHandlingUtil.isExceptionHandled(e));
         MuleExceptionHandlingUtil.markExceptionAsHandled(e);
-        assertTrue(e.isExceptionAlreadyHandled());
         assertTrue(MuleExceptionHandlingUtil.isExceptionHandled(e));
     }
 
@@ -88,9 +71,8 @@ public class MuleExceptionHandlingUtilTestCase extends AbstractMuleTestCase
         MuleException cause = new DispatchException(null, null);
         MuleException wrapper = new DispatchException(null, null, cause);
 
-        assertFalse(cause.isExceptionAlreadyHandled());
+        assertFalse(MuleExceptionHandlingUtil.isExceptionHandled(cause));
         MuleExceptionHandlingUtil.markExceptionAsHandled(wrapper);
-        assertTrue(cause.isExceptionAlreadyHandled());
         assertTrue(MuleExceptionHandlingUtil.isExceptionHandled(cause));
         assertTrue(MuleExceptionHandlingUtil.isExceptionHandled(wrapper));
     }
@@ -101,7 +83,7 @@ public class MuleExceptionHandlingUtilTestCase extends AbstractMuleTestCase
 
         assertFalse(MuleExceptionHandlingUtil.isExceptionHandled(cause));
         MuleExceptionHandlingUtil.markExceptionAsHandled(cause);
-        assertFalse(MuleExceptionHandlingUtil.isExceptionHandled(cause));
+        assertTrue(MuleExceptionHandlingUtil.isExceptionHandled(cause));
     }
 
     public void testHandledExceptionIfNeeded_withRegularException() throws Exception
@@ -110,10 +92,10 @@ public class MuleExceptionHandlingUtilTestCase extends AbstractMuleTestCase
 
         ExceptionListener exceptionListener = mock(ExceptionListener.class);
         assertTrue(MuleExceptionHandlingUtil.handledExceptionIfNeeded(exceptionListener, e));
-        assertFalse(MuleExceptionHandlingUtil.isExceptionHandled(e));
-        assertTrue(MuleExceptionHandlingUtil.handledExceptionIfNeeded(exceptionListener, e));
+        assertTrue(MuleExceptionHandlingUtil.isExceptionHandled(e));
+        assertFalse(MuleExceptionHandlingUtil.handledExceptionIfNeeded(exceptionListener, e));
         
-        verify(exceptionListener, times(2)).exceptionThrown(e);
+        verify(exceptionListener, times(1)).exceptionThrown(e);
     }
 
     public void testHandledExceptionIfNeeded_withAMuleExceptionHandleStatusException() throws Exception
