@@ -12,10 +12,6 @@ package org.mule.tck.testmodels.mule;
 
 import org.mule.DefaultExceptionStrategy;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -31,19 +27,9 @@ public class TestExceptionStrategy extends DefaultExceptionStrategy
      */
     protected final Log logger = LogFactory.getLog(getClass());
 
-    /**
-     * This is the lock that protect both the storage of {@link #callback} and
-     * modifications of {@link #unhandled}.
-     */
-    private Object callbackLock = new Object();
-
-    // @GuardedBy("callbackLock")
-    private ExceptionCallback callback;
-    // @GuardedBy("callbackLock")
-    private List<Exception> unhandled = new LinkedList<Exception>();
-
     private volatile String testProperty;
 
+    private final CumulativeExceptionCallback exceptionCallback = new CumulativeExceptionCallback();
 
     public String getTestProperty()
     {
@@ -58,69 +44,12 @@ public class TestExceptionStrategy extends DefaultExceptionStrategy
     @Override
     public void exceptionThrown(Exception e)
     {
-        ExceptionCallback callback = null;
-        synchronized (callbackLock)
-        {
-            if (this.callback != null)
-            {
-                callback = this.callback;
-            }
-            else
-            {
-                unhandled.add(e);
-            }
-        }
-        // It is important that the call to the callback is done outside
-        // synchronization since we don't control that code and
-        // we could have liveness problems.
-        if (callback != null)
-        {
-            logger.info("Exception caught on TestExceptionStrategy and was sent to callback.", e);
-            callback.onException(e);
-        }
-        else
-        {
-            logger.info("Exception caught on TestExceptionStrategy but there was no callback set.", e);
-        }
-    }
-
-    public interface ExceptionCallback
-    {
-        void onException(Throwable t);
+        exceptionCallback.onException(e);
     }
 
     public void setExceptionCallback(ExceptionCallback exceptionCallback)
     {
-        synchronized (callbackLock)
-        {
-            this.callback = exceptionCallback;
-        }
-        processUnhandled();
+        this.exceptionCallback.setExceptionCallback(exceptionCallback);
     }
 
-    protected void processUnhandled()
-    {
-        List<Exception> unhandledCopies = null;
-        ExceptionCallback callback = null;
-        synchronized (callbackLock)
-        {
-            if (this.callback != null)
-            {
-                callback = this.callback;
-                unhandledCopies = new ArrayList<Exception>(unhandled);
-                unhandled.clear();
-            }
-        }
-        // It is important that the call to the callback is done outside
-        // synchronization since we don't control that code and
-        // we could have liveness problems.
-        if (callback != null && unhandledCopies != null)
-        {
-            for (Exception exception : unhandledCopies)
-            {
-                logger.info("Handling exception after setting the callback.", exception);
-                callback.onException(exception);
-            }
-        }
-    }
 }
