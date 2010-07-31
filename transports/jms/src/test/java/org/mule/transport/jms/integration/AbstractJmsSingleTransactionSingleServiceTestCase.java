@@ -10,8 +10,8 @@
 
 package org.mule.transport.jms.integration;
 
+import org.mule.tck.testmodels.mule.ExceptionCallback;
 import org.mule.tck.testmodels.mule.TestExceptionStrategy;
-import org.mule.tck.testmodels.mule.TestExceptionStrategy.ExceptionCallback;
 import org.mule.util.ExceptionUtils;
 
 import java.util.Properties;

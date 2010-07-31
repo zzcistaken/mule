@@ -12,8 +12,8 @@ package org.mule.test.integration.exceptions.duplicatehandling;
 
 import org.mule.module.client.MuleClient;
 import org.mule.tck.FunctionalTestCase;
+import org.mule.tck.testmodels.mule.ExceptionCallback;
 import org.mule.tck.testmodels.mule.TestExceptionStrategy;
-import org.mule.tck.testmodels.mule.TestExceptionStrategy.ExceptionCallback;
 import org.mule.util.concurrent.Latch;
 
 import java.util.concurrent.atomic.AtomicInteger;
