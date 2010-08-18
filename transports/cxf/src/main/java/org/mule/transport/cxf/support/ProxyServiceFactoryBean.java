@@ -10,6 +10,8 @@
 
 package org.mule.transport.cxf.support;
 
+import org.mule.transport.cxf.i18n.CxfMessages;
+
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -78,7 +80,8 @@ public class ProxyServiceFactoryBean extends ReflectionServiceFactoryBean
                     enames.add(ep.getName());
                 }
             }
-            LOG.log(Level.WARNING, "COULD_NOT_FIND_ENDPOINT", new Object[]{getEndpointName(), enames});
+            LOG.log(Level.WARNING, "COULD_NOT_FIND_ENDPOINT", new ComponentNotFoundRuntimeException(
+                CxfMessages.couldNotFindEndpoint(getEndpointName(), enames)));
         }
 
         try
