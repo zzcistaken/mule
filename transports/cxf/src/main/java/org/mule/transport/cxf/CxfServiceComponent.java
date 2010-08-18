@@ -264,7 +264,7 @@ public class CxfServiceComponent implements Callable, Lifecycle
                         return;
                     }
                     
-                    DelegatingOutputStream delegate = (DelegatingOutputStream) contentMsg.getContent(DelegatingOutputStream.class);
+                    DelegatingOutputStream delegate = contentMsg.getContent(DelegatingOutputStream.class);
                     out.write(((ByteArrayOutputStream) delegate.getOutputStream()).toByteArray());
                     delegate.setOutputStream(out);
                     
@@ -374,7 +374,7 @@ public class CxfServiceComponent implements Callable, Lifecycle
         }
         else if (payload instanceof XMLStreamReader)
         {
-            m.setContent(XMLStreamReader.class, (XMLStreamReader) payload);
+            m.setContent(XMLStreamReader.class, payload);
         }
         else if (payload instanceof Document)
         {
