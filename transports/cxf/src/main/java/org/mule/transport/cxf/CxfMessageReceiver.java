@@ -255,11 +255,12 @@ public class CxfMessageReceiver extends AbstractMessageReceiver
             addIgnoredMethods(svcFac, ServiceAware.class.getName());
 
             String name = (String) endpointProps.get(CxfConstants.SERVICE_NAME);
+            String portName = (String) endpointProps.get(CxfConstants.PORT_NAME);
             // check if there is the namespace property on the service
             String namespace = (String) endpointProps.get(CxfConstants.NAMESPACE);
 
             // HACK because CXF expects a QName for the service
-            initServiceName(svcCls, name, namespace, svcFac);
+            initServiceName(svcCls, name, portName, namespace, svcFac);
 
             boolean sync = endpoint.isSynchronous();
             // default to synchronous if using http
@@ -274,7 +275,7 @@ public class CxfMessageReceiver extends AbstractMessageReceiver
 
             Bus bus = connector.getCxfBus();
             sfb.setBus(bus);
-            sfb.getServiceFactory().setBus(bus);
+            svcFac.setBus(bus);
 
             initializeServerFactory(sfb);
             
@@ -339,6 +340,7 @@ public class CxfMessageReceiver extends AbstractMessageReceiver
      */
     private void initServiceName(Class<?> exposedInterface,
                                  String name,
+                                 String portName,
                                  String namespace,
                                  ReflectionServiceFactoryBean svcFac)
     {
@@ -361,6 +363,17 @@ public class CxfMessageReceiver extends AbstractMessageReceiver
         {
             svcFac.setServiceName(new QName(namespace, name));
         }
+
+        setPortName(svcFac, portName);
+    }
+
+    protected void setPortName(ReflectionServiceFactoryBean svcFac, String portName)
+    {
+        if (svcFac.getProperties() == null)
+        {
+            svcFac.setProperties(new HashMap<String, Object>());
+        }
+        svcFac.getProperties().put(CxfConstants.PORT_NAME, portName);
     }
 
     public void addIgnoredMethods(ReflectionServiceFactoryBean svcFac, String className)

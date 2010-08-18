@@ -21,6 +21,7 @@ public class CxfConstants
     public static final String WSDL_LOCATION = "wsdlLocation";
     public static final String NAMESPACE = "namespace";
     public static final String SERVICE_NAME = "serviceName";
+    public static final String PORT_NAME = "endpointName";
     public static final String CLIENT_CLASS = "clientClass";
     public static final String SERVICE_INTERFACE = "serviceInterface";
     public static final String CLIENT_PORT = "wsdlPort";

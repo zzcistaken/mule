@@ -10,6 +10,7 @@
 
 package org.mule.transport.cxf.support;
 
+import org.mule.transport.cxf.CxfConstants;
 import org.mule.transport.cxf.i18n.CxfMessages;
 
 import java.util.Iterator;
@@ -29,6 +30,7 @@ import org.apache.commons.collections.Predicate;
 import org.apache.cxf.common.i18n.Message;
 import org.apache.cxf.common.logging.LogUtils;
 import org.apache.cxf.service.factory.DefaultServiceConfiguration;
+import org.apache.cxf.service.factory.ReflectionServiceFactoryBean;
 import org.apache.cxf.service.factory.ServiceConstructionException;
 import org.apache.cxf.wsdl.WSDLManager;
 
@@ -51,13 +53,20 @@ public class ProxyServiceConfiguration extends DefaultServiceConfiguration
     {
         try
         {
-            if (getServiceFactory().getWsdlURL() != null)
+            ReflectionServiceFactoryBean serviceFactory = getServiceFactory();
+            String wsdlURL = serviceFactory.getWsdlURL();
+            if (wsdlURL != null)
             {
-                Definition definition = getServiceFactory().getBus()
+                Definition definition = serviceFactory.getBus()
                     .getExtension(WSDLManager.class)
-                    .getDefinition(getServiceFactory().getWsdlURL());
+                    .getDefinition(wsdlURL);
                 Service service = getServiceFromDefinition(definition);
-                return new QName(getServiceNamespace(), ((Port) service.getPorts().values().iterator().next()).getName());
+                setServiceNamespace(service.getQName().getNamespaceURI());
+
+                String portName = getPortName(serviceFactory);
+                Port port = getPortFromService(service, portName);
+
+                return new QName(getServiceNamespace(), port.getName());
             }
             else
             {
@@ -68,6 +77,39 @@ public class ProxyServiceConfiguration extends DefaultServiceConfiguration
         catch (WSDLException e)
         {
             throw new ServiceConstructionException(new Message("SERVICE_CREATION_MSG", LOG), e);
+        }
+    }
+
+    protected Port getPortFromService(Service service, String portName)
+    {
+        Port port = null;
+        if (portName != null)
+        {
+            port = service.getPort(portName);
+        }
+        if (port == null)
+        {
+            port = ((Port) service.getPorts().values().iterator().next());
+            if (portName != null)
+            {
+                LOG.warning("No port with endpointName='" + portName + "' was found on service '"
+                            + service.getQName() + "'. Using the fist one available: '" + port.getName()
+                            + "'");
+            }
+        }
+        return port;
+    }
+
+    private String getPortName(ReflectionServiceFactoryBean serviceFactory)
+    {
+        Map<String, Object> serviceProperties = serviceFactory.getProperties();
+        if (serviceProperties == null)
+        {
+            return null;
+        }
+        else
+        {
+            return (String) serviceProperties.get(CxfConstants.PORT_NAME);
         }
     }
 
