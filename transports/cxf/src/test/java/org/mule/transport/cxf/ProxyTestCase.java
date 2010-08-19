@@ -28,6 +28,8 @@ import edu.emory.mathcs.backport.java.util.concurrent.TimeUnit;
 
 public class ProxyTestCase extends FunctionalTestCase
 {
+    private static final String EMPTY_REPONSE_PAYLOAD_STRING = "<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"><soap:Body /></soap:Envelope>";
+
     String msg = "<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">"
                  + "<soap:Body><test xmlns=\"http://foo\"> foo </test>" + "</soap:Body>" + "</soap:Envelope>";
 
@@ -209,7 +211,7 @@ public class ProxyTestCase extends FunctionalTestCase
         MuleClient client = new MuleClient();
         MuleMessage result = client.send("http://localhost:63081/services/routeBasedOnSoapAction",
             prepareOneWayTestMessage(), prepareOneWayTestProperties());
-        assertEquals("", result.getPayloadAsString());
+        assertEquals(EMPTY_REPONSE_PAYLOAD_STRING, result.getPayloadAsString());
         int status = result.getIntProperty(HttpConnector.HTTP_STATUS_PROPERTY, -1);
         assertEquals(HttpConstants.SC_OK, status);
 
@@ -231,7 +233,7 @@ public class ProxyTestCase extends FunctionalTestCase
         MuleClient client = new MuleClient();
         MuleMessage result = client.send("http://localhost:63081/services/routeBasedOnSoapActionAsync",
             prepareOneWayTestMessage(), prepareOneWayTestProperties());
-        assertEquals("", result.getPayloadAsString());
+        assertEquals(EMPTY_REPONSE_PAYLOAD_STRING, result.getPayloadAsString());
 
         AsyncService component = (AsyncService) getComponent("asyncService");
         assertTrue(component.getLatch().await(10000, TimeUnit.MILLISECONDS));
@@ -279,6 +281,7 @@ public class ProxyTestCase extends FunctionalTestCase
         return props;
     }
 
+    @Override
     protected String getConfigResources()
     {
         return "proxy-conf.xml";

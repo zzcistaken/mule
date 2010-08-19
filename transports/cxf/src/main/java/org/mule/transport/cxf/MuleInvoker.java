@@ -132,7 +132,7 @@ public class MuleInvoker implements Invoker
             }
             else if (message.getPayload() instanceof NullPayload)
             {
-                return new MessageContentsList((Object)null);
+                return new MessageContentsList();
             }
             else if (receiver.isProxy())
             {
@@ -146,7 +146,7 @@ public class MuleInvoker implements Invoker
         }
         else
         {
-            return new MessageContentsList((Object)null);
+            return new MessageContentsList();
         }
     }
 
