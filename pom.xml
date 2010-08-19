@@ -105,15 +105,13 @@
         but the PGP module would need some work in order to use it -->
         <cryptixJceVersion>20050328</cryptixJceVersion>
         <cryptixVersion>20050405</cryptixVersion>
-        <cxfVersion>2.1.9</cxfVersion>
+        <cxfVersion>2.1.10</cxfVersion>
         <dom4jVersion>1.6.1</dom4jVersion>
         <flatpackVersion>3.1.1</flatpackVersion>
         <geronimoSpecsVersion>1.1</geronimoSpecsVersion>
         <geronimoSpecsAnnotationVersion>1.1.1</geronimoSpecsAnnotationVersion>
         <geronimoSpecsStaxVersion>1.0.1</geronimoSpecsStaxVersion>
         <geronimoSpecsWsMetadataVersion>1.1.2</geronimoSpecsWsMetadataVersion>
-        <groovyEngineVersion>1.1</groovyEngineVersion>
-        <groovyVersion>1.5.6</groovyVersion>
         <hibernateVersion>3.2.2.ga</hibernateVersion>
         <jaxbApiVersion>2.1</jaxbApiVersion>
         <javassistVersion>3.6.ga</javassistVersion>
@@ -1300,7 +1298,7 @@
         <repository>
             <id>apache.snapshots</id>
             <name>Apache Development Snapshot Repository</name>
-            <url>http://people.apache.org/repo/m2-snapshot-repository</url>
+            <url>http://repository.apache.org/snapshots</url>
             <releases>
                 <enabled>false</enabled>
             </releases>
