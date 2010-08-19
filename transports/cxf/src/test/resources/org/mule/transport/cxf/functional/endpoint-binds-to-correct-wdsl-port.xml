@@ -18,7 +18,7 @@
                     wsdlLocation="org/mule/transport/cxf/functional/ListsOriginal.wsdl"
                     namespace="http://schemas.microsoft.com/sharepoint/soap/" 
                     serviceName="Lists" 
-                    endpointName="ListsSoapIU" 
+                    endpointName="ListsSoap" 
                     applyTransformersToProtocol="false"/>
             </inbound>
         </service>
