@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesource.org/schema/mule/core/2.2"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:spring="http://www.springframework.org/schema/beans"
+      xmlns:stdio="http://www.mulesource.org/schema/mule/stdio/2.2"
+      xmlns:vm="http://www.mulesource.org/schema/mule/vm/2.2"
+      xmlns:http="http://www.mulesource.org/schema/mule/http/2.2"
+      xmlns:https="http://www.mulesource.org/schema/mule/https/2.2"
+      xmlns:soap="http://www.mulesource.org/schema/mule/soap/2.2"
+      xmlns:mulexml="http://www.mulesource.org/schema/mule/xml/2.2"
+      xmlns:axis="http://www.mulesource.org/schema/mule/axis/2.2"
+      xmlns:cxf="http://www.mulesource.org/schema/mule/cxf/2.2"
+      xsi:schemaLocation="
+      	  http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+          http://www.mulesource.org/schema/mule/core/2.2 http://www.mulesource.org/schema/mule/core/2.2/mule.xsd
+          http://www.mulesource.org/schema/mule/stdio/2.2 http://www.mulesource.org/schema/mule/stdio/2.2/mule-stdio.xsd
+          http://www.mulesource.org/schema/mule/vm/2.2 http://www.mulesource.org/schema/mule/vm/2.2/mule-vm.xsd
+          http://www.mulesource.org/schema/mule/http/2.2 http://www.mulesource.org/schema/mule/http/2.2/mule-http.xsd
+          http://www.mulesource.org/schema/mule/https/2.2 http://www.mulesource.org/schema/mule/https/2.2/mule-https.xsd
+          http://www.mulesource.org/schema/mule/soap/2.2 http://www.mulesource.org/schema/mule/soap/2.2/mule-soap.xsd
+          http://www.mulesource.org/schema/mule/xml/2.2 http://www.mulesource.org/schema/mule/xml/2.2/mule-xml.xsd
+          http://www.mulesource.org/schema/mule/axis/2.2 http://www.mulesource.org/schema/mule/axis/2.2/mule-axis.xsd
+          http://www.mulesource.org/schema/mule/cxf/2.2 http://www.mulesource.org/schema/mule/cxf/2.2/mule-cxf.xsd
+          http://www.mulesource.org/schema/mule/core/2.2 http://www.mulesource.org/schema/mule/core/2.2/mule.xsd">
+    
+    <description>
+    Camelot ScratchCard Service V1.
+    </description>
+    
+    <cxf:connector name="someCxfConnector">
+        <custom-exception-strategy
+            class="org.mule.tck.testmodels.mule.TestExceptionStrategy">
+            <spring:property name="testProperty" value="true"></spring:property>
+        </custom-exception-strategy>
+    </cxf:connector>
+
+	<mulexml:xslt-transformer name="insertTicketData">
+        <mulexml:xslt-text>
+			<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+				xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" version="2.0">
+				<xsl:output omit-xml-declaration="yes"/>
+				<!-- Template to match the soap Body element -->
+				<xsl:template match="ScratchcardValidateAndPayRequestBody">
+					<xsl:copy>
+						<xsl:apply-templates/>
+						<!-- Insert new body elements here -->
+						<TicketData>Dummy Ticket Data</TicketData>
+					</xsl:copy>
+				</xsl:template>
+				<!-- Template to perform a Standard Identity Transform -->
+				<xsl:template match="@*|node()">
+					<xsl:copy>
+						<xsl:apply-templates select="@*|node()"/>
+					</xsl:copy>
+				</xsl:template>
+			</xsl:stylesheet> 
+        </mulexml:xslt-text>
+    </mulexml:xslt-transformer>
+    
+	<mulexml:xslt-transformer name="insertTicketSecurity">
+        <mulexml:xslt-text>
+			<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+				xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" version="2.0">
+				<xsl:output omit-xml-declaration="yes"/>
+				<!-- Template to match the soap Body element -->
+				<xsl:template match="ScratchcardValidateAndPayRequestBody">
+					<xsl:copy>
+						<xsl:apply-templates/>
+						<!-- Insert new body elements here -->
+						<TicketSecurityCode>0kb21y6z*6vp~p$pjh##q~66o*w2@xc2.@i1h*c.</TicketSecurityCode>
+					</xsl:copy>
+				</xsl:template>
+				<!-- Template to perform a Standard Identity Transform -->
+				<xsl:template match="@*|node()">
+					<xsl:copy>
+						<xsl:apply-templates select="@*|node()"/>
+					</xsl:copy>
+				</xsl:template>
+			</xsl:stylesheet> 
+        </mulexml:xslt-text>
+    </mulexml:xslt-transformer>
+    
+    <model name="ScratchCardServices"> 
+    	<service name="ScratchCardServiceV1">
+  			<inbound>
+    			<cxf:inbound-endpoint address="http://localhost:28181/ScratchCardServiceV1" 
+                    proxy="true" 
+                    wsdlLocation="org/mule/test/integration/transport/cxf/scratchcard.wsdl" 
+                    serviceName="IntegrationLayerService" synchronous="true"
+                    namespace="http://www.wcs.com/2010/07/14/emop.wsdl" >
+    			</cxf:inbound-endpoint>
+  			</inbound>
+  			<outbound>	
+				<chaining-router>
+					<cxf:outbound-endpoint address="http://localhost:28081/ESB2B/LotteryService" proxy="true" synchronous="true"/>
+					<cxf:outbound-endpoint address="http://localhost:28081/EMOP/TicketSecurityService" proxy="true" synchronous="true"/>
+				</chaining-router>
+			</outbound>	
+		</service>
+		<service name="ESB2BServiceV1">
+  			<inbound>
+    			<http:inbound-endpoint address="http://localhost:28081/ESB2B/LotteryService" transformer-refs="insertTicketData" synchronous="true" contentType="text/xml"/>
+  			</inbound>
+    		<echo-component/>
+    	</service>
+		<service name="EMOPServiceV1">
+  			<inbound>
+    			<http:inbound-endpoint address="http://localhost:28081/EMOP/TicketSecurityService" transformer-refs="insertTicketSecurity" synchronous="true" contentType="text/xml"/>
+  			</inbound>
+    		<echo-component/>
+    	</service>
+	</model>
+</mule>
