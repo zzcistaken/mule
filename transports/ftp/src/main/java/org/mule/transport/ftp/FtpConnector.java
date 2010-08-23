@@ -13,6 +13,7 @@ package org.mule.transport.ftp;
 import org.mule.api.MuleException;
 import org.mule.api.MuleMessage;
 import org.mule.api.MuleRuntimeException;
+import org.mule.api.config.ThreadingProfile;
 import org.mule.api.endpoint.EndpointURI;
 import org.mule.api.endpoint.ImmutableEndpoint;
 import org.mule.api.endpoint.InboundEndpoint;
@@ -214,9 +215,23 @@ public class FtpConnector extends AbstractConnector
                 FtpConnectionFactory connectionFactory =
                         (FtpConnectionFactory) ClassUtils.instanciateClass(getConnectionFactoryClass(),
                                                                             new Object[] {uri}, getClass());
-                pool = new GenericObjectPool(connectionFactory);
-                ((GenericObjectPool) pool).setTestOnBorrow(isValidateConnections());
-                pools.put(key, pool);
+                GenericObjectPool genericPool = new GenericObjectPool(connectionFactory);
+                
+                byte value = ThreadingProfile.DEFAULT_POOL_EXHAUST_ACTION;
+                if (this.getReceiverThreadingProfile() != null) {
+                    if (this.getReceiverThreadingProfile().getPoolExhaustedAction() == ThreadingProfile.WHEN_EXHAUSTED_WAIT) {
+                        value = GenericObjectPool.WHEN_EXHAUSTED_BLOCK;
+                    } else if (this.getReceiverThreadingProfile().getPoolExhaustedAction() == ThreadingProfile.WHEN_EXHAUSTED_ABORT) {
+                        value = GenericObjectPool.WHEN_EXHAUSTED_FAIL;
+                    } else if (this.getReceiverThreadingProfile().getPoolExhaustedAction() == ThreadingProfile.WHEN_EXHAUSTED_RUN) {
+                        value = GenericObjectPool.WHEN_EXHAUSTED_GROW;
+                    }
+                }
+                
+                genericPool.setWhenExhaustedAction(value);
+                genericPool.setTestOnBorrow(isValidateConnections());
+                pools.put(key, genericPool);
+                pool = genericPool;
             }
             catch (Exception ex)
             {
