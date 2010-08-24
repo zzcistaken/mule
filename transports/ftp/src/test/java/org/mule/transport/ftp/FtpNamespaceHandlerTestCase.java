@@ -46,11 +46,13 @@ public class FtpNamespaceHandlerTestCase extends FunctionalTestCase
         assertTrue(c.isStarted());
     }
     
-    public void testReceiverFtpConnector() throws EndpointException {
+    public void testReceiverFtpConnector() throws EndpointException 
+    {
         FtpConnector c = (FtpConnector)muleContext.getRegistry().lookupConnector("receiverFtpConnector");
         assertNotNull(c);
         
-        GenericObjectPool objectPool = (GenericObjectPool) c.getFtpPool(new MuleEndpointURI("http://localhost"));
+        MuleEndpointURI uri = new MuleEndpointURI("http://localhost");
+        GenericObjectPool objectPool = (GenericObjectPool) c.getFtpPool(uri);
         assertEquals(GenericObjectPool.WHEN_EXHAUSTED_FAIL, objectPool.getWhenExhaustedAction());
     }
 }

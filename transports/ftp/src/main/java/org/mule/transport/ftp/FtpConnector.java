@@ -215,21 +215,7 @@ public class FtpConnector extends AbstractConnector
                 FtpConnectionFactory connectionFactory =
                         (FtpConnectionFactory) ClassUtils.instanciateClass(getConnectionFactoryClass(),
                                                                             new Object[] {uri}, getClass());
-                GenericObjectPool genericPool = new GenericObjectPool(connectionFactory);
-                
-                byte value = ThreadingProfile.DEFAULT_POOL_EXHAUST_ACTION;
-                if (this.getReceiverThreadingProfile() != null) {
-                    if (this.getReceiverThreadingProfile().getPoolExhaustedAction() == ThreadingProfile.WHEN_EXHAUSTED_WAIT) {
-                        value = GenericObjectPool.WHEN_EXHAUSTED_BLOCK;
-                    } else if (this.getReceiverThreadingProfile().getPoolExhaustedAction() == ThreadingProfile.WHEN_EXHAUSTED_ABORT) {
-                        value = GenericObjectPool.WHEN_EXHAUSTED_FAIL;
-                    } else if (this.getReceiverThreadingProfile().getPoolExhaustedAction() == ThreadingProfile.WHEN_EXHAUSTED_RUN) {
-                        value = GenericObjectPool.WHEN_EXHAUSTED_GROW;
-                    }
-                }
-                
-                genericPool.setWhenExhaustedAction(value);
-                genericPool.setTestOnBorrow(isValidateConnections());
+                GenericObjectPool genericPool = createPool(connectionFactory);
                 pools.put(key, genericPool);
                 pool = genericPool;
             }
@@ -242,6 +228,33 @@ public class FtpConnector extends AbstractConnector
         return pool;
     }
 
+    protected GenericObjectPool createPool(FtpConnectionFactory connectionFactory)
+    {
+        GenericObjectPool genericPool = new GenericObjectPool(connectionFactory);
+        byte poolExhaustedAction = ThreadingProfile.DEFAULT_POOL_EXHAUST_ACTION;
+        
+        ThreadingProfile receiverThreadingProfile = this.getReceiverThreadingProfile();
+        if (receiverThreadingProfile != null) 
+        {
+            int threadingProfilePoolExhaustedAction = receiverThreadingProfile.getPoolExhaustedAction();
+            if (threadingProfilePoolExhaustedAction == ThreadingProfile.WHEN_EXHAUSTED_WAIT) 
+            {
+                poolExhaustedAction = GenericObjectPool.WHEN_EXHAUSTED_BLOCK;
+            } 
+            else if (threadingProfilePoolExhaustedAction == ThreadingProfile.WHEN_EXHAUSTED_ABORT) 
+            {
+                poolExhaustedAction = GenericObjectPool.WHEN_EXHAUSTED_FAIL;
+            } 
+            else if (threadingProfilePoolExhaustedAction == ThreadingProfile.WHEN_EXHAUSTED_RUN) 
+            {
+                poolExhaustedAction = GenericObjectPool.WHEN_EXHAUSTED_GROW;
+            }
+        }
+        
+        genericPool.setWhenExhaustedAction(poolExhaustedAction);
+        genericPool.setTestOnBorrow(isValidateConnections());
+        return genericPool;
+    }
 
     protected void doInitialise() throws InitialisationException
     {
