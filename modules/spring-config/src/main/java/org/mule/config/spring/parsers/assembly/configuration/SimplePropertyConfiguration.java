@@ -264,20 +264,4 @@ public class SimplePropertyConfiguration implements PropertyConfiguration
         }
 
     }
-    
-    public static class IndentityMapValueMap extends MapValueMap
-    {
-
-        public IndentityMapValueMap(Map map)
-        {
-            super(map);
-        }
-
-        @Override
-        public Object rewrite(String value)
-        {
-            Object result = map.get(value);
-            return result;
-        }
-    }
 }

@@ -10,7 +10,6 @@
 package org.mule.transport.email.config;
 
 import org.mule.config.spring.handlers.AbstractMuleNamespaceHandler;
-import org.mule.config.spring.parsers.MuleDefinitionParserConfiguration;
 import org.mule.endpoint.URIBuilder;
 import org.mule.transport.email.Pop3Connector;
 
@@ -23,8 +22,6 @@ public class Pop3NamespaceHandler extends AbstractMuleNamespaceHandler
     public void init()
     {
         registerStandardTransportEndpoints(Pop3Connector.POP3, URIBuilder.USERHOST_ATTRIBUTES);
-
-        MuleDefinitionParserConfiguration parser = registerConnectorDefinitionParser(Pop3Connector.class);
-        parser.addMapping("defaultProcessMessageAction", EmailNamespaceHandler.DEFAULT_PROCESS_MESSAGE_ACTION);
+        registerConnectorDefinitionParser(Pop3Connector.class);
     }
 }
