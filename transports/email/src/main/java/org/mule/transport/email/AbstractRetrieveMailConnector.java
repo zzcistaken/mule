@@ -14,6 +14,8 @@ import org.mule.api.endpoint.InboundEndpoint;
 import org.mule.api.service.Service;
 import org.mule.api.transport.MessageReceiver;
 
+import javax.mail.Flags;
+
 /**
  * Support for connecting to and receiving email from a mailbox (the exact protocol depends on
  * the subclass).
@@ -42,6 +44,11 @@ public abstract class AbstractRetrieveMailConnector extends AbstractMailConnecto
      * Once a message has been read, should it be deleted
      */
     private volatile boolean deleteReadMessages = true;
+    
+    /**
+     * The action performed if the deleteReadMessages actions is set to false
+     */
+    private Flags.Flag defaultProcessMessageAction = Flags.Flag.SEEN;
 
     
     protected AbstractRetrieveMailConnector(int defaultPort)
@@ -108,4 +115,13 @@ public abstract class AbstractRetrieveMailConnector extends AbstractMailConnecto
         this.backupEnabled = backupEnabled;
     }
 
+    public Flags.Flag getDefaultProcessMessageAction()
+    {
+        return defaultProcessMessageAction;
+    }
+
+    public void setDefaultProcessMessageAction(Flags.Flag defaultProcessMessageAction)
+    {
+        this.defaultProcessMessageAction = defaultProcessMessageAction;
+    }
 }

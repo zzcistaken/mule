@@ -61,7 +61,14 @@
                 <xsd:attribute name="deleteReadMessages" type="mule:substitutableBoolean">
                     <xsd:annotation>
                         <xsd:documentation>
-                            Whether to delete messages from the server when they have been downloaded. The default is true. If set to false, the messages are set to SEEN.
+                            Whether to delete messages from the server when they have been downloaded. The default is true. If set to false, the messages are set to defaultProcessMessageAction attribute value.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="defaultProcessMessageAction" type="xsd:string" default="SEEN">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            The action performed if the deleteReadMessages attribute is set to false.
                         </xsd:documentation>
                     </xsd:annotation>
                 </xsd:attribute>

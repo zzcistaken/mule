@@ -134,7 +134,11 @@ public class RetrieveMessageReceiver extends AbstractPollingMessageReceiver impl
                         }
                         else
                         {
-                            messages[i].setFlag(Flags.Flag.SEEN, true);
+                            Flags.Flag flag = castConnector().getDefaultProcessMessageAction();
+                            if (flag != null)
+                            {
+                                messages[i].setFlag(flag, true);
+                            }
                         }
                         routeMessage(message, endpoint.isSynchronous());
                     }
