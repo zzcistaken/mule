@@ -17,9 +17,6 @@
                 <entry key="org.mule.endpoint.URIBuilder">
                     <bean class="org.mule.config.spring.editors.URIBuilderPropertyEditor"/>
                 </entry>
-                <entry key="javax.mail.Flags$Flag">
-                    <bean class="org.mule.config.spring.editors.FlagPropertyEditor"/>
-                </entry>
             </map>
         </property>
     </bean>

@@ -10,6 +10,7 @@
 package org.mule.transport.email.config;
 
 import org.mule.config.spring.handlers.AbstractMuleNamespaceHandler;
+import org.mule.config.spring.parsers.MuleDefinitionParserConfiguration;
 import org.mule.config.spring.parsers.specific.tls.ClientKeyStoreDefinitionParser;
 import org.mule.config.spring.parsers.specific.tls.TrustStoreDefinitionParser;
 import org.mule.endpoint.URIBuilder;
@@ -24,7 +25,10 @@ public class Pop3sNamespaceHandler extends AbstractMuleNamespaceHandler
     public void init()
     {
         registerStandardTransportEndpoints(Pop3sConnector.POP3S, URIBuilder.USERHOST_ATTRIBUTES);
-        registerConnectorDefinitionParser(Pop3sConnector.class);
+
+        MuleDefinitionParserConfiguration parser = registerConnectorDefinitionParser(Pop3sConnector.class);
+        parser.addMapping("defaultProcessMessageAction", EmailNamespaceHandler.DEFAULT_PROCESS_MESSAGE_ACTION);
+
         registerBeanDefinitionParser("tls-trust-store", new TrustStoreDefinitionParser());
         registerBeanDefinitionParser("tls-client", new ClientKeyStoreDefinitionParser());
     }
