@@ -33,7 +33,7 @@ public class WaitPolicyTestCase extends AbstractMuleTestCase
     private ThreadPoolExecutor executor;
     private ReentrantLock executorLock;
 
-    // @Override
+    @Override
     protected void doSetUp() throws Exception
     {
         super.doSetUp();
@@ -54,7 +54,7 @@ public class WaitPolicyTestCase extends AbstractMuleTestCase
         SleepyTask.activeTasks.set(0);
     }
 
-    // @Override
+    @Override
     protected void doTearDown() throws Exception
     {
         executor.shutdown();
@@ -69,14 +69,14 @@ public class WaitPolicyTestCase extends AbstractMuleTestCase
     // A submitting thread waits on a fair Lock to guarantee FIFO ordering.
     // At the time of return the Runnables may or may not be in the queue,
     // rejected, running or already finished. :-)
-    protected LinkedList/* <Thread> */execute(final List/* <Runnable> */tasks) throws InterruptedException
+    protected LinkedList<Thread> execute(final List<Runnable> tasks) throws InterruptedException
     {
         if (tasks == null || tasks.isEmpty())
         {
             throw new IllegalArgumentException("List<Runnable> must not be empty");
         }
 
-        LinkedList submitters = new LinkedList();
+        LinkedList<Thread> submitters = new LinkedList<Thread>();
 
         executorLock.lock();
 
@@ -128,7 +128,7 @@ public class WaitPolicyTestCase extends AbstractMuleTestCase
         executor.shutdown();
 
         // create a task
-        List tasks = new ArrayList();
+        List<Runnable> tasks = new ArrayList<Runnable>();
         tasks.add(new SleepyTask("rejected", 1000));
 
         // should fail and return immediately
@@ -138,7 +138,7 @@ public class WaitPolicyTestCase extends AbstractMuleTestCase
         // let submitted tasks run
         Thread.sleep(1000);
 
-        LinkedList exceptions = threadGroup.collectedExceptions();
+        LinkedList<Map<Thread, Throwable>> exceptions = threadGroup.collectedExceptions();
         assertEquals(1, exceptions.size());
 
         Map.Entry threadFailure = (Map.Entry)((Map)(exceptions.getFirst())).entrySet().iterator().next();
@@ -156,7 +156,7 @@ public class WaitPolicyTestCase extends AbstractMuleTestCase
         executor.setRejectedExecutionHandler(policy);
 
         // create tasks
-        List tasks = new ArrayList();
+        List<Runnable> tasks = new ArrayList<Runnable>();
         // task 1 runs immediately
         tasks.add(new SleepyTask("run", 1000));
         // task 2 is queued
@@ -184,7 +184,7 @@ public class WaitPolicyTestCase extends AbstractMuleTestCase
         executor.setRejectedExecutionHandler(policy);
 
         // create tasks
-        List tasks = new ArrayList();
+        List<Runnable> tasks = new ArrayList<Runnable>();
         // task 1 runs immediately
         tasks.add(new SleepyTask("run", 1000));
         // task 2 is queued
@@ -212,7 +212,7 @@ public class WaitPolicyTestCase extends AbstractMuleTestCase
         executor.setRejectedExecutionHandler(policy);
 
         // create tasks
-        List tasks = new ArrayList();
+        List<Runnable> tasks = new ArrayList<Runnable>();
         // task 1 runs immediately
         tasks.add(new SleepyTask("run", 1000));
         // task 2 is queued
@@ -229,7 +229,7 @@ public class WaitPolicyTestCase extends AbstractMuleTestCase
         Thread.sleep(failureInterval * 10);
 
         // make sure there was one failure
-        LinkedList exceptions = threadGroup.collectedExceptions();
+        LinkedList<Map<Thread, Throwable>>  exceptions = threadGroup.collectedExceptions();
         assertEquals(1, exceptions.size());
 
         // make sure the failed task was the right one
@@ -320,7 +320,7 @@ class SleepyTask extends Object implements Runnable
 // ThreadGroup wrapper that collects uncaught exceptions
 class ExceptionCollectingThreadGroup extends ThreadGroup
 {
-    private final LinkedList/* <Map<Thread, Throwable>> */exceptions = new LinkedList();
+    private final LinkedList<Map<Thread, Throwable>> exceptions = new LinkedList<Map<Thread, Throwable>>();
 
     public ExceptionCollectingThreadGroup()
     {
@@ -328,13 +328,13 @@ class ExceptionCollectingThreadGroup extends ThreadGroup
     }
 
     // collected Map(Thread, Throwable) associations
-    public LinkedList collectedExceptions()
+    public LinkedList<Map<Thread, Throwable>> collectedExceptions()
     {
         return exceptions;
     }
 
     // all uncaught Thread exceptions end up here
-    // @Override
+    @Override
     public void uncaughtException(Thread t, Throwable e)
     {
         synchronized (exceptions)
