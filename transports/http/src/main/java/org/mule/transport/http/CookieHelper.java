@@ -17,7 +17,6 @@ import org.mule.api.expression.ExpressionManager;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -431,7 +430,8 @@ enum CookieStorageType
             }
             else
             {
-                Cookie[] mergedCookies = Arrays.copyOf(cookies1, cookies1.length + cookies2.length);
+                Cookie[] mergedCookies = new Cookie[cookies1.length + cookies2.length];
+                System.arraycopy(cookies1, 0, mergedCookies, 0, cookies1.length);
                 System.arraycopy(cookies2, 0, mergedCookies, cookies1.length, cookies2.length);
                 return mergedCookies;
             }
