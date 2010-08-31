@@ -55,5 +55,19 @@ public class VMFunctionalTestCase extends FunctionalTestCase
             assertNotNull("Response is null", response);
             assertEquals("Polo", response.getPayload());
         }
+
+        MuleMessage secondMessage = client.request("vm://out", WAIT);
+        assertNull(secondMessage);
+    }
+    
+    public void testNoMessageDuplication() throws Exception
+    {
+        MuleClient client = new MuleClient();
+        client.dispatch("vm://in", "Marco", null);
+        MuleMessage response = client.request("vm://out", WAIT);
+        assertNotNull("Response is null", response);
+        assertEquals("Polo", response.getPayload());
+        MuleMessage secondMessage = client.request("vm://out", WAIT);
+        assertNull(secondMessage);
     }
 }
