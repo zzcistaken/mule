@@ -36,7 +36,6 @@ public class VMMessageReceiver extends TransactedPollingMessageReceiver
 {
 
     private VMConnector connector;
-    private final Object lock = new Object();
 
     public VMMessageReceiver(Connector connector, Service service, InboundEndpoint endpoint)
         throws CreateException
