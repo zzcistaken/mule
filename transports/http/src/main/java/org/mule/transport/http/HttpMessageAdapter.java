@@ -21,9 +21,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.commons.httpclient.Cookie;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HeaderElement;
 import org.apache.commons.httpclient.NameValuePair;
+import org.apache.commons.httpclient.cookie.MalformedCookieException;
 
 /**
  * <code>HttpMessageAdapter</code> Wraps an incoming Http Request making the
@@ -114,9 +116,26 @@ public class HttpMessageAdapter extends AbstractMessageAdapter implements Messag
     {
         for (int i = 0; i < inboundHeaders.length; i++)
         {
-            headers.put(inboundHeaders[i].getName(), inboundHeaders[i].getValue());
-        }        
+            // do something special with cookies
+            if (HttpConstants.HEADER_COOKIE_SET.equals(inboundHeaders[i].getName()))
+            {
+                try
+                {
+                    final Cookie[] newCookies = CookieHelper.parseCookiesAsAClient(inboundHeaders[i], null);
+                    final Object preExistentCookies = headers.get(HttpConstants.HEADER_COOKIE_SET);
+                    final Object mergedCookie = CookieHelper.putAndMergeCookie(preExistentCookies, newCookies);
+                    headers.put(HttpConstants.HEADER_COOKIE_SET, mergedCookie);
+                }
+                catch (MalformedCookieException e)
+                {
+                    logger.warn("Received an invalid cookie: " + inboundHeaders[i], e);
+                }
+            } else {
+                headers.put(inboundHeaders[i].getName(), inboundHeaders[i].getValue());
+            }
+        }     
     }
+
 
     private void determineHttpVersion(Map headers)
     {

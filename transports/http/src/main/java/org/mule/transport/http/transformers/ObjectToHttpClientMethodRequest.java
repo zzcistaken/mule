@@ -120,6 +120,7 @@ public class ObjectToHttpClientMethodRequest extends AbstractMessageAwareTransfo
         return parameterIndex + 1;
     }
 
+    @Override
     public Object transform(MuleMessage msg, String outputEncoding) throws TransformerException
     {
         Object src = msg.getPayload();
@@ -375,7 +376,8 @@ public class ObjectToHttpClientMethodRequest extends AbstractMessageAwareTransfo
                 }
             }
             else if (HttpConstants.REQUEST_HEADER_NAMES.get(headerName) == null
-                        && !HttpConnector.HTTP_INBOUND_PROPERTIES.contains(headerName))
+                     && !HttpConnector.HTTP_INBOUND_PROPERTIES.contains(headerName)
+                     && !HttpConnector.HTTP_COOKIES_PROPERTY.equals(headerName))
             {
                 headerValue = msg.getStringProperty(headerName, null);
                 if (headerName.startsWith(MuleProperties.PROPERTY_PREFIX))

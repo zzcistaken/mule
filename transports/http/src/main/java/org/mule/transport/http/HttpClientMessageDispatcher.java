@@ -27,15 +27,11 @@ import org.mule.util.StringUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.util.Iterator;
-import java.util.Map;
 
-import org.apache.commons.httpclient.Cookie;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.httpclient.methods.ByteArrayRequestEntity;
 import org.apache.commons.httpclient.methods.EntityEnclosingMethod;
 import org.apache.commons.httpclient.params.HttpMethodParams;
@@ -87,6 +83,7 @@ public class HttpClientMessageDispatcher extends AbstractMessageDispatcher
         client = null;
     }
 
+    @Override
     protected void doDispatch(MuleEvent event) throws Exception
     {
         HttpMethod httpMethod = getMethod(event);
@@ -151,42 +148,11 @@ public class HttpClientMessageDispatcher extends AbstractMessageDispatcher
 
     private void processCookies(Object cookieObject, String policy, MuleEvent event)
     {
-        if (cookieObject instanceof Cookie[])
-        {
-            // cookies came in via a regular HTTP request
-            Cookie[] cookies = (Cookie[]) cookieObject;
-            if (cookies != null && cookies.length > 0)
-            {
-                client.getParams().setCookiePolicy(CookieHelper.getCookiePolicy(policy));
-                client.getState().addCookies(cookies);
-            }
-        }
-        else if (cookieObject instanceof Map)
-        {
-            // cookies were configured on the endpoint
-            client.getParams().setCookiePolicy(CookiePolicy.RFC_2109);
-
-            String host = this.getEndpoint().getEndpointURI().getHost();
-            String path = this.getEndpoint().getEndpointURI().getPath();
-            Map cookieMap = (Map) cookieObject;
-            Iterator keyIter = cookieMap.keySet().iterator();
-            while (keyIter.hasNext())
-            {
-                String key = (String) keyIter.next();
-                String cookieValue = (String) cookieMap.get(key);
-
-                String value = event.getMuleContext().getExpressionManager().parse(cookieValue, 
-                    event.getMessage());
-
-                Cookie cookie = new Cookie(host, key, value, path, null, false);
-                client.getState().addCookie(cookie);
-            }
-        }
-        else if (cookieObject != null)
-        {
-            throw new IllegalArgumentException("Invalid cookies " + cookieObject);
-        }
+        URI uri = this.getEndpoint().getEndpointURI().getUri();
+        CookieHelper.addCookiesToClient(this.client, cookieObject, policy, event, uri);
     }
+
+
 
     protected HttpMethod getMethod(MuleEvent event) throws TransformerException
     {
@@ -260,6 +226,7 @@ public class HttpClientMessageDispatcher extends AbstractMessageDispatcher
         return httpMethod;
     }
 
+    @Override
     protected MuleMessage doSend(MuleEvent event) throws Exception
     {
         HttpMethod httpMethod = getMethod(event);

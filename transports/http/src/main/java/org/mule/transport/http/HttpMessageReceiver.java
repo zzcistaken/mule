@@ -14,7 +14,6 @@ import org.mule.DefaultMuleEvent;
 import org.mule.DefaultMuleMessage;
 import org.mule.DefaultMuleSession;
 import org.mule.MuleServer;
-import org.mule.NullSessionHandler;
 import org.mule.OptimizedRequestContext;
 import org.mule.RequestContext;
 import org.mule.api.MessagingException;
@@ -442,46 +441,43 @@ public class HttpMessageReceiver extends TcpMessageReceiver
 
         protected Map parseHeaders(HttpRequest request) throws MalformedCookieException
         {
-            RequestLine requestLine = request.getRequestLine();
-            Map<String, Object> headers = new HashMap<String, Object>();
+            final RequestLine requestLine = request.getRequestLine();
+            final Map<String, Object> headers = new HashMap<String, Object>();
 
-            for (Iterator rhi = request.getHeaderIterator(); rhi.hasNext();)
+            for (Iterator<Header> rhi = request.getHeaderIterator(); rhi.hasNext();)
             {
-                Header header = (Header) rhi.next();
+                Header header = rhi.next();
                 String headerName = header.getName();
                 Object headerValue = header.getValue();
 
-                // fix Mule headers?
-                if (headerName.startsWith("X-MULE"))
-                {
-                    headerName = headerName.substring(2);
-                }
-                // Parse cookies?
-                else if (headerName.equals(HttpConnector.HTTP_COOKIES_PROPERTY))
+                // Cookies are a special case because there may be more than one
+                // cookie.
+                if (HttpConnector.HTTP_COOKIES_PROPERTY.equals(headerName)
+                    || HttpConstants.HEADER_COOKIE.equals(headerName))
                 {
                     if (enableCookies)
                     {
-                        Cookie[] cookies = CookieHelper.parseCookies(header, cookieSpec);
-                        if (cookies.length > 0)
+                        headerName = HttpConnector.HTTP_COOKIES_PROPERTY;
+                        Cookie[] newCookies = CookieHelper.parseCookiesAsAServer(header);
+                        if (newCookies.length > 0)
                         {
-                            // yum!
-                            headerValue = cookies;
+                            Object oldCookies = headers.get(headerName);
+                            Object mergedCookies = CookieHelper.putAndMergeCookie(oldCookies, newCookies);
+                            headers.put(headerName, mergedCookies);
                         }
-                        else
-                        {
-                            // bad cookies?!
-                            continue;
-                        }
-                    }
-                    else
-                    {
-                        // no cookies for you!
-                        continue;
                     }
                 }
+                else
+                {
+                    // fix Mule headers?
+                    if (headerName.startsWith("X-MULE"))
+                    {
+                        headerName = headerName.substring(2);
+                    }
 
-                // accept header & value
-                headers.put(headerName, headerValue);
+                    // accept header & value
+                    headers.put(headerName, headerValue);
+                }
             }
 
             headers.put(HttpConnector.HTTP_METHOD_PROPERTY, requestLine.getMethod());

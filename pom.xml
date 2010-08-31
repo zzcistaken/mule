@@ -158,6 +158,7 @@
         <springSecurityVersion>2.0.4</springSecurityVersion>
         <staxUtilsVersion>20080702</staxUtilsVersion>
         <sxcVersion>0.7.3</sxcVersion>
+        <tomcatVersion>5.5.23</tomcatVersion>
         <woodstoxVersion>3.2.6</woodstoxVersion>
         <wrapperVersion>3.2.3</wrapperVersion>
         <wsCommonsAxiomVersion>1.2.7</wsCommonsAxiomVersion>
@@ -500,6 +501,11 @@
                 <version>${jettyServletApiVersion}</version>
             </dependency>
 
+            <dependency>
+                <groupId>tomcat</groupId>
+                <artifactId>tomcat-util</artifactId>
+                <version>${tomcatVersion}</version>
+            </dependency>
 
             <!-- For unit tests only -->
             <dependency>

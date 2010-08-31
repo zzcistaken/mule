@@ -18,13 +18,11 @@ import org.mule.api.transport.PropertyScope;
 import org.mule.config.MuleManifest;
 import org.mule.transformer.AbstractMessageAwareTransformer;
 import org.mule.transport.NullPayload;
+import org.mule.transport.http.CookieHelper;
 import org.mule.transport.http.HttpConnector;
 import org.mule.transport.http.HttpConstants;
 import org.mule.transport.http.HttpResponse;
 import org.mule.util.StringUtils;
-
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.HttpVersion;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -33,6 +31,10 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
+
+import org.apache.commons.httpclient.Cookie;
+import org.apache.commons.httpclient.Header;
+import org.apache.commons.httpclient.HttpVersion;
 
 /**
  * Converts a {@link MuleMessage} into an Http response.
@@ -64,6 +66,7 @@ public class MuleMessageToHttpResponse extends AbstractMessageAwareTransformer
         }
     }
 
+    @Override
     public Object transform(MuleMessage msg, String outputEncoding) throws TransformerException
     {
         Object src = msg.getPayload();
@@ -229,15 +232,28 @@ public class MuleMessageToHttpResponse extends AbstractMessageAwareTransformer
         }
         response.setFallbackCharset(encoding);
 
-        Collection headerNames = HttpConstants.RESPONSE_HEADER_NAMES.values();
+        Collection<String> headerNames = HttpConstants.RESPONSE_HEADER_NAMES.values();
         String headerName, value;
-        for (Iterator iterator = headerNames.iterator(); iterator.hasNext();)
+        for (Iterator<String> iterator = headerNames.iterator(); iterator.hasNext();)
         {
-            headerName = (String) iterator.next();
-            value = msg.getStringProperty(headerName, null);
-            if (value != null)
+            headerName = iterator.next();
+            if (HttpConstants.HEADER_COOKIE_SET.equals(headerName))
             {
-                response.setHeader(new Header(headerName, value));
+                Object cookiesObject = msg.getProperty(headerName);
+                Cookie[] arrayOfCookies = CookieHelper.asArrayOfCookies(cookiesObject);
+                for (Cookie cookie : arrayOfCookies)
+                {
+                    response.addHeader(new Header(headerName,
+                        CookieHelper.formatCookieForASetCookieHeader(cookie)));
+                }
+            }
+            else
+            {
+                value = msg.getStringProperty(headerName, null);
+                if (value != null)
+                {
+                    response.setHeader(new Header(headerName, value));
+                }
             }
         }
 
@@ -298,6 +314,7 @@ public class MuleMessageToHttpResponse extends AbstractMessageAwareTransformer
         return response;
     }
 
+    @Override
     public boolean isAcceptNull()
     {
         return true;

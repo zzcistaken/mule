@@ -21,7 +21,6 @@ import org.mule.util.Base64;
 
 import java.io.IOException;
 
-import org.apache.commons.httpclient.Cookie;
 import org.apache.commons.lang.SerializationUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -39,12 +38,14 @@ public class HttpSessionHandler implements SessionHandler
 
     public MuleSession retrieveSessionInfoFromMessage(MuleMessage message) throws MuleException
     {
+        final Object cookiesObject = message.getProperty(HttpConnector.HTTP_COOKIES_PROPERTY);
+        final String cookieName = MuleProperties.MULE_SESSION_PROPERTY;
+        final String cookieValue = CookieHelper.getCookieValueFromCookies(cookiesObject, cookieName);
+
         MuleSession session = null;
-        
-        Cookie[] cookies = (Cookie[]) message.getProperty(HttpConnector.HTTP_COOKIES_PROPERTY);
-        if (cookies != null && cookies.length > 0 && cookies[0] != null && cookies[0].getValue() != null)
+        if (cookieValue != null)
         {
-            byte[] serializedSession = Base64.decode(cookies[0].getValue());
+            byte[] serializedSession = Base64.decode(cookieValue);
             
             if (serializedSession != null)
             {
@@ -53,6 +54,7 @@ public class HttpSessionHandler implements SessionHandler
         }
         return session;
     }
+
 
     /**
      * @deprecated Use retrieveSessionInfoFromMessage(MuleMessage message) instead
@@ -81,10 +83,16 @@ public class HttpSessionHandler implements SessionHandler
             logger.debug("Adding serialized and base64-encoded Session header to message: " + serializedEncodedSession);
         }
 
-        message.setProperty(HttpConnector.HTTP_COOKIES_PROPERTY, new Cookie[] {
-            // TODO handle domain, path, secure (https) and expiry
-            new Cookie(null, MuleProperties.MULE_SESSION_PROPERTY, serializedEncodedSession)});
+        final Object preExistentCookies = message.getProperty(HttpConnector.HTTP_COOKIES_PROPERTY);
+        final String cookieName = MuleProperties.MULE_SESSION_PROPERTY;
+        final String cookieValue = serializedEncodedSession;
+
+        Object mergedCookies = CookieHelper.putAndMergeCookie(preExistentCookies, cookieName, cookieValue);
+
+        message.setProperty(HttpConnector.HTTP_COOKIES_PROPERTY, mergedCookies);
     }
+
+
 
     /**
      * @deprecated This method is no longer needed and will be removed in the next major release

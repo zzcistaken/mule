@@ -145,7 +145,8 @@ public class HttpRequest
         addHeader(header);
     }
 
-    public Iterator getHeaderIterator()
+    @SuppressWarnings("unchecked")
+    public Iterator<Header> getHeaderIterator()
     {
         return this.headers.getIterator();
     }

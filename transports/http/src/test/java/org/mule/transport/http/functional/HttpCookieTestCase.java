@@ -30,11 +30,13 @@ public class HttpCookieTestCase extends AbstractMockHttpServerTestCase
     private boolean cookieFound = false;
     private List<String> cookieHeaders  = new ArrayList<String>();
 
+    @Override
     protected String getConfigResources()
     {
         return "http-cookie-test.xml";
     }
 
+    @Override
     protected MockHttpServer getHttpServer(CountDownLatch serverStartLatch)
     {
         return new SimpleHttpServer(LISTEN_PORT, serverStartLatch, latch);
@@ -51,9 +53,11 @@ public class HttpCookieTestCase extends AbstractMockHttpServerTestCase
         assertTrue(latch.await(RECEIVE_TIMEOUT, TimeUnit.MILLISECONDS));
         assertTrue(cookieFound);
 
-        assertTrue(cookieHeaders.size() == 2);
+        assertEquals(3, cookieHeaders.size());
         assertEquals("Cookie: $Version=0; customCookie=yes", cookieHeaders.get(0));
         assertEquals("Cookie: $Version=0; expressionCookie=MYCOOKIE", cookieHeaders.get(1));
+        assertTrue("The third cookie must be a MULE_SESSION cookie",
+            cookieHeaders.get(2).contains("MULE_SESSION="));
     }
 
     private class SimpleHttpServer extends MockHttpServer

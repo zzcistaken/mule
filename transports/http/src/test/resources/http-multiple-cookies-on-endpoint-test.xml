@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesource.org/schema/mule/core/2.2"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:http="http://www.mulesource.org/schema/mule/http/2.2"
+      xmlns:spring="http://www.springframework.org/schema/beans"
+      xmlns:stdio="http://www.mulesource.org/schema/mule/stdio/2.2"
+      xmlns:vm="http://www.mulesource.org/schema/mule/vm/2.2"
+    
+      xsi:schemaLocation="
+            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+            http://www.mulesource.org/schema/mule/core/2.2 http://www.mulesource.org/schema/mule/core/2.2/mule.xsd
+            http://www.mulesource.org/schema/mule/stdio/2.2 http://www.mulesource.org/schema/mule/stdio/2.2/mule-stdio.xsd
+            http://www.mulesource.org/schema/mule/http/2.2 http://www.mulesource.org/schema/mule/http/2.2/mule-http.xsd
+            http://www.mulesource.org/schema/mule/vm/2.2 http://www.mulesource.org/schema/mule/vm/2.2/mule-vm.xsd">
+
+
+    <http:connector name="httpConnector" enableCookies="true" />
+
+    <model name="HttpMultipleCookiesInEndpointTestCase">
+
+        <service name="CookieClient">
+            <inbound>
+                <vm:inbound-endpoint path="in" synchronous="true"/>
+            </inbound>
+            <outbound>
+                <pass-through-router>
+                    <http:outbound-endpoint address="http://localhost:34876/test" synchronous="true" method="POST" responseTimeout="600000">
+                        <properties>
+                            <spring:entry key="Content-Type" value="text/xml" />
+                            <spring:entry key="cookies">
+                                <spring:map>
+                                    <spring:entry key="CookieNumber1" value="ValueForCookieNumber1"/>
+                                    <spring:entry key="CookieNumber2" value="ValueForCookieNumber2"/>
+                                </spring:map>
+                            </spring:entry> 
+                        </properties>
+                    </http:outbound-endpoint>    
+                </pass-through-router>                    
+            </outbound>
+        </service>
+
+        <service name="HttpServer">
+            <inbound>
+                <http:inbound-endpoint address="http://localhost:34876/test" synchronous="true"/>
+            </inbound>
+            <component class="org.mule.transport.http.functional.HttpMultipleCookiesInEndpointTestComponent"/>
+        </service>
+
+    </model>
+
+</mule>
