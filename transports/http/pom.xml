@@ -35,7 +35,7 @@
             <groupId>org.mule.transports</groupId>
             <artifactId>mule-transport-ssl</artifactId>
         </dependency>
-        
+
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
@@ -53,8 +53,16 @@
         <dependency>
             <groupId>tomcat</groupId>
             <artifactId>tomcat-util</artifactId>
+            <version>5.5.23</version>
+            <exclusions>
+                <!-- we use slf4j -->
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
-        
+
         <!-- Unit tests -->
         <dependency>
             <groupId>org.mule.transports</groupId>

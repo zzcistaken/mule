@@ -158,7 +158,6 @@
         <springSecurityVersion>2.0.4</springSecurityVersion>
         <staxUtilsVersion>20080702</staxUtilsVersion>
         <sxcVersion>0.7.3</sxcVersion>
-        <tomcatVersion>5.5.23</tomcatVersion>
         <woodstoxVersion>3.2.6</woodstoxVersion>
         <wrapperVersion>3.2.3</wrapperVersion>
         <wsCommonsAxiomVersion>1.2.7</wsCommonsAxiomVersion>
@@ -269,8 +268,6 @@
                 <artifactId>geronimo-stax-api_1.0_spec</artifactId>
                 <version>${geronimoSpecsStaxVersion}</version>
             </dependency>
-
-
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-beans</artifactId>
@@ -430,16 +427,12 @@
                     </exclusion>
                 </exclusions>
             </dependency>
-
             <dependency>
                 <!-- OSGi-ready -->
                 <groupId>commons-pool</groupId>
                 <artifactId>commons-pool</artifactId>
                 <version>1.4</version>
             </dependency>
-
-
-
             <!-- OSGi Specification -->
             <dependency>
                 <groupId>org.osgi</groupId>
@@ -462,14 +455,6 @@
                 <artifactId>spring-osgi-io</artifactId>
                 <version>${springOsgiVersion}</version>
             </dependency>
-            <!-- We package this one ourselves in mule-module-spring-osgi
-            <dependency>
-                <groupId>org.springframework.osgi</groupId>
-                <artifactId>spring-osgi-extender</artifactId>
-                <version>${springOsgiVersion}</version>
-            </dependency>
-            -->
-
             <dependency>
                 <!-- OSGi-ready -->
                 <groupId>org.mortbay.jetty</groupId>
@@ -500,13 +485,6 @@
                 <!-- servlet api jar is versioned differently -->
                 <version>${jettyServletApiVersion}</version>
             </dependency>
-
-            <dependency>
-                <groupId>tomcat</groupId>
-                <artifactId>tomcat-util</artifactId>
-                <version>${tomcatVersion}</version>
-            </dependency>
-
             <!-- For unit tests only -->
             <dependency>
                 <groupId>org.apache.derby</groupId>
@@ -655,7 +633,6 @@
                 <artifactId>log4j</artifactId>
                 <version>${log4jVersion}</version>
             </dependency>
-
             <dependency>
                 <groupId>mockobjects</groupId>
                 <artifactId>mockobjects-core</artifactId>
@@ -676,37 +653,31 @@
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-ejb_2.1_spec</artifactId>
             <version>${geronimoSpecsVersion}-osgi</version>
-
         </dependency>
          <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-j2ee-connector_1.5_spec</artifactId>
             <version>${geronimoSpecsVersion}-osgi</version>
-
         </dependency>
          <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-j2ee-management_1.0_spec</artifactId>
             <version>${geronimoSpecsVersion}-osgi</version>
-
         </dependency>
          <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-jaxrpc_1.1_spec</artifactId>
             <version>${geronimoSpecsVersion}-osgi</version>
-
         </dependency>
          <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-jms_1.1_spec</artifactId>
             <version>${geronimoSpecsVersion}-osgi</version>
-
         </dependency>
          <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-jta_1.0.1B_spec</artifactId>
             <version>${geronimoSpecsVersion}-osgi</version>
-
         </dependency>
          <dependency>
             <groupId>javax.activation</groupId>
@@ -750,7 +721,6 @@
             <artifactId>jaxb-impl</artifactId>
             <version>${javaXmlBindVersion}-osgi</version>
         </dependency>
-
         <dependency>
             <groupId>javax.xml.soap</groupId>
             <artifactId>saaj-api</artifactId>
@@ -761,7 +731,6 @@
             <artifactId>saaj-impl</artifactId>
             <version>${saajVersion}-osgi</version>
         </dependency>
-
          <dependency>
             <groupId>net.java.dev.stax-utils</groupId>
             <artifactId>stax-utils</artifactId>
@@ -773,7 +742,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
          <dependency>
             <groupId>wsdl4j</groupId>
             <artifactId>wsdl4j</artifactId>
@@ -843,7 +811,6 @@
                     </exclusion>
                 </exclusions>
          </dependency>
-
         <dependency>
             <groupId>commons-jxpath</groupId>
             <artifactId>commons-jxpath</artifactId>
@@ -1125,7 +1092,6 @@
             <artifactId>jaxen</artifactId>
             <version>${jaxenVersion}-osgi</version>
         </dependency>
-
         <dependency>
             <groupId>org.apache.ws.security</groupId>
             <artifactId>wss4j</artifactId>
