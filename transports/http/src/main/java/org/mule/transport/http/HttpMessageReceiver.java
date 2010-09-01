@@ -121,6 +121,70 @@ public class HttpMessageReceiver extends TcpMessageReceiver
         message.setProperty(HttpConnector.HTTP_STATUS_PROPERTY, String.valueOf(HttpConstants.SC_NOT_ACCEPTABLE));
         return message;
     }
+    
+    protected Map parseHeaders(HttpRequest request, boolean enableCookies, Object cookieSpec) throws MalformedCookieException
+    {
+        final RequestLine requestLine = request.getRequestLine();
+        final Map<String, Object> headers = new HashMap<String, Object>();
+
+        for (Iterator<Header> rhi = request.getHeaderIterator(); rhi.hasNext();)
+        {
+            Header header = rhi.next();
+            String headerName = header.getName();
+            Object headerValue = header.getValue();
+
+            // Cookies are a special case because there may be more than one
+            // cookie.
+            if (HttpConnector.HTTP_COOKIES_PROPERTY.equals(headerName)
+                || HttpConstants.HEADER_COOKIE.equals(headerName))
+            {
+                if (enableCookies)
+                {
+                    headerName = HttpConnector.HTTP_COOKIES_PROPERTY;
+                    Cookie[] newCookies = CookieHelper.parseCookiesAsAServer(header);
+                    if (newCookies.length > 0)
+                    {
+                        Object oldCookies = headers.get(headerName);
+                        Object mergedCookies = CookieHelper.putAndMergeCookie(oldCookies, newCookies);
+                        headers.put(headerName, mergedCookies);
+                    }
+                }
+            }
+            else
+            {
+                // fix Mule headers?
+                if (headerName.startsWith("X-MULE"))
+                {
+                    headerName = headerName.substring(2);
+                }
+
+                // accept header & value
+                if (headers.containsKey(headerName))
+                {
+                    if (headers.get(headerName) instanceof String)
+                    {
+                        // concat
+                        headers.put(headerName, headers.get(headerName) + "," + headerValue);
+                    }
+                    else
+                    {
+                        // override
+                        headers.put(headerName, headerValue);
+                    }
+                }
+                else
+                {
+                    headers.put(headerName, headerValue);
+                }
+            }
+        }
+
+        headers.put(HttpConnector.HTTP_METHOD_PROPERTY, requestLine.getMethod());
+        headers.put(HttpConnector.HTTP_REQUEST_PROPERTY, requestLine.getUri());
+        headers.put(HttpConnector.HTTP_VERSION_PROPERTY, requestLine.getHttpVersion().toString());
+        headers.put(HttpConnector.HTTP_COOKIE_SPEC_PROPERTY, cookieSpec);
+        return headers;
+    }
 
     protected class HttpWorker implements Work, Expirable
     {
@@ -241,7 +305,7 @@ public class HttpMessageReceiver extends TcpMessageReceiver
         protected HttpResponse doRequest(HttpRequest request,
                                          RequestLine requestLine) throws IOException, MuleException
         {
-            Map headers = parseHeaders(request);
+            Map headers = parseHeaders(request, this.enableCookies, this.cookieSpec);
 
             // TODO Mule 2.0 generic way to set stream message adapter
             MessageAdapter adapter = buildStandardAdapter(request, headers);
@@ -437,54 +501,6 @@ public class HttpMessageReceiver extends TcpMessageReceiver
                     new DefaultMuleSession(service, connector.getMuleContext()), true));
             // The DefaultResponseTransformer will set the necessary headers
             return transformResponse(response);
-        }
-
-        protected Map parseHeaders(HttpRequest request) throws MalformedCookieException
-        {
-            final RequestLine requestLine = request.getRequestLine();
-            final Map<String, Object> headers = new HashMap<String, Object>();
-
-            for (Iterator<Header> rhi = request.getHeaderIterator(); rhi.hasNext();)
-            {
-                Header header = rhi.next();
-                String headerName = header.getName();
-                Object headerValue = header.getValue();
-
-                // Cookies are a special case because there may be more than one
-                // cookie.
-                if (HttpConnector.HTTP_COOKIES_PROPERTY.equals(headerName)
-                    || HttpConstants.HEADER_COOKIE.equals(headerName))
-                {
-                    if (enableCookies)
-                    {
-                        headerName = HttpConnector.HTTP_COOKIES_PROPERTY;
-                        Cookie[] newCookies = CookieHelper.parseCookiesAsAServer(header);
-                        if (newCookies.length > 0)
-                        {
-                            Object oldCookies = headers.get(headerName);
-                            Object mergedCookies = CookieHelper.putAndMergeCookie(oldCookies, newCookies);
-                            headers.put(headerName, mergedCookies);
-                        }
-                    }
-                }
-                else
-                {
-                    // fix Mule headers?
-                    if (headerName.startsWith("X-MULE"))
-                    {
-                        headerName = headerName.substring(2);
-                    }
-
-                    // accept header & value
-                    headers.put(headerName, headerValue);
-                }
-            }
-
-            headers.put(HttpConnector.HTTP_METHOD_PROPERTY, requestLine.getMethod());
-            headers.put(HttpConnector.HTTP_REQUEST_PROPERTY, requestLine.getUri());
-            headers.put(HttpConnector.HTTP_VERSION_PROPERTY, requestLine.getHttpVersion().toString());
-            headers.put(HttpConnector.HTTP_COOKIE_SPEC_PROPERTY, cookieSpec);
-            return headers;
         }
 
         protected void preRouteMessage(MuleMessage message) throws MessagingException

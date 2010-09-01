@@ -21,6 +21,11 @@ import org.mule.util.CollectionUtils;
 
 import com.mockobjects.dynamic.Mock;
 
+import java.util.Map;
+
+import org.apache.commons.httpclient.Header;
+import org.apache.commons.httpclient.HttpVersion;
+
 public class HttpMessageReceiverTestCase extends AbstractMessageReceiverTestCase
 {
     public MessageReceiver getMessageReceiver() throws Exception
@@ -38,5 +43,29 @@ public class HttpMessageReceiverTestCase extends AbstractMessageReceiverTestCase
         endpointBuilder.setResponseTransformers(CollectionUtils.singletonList(new MuleMessageToHttpResponse()));
         endpoint = muleContext.getRegistry().lookupEndpointFactory().getInboundEndpoint(endpointBuilder);
         return endpoint;
+    }
+    
+    public void testMultipleHeaderWithSameName() throws Exception
+    {
+        Mock mockComponent = new Mock(Service.class);
+        mockComponent.expectAndReturn("getResponseTransformer", null);
+        mockComponent.expectAndReturn("getResponseRouter", null);
+
+        HttpMessageReceiver receiver = new HttpMessageReceiver(endpoint.getConnector(),
+            (Service) mockComponent.proxy(), endpoint);
+
+        RequestLine requestLine = new RequestLine("GET", "http://localhost", HttpVersion.HTTP_1_1);
+        Header[] headers = new Header[4];
+        headers[0] = new Header("k2", "priority");
+        headers[1] = new Header("k1", "top");
+        headers[2] = new Header("k2", "always");
+        headers[3] = new Header("k2", "true");
+        HttpRequest request = new HttpRequest(requestLine, headers);
+
+        Map parsedHeaders = receiver.parseHeaders(request, true, "");
+
+        assertEquals(6, parsedHeaders.size());
+        assertEquals("top", parsedHeaders.get("k1"));
+        assertEquals("priority,always,true", parsedHeaders.get("k2"));
     }
 }
