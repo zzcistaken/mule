@@ -11,7 +11,8 @@ For more information, refer http://mule.mulesource.org/display/MULE2INTRO/Exampl
 | Running the example |
 +---------------------+
 Simply use the shell script (Unix/Linux) or batch file (Windows) provided in
-this directory to run the example.
+this directory to run the example.  Make sure that you have JAVA_HOME/bin in your
+path.  See http://www.mulesoft.org/jira/browse/MULE-4771 for more details.
 
 Alternatively, if you have added Mule to your executable path as recommended in
 Mule's README.txt, you can run the example from the command line as follows:
