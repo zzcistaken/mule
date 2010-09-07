@@ -10,6 +10,25 @@
     <cxf:connector name="cxf" defaultFrontend="simple" 
       configurationLocation="cxf-config.xml"/>
     
+    <spring:bean id="foo1" class="org.apache.cxf.interceptor.LoggingInInterceptor"/>
+  
+    <cxf:endpoint 
+      name="clientEndpoint" 
+      address="http://localhost:63081/services/greeter"
+      clientClass="org.apache.hello_world_soap_http.SOAPService" 
+      wsdlPort="SoapPort" 
+      wsdlLocation="classpath:/wsdl/hello_world.wsdl">
+      <cxf:inInterceptors>
+          <spring:ref bean="foo1"/>    
+          <spring:ref bean="foo3"/>    
+      </cxf:inInterceptors>
+      <cxf:outInterceptors>
+          <spring:bean id="foo2" class="org.apache.cxf.interceptor.LoggingOutInterceptor"/>    
+      </cxf:outInterceptors>
+    </cxf:endpoint>
+
+    <spring:bean id="foo3" class="org.apache.cxf.interceptor.LoggingInInterceptor"/>
+  
     <model name="test">
 
     </model>

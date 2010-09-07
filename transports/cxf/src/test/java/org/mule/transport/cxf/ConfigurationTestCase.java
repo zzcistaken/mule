@@ -10,11 +10,16 @@
 
 package org.mule.transport.cxf;
 
+import org.mule.api.endpoint.EndpointException;
+import org.mule.api.endpoint.InboundEndpoint;
+import org.mule.api.lifecycle.InitialisationException;
 import org.mule.api.transport.Connector;
+import org.mule.endpoint.EndpointURIEndpointBuilder;
 import org.mule.tck.FunctionalTestCase;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import org.apache.cxf.Bus;
 import org.apache.cxf.interceptor.Interceptor;
@@ -50,10 +55,19 @@ public class ConfigurationTestCase extends FunctionalTestCase
 
         assertTrue("Did not find logging interceptor.", found);
     }
+    
+    public void testSpringRefs() throws InitialisationException, EndpointException
+    {
+        EndpointURIEndpointBuilder builder = (EndpointURIEndpointBuilder) muleContext.getRegistry().get("clientEndpoint");
+        InboundEndpoint endpoint = builder.buildInboundEndpoint();
+        List inInterceptors = (List) endpoint.getProperties().get("inInterceptors");
+        
+        assertEquals(muleContext.getRegistry().get("foo1"), inInterceptors.get(0));
+        assertEquals(muleContext.getRegistry().get("foo3"), inInterceptors.get(1));
+    }
 
     protected String getConfigResources()
     {
         return "configuration-conf.xml";
     }
-
 }
