@@ -72,7 +72,7 @@
     </mule-send>
 
     <mule-send name="sendCustomerResponse"
-          expr="#{loanQuote}" endpoint="CustomerResponses">
+          expr="#{loanQuote}" endpoint="CustomerResponses" synchronous="false">
         <transition to="loanApproved" />
     </mule-send>
 

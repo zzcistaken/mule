@@ -43,9 +43,7 @@ public class JBpmFunctionalTestCase extends AbstractAsynchronousLoanBrokerTestCa
     @Override
     protected int getNumberOfRequests()
     {
-        // TODO There is a concurrency issue in ProcessMessageReceiver.generateEvent() which causes the test 
-        // to fail intermittently if this number is too high.  See comments on MULE-4890.
-        return 3;
+        return 100;
     }
 
     @Override
