@@ -22,8 +22,8 @@
     <dependencies>
         <dependency>
             <groupId>org.ibeans</groupId>
-            <artifactId>ibeans-core</artifactId>
-            <version>1.0-dev-20100813</version>
+            <artifactId>ibeans-support</artifactId>
+            <version>0.9</version>
             <exclusions>
                 <!-- we like slf4j -->
                 <exclusion>
@@ -32,6 +32,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
+
         <dependency>
             <groupId>org.mule</groupId>
             <artifactId>mule-core</artifactId>
@@ -65,6 +66,7 @@
             <artifactId>mule-module-xml</artifactId>
             <version>${version}</version>
         </dependency>
+        
         <dependency>
             <groupId>org.mule.modules</groupId>
             <artifactId>mule-module-json</artifactId>
@@ -78,6 +80,23 @@
             <version>${version}</version>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.mule.ibeans</groupId>
+            <artifactId>flickr-ibean</artifactId>
+            <version>1.0-beta-10-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- this is an ibeans dependency for ibeans core, but for some reason doesn't get
+             carried through -->
+        <dependency>
+            <groupId>org.mule.modules</groupId>
+            <artifactId>mule-module-xannotations</artifactId>
+            <version>3.0.0</version>
+            <scope>test</scope>
+        </dependency>
+
         <dependency>
             <groupId>mockobjects</groupId>
             <artifactId>mockobjects-core</artifactId>
@@ -90,4 +109,28 @@
             <artifactId>mockito-all</artifactId>
         </dependency>
     </dependencies>
+
+    <repositories>
+        <repository>
+            <id>annotationsx-repo</id>
+            <name>Annotation Extentions repository</name>
+            <url>http://repository.annotations.muleforge.org</url>
+        </repository>
+        <repository>
+            <id>ibeans-snapshot-repo</id>
+            <name>IBeans SNAPSHOT repository</name>
+            <url>http://snapshots.repository.ibeans.muleforge.org</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>ibeans-repo</id>
+            <name>IBeans repository</name>
+            <url>http://repository.ibeans.muleforge.org</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
 </project>
