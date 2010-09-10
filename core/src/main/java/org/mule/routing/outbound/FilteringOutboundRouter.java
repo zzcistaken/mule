@@ -73,7 +73,7 @@ public class FilteringOutboundRouter extends AbstractOutboundRouter implements T
             throw new RoutePathNotFoundException(CoreMessages.noEndpointsForRouter(), event, null);
         }
 
-        MessageProcessor ep = getRoute(0, message);
+        MessageProcessor ep = getRoute(0, event);
 
         try
         {
@@ -158,8 +158,7 @@ public class FilteringOutboundRouter extends AbstractOutboundRouter implements T
      * @throws CouldNotRouteOutboundMessageException if the template causs the
      *             endpoint to become illegal or malformed
      */
-    public MessageProcessor getRoute(int index, MuleMessage message)
-        throws CouldNotRouteOutboundMessageException
+    public MessageProcessor getRoute(int index, MuleEvent event) throws CouldNotRouteOutboundMessageException
     {
         if (!useTemplates)
         {
@@ -167,6 +166,7 @@ public class FilteringOutboundRouter extends AbstractOutboundRouter implements T
         }
         else
         {
+            MuleMessage message = event.getMessage();
             MessageProcessor mp = routes.get(index);
             if (!(mp instanceof ImmutableEndpoint))
             {
@@ -217,7 +217,7 @@ public class FilteringOutboundRouter extends AbstractOutboundRouter implements T
                     {
                         throw new CouldNotRouteOutboundMessageException(
                             CoreMessages.schemeCannotChangeForRouter(ep.getEndpointURI().getScheme(),
-                                newUri.getScheme()), message, ep);
+                                newUri.getScheme()), event, ep);
                     }
 
                     return new DynamicURIOutboundEndpoint(ep, newUri);
@@ -225,7 +225,7 @@ public class FilteringOutboundRouter extends AbstractOutboundRouter implements T
                 catch (EndpointException e)
                 {
                     throw new CouldNotRouteOutboundMessageException(
-                        CoreMessages.templateCausedMalformedEndpoint(uri, newUriString), message, ep, e);
+                        CoreMessages.templateCausedMalformedEndpoint(uri, newUriString), event, ep, e);
                 }
             }
         }

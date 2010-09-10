@@ -56,7 +56,7 @@ public abstract class AbstractRecipientList extends FilteringOutboundRouter impl
     {
         MuleMessage message = event.getMessage();
 
-        List recipients = this.getRecipients(message);
+        List recipients = this.getRecipients(event);
         List<MuleEvent> results = new ArrayList<MuleEvent>();
         
         if (enableCorrelation != CorrelationMode.NEVER)
@@ -184,6 +184,6 @@ public abstract class AbstractRecipientList extends FilteringOutboundRouter impl
         return true;
     }
 
-    protected abstract List getRecipients(MuleMessage message) throws CouldNotRouteOutboundMessageException;
+    protected abstract List getRecipients(MuleEvent event) throws CouldNotRouteOutboundMessageException;
 
 }

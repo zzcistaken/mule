@@ -45,7 +45,7 @@ public class ExceptionBasedRouter extends ExpressionRecipientList
         List recipients = null;
         try
         {
-            recipients = getRecipients(message);
+            recipients = getRecipients(event);
         }
         catch (RequiredValueException e)
         {
@@ -58,7 +58,7 @@ public class ExceptionBasedRouter extends ExpressionRecipientList
             recipients = new ArrayList(endpointsCount);
             for (int i = 0; i < endpointsCount; i++)
             {
-                recipients.add(getRoute(i, message));
+                recipients.add(getRoute(i, event));
             }
         }        
         
