@@ -31,7 +31,7 @@ import org.springframework.context.support.AbstractApplicationContext;
 
 public class SpringEventsTestCase extends FunctionalTestCase
 {
-    protected static final int DEFAULT_LATCH_TIMEOUT = 10000;
+    protected static final int DEFAULT_LATCH_TIMEOUT = 15000;
 
     private static final int NUMBER_OF_MESSAGES = 10;
     volatile AtomicInteger eventCounter1;
