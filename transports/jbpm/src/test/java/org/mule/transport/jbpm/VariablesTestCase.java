@@ -41,7 +41,7 @@ public class VariablesTestCase extends AbstractJbpmTestCase
             String processId = (String)bpms.getId(response.getPayload());
             assertNotNull(processId);
 
-            response = client.request("vm://queueA", 3000);
+            response = client.request("vm://queueA", 5000);
             assertNotNull(response);
             assertEquals("bar", response.getInboundProperty("foo"));
             assertEquals(0.75, response.getInboundProperty("fraction"));
@@ -52,7 +52,7 @@ public class VariablesTestCase extends AbstractJbpmTestCase
             props.put("time", new Date());
             response = client.send("bpm://variables/" + processId, "data", props);
             
-            response = client.request("vm://queueB", 3000);
+            response = client.request("vm://queueB", 5000);
             assertNotNull(response);
             assertEquals("bar", response.getInboundProperty("foo"));
             assertEquals(0.75, response.getInboundProperty("fraction"));
