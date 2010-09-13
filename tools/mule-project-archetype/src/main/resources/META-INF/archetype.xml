@@ -66,6 +66,12 @@ Which Mule transports do you want to include in this project?
             <file>src/main/java/package.vm</file>
             <output>src/main/java/${package}/${ModuleNameLower}/package.html</output>
         </template>
+        <template>
+            <file>src/main/java/org/mule/modules/Placeholder.vm</file>
+            <output>
+                src/main/java/${package}/${ModuleNameLower}/${ModuleName}.java
+            </output>
+        </template>
 
         <!-- Test Cases -->
         <template>
