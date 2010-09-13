@@ -5,7 +5,7 @@
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:file="http://www.mulesoft.org/schema/mule/file"
        xmlns:jms="http://www.mulesoft.org/schema/mule/jms"
-       xmlns:smtps="http://www.mulesoft.org/schema/mule/smtps"
+       xmlns:smtp="http://www.mulesoft.org/schema/mule/smtp"
        xmlns:email="http://www.mulesoft.org/schema/mule/email"
        xmlns:xm="http://www.mulesoft.org/schema/mule/xml"
     xsi:schemaLocation="
@@ -14,7 +14,7 @@
        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/3.0/mule.xsd
        http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/3.0/mule-file.xsd
        http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/3.0/mule-jms.xsd
-       http://www.mulesoft.org/schema/mule/smtps http://www.mulesoft.org/schema/mule/smtps/3.0/mule-smtps.xsd
+       http://www.mulesoft.org/schema/mule/smtp http://www.mulesoft.org/schema/mule/smtp/3.0/mule-smtp.xsd
        http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/email/3.0/mule-email.xsd
        http://www.mulesoft.org/schema/mule/xml http://www.mulesoft.org/schema/mule/xml/3.0/mule-xml.xsd">
 
@@ -113,14 +113,14 @@
             </when>
             
             <when expression="payload.throwable instanceof org.mule.api.lifecycle.FatalException" evaluator="groovy">
-                <smtps:outbound-endpoint user="${smtp.username}" password="${smtp.password}"
+                <smtp:outbound-endpoint user="${smtp.username}" password="${smtp.password}"
                                         host="${smtp.host}" port="${smtp.port}"
                                         to="${email.toAddress}" from="${email.fromAddress}"
                                         subject="${email.subject}">
                     <transformer ref="ErrorMessageToExceptionBean" />
                     <transformer ref="ExceptionBeanToXML" />
                     <email:string-to-email-transformer/>
-                 </smtps:outbound-endpoint>
+                 </smtp:outbound-endpoint>
             </when>
             
             <when expression="payload.throwable instanceof org.mule.example.errorhandler.exceptions.BusinessException" evaluator="groovy">
