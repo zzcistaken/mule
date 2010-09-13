@@ -35,5 +35,5 @@
         <test:component appendString=" Received"/>
 
         <vm:outbound-endpoint path="out"/>
-    </model>
+    </flow>
 </mule>
