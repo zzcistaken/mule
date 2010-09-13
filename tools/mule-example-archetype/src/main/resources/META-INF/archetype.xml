@@ -85,6 +85,12 @@
                 src/main/java/${package}/${ModuleNameLower}/package.html
             </output>
         </template>
+        <template>
+            <file>src/main/java/org/mule/example/Placeholder.vm</file>
+            <output>
+                src/main/java/${package}/${ModuleNameLower}/${ModuleName}.java
+            </output>
+        </template>
 
         <!-- Test Cases -->
         <template>
