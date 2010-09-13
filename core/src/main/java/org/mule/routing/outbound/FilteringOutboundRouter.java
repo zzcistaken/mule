@@ -100,22 +100,14 @@ public class FilteringOutboundRouter extends AbstractOutboundRouter implements T
         this.filter = filter;
     }
 
-    public boolean isMatch(MuleMessage message) throws RoutingException
+    public boolean isMatch(MuleMessage message) throws MuleException
     {
         if (getFilter() == null)
         {
             return true;
         }
         
-        try
-        {
-            message.applyTransformers(null, transformers);
-        }
-        catch (MuleException e)
-        {
-            throw new RoutingException(CoreMessages.transformFailedBeforeFilter(), message, 
-                routes.get(0), e);
-        }
+        message.applyTransformers(null, transformers);
         
         return getFilter().accept(message);
     }
