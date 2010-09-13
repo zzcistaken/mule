@@ -11,7 +11,7 @@
     <model>
         <service name="httpIn">
             <inbound>
-                <http:inbound-endpoint host="localhost" port="60201" synchronous="true">
+                <http:inbound-endpoint host="localhost" port="60227" synchronous="true">
                     <not-filter>
                         <http:request-wildcard-filter pattern="*xyz*"/>
                     </not-filter>
