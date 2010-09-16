@@ -10,7 +10,7 @@
 
 package org.mule.module.sxc;
 
-import org.mule.api.MessagingException;
+import org.mule.api.DefaultMuleException;
 import org.mule.api.MuleContext;
 import org.mule.api.MuleException;
 import org.mule.api.MuleMessage;
@@ -166,7 +166,7 @@ public class SxcFilteringOutboundRouter extends FilteringOutboundRouter
         }
         catch (Exception e)
         {
-            throw new MessagingException(message, e);
+            throw new DefaultMuleException(e);
         }
         finally
         {
