@@ -26,6 +26,7 @@ public class ServletNamespaceHandlerTestCase extends FunctionalTestCase
                 (ServletConnector) muleContext.getRegistry().lookupConnector("servletConnector");
 
         assertEquals("foo", connector.getServletUrl());
+        assertTrue(connector.isUseCachedHttpServletRequest());
     }
 
 }

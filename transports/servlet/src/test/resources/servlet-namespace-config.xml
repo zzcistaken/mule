@@ -8,6 +8,6 @@
        http://www.mulesource.org/schema/mule/core/2.2 http://www.mulesource.org/schema/mule/core/2.2/mule.xsd
        http://www.mulesource.org/schema/mule/servlet/2.2 http://www.mulesource.org/schema/mule/servlet/2.2/mule-servlet.xsd">
 
-    <servlet:connector name="servletConnector" servletUrl="foo"/>
+    <servlet:connector name="servletConnector" servletUrl="foo" useCachedHttpServletRequest="true"/>
 
 </mule>

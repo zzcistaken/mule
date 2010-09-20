@@ -37,6 +37,8 @@ public class ServletConnector extends AbstractConnector
     // The real URL that the servlet container is bound on.
     // If this is not set the wsdl may not be generated correctly
     protected String servletUrl;
+    
+    private boolean useCachedHttpServletRequest = false;
 
     public ServletConnector()
     {
@@ -100,5 +102,15 @@ public class ServletConnector extends AbstractConnector
     {
         EndpointURI uri = endpoint.getEndpointURI();
         return uri.getAddress();
+    }
+
+    public boolean isUseCachedHttpServletRequest()
+    {
+        return useCachedHttpServletRequest;
+    }
+
+    public void setUseCachedHttpServletRequest(boolean useCachedHttpServletRequest)
+    {
+        this.useCachedHttpServletRequest = useCachedHttpServletRequest;
     }
 }
