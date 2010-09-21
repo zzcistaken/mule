@@ -40,7 +40,10 @@ public class LoggingInterceptor extends AbstractEnvelopeInterceptor
     {
         if (logger.isInfoEnabled())
         {
-            logger.info("Finished event processing for " + event.getFlowConstruct().getName());
+            if (event != null)
+            {
+                logger.info("Finished event processing for " + event.getFlowConstruct().getName());
+            }
         }
         return event;
     }
