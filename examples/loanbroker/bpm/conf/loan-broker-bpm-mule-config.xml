@@ -47,7 +47,7 @@
                 <!-- Incoming message = CreditProfile -->
                 <inbound-endpoint ref="CreditProfiles" />
             </inbound>
-            <bpm:component process="LoanBroker" resource="loan-broker-process.jpdl.xml" />
+            <bpm:process processName="LoanBroker" processDefinition="loan-broker-process.jpdl.xml" />
         </service>
 
 

@@ -28,7 +28,7 @@
         </xsd:appinfo>
     </xsd:annotation>
 
-    <xsd:element name="component" type="processComponentType" substitutionGroup="mule:abstract-component">
+    <xsd:element name="process" type="processComponentType" substitutionGroup="mule:abstract-component">
         <xsd:annotation>
             <xsd:documentation>
                 A service backed by a process engine such as jBPM.
@@ -45,14 +45,14 @@
                         </xsd:documentation>
                     </xsd:annotation>
                 </xsd:attribute>
-                <xsd:attribute name="process" type="xsd:string" use="required">
+                <xsd:attribute name="processName" type="xsd:string" use="required">
                     <xsd:annotation>
                         <xsd:documentation>
                             The logical name of the process.  This is used to look up the running process instance from the BPMS.
                         </xsd:documentation>
                     </xsd:annotation>
                 </xsd:attribute>
-                <xsd:attribute name="resource" type="xsd:string" use="required">
+                <xsd:attribute name="processDefinition" type="xsd:string" use="required">
                     <xsd:annotation>
                         <xsd:documentation>
                             The resource containing the process definition.  This will be used to deploy the process to the BPMS.
@@ -113,7 +113,7 @@
         <xsd:complexContent>
             <xsd:extension base="mule:abstractExtensionType">
 		         <xsd:sequence>
-		         	<xsd:element name="process" type="processType" minOccurs="0" maxOccurs="unbounded">
+		         	<xsd:element name="process-definition" type="processType" minOccurs="0" maxOccurs="unbounded">
 		              <xsd:annotation>
 		                  <xsd:documentation>
 		                  	A process definition to be loaded into jBPM at startup.
@@ -152,7 +152,7 @@
         <xsd:complexContent>
             <xsd:extension base="abstractBpmConnectorType">
                 <xsd:sequence>
-                	<xsd:element name="process" type="processType" maxOccurs="unbounded">
+                	<xsd:element name="process-definition" type="processType" maxOccurs="unbounded">
 	                    <xsd:annotation>
 	                        <xsd:documentation>
 	                        	A process definition to be loaded into jBPM when the connector is initialized.

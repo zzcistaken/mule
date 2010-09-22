@@ -43,9 +43,9 @@ public class BpmNamespaceHandler extends AbstractMuleNamespaceHandler
         registerConnectorDefinitionParser(ProcessConnector.class);
         registerBeanDefinitionParser("outbound-router", new BpmOutboundRouterDefinitionParser());
         
-        registerBeanDefinitionParser("component", new ProcessComponentDefinitionParser());
+        registerBeanDefinitionParser("process", new ProcessComponentDefinitionParser());
 
-        registerMuleBeanDefinitionParser("process", new ChildMapEntryDefinitionParser("processDefinitions", "name", "resource"));
+        registerMuleBeanDefinitionParser("process-definition", new ChildMapEntryDefinitionParser("processDefinitions", "name", "resource"));
 
         try
         {
@@ -82,7 +82,8 @@ public class BpmNamespaceHandler extends AbstractMuleNamespaceHandler
         public ProcessComponentDefinitionParser()
         {
             super(ProcessComponent.class);
-            addAlias("process", "name");
+            addAlias("processName", "name");
+            addAlias("processDefinition", "resource");
         }
     }
 }

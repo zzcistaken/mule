@@ -21,21 +21,21 @@
             <inbound>
                 <vm:inbound-endpoint path="simple" exchange-pattern="request-response"/>
             </inbound>
-            <bpm:component process="simple" resource="simple-process.jpdl.xml" />
+            <bpm:process processName="simple" processDefinition="simple-process.jpdl.xml" />
         </service>
 
         <service name="MessageProcess">
             <inbound>
                 <vm:inbound-endpoint path="message" exchange-pattern="request-response"/>
             </inbound>
-            <bpm:component process="message" resource="message-process.jpdl.xml" />
+            <bpm:process processName="message" processDefinition="message-process.jpdl.xml" />
         </service>
 
         <service name="MessageExceptionProcess">
             <inbound>
                 <vm:inbound-endpoint path="exception" exchange-pattern="request-response"/>
             </inbound>
-            <bpm:component process="exception" resource="message-exception-process.jpdl.xml" />
+            <bpm:process processName="exception" processDefinition="message-exception-process.jpdl.xml" />
         </service>
 
         <service name="ForkedProcess">
@@ -43,14 +43,14 @@
                 <vm:inbound-endpoint path="fork" exchange-pattern="request-response"/>
                 <vm:inbound-endpoint path="fork-reply" exchange-pattern="one-way"/>
             </inbound>
-            <bpm:component process="fork" resource="fork-process.jpdl.xml" />
+            <bpm:process processName="fork" processDefinition="fork-process.jpdl.xml" />
         </service>
 
         <service name="VariablesProcess">
             <inbound>
                 <vm:inbound-endpoint path="variables" exchange-pattern="request-response"/>
             </inbound>
-            <bpm:component process="variables" resource="variables-process.jpdl.xml" />
+            <bpm:process processName="variables" processDefinition="variables-process.jpdl.xml" />
         </service>
 
         <service name="ServiceA" initialState="paused">
