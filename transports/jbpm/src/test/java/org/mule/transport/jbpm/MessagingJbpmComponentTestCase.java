@@ -16,11 +16,14 @@ import org.mule.tck.FunctionalTestCase;
 import org.mule.transport.bpm.BPMS;
 import org.mule.transport.bpm.ProcessConnector;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Tests the connector against jBPM with a process which generates 
  * a Mule message and processes its response. jBPM is instantiated by Spring. 
  */
-public class MessagingJbpmTestCase extends FunctionalTestCase
+public class MessagingJbpmComponentTestCase extends FunctionalTestCase
 {
     static {
            System.setProperty( PROPERTY_MULE_TEST_TIMEOUT, "300");
@@ -28,20 +31,19 @@ public class MessagingJbpmTestCase extends FunctionalTestCase
 
     protected String getConfigResources()
     {
-        return "jbpm-functional-test.xml";
+        return "jbpm-component-functional-test.xml";
     }
 
     public void testSendMessageProcess() throws Exception
     {
-        ProcessConnector connector = (ProcessConnector) muleContext.getRegistry().lookupConnector("bpmConnector");
-        BPMS bpms = connector.getBpms();
+        BPMS bpms = muleContext.getRegistry().lookupObject(BPMS.class);
         assertNotNull(bpms);
 
         MuleClient client = new MuleClient(muleContext);
         try
         {
             // Create a new process.
-            MuleMessage response = client.send("bpm://message", "data", null);
+            MuleMessage response = client.send("vm://message", "data", null);
             Object process = response.getPayload();
             assertTrue(bpms.isProcess(process)); 
 
@@ -51,7 +53,9 @@ public class MessagingJbpmTestCase extends FunctionalTestCase
             assertEquals("waitForResponse", bpms.getState(process));
 
             // Advance the process one step.
-            response = client.send("bpm://message/" + processId, "data", null);
+            Map props = new HashMap<String, Object>();
+            props.put(ProcessConnector.PROPERTY_PROCESS_ID, processId);
+            response = client.send("vm://message", "data", props);
             process = response.getPayload();
 
             // The process should have ended.

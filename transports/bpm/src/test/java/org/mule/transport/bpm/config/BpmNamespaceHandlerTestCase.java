@@ -11,6 +11,7 @@ package org.mule.transport.bpm.config;
 
 import org.mule.tck.FunctionalTestCase;
 import org.mule.transport.bpm.BPMS;
+import org.mule.transport.bpm.ProcessComponent;
 import org.mule.transport.bpm.ProcessConnector;
 import org.mule.transport.bpm.test.TestBpms;
 
@@ -25,7 +26,7 @@ public class BpmNamespaceHandlerTestCase extends FunctionalTestCase
         return "bpm-namespace-config.xml";
     }
 
-    public void testDefaults() throws Exception
+    public void testDefaultsConnector() throws Exception
     {
         ProcessConnector c = (ProcessConnector)muleContext.getRegistry().lookupConnector("bpmConnectorDefaults");
         assertNotNull(c);
@@ -42,7 +43,22 @@ public class BpmNamespaceHandlerTestCase extends FunctionalTestCase
         assertTrue(c.isStarted());
     }
     
-    public void testConfig() throws Exception
+    public void testDefaultsComponent() throws Exception
+    {
+        ProcessComponent c = (ProcessComponent) muleContext.getRegistry().lookupService("Service1").getComponent();
+        assertNotNull(c);
+        
+        assertEquals("test.def", c.getResource());
+        assertNull(c.getProcessIdField());
+        
+        // BPMS gets set explicitly in config
+        BPMS bpms = c.getBpms();
+        assertNotNull(bpms);
+        assertEquals(TestBpms.class, bpms.getClass());
+        assertEquals("bar", ((TestBpms) bpms).getFoo());
+    }
+    
+    public void testConfigConnector() throws Exception
     {
         ProcessConnector c = (ProcessConnector)muleContext.getRegistry().lookupConnector("bpmConnector1");
         assertNotNull(c);
@@ -58,4 +74,20 @@ public class BpmNamespaceHandlerTestCase extends FunctionalTestCase
         assertTrue(c.isConnected());
         assertTrue(c.isStarted());
     }    
+
+    public void testConfigComponent() throws Exception
+    {
+        ProcessComponent c = (ProcessComponent) muleContext.getRegistry().lookupService("Service2").getComponent();
+        assertNotNull(c);
+        
+        assertEquals("test.def", c.getResource());
+        assertEquals("myId", c.getProcessIdField());
+        
+        // BPMS gets set implicitly via MuleRegistry.lookupObject(BPMS.class)
+        BPMS bpms = c.getBpms();
+        assertNotNull(bpms);
+        assertEquals(TestBpms.class, bpms.getClass());
+        assertEquals("bar", ((TestBpms) bpms).getFoo());
+    }
+    
 }

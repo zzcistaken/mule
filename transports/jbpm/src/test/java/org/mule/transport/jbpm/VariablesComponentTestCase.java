@@ -20,30 +20,25 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class VariablesTestCase extends FunctionalTestCase
+public class VariablesComponentTestCase extends FunctionalTestCase
 {
-    static
-    {
-        System.setProperty(PROPERTY_MULE_TEST_TIMEOUT, "300");
-    }
-
     @Override
     protected String getConfigResources()
     {
-        return "jbpm-functional-test.xml";
+        return "jbpm-component-functional-test.xml";
     }
 
     public void testVariables() throws Exception
     {
-        ProcessConnector connector = (ProcessConnector) muleContext.getRegistry().lookupConnector("bpmConnector");
-        BPMS bpms = connector.getBpms();
+        BPMS bpms = muleContext.getRegistry().lookupObject(BPMS.class);
         assertNotNull(bpms);
+
         MuleClient client = new MuleClient(muleContext);
         try
         {
             Map<String, Object> props = new HashMap<String, Object>();
             props.put("foo", "bar");
-            MuleMessage response = client.send("bpm://variables", "data", props);
+            MuleMessage response = client.send("vm://variables", "data", props);
             String processId = (String)bpms.getId(response.getPayload());
             assertNotNull(processId);
 
@@ -54,9 +49,10 @@ public class VariablesTestCase extends FunctionalTestCase
 
             // Advance the process
             props = new HashMap<String, Object>();
+            props.put(ProcessConnector.PROPERTY_PROCESS_ID, processId);
             props.put("straw", "berry");
             props.put("time", new Date());
-            response = client.send("bpm://variables/" + processId, "data", props);
+            response = client.send("vm://variables", "data", props);
             
             response = client.request("vm://queueB", 3000);
             assertNotNull(response);

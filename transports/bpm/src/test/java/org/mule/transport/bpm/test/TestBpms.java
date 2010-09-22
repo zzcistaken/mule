@@ -81,4 +81,14 @@ public class TestBpms implements BPMS
     {
         this.foo = foo;
     }
+
+    public void deployProcess(String resource) throws Exception
+    {
+        // nop
+    }
+
+    public void undeployProcess(String resource) throws Exception
+    {
+        // nop
+    }
 }

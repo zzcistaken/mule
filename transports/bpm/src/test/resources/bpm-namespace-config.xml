@@ -17,4 +17,20 @@
         <spring:property name="foo" value="bar"/>
     </spring:bean>
 
+	<model>
+		<service name="Service1">
+			<inbound>
+				<inbound-endpoint address="test://in1" />
+			</inbound>
+		    <bpm:component bpms-ref="testBpms" process="test" resource="test.def" />
+		</service>
+
+		<service name="Service2">
+			<inbound>
+				<inbound-endpoint address="test://in2" />
+			</inbound>
+		    <bpm:component process="test" resource="test.def" processIdField="myId" />
+		</service>
+	</model>
+
 </mule>

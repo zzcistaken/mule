@@ -12,13 +12,14 @@ package org.mule.transport.jbpm;
 
 import org.mule.api.MuleMessage;
 import org.mule.module.client.MuleClient;
+import org.mule.tck.FunctionalTestCase;
 import org.mule.transport.bpm.BPMS;
 import org.mule.transport.bpm.ProcessConnector;
 
 /**
  * Tests the connector against jBPM with a simple process.
  */
-public class SimpleJbpmTestCase extends AbstractJbpmTestCase
+public class SimpleJbpmTestCase extends FunctionalTestCase
 {
 
     protected String getConfigResources()
@@ -28,15 +29,16 @@ public class SimpleJbpmTestCase extends AbstractJbpmTestCase
 
     public void testSimpleProcess() throws Exception 
     {
-        MuleMessage response;
-        Object process;
+        ProcessConnector connector = (ProcessConnector) muleContext.getRegistry().lookupConnector("bpmConnector");
         BPMS bpms = connector.getBpms();
+        assertNotNull(bpms);
+
         MuleClient client = new MuleClient(muleContext);
         try
         {
             // Create a new process.
-            response = client.send("bpm://simple", "data", null);
-            process = response.getPayload();
+            MuleMessage response = client.send("bpm://simple", "data", null);
+            Object process = response.getPayload();
 
             String processId = (String)bpms.getId(process);
             // The process should be started and in a wait state.
@@ -58,17 +60,17 @@ public class SimpleJbpmTestCase extends AbstractJbpmTestCase
 
     public void testSimpleProcessWithParameters() throws Exception
     {
-        MuleMessage response;
-        Object process;
+        ProcessConnector connector = (ProcessConnector) muleContext.getRegistry().lookupConnector("bpmConnector");
         BPMS bpms = connector.getBpms();
+
         MuleClient client = new MuleClient(muleContext);
         try
         {
             // Create a new process.
-            response = client.send("bpm://?" +
+            MuleMessage response = client.send("bpm://?" +
                                    ProcessConnector.PROPERTY_ACTION + "=" + ProcessConnector.ACTION_START +
                                    "&" + ProcessConnector.PROPERTY_PROCESS_TYPE + "=simple", "data", null);
-            process = response.getPayload();
+            Object process = response.getPayload();
 
             // The process should be started and in a wait state.
             Object processId = bpms.getId(process);

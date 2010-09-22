@@ -12,9 +12,11 @@ package org.mule.transport.bpm.config;
 import org.mule.config.spring.handlers.AbstractMuleNamespaceHandler;
 import org.mule.config.spring.parsers.collection.ChildMapEntryDefinitionParser;
 import org.mule.config.spring.parsers.generic.MuleOrphanDefinitionParser;
+import org.mule.config.spring.parsers.specific.ComponentDefinitionParser;
 import org.mule.config.spring.parsers.specific.RouterDefinitionParser;
 import org.mule.endpoint.URIBuilder;
 import org.mule.routing.outbound.EndpointSelector;
+import org.mule.transport.bpm.ProcessComponent;
 import org.mule.transport.bpm.ProcessConnector;
 import org.mule.transport.bpm.jbpm.JBpmConnector;
 
@@ -29,16 +31,30 @@ public class BpmNamespaceHandler extends AbstractMuleNamespaceHandler
 {
     public static final String PROCESS = "process";
 
+    /** 
+     * Allows simple configuration of jBPM from the generic "bpm" namespace.  Otherwise you would need to include both the 
+     * "bpm" and "jbpm" namespaces in your config, which is not really justified.
+     */
+    public static final String JBPM_WRAPPER_CLASS = "org.mule.transport.jbpm.Jbpm";
+
     public void init()
     {
         registerStandardTransportEndpoints(ProcessConnector.PROTOCOL, new String[]{PROCESS}).addAlias(PROCESS, URIBuilder.PATH);
         registerConnectorDefinitionParser(ProcessConnector.class);
         registerBeanDefinitionParser("outbound-router", new BpmOutboundRouterDefinitionParser());
-        // TODO MULE-3205
-        //registerBeanDefinitionParser("component", new ComponentDefinitionParser(ProcessComponent.class));
+        
+        registerBeanDefinitionParser("component", new ProcessComponentDefinitionParser());
 
         registerMuleBeanDefinitionParser("process", new ChildMapEntryDefinitionParser("processDefinitions", "name", "resource"));
 
+        try
+        {
+            registerBeanDefinitionParser("jbpm", new MuleOrphanDefinitionParser(Class.forName(JBPM_WRAPPER_CLASS), true));
+        }
+        catch (ClassNotFoundException e)
+        {
+            logger.warn(e.getMessage());
+        }
         registerBeanDefinitionParser("jbpm-connector", new MuleOrphanDefinitionParser(JBpmConnector.class, true));
     }
 
@@ -58,8 +74,16 @@ public class BpmNamespaceHandler extends AbstractMuleNamespaceHandler
             builder.addPropertyValue("evaluator", "header");
             builder.addPropertyValue("expression", ProcessConnector.PROPERTY_ENDPOINT);
             super.parseChild(element, parserContext, builder);
+        }        
+    }
+    
+    class ProcessComponentDefinitionParser extends ComponentDefinitionParser
+    {
+        public ProcessComponentDefinitionParser()
+        {
+            super(ProcessComponent.class);
+            addAlias("process", "name");
         }
-        
     }
 }
 

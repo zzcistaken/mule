@@ -10,6 +10,7 @@
 
 package org.mule.transport.bpm;
 
+import org.mule.MessageExchangePattern;
 import org.mule.api.MuleContext;
 import org.mule.api.MuleException;
 import org.mule.api.MuleMessage;
@@ -210,7 +211,7 @@ public class ProcessConnector extends AbstractConnector implements MessageServic
     public MuleMessage generateMessage(String endpoint,
                                       Object payloadObject,
                                       Map messageProperties,
-                                      boolean synchronous) throws Exception
+                                      MessageExchangePattern mep) throws Exception
     {
         String processName = (String)messageProperties.get(ProcessConnector.PROPERTY_PROCESS_TYPE);
         Object processId = messageProperties.get(ProcessConnector.PROPERTY_PROCESS_ID);
@@ -224,9 +225,9 @@ public class ProcessConnector extends AbstractConnector implements MessageServic
                                 + ", processId = " + processId));
         }
 
-        logger.debug("Generating Mule message for process name = " + processName + " id = " + processId + ", synchronous = " + synchronous);
+        logger.debug("Generating Mule message for process name = " + processName + " id = " + processId + ", synchronous = " + mep.hasResponse());
         
-        if (synchronous)
+        if (mep.hasResponse())
         {
             // Send the process-generated Mule message synchronously.
             return receiver.generateSynchronousEvent(endpoint, payloadObject, messageProperties);

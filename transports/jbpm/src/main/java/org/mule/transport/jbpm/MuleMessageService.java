@@ -10,6 +10,7 @@
 
 package org.mule.transport.jbpm;
 
+import org.mule.MessageExchangePattern;
 import org.mule.api.MuleMessage;
 import org.mule.transport.bpm.MessageService;
 import org.mule.transport.bpm.ProcessConnector;
@@ -31,8 +32,8 @@ public class MuleMessageService implements MessageService
     public MuleMessage generateMessage(String endpoint,
                                        Object payloadObject,
                                        Map messageProperties,
-                                       boolean synchronous) throws Exception
+                                       MessageExchangePattern mep) throws Exception
     {
-        return messageService.generateMessage(endpoint, payloadObject, messageProperties, synchronous);
+        return messageService.generateMessage(endpoint, payloadObject, messageProperties, mep);
     }
 }
