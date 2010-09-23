@@ -14,7 +14,7 @@ import org.mule.MessageExchangePattern;
 import org.mule.api.MuleMessage;
 import org.mule.api.config.MuleProperties;
 import org.mule.transport.bpm.MessageService;
-import org.mule.transport.bpm.ProcessConnector;
+import org.mule.transport.bpm.Process;
 import org.mule.util.ClassUtils;
 
 import java.util.HashMap;
@@ -86,10 +86,10 @@ public class MuleSendActivity extends JpdlActivity implements EventListener
 
         if (payloadExpression == null)
         {
-            payloadObject = execution.getVariable(ProcessConnector.PROCESS_VARIABLE_DATA);
+            payloadObject = execution.getVariable(Process.PROCESS_VARIABLE_DATA);
             if (payloadObject == null)
             {
-                payloadObject = execution.getVariable(ProcessConnector.PROCESS_VARIABLE_INCOMING);
+                payloadObject = execution.getVariable(Process.PROCESS_VARIABLE_INCOMING);
             }
         }
         else
@@ -107,8 +107,8 @@ public class MuleSendActivity extends JpdlActivity implements EventListener
 
         Map props = new HashMap();
 
-        props.put(ProcessConnector.PROPERTY_PROCESS_TYPE, ((ExecutionImpl) execution).getProcessDefinition().getName());
-        props.put(ProcessConnector.PROPERTY_PROCESS_ID, execution.getId());
+        props.put(Process.PROPERTY_PROCESS_TYPE, ((ExecutionImpl) execution).getProcessDefinition().getName());
+        props.put(Process.PROPERTY_PROCESS_ID, execution.getId());
         String state = Jbpm.getState(execution.getProcessInstance());
         props.put("MULE_BPM_PROCESS_STATE", state);
         log.debug("process state: " + state);        

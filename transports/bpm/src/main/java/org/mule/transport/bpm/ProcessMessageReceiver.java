@@ -100,13 +100,13 @@ public class ProcessMessageReceiver extends AbstractMessageReceiver
 
         // Set correlation properties in SESSION scope so that they get propagated to response messages.
         RequestContext.setEvent(event);
-        if (messageProperties.get(ProcessConnector.PROPERTY_PROCESS_TYPE) != null)
+        if (messageProperties.get(Process.PROPERTY_PROCESS_TYPE) != null)
         {
-            event.getMessage().setSessionProperty(ProcessConnector.PROPERTY_PROCESS_TYPE, messageProperties.get(ProcessConnector.PROPERTY_PROCESS_TYPE));
+            event.getMessage().setSessionProperty(Process.PROPERTY_PROCESS_TYPE, messageProperties.get(Process.PROPERTY_PROCESS_TYPE));
         }
-        if (messageProperties.get(ProcessConnector.PROPERTY_PROCESS_ID) != null)
+        if (messageProperties.get(Process.PROPERTY_PROCESS_ID) != null)
         {
-            event.getMessage().setSessionProperty(ProcessConnector.PROPERTY_PROCESS_ID, messageProperties.get(ProcessConnector.PROPERTY_PROCESS_ID));
+            event.getMessage().setSessionProperty(Process.PROPERTY_PROCESS_ID, messageProperties.get(Process.PROPERTY_PROCESS_ID));
         }
         
         MuleEvent resultEvent = ep.process(event);

@@ -14,6 +14,7 @@ import org.mule.api.MuleMessage;
 import org.mule.module.client.MuleClient;
 import org.mule.tck.FunctionalTestCase;
 import org.mule.transport.bpm.BPMS;
+import org.mule.transport.bpm.Process;
 import org.mule.transport.bpm.ProcessConnector;
 
 /**
@@ -70,8 +71,8 @@ public class SimpleJbpmTestCase extends FunctionalTestCase
         {
             // Create a new process.
             MuleMessage response = client.send("bpm://?" +
-                                   ProcessConnector.PROPERTY_ACTION + "=" + ProcessConnector.ACTION_START +
-                                   "&" + ProcessConnector.PROPERTY_PROCESS_TYPE + "=simple", "data", null);
+                                   Process.PROPERTY_ACTION + "=" + Process.ACTION_START +
+                                   "&" + Process.PROPERTY_PROCESS_TYPE + "=simple", "data", null);
             Object process = response.getPayload();
 
             // The process should be started and in a wait state.
@@ -81,9 +82,9 @@ public class SimpleJbpmTestCase extends FunctionalTestCase
 
             // Advance the process one step.
             response = client.send("bpm://?" +
-                                   ProcessConnector.PROPERTY_ACTION + "=" + ProcessConnector.ACTION_ADVANCE +
-                                   "&" + ProcessConnector.PROPERTY_PROCESS_TYPE + "=simple&" +
-                                   ProcessConnector.PROPERTY_PROCESS_ID + "=" + processId, "data", null);
+                                   Process.PROPERTY_ACTION + "=" + Process.ACTION_ADVANCE +
+                                   "&" + Process.PROPERTY_PROCESS_TYPE + "=simple&" +
+                                   Process.PROPERTY_PROCESS_ID + "=" + processId, "data", null);
             process = response.getPayload();
 
             // The process should have ended.

@@ -16,6 +16,7 @@ import org.mule.config.spring.parsers.specific.ComponentDefinitionParser;
 import org.mule.config.spring.parsers.specific.RouterDefinitionParser;
 import org.mule.endpoint.URIBuilder;
 import org.mule.routing.outbound.EndpointSelector;
+import org.mule.transport.bpm.Process;
 import org.mule.transport.bpm.ProcessComponent;
 import org.mule.transport.bpm.ProcessConnector;
 import org.mule.transport.bpm.jbpm.JBpmConnector;
@@ -73,7 +74,7 @@ public class BpmNamespaceHandler extends AbstractMuleNamespaceHandler
         protected void parseChild(Element element, ParserContext parserContext, BeanDefinitionBuilder builder)
         {
             builder.addPropertyValue("evaluator", "header");
-            builder.addPropertyValue("expression", ProcessConnector.PROPERTY_ENDPOINT);
+            builder.addPropertyValue("expression", Process.PROPERTY_ENDPOINT);
             super.parseChild(element, parserContext, builder);
         }        
     }

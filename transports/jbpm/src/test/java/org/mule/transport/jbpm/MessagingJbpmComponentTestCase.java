@@ -14,7 +14,7 @@ import org.mule.api.MuleMessage;
 import org.mule.module.client.MuleClient;
 import org.mule.tck.FunctionalTestCase;
 import org.mule.transport.bpm.BPMS;
-import org.mule.transport.bpm.ProcessConnector;
+import org.mule.transport.bpm.Process;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -50,7 +50,7 @@ public class MessagingJbpmComponentTestCase extends FunctionalTestCase
 
             // Advance the process one step.
             Map props = new HashMap<String, Object>();
-            props.put(ProcessConnector.PROPERTY_PROCESS_ID, processId);
+            props.put(Process.PROPERTY_PROCESS_ID, processId);
             response = client.send("vm://message", "data", props);
             process = response.getPayload();
 

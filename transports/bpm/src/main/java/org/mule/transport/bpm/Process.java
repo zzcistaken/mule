@@ -54,7 +54,7 @@ public class Process implements Initialisable, Disposable, MessageService
     /** This field will be used to correlate messages with processes. */
     protected final String processIdField;
 
-    // Needed for exception handling
+    /** Needed for exception handling. */
     private FlowConstruct flowConstruct;
     
     public static final String BPM_PROPERTY_PREFIX = "BPM_";
@@ -137,13 +137,13 @@ public class Process implements Initialisable, Disposable, MessageService
             if (payload != null && !(payload instanceof NullPayload))
             {
                 // Store the message's payload as a process variable.
-                processVariables.put(ProcessConnector.PROCESS_VARIABLE_INCOMING, payload);
+                processVariables.put(PROCESS_VARIABLE_INCOMING, payload);
 
                 // Store the endpoint on which the message was received as a process variable.
                 String originatingEndpoint = event.getMessage().getInboundProperty(MuleProperties.MULE_ORIGINATING_ENDPOINT_PROPERTY);
                 if (StringUtils.isNotEmpty(originatingEndpoint))
                 {
-                    processVariables.put(ProcessConnector.PROCESS_VARIABLE_INCOMING_SOURCE, originatingEndpoint);
+                    processVariables.put(PROCESS_VARIABLE_INCOMING_SOURCE, originatingEndpoint);
                 }
             }
         }
@@ -151,7 +151,7 @@ public class Process implements Initialisable, Disposable, MessageService
         String processIdField = getProcessIdField();
         if (StringUtils.isEmpty(processIdField))
         {
-            processIdField = ProcessConnector.PROPERTY_PROCESS_ID;
+            processIdField = PROPERTY_PROCESS_ID;
         }
 
         Object processId;
@@ -167,18 +167,18 @@ public class Process implements Initialisable, Disposable, MessageService
         processVariables.remove(processIdField);
 
         // Default action is "advance"
-        String action = event.getMessage().getInvocationProperty(ProcessConnector.PROPERTY_ACTION, ProcessConnector.ACTION_ADVANCE);
-        processVariables.remove(ProcessConnector.PROPERTY_ACTION);
+        String action = event.getMessage().getInvocationProperty(PROPERTY_ACTION, ACTION_ADVANCE);
+        processVariables.remove(PROPERTY_ACTION);
 
-        Object transition = event.getMessage().getInvocationProperty(ProcessConnector.PROPERTY_TRANSITION);
-        processVariables.remove(ProcessConnector.PROPERTY_TRANSITION);
+        Object transition = event.getMessage().getInvocationProperty(PROPERTY_TRANSITION);
+        processVariables.remove(PROPERTY_TRANSITION);
 
         // //////////////////////////////////////////////////////////////////////
 
         logger.debug("Message received: payload = " + event.getMessage().getPayload().getClass().getName() + " processType = " + name + " processId = " + processId + " action = " + action);
         
         // Start a new process.
-        if (processId == null || action.equals(ProcessConnector.ACTION_START))
+        if (processId == null || action.equals(ACTION_START))
         {
             process = getBpms().startProcess(name, transition, processVariables);
             if ((process != null) && logger.isInfoEnabled())
@@ -188,7 +188,7 @@ public class Process implements Initialisable, Disposable, MessageService
         }
 
         // Don't advance the process, just update the process variables.
-        else if (action.equals(ProcessConnector.ACTION_UPDATE))
+        else if (action.equals(ACTION_UPDATE))
         {
             if (processId != null)
             {
@@ -205,7 +205,7 @@ public class Process implements Initialisable, Disposable, MessageService
         }
 
         // Abort the running process (end abnormally).
-        else if (action.equals(ProcessConnector.ACTION_ABORT))
+        else if (action.equals(ACTION_ABORT))
         {
             if (processId != null)
             {
@@ -275,13 +275,13 @@ public class Process implements Initialisable, Disposable, MessageService
 
         // Set correlation properties in SESSION scope so that they get propagated to response messages.
         RequestContext.setEvent(event);
-        if (messageProperties.get(ProcessConnector.PROPERTY_PROCESS_TYPE) != null)
+        if (messageProperties.get(PROPERTY_PROCESS_TYPE) != null)
         {
-            event.getMessage().setSessionProperty(ProcessConnector.PROPERTY_PROCESS_TYPE, messageProperties.get(ProcessConnector.PROPERTY_PROCESS_TYPE));
+            event.getMessage().setSessionProperty(PROPERTY_PROCESS_TYPE, messageProperties.get(PROPERTY_PROCESS_TYPE));
         }
-        if (messageProperties.get(ProcessConnector.PROPERTY_PROCESS_ID) != null)
+        if (messageProperties.get(PROPERTY_PROCESS_ID) != null)
         {
-            event.getMessage().setSessionProperty(ProcessConnector.PROPERTY_PROCESS_ID, messageProperties.get(ProcessConnector.PROPERTY_PROCESS_ID));
+            event.getMessage().setSessionProperty(PROPERTY_PROCESS_ID, messageProperties.get(PROPERTY_PROCESS_ID));
         }
         
         MuleEvent resultEvent = ep.process(event);

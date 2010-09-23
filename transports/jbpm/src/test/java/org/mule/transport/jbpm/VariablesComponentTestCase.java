@@ -14,7 +14,7 @@ import org.mule.api.MuleMessage;
 import org.mule.module.client.MuleClient;
 import org.mule.tck.FunctionalTestCase;
 import org.mule.transport.bpm.BPMS;
-import org.mule.transport.bpm.ProcessConnector;
+import org.mule.transport.bpm.Process;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -49,7 +49,7 @@ public class VariablesComponentTestCase extends FunctionalTestCase
 
             // Advance the process
             props = new HashMap<String, Object>();
-            props.put(ProcessConnector.PROPERTY_PROCESS_ID, processId);
+            props.put(Process.PROPERTY_PROCESS_ID, processId);
             props.put("straw", "berry");
             props.put("time", new Date());
             response = client.send("vm://variables", "data", props);

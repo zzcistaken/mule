@@ -53,7 +53,7 @@ public class ProcessMessageDispatcher extends AbstractMessageDispatcher
         if (process != null)
         {
             MuleMessage msg = new DefaultMuleMessage(process, connector.getMuleContext());
-            msg.setProperty(ProcessConnector.PROPERTY_PROCESS_ID, connector.getBpms().getId(process), PropertyScope.SESSION);
+            msg.setProperty(Process.PROPERTY_PROCESS_ID, connector.getBpms().getId(process), PropertyScope.SESSION);
             return msg;
         }
         else
@@ -89,33 +89,33 @@ public class ProcessMessageDispatcher extends AbstractMessageDispatcher
             if (payload != null && !(payload instanceof NullPayload))
             {
                 // Store the message's payload as a process variable.
-                processVariables.put(ProcessConnector.PROCESS_VARIABLE_INCOMING, payload);
+                processVariables.put(Process.PROCESS_VARIABLE_INCOMING, payload);
 
                 // Store the endpoint on which the message was received as a process variable.
                 String originatingEndpoint = event.getMessage().getInboundProperty(MuleProperties.MULE_ORIGINATING_ENDPOINT_PROPERTY);
                 if (StringUtils.isNotEmpty(originatingEndpoint))
                 {
-                    processVariables.put(ProcessConnector.PROCESS_VARIABLE_INCOMING_SOURCE, originatingEndpoint);
+                    processVariables.put(Process.PROCESS_VARIABLE_INCOMING_SOURCE, originatingEndpoint);
                 }
             }
         }
 
         // Retrieve the parameters
-        Object processType = event.getMessage().getSessionProperty(ProcessConnector.PROPERTY_PROCESS_TYPE);
+        Object processType = event.getMessage().getSessionProperty(Process.PROPERTY_PROCESS_TYPE);
         if (processType == null)
         {
-            processType = event.getMessage().getInvocationProperty(ProcessConnector.PROPERTY_PROCESS_TYPE);
+            processType = event.getMessage().getInvocationProperty(Process.PROPERTY_PROCESS_TYPE);
         }
         if (processType == null)
         {
-            processType = event.getMessage().getInboundProperty(ProcessConnector.PROPERTY_PROCESS_TYPE);
+            processType = event.getMessage().getInboundProperty(Process.PROPERTY_PROCESS_TYPE);
         }
-        processVariables.remove(ProcessConnector.PROPERTY_PROCESS_TYPE);
+        processVariables.remove(Process.PROPERTY_PROCESS_TYPE);
 
         String processIdField = connector.getProcessIdField();
         if (StringUtils.isEmpty(processIdField))
         {
-            processIdField = ProcessConnector.PROPERTY_PROCESS_ID;
+            processIdField = Process.PROPERTY_PROCESS_ID;
         }
 
         Object processId;
@@ -131,11 +131,11 @@ public class ProcessMessageDispatcher extends AbstractMessageDispatcher
         processVariables.remove(processIdField);
 
         // Default action is "advance"
-        String action = event.getMessage().getInvocationProperty(ProcessConnector.PROPERTY_ACTION, ProcessConnector.ACTION_ADVANCE);
-        processVariables.remove(ProcessConnector.PROPERTY_ACTION);
+        String action = event.getMessage().getInvocationProperty(Process.PROPERTY_ACTION, Process.ACTION_ADVANCE);
+        processVariables.remove(Process.PROPERTY_ACTION);
 
-        Object transition = event.getMessage().getInvocationProperty(ProcessConnector.PROPERTY_TRANSITION);
-        processVariables.remove(ProcessConnector.PROPERTY_TRANSITION);
+        Object transition = event.getMessage().getInvocationProperty(Process.PROPERTY_TRANSITION);
+        processVariables.remove(Process.PROPERTY_TRANSITION);
 
         // Decode the URI, for example:
         // bpm://testProcess/4561?action=advance
@@ -166,7 +166,7 @@ public class ProcessMessageDispatcher extends AbstractMessageDispatcher
         logger.debug("Message received: payload = " + event.getMessage().getPayload().getClass().getName() + " processType = " + processType + " processId = " + processId + " action = " + action);
         
         // Start a new process.
-        if (processId == null || action.equals(ProcessConnector.ACTION_START))
+        if (processId == null || action.equals(Process.ACTION_START))
         {
             if (processType != null)
             {
@@ -183,7 +183,7 @@ public class ProcessMessageDispatcher extends AbstractMessageDispatcher
         }
 
         // Don't advance the process, just update the process variables.
-        else if (action.equals(ProcessConnector.ACTION_UPDATE))
+        else if (action.equals(Process.ACTION_UPDATE))
         {
             if (processId != null)
             {
@@ -200,7 +200,7 @@ public class ProcessMessageDispatcher extends AbstractMessageDispatcher
         }
 
         // Abort the running process (end abnormally).
-        else if (action.equals(ProcessConnector.ACTION_ABORT))
+        else if (action.equals(Process.ACTION_ABORT))
         {
             if (processId != null)
             {
