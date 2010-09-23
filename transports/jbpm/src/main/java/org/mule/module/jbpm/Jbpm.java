@@ -8,13 +8,13 @@
  * LICENSE.txt file.
  */
 
-package org.mule.transport.jbpm;
+package org.mule.module.jbpm;
 
 import org.mule.api.NamedObject;
 import org.mule.api.lifecycle.Disposable;
 import org.mule.api.lifecycle.Initialisable;
-import org.mule.transport.bpm.BPMS;
-import org.mule.transport.bpm.MessageService;
+import org.mule.module.bpm.BPMS;
+import org.mule.module.bpm.MessageService;
 import org.mule.util.IOUtils;
 
 import java.io.IOException;

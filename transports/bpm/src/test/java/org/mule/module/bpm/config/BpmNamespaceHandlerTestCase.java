@@ -7,13 +7,13 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.transport.bpm.config;
+package org.mule.module.bpm.config;
 
+import org.mule.module.bpm.BPMS;
+import org.mule.module.bpm.ProcessComponent;
+import org.mule.module.bpm.test.TestBpms;
 import org.mule.tck.FunctionalTestCase;
-import org.mule.transport.bpm.BPMS;
-import org.mule.transport.bpm.ProcessComponent;
 import org.mule.transport.bpm.ProcessConnector;
-import org.mule.transport.bpm.test.TestBpms;
 
 
 /**

@@ -26,6 +26,7 @@ import org.mule.api.transport.Connector;
 import org.mule.api.transport.ConnectorException;
 import org.mule.api.transport.PropertyScope;
 import org.mule.config.i18n.MessageFactory;
+import org.mule.module.bpm.Process;
 import org.mule.session.DefaultMuleSession;
 import org.mule.transport.AbstractMessageReceiver;
 

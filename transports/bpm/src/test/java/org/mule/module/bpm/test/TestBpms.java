@@ -8,10 +8,10 @@
  * LICENSE.txt file.
  */
 
-package org.mule.transport.bpm.test;
+package org.mule.module.bpm.test;
 
-import org.mule.transport.bpm.BPMS;
-import org.mule.transport.bpm.MessageService;
+import org.mule.module.bpm.BPMS;
+import org.mule.module.bpm.MessageService;
 
 import java.util.Map;
 

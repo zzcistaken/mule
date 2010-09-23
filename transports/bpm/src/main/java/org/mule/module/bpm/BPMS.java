@@ -8,7 +8,7 @@
  * LICENSE.txt file.
  */
 
-package org.mule.transport.bpm;
+package org.mule.module.bpm;
 
 import java.util.Map;
 

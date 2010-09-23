@@ -11,9 +11,9 @@
 package org.mule.transport.bpm.jbpm;
 
 import org.mule.api.MuleContext;
-import org.mule.transport.bpm.BPMS;
+import org.mule.module.bpm.BPMS;
+import org.mule.module.bpm.config.BpmNamespaceHandler;
 import org.mule.transport.bpm.ProcessConnector;
-import org.mule.transport.bpm.config.BpmNamespaceHandler;
 import org.mule.util.ClassUtils;
 
 import java.util.Properties;

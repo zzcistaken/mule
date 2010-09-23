@@ -7,7 +7,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.transport.bpm;
+package org.mule.module.bpm;
 
 import org.mule.MessageExchangePattern;
 import org.mule.api.MuleMessage;

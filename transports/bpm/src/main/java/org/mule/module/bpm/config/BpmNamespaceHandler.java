@@ -7,7 +7,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.transport.bpm.config;
+package org.mule.module.bpm.config;
 
 import org.mule.config.spring.handlers.AbstractMuleNamespaceHandler;
 import org.mule.config.spring.parsers.collection.ChildMapEntryDefinitionParser;
@@ -15,9 +15,9 @@ import org.mule.config.spring.parsers.generic.MuleOrphanDefinitionParser;
 import org.mule.config.spring.parsers.specific.ComponentDefinitionParser;
 import org.mule.config.spring.parsers.specific.RouterDefinitionParser;
 import org.mule.endpoint.URIBuilder;
+import org.mule.module.bpm.Process;
+import org.mule.module.bpm.ProcessComponent;
 import org.mule.routing.outbound.EndpointSelector;
-import org.mule.transport.bpm.Process;
-import org.mule.transport.bpm.ProcessComponent;
 import org.mule.transport.bpm.ProcessConnector;
 import org.mule.transport.bpm.jbpm.JBpmConnector;
 
@@ -36,7 +36,7 @@ public class BpmNamespaceHandler extends AbstractMuleNamespaceHandler
      * Allows simple configuration of jBPM from the generic "bpm" namespace.  Otherwise you would need to include both the 
      * "bpm" and "jbpm" namespaces in your config, which is not really justified.
      */
-    public static final String JBPM_WRAPPER_CLASS = "org.mule.transport.jbpm.Jbpm";
+    public static final String JBPM_WRAPPER_CLASS = "org.mule.module.jbpm.Jbpm";
 
     public void init()
     {

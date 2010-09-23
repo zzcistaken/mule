@@ -8,13 +8,13 @@
  * LICENSE.txt file.
  */
 
-package org.mule.transport.jbpm;
+package org.mule.module.jbpm;
 
 import org.mule.MessageExchangePattern;
 import org.mule.api.MuleMessage;
 import org.mule.api.config.MuleProperties;
-import org.mule.transport.bpm.MessageService;
-import org.mule.transport.bpm.Process;
+import org.mule.module.bpm.MessageService;
+import org.mule.module.bpm.Process;
 import org.mule.util.ClassUtils;
 
 import java.util.HashMap;

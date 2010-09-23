@@ -8,28 +8,29 @@
  * LICENSE.txt file.
  */
 
-package org.mule.transport.jbpm;
+package org.mule.module.jbpm;
 
 import org.mule.api.MuleMessage;
+import org.mule.module.bpm.BPMS;
+import org.mule.module.bpm.Process;
 import org.mule.module.client.MuleClient;
 import org.mule.tck.FunctionalTestCase;
-import org.mule.transport.bpm.BPMS;
-import org.mule.transport.bpm.Process;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Tests jBPM component with a simple process.
+ * Tests the connector against jBPM with a process which generates 
+ * a Mule message and processes its response. jBPM is instantiated by Spring. 
  */
-public class SimpleJbpmComponentTestCase extends FunctionalTestCase
+public class MessagingJbpmComponentTestCase extends FunctionalTestCase
 {
     protected String getConfigResources()
     {
         return "jbpm-component-functional-test.xml";
     }
 
-    public void testSimpleProcess() throws Exception 
+    public void testSendMessageProcess() throws Exception
     {
         BPMS bpms = muleContext.getRegistry().lookupObject(BPMS.class);
         assertNotNull(bpms);
@@ -38,18 +39,19 @@ public class SimpleJbpmComponentTestCase extends FunctionalTestCase
         try
         {
             // Create a new process.
-            MuleMessage response = client.send("vm://simple", "data", null);
+            MuleMessage response = client.send("vm://message", "data", null);
             Object process = response.getPayload();
+            assertTrue(bpms.isProcess(process)); 
 
             String processId = (String)bpms.getId(process);
-            // The process should be started and in a wait state.
+            // The process should have sent a synchronous message, followed by an asynchronous message and now be in a wait state.
             assertFalse(processId == null);
-            assertEquals("dummyState", bpms.getState(process));
+            assertEquals("waitForResponse", bpms.getState(process));
 
             // Advance the process one step.
-            Map props = new HashMap();
+            Map props = new HashMap<String, Object>();
             props.put(Process.PROPERTY_PROCESS_ID, processId);
-            response = client.send("vm://simple", null, props);
+            response = client.send("vm://message", "data", props);
             process = response.getPayload();
 
             // The process should have ended.

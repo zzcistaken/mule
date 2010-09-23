@@ -8,7 +8,7 @@
  * LICENSE.txt file.
  */
 
-package org.mule.transport.jbpm;
+package org.mule.module.jbpm;
 
 import org.mule.api.MuleMessage;
 import org.mule.api.transformer.TransformerException;

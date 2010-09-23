@@ -11,10 +11,10 @@
 package org.mule.transport.jbpm;
 
 import org.mule.api.MuleMessage;
+import org.mule.module.bpm.BPMS;
+import org.mule.module.bpm.Process;
 import org.mule.module.client.MuleClient;
 import org.mule.tck.FunctionalTestCase;
-import org.mule.transport.bpm.BPMS;
-import org.mule.transport.bpm.Process;
 import org.mule.transport.bpm.ProcessConnector;
 
 /**

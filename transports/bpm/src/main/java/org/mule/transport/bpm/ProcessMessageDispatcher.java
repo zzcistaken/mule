@@ -18,6 +18,7 @@ import org.mule.api.endpoint.OutboundEndpoint;
 import org.mule.api.transport.DispatchException;
 import org.mule.api.transport.PropertyScope;
 import org.mule.config.i18n.MessageFactory;
+import org.mule.module.bpm.Process;
 import org.mule.transport.AbstractMessageDispatcher;
 import org.mule.transport.NullPayload;
 import org.mule.util.StringUtils;

@@ -8,7 +8,7 @@
  * LICENSE.txt file.
  */
 
-package org.mule.transport.bpm;
+package org.mule.module.bpm;
 
 import org.mule.DefaultMuleEvent;
 import org.mule.DefaultMuleMessage;

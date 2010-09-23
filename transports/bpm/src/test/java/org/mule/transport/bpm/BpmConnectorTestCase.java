@@ -11,8 +11,9 @@
 package org.mule.transport.bpm;
 
 import org.mule.api.transport.Connector;
+import org.mule.module.bpm.BPMS;
+import org.mule.module.bpm.test.TestBpms;
 import org.mule.transport.AbstractConnectorTestCase;
-import org.mule.transport.bpm.test.TestBpms;
 
 import com.mockobjects.dynamic.Mock;
 
