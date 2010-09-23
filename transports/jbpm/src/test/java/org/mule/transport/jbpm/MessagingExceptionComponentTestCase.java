@@ -19,10 +19,6 @@ import org.mule.util.ExceptionUtils;
 
 public class MessagingExceptionComponentTestCase extends FunctionalTestCase
 {
-    static {
-           System.setProperty( PROPERTY_MULE_TEST_TIMEOUT, "300");
-    }
-
     protected String getConfigResources()
     {
         return "jbpm-component-functional-test.xml";

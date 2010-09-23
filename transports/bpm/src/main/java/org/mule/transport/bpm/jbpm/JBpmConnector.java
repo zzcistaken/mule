@@ -18,6 +18,9 @@ import org.mule.util.ClassUtils;
 
 import java.util.Properties;
 
+/**
+ * @deprecated It is recommended to configure BPM as a component rather than a transport for 3.x
+ */
 public class JBpmConnector extends ProcessConnector 
 {    
     private String configurationResource;

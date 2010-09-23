@@ -27,6 +27,8 @@ import java.util.Map;
 
 /**
  * Initiates or advances a workflow process from an outgoing Mule event.
+ * 
+ * @deprecated It is recommended to configure BPM as a component rather than a transport for 3.x
  */
 public class ProcessMessageDispatcher extends AbstractMessageDispatcher
 {

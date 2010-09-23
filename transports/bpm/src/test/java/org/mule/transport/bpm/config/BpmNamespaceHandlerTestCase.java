@@ -26,6 +26,9 @@ public class BpmNamespaceHandlerTestCase extends FunctionalTestCase
         return "bpm-namespace-config.xml";
     }
 
+    /**
+     * @deprecated It is recommended to configure BPM as a component rather than a transport for 3.x
+     */
     public void testDefaultsConnector() throws Exception
     {
         ProcessConnector c = (ProcessConnector)muleContext.getRegistry().lookupConnector("bpmConnectorDefaults");
@@ -58,6 +61,9 @@ public class BpmNamespaceHandlerTestCase extends FunctionalTestCase
         assertEquals("bar", ((TestBpms) bpms).getFoo());
     }
     
+    /**
+     * @deprecated It is recommended to configure BPM as a component rather than a transport for 3.x
+     */
     public void testConfigConnector() throws Exception
     {
         ProcessConnector c = (ProcessConnector)muleContext.getRegistry().lookupConnector("bpmConnector1");

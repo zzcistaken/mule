@@ -18,6 +18,8 @@ import org.mule.transport.bpm.ProcessConnector;
 
 /**
  * Tests the connector against jBPM with a simple process.
+ * 
+ * @deprecated It is recommended to configure BPM as a component rather than a transport for 3.x
  */
 public class SimpleJbpmTestCase extends FunctionalTestCase
 {

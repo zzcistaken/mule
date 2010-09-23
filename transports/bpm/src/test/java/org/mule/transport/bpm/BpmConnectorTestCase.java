@@ -18,6 +18,8 @@ import com.mockobjects.dynamic.Mock;
 
 /**
  * Generic connector tests.
+ * 
+ * @deprecated It is recommended to configure BPM as a component rather than a transport for 3.x
  */
 public class BpmConnectorTestCase extends AbstractConnectorTestCase
 {

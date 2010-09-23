@@ -20,13 +20,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @deprecated It is recommended to configure BPM as a component rather than a transport for 3.x
+ */
 public class VariablesTestCase extends FunctionalTestCase
 {
-    static
-    {
-        System.setProperty(PROPERTY_MULE_TEST_TIMEOUT, "300");
-    }
-
     @Override
     protected String getConfigResources()
     {

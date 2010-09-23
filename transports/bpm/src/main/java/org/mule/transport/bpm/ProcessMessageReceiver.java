@@ -34,7 +34,11 @@ import java.util.Map;
 import javax.resource.spi.work.Work;
 import javax.resource.spi.work.WorkException;
 
-/** Generates an incoming Mule event from an executing workflow process. */
+/** 
+ * Generates an incoming Mule event from an executing workflow process. 
+ * 
+ * @deprecated It is recommended to configure BPM as a component rather than a transport for 3.x
+ */
 public class ProcessMessageReceiver extends AbstractMessageReceiver
 {
 

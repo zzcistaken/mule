@@ -30,6 +30,8 @@ import java.util.Map;
  * The BPM provider allows Mule events to initiate and/or advance processes in an
  * external or embedded Business Process Management System (BPMS). It also allows
  * executing processes to generate Mule events.
+ * 
+ * @deprecated It is recommended to configure BPM as a component rather than a transport for 3.x
  */
 public class ProcessConnector extends AbstractConnector implements MessageService
 {

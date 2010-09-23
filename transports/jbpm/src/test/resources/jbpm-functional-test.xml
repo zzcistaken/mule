@@ -14,6 +14,9 @@
        http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/3.0/mule-vm.xsd
        http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/3.0/mule-test.xsd">
 
+	<!-- 
+ 	  Deprecated: It is recommended to configure BPM as a component rather than a transport for 3.x
+	 -->
     <bpm:jbpm-connector name="bpmConnector">
         <bpm:process-definition name="simple" resource="simple-process.jpdl.xml" />
         <bpm:process-definition name="message" resource="message-process.jpdl.xml" />

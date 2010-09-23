@@ -19,13 +19,11 @@ import org.mule.transport.bpm.ProcessConnector;
 /**
  * Tests the connector against jBPM with a process which generates 
  * a Mule message and processes its response. jBPM is instantiated by Spring. 
+ * 
+ * @deprecated It is recommended to configure BPM as a component rather than a transport for 3.x
  */
 public class MessagingJbpmTestCase extends FunctionalTestCase
 {
-    static {
-           System.setProperty( PROPERTY_MULE_TEST_TIMEOUT, "300");
-    }
-
     protected String getConfigResources()
     {
         return "jbpm-functional-test.xml";

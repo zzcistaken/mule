@@ -15,12 +15,11 @@ import org.mule.module.client.MuleClient;
 import org.mule.tck.FunctionalTestCase;
 import org.mule.tck.exceptions.FunctionalTestException;
 
+/**
+ * @deprecated It is recommended to configure BPM as a component rather than a transport for 3.x
+ */
 public class MessagingExceptionTestCase extends FunctionalTestCase
 {
-    static {
-           System.setProperty( PROPERTY_MULE_TEST_TIMEOUT, "300");
-    }
-
     protected String getConfigResources()
     {
         return "jbpm-functional-test.xml";

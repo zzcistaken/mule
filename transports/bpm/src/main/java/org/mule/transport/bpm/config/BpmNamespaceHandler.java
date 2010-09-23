@@ -61,6 +61,7 @@ public class BpmNamespaceHandler extends AbstractMuleNamespaceHandler
     /**
      * This is merely a shortcut for:
      *   <endpoint-selector-router evaluator="header" expression="MULE_BPM_ENDPOINT"> 
+     * @deprecated It is recommended to configure BPM as a component rather than a transport for 3.x
      */
     class BpmOutboundRouterDefinitionParser extends RouterDefinitionParser
     {
