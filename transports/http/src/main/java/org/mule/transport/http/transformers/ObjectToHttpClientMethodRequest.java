@@ -11,7 +11,6 @@
 package org.mule.transport.http.transformers;
 
 import org.mule.RequestContext;
-import org.mule.api.MuleContext;
 import org.mule.api.MuleEvent;
 import org.mule.api.MuleMessage;
 import org.mule.api.config.MuleProperties;
@@ -81,13 +80,6 @@ public class ObjectToHttpClientMethodRequest extends AbstractMessageTransformer
         registerSourceType(DataTypeFactory.create(OutputHandler.class));
         registerSourceType(DataTypeFactory.create(NullPayload.class));
     }
-
-    public void setMuleContext(MuleContext context)
-    {
-        this.muleContext = context;
-    }
-
-
 
     @Override
     public Object transformMessage(MuleMessage msg, String outputEncoding) throws TransformerException
