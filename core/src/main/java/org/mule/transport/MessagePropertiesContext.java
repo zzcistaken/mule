@@ -436,7 +436,10 @@ public class MessagePropertiesContext implements Serializable
 
     protected MessagePropertiesContext copy()
     {
-        Set<String> keySet = new TreeSet<String>(getPropertyNames());
+        Set<String> keySet = new TreeSet<String>();
+        keySet.addAll(getPropertyNames(PropertyScope.INBOUND));
+        keySet.addAll(getPropertyNames(PropertyScope.INVOCATION));
+        keySet.addAll(getPropertyNames(PropertyScope.OUTBOUND)); 
 
         Map scopedMap = new TreeMap(new PropertyScope.ScopeComparator());
 
