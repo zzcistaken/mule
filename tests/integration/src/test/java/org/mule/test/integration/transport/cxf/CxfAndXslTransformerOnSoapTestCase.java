@@ -56,6 +56,13 @@ public class CxfAndXslTransformerOnSoapTestCase extends FunctionalTestCase
      * This test fails without the change involving the
      * {@link OutputPayloadInterceptor#cleanUpPayload(Object)}. It is a fix for issue
      * MULE-5030.
+     * <p>
+     * This test also verifies the fix for MULE-5113. The only required change was in
+     * the scratchcard-service-v1.xml file: adding payload="envelope" property in the
+     * inbound configuration.
+     * <p>
+     * Both issues are related to the same CXF bug, but they needed different hacks
+     * in mule code in order to be fixed.
      * 
      * @throws Exception
      */
