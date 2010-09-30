@@ -93,7 +93,7 @@ public class ValidatorTestCase extends FunctionalTestCase
 
         final Object validPayload = doTestValidMessageAck(serviceName);
 
-        latch.await(15, TimeUnit.SECONDS);
+        latch.await(getTestTimeoutSecs(), TimeUnit.SECONDS);
         assertEquals(1, ftc.getReceivedMessagesCount());
         assertEquals(validPayload, ftc.getLastReceivedMessage());
         ftc.initialise();
