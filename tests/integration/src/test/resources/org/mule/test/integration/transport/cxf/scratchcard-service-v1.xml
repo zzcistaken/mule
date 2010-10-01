@@ -87,8 +87,7 @@
                     proxy="true" 
                     wsdlLocation="org/mule/test/integration/transport/cxf/scratchcard.wsdl" 
                     serviceName="IntegrationLayerService" synchronous="true"
-                    namespace="http://www.wcs.com/2010/07/14/emop.wsdl"
-                    payload="envelope">
+                    namespace="http://www.wcs.com/2010/07/14/emop.wsdl" >
     			</cxf:inbound-endpoint>
   			</inbound>
   			<outbound>	
