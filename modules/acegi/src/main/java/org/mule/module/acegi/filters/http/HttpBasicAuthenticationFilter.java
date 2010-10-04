@@ -137,7 +137,7 @@ public class HttpBasicAuthenticationFilter extends AbstractEndpointSecurityFilte
             {
                 authResult = getSecurityManager().authenticate(authentication);
             }
-            catch (AuthenticationException e)
+            catch (UnauthorisedException e)
             {
                 // Authentication failed
                 if (logger.isDebugEnabled())
