@@ -34,7 +34,7 @@ public class HttpRequestBodyToParamMap extends AbstractMessageTransformer
     }
 
     @Override
-    public Object transformMessage(MuleMessage message, String encoding) throws TransformerException
+    public Object transformMessage(MuleMessage message, String outputEncoding) throws TransformerException
     {
         Map<String, Object> paramMap = new HashMap<String, Object>();
 
@@ -59,7 +59,7 @@ public class HttpRequestBodyToParamMap extends AbstractMessageTransformer
             String queryString = null;
             if (isGet)
             {
-                URI uri = new URI(message.getPayloadAsString(encoding));
+                URI uri = new URI(message.getPayloadAsString(outputEncoding));
                 queryString = uri.getRawQuery();
             }
             else if (isPost)
@@ -75,8 +75,8 @@ public class HttpRequestBodyToParamMap extends AbstractMessageTransformer
                     String[] nameValue = pair.split("=");
                     if (nameValue.length == 2)
                     {
-                        String key = URLDecoder.decode(nameValue[0], encoding);
-                        String value = URLDecoder.decode(nameValue[1], encoding);
+                        String key = URLDecoder.decode(nameValue[0], outputEncoding);
+                        String value = URLDecoder.decode(nameValue[1], outputEncoding);
                         addToParameterMap(paramMap, key, value);
                     }
                 }
@@ -120,5 +120,4 @@ public class HttpRequestBodyToParamMap extends AbstractMessageTransformer
     {
         return false;
     }
-
 }
