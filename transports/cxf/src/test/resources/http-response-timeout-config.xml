@@ -22,7 +22,7 @@
             </inbound>
             <outbound>
                 <pass-through-router>
-                    <cxf:outbound-endpoint address="http://localhost:60216/DelayService?onCall" synchronous="true" responseTimeout="1000" proxy="true"/>
+                    <cxf:outbound-endpoint address="http://localhost:${port1}/DelayService?onCall" synchronous="true" responseTimeout="1000" proxy="true"/>
                 </pass-through-router>
             </outbound>
         </service>
@@ -33,14 +33,14 @@
             </inbound>
             <outbound>
                 <pass-through-router>
-                    <cxf:outbound-endpoint address="http://localhost:60216/DelayService?onCall" synchronous="true" responseTimeout="3000" proxy="true"/>
+                    <cxf:outbound-endpoint address="http://localhost:${port1}/DelayService?onCall" synchronous="true" responseTimeout="3000" proxy="true"/>
                 </pass-through-router>
             </outbound>
         </service>
         
         <service name="ProxyDelayService">
             <inbound>
-                <cxf:inbound-endpoint address="http://localhost:60216/DelayService" synchronous="true" proxy="true" applyTransformersToProtocol="false">
+                <cxf:inbound-endpoint address="http://localhost:${port1}/DelayService" synchronous="true" proxy="true" applyTransformersToProtocol="false" name="inDelayService">
                     <custom-transformer class="org.mule.module.xml.transformer.DomDocumentToXml"/>
                 </cxf:inbound-endpoint>
             </inbound>
