@@ -69,10 +69,7 @@ public class HttpEncodingNonAsciiFunctionalTestCase extends FunctionalTestCase
 
         assertTrue(latch.await(RECEIVE_TIMEOUT, TimeUnit.MILLISECONDS));
         assertNotNull(reply);
-        // TODO see why the status code doesn't make it until here
-//        assertEquals(HttpConstants.SC_OK, reply.getProperty(HttpConnector.HTTP_STATUS_PROPERTY));
-//        assertEquals("text/plain;charset=EUC-JP",
-//            reply.getProperty(HttpConstants.HEADER_CONTENT_TYPE).toString());
+        assertEquals(expectedContentType, reply.getInvocationProperty(HttpConstants.HEADER_CONTENT_TYPE));
         assertEquals("EUC-JP", reply.getEncoding());
         assertEquals(getTestMessage(Locale.JAPAN) + " Received", reply.getPayloadAsString());
     }
