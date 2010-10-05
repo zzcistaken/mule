@@ -12,12 +12,12 @@ package org.mule.transport.tcp;
 
 import org.mule.api.MuleMessage;
 import org.mule.module.client.MuleClient;
-import org.mule.tck.FunctionalTestCase;
+import org.mule.tck.DynamicPortTestCase;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class TcpFunctionalTestCase extends FunctionalTestCase 
+public class TcpFunctionalTestCase extends DynamicPortTestCase
 {
 
     protected static String TEST_MESSAGE = "Test TCP Request";
@@ -63,4 +63,9 @@ public class TcpFunctionalTestCase extends FunctionalTestCase
         logger.error(speed + " messages per second");
     }
 
+    @Override
+    protected int getNumPortsToFind()
+    {
+        return 2;
+    }
 }

@@ -1,7 +1,7 @@
 /*
  * $Id$
  * --------------------------------------------------------------------------------------
- * Copyright (c) MuleSource, Inc.  All rights reserved.  http://www.mulesource.com
+ * Copyright (c) MuleSoft, Inc.  All rights reserved.  http://www.mulesoft.com
  *
  * The software in this package is published under the terms of the CPAL v1.0
  * license, a copy of which has been included with this distribution in the
@@ -12,16 +12,12 @@ package org.mule.transport.tcp;
 
 import org.mule.api.MuleMessage;
 import org.mule.module.client.MuleClient;
-import org.mule.tck.FunctionalTestCase;
+import org.mule.tck.DynamicPortTestCase;
 
-import java.util.HashMap;
-import java.util.Map;
-
-public class TcpLengthFunctionalTestCase extends FunctionalTestCase
+public class TcpLengthFunctionalTestCase extends DynamicPortTestCase
 {
-
     protected static String TEST_MESSAGE = "Test TCP Request";
-    private int timeout = getTimeoutSecs() * 1000 / 20;
+    private int timeout = 60 * 1000 / 20;
 
     public TcpLengthFunctionalTestCase()
     {
@@ -35,17 +31,15 @@ public class TcpLengthFunctionalTestCase extends FunctionalTestCase
 
     public void testSend() throws Exception
     {
-        MuleClient client = new MuleClient();
-        Map props = new HashMap();
-        MuleMessage result = client.send("clientEndpoint", TEST_MESSAGE, props);
+        MuleClient client = new MuleClient(muleContext);
+        MuleMessage result = client.send("clientEndpoint", TEST_MESSAGE, null);
         assertEquals(TEST_MESSAGE + " Received", result.getPayloadAsString());
     }
 
     public void testDispatchAndReplyViaStream() throws Exception
     {
-        MuleClient client = new MuleClient();
-        Map props = new HashMap();
-        client.dispatch("asyncClientEndpoint1", TEST_MESSAGE, props);
+        MuleClient client = new MuleClient(muleContext);
+        client.dispatch("asyncClientEndpoint1", TEST_MESSAGE, null);
         // MULE-2754
         Thread.sleep(200);
         MuleMessage result =  client.request("asyncClientEndpoint1", timeout);
@@ -55,9 +49,8 @@ public class TcpLengthFunctionalTestCase extends FunctionalTestCase
 
     public void testDispatchAndReply() throws Exception
     {
-        MuleClient client = new MuleClient();
-        Map props = new HashMap();
-        client.dispatch("asyncClientEndpoint2", TEST_MESSAGE, props);
+        MuleClient client = new MuleClient(muleContext);
+        client.dispatch("asyncClientEndpoint2", TEST_MESSAGE, null);
         // MULE-2754
         Thread.sleep(200);
         MuleMessage result =  client.request("asyncClientEndpoint2", timeout);
@@ -65,4 +58,9 @@ public class TcpLengthFunctionalTestCase extends FunctionalTestCase
         assertNull(result);
     }
 
+    @Override
+    protected int getNumPortsToFind()
+    {
+        return 3;
+    }
 }

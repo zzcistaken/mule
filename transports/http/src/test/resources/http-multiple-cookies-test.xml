@@ -16,8 +16,8 @@
 
     <http:connector name="httpConnector" enableCookies="true"/>
 
-    <http:endpoint name="clientEndpoint" address="http://localhost:4019" synchronous="true"/>
-    <http:endpoint name="serverEndpoint" address="http://localhost:4020" synchronous="true"/>
+    <http:endpoint name="clientEndpoint" address="http://localhost:${port1}" synchronous="true"/>
+    <http:endpoint name="serverEndpoint" address="http://localhost:${port2}" synchronous="true"/>
 
     <model name="main">
 

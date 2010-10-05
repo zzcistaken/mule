@@ -22,7 +22,7 @@
         <custom-service name="Test" class="org.mule.tck.testmodels.mule.TestSedaService">
             <inbound>
                 <http:inbound-endpoint name="httpEndpoint" connector-ref="PollingHttpConnector"
-                                       address="http://localhost:60206/TestServer"/>
+                                       address="http://localhost:${port1}/TestServer"/>
             </inbound>
             <test:component/>
             <outbound>
@@ -34,7 +34,7 @@
 
         <service name="TestServer">
             <inbound>
-                <inbound-endpoint address="http://localhost:60206" synchronous="true" connector-ref="HttpConnector"/>
+                <inbound-endpoint address="http://localhost:${port1}" synchronous="true" connector-ref="HttpConnector"/>
             </inbound>
             <component>
                 <singleton-object class="org.mule.transport.http.functional.ETagComponent"/>

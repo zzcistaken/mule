@@ -17,7 +17,7 @@
 
         <service name="mycomponent1">
             <inbound>
-                <inbound-endpoint address="http://localhost:60211/mycomponent1" synchronous="true"/>
+                <inbound-endpoint address="http://localhost:${port1}/mycomponent1" synchronous="true" name="inMyComponent1"/>
             </inbound>
             <test:component>
                 <test:return-data>mycomponent1</test:return-data>
@@ -27,7 +27,7 @@
 
         <service name="mycomponent2">
             <inbound>
-                <inbound-endpoint address="http://localhost:60211/mycomponent2" synchronous="true"/>
+                <inbound-endpoint address="http://localhost:${port1}/mycomponent2" synchronous="true" name="inMyComponent2"/>
             </inbound>
             <test:component>
                 <test:return-data>mycomponent2</test:return-data>

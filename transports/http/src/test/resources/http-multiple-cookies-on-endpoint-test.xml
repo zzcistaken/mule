@@ -24,7 +24,7 @@
             </inbound>
             <outbound>
                 <pass-through-router>
-                    <http:outbound-endpoint address="http://localhost:34876/test" synchronous="true" method="POST" responseTimeout="600000">
+                    <http:outbound-endpoint address="http://localhost:${port1}/test" synchronous="true" method="POST" responseTimeout="600000">
                         <properties>
                             <spring:entry key="Content-Type" value="text/xml" />
                             <spring:entry key="cookies">
@@ -41,7 +41,7 @@
 
         <service name="HttpServer">
             <inbound>
-                <http:inbound-endpoint address="http://localhost:34876/test" synchronous="true"/>
+                <http:inbound-endpoint address="http://localhost:${port1}/test" synchronous="true"/>
             </inbound>
             <component class="org.mule.transport.http.functional.HttpMultipleCookiesInEndpointTestComponent"/>
         </service>

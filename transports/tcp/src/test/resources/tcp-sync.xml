@@ -8,7 +8,7 @@
        http://www.mulesource.org/schema/mule/tcp/2.2 http://www.mulesource.org/schema/mule/tcp/2.2/mule-tcp.xsd
        http://www.mulesource.org/schema/mule/core/2.2 http://www.mulesource.org/schema/mule/core/2.2/mule.xsd">
 
-    <global-property name="test.endpoint" value="tcp://localhost:45441"/>
+    <global-property name="test.endpoint" value="tcp://localhost:${port1}"/>
     
     <tcp:connector name="tcpConnector" clientSoTimeout="60000" serverSoTimeout="60000">
         <tcp:length-protocol payloadOnly="true"/>
@@ -20,7 +20,7 @@
     <model name="model">
         <service name="service">
             <inbound>
-                <tcp:inbound-endpoint address="${test.endpoint}" synchronous="true"/>
+                <tcp:inbound-endpoint address="${test.endpoint}" synchronous="true" name="inService"/>
             </inbound>
             <echo-component/>
         </service>

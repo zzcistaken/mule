@@ -10,7 +10,9 @@
 
 package org.mule.transport.http.functional;
 
-import org.mule.tck.FunctionalTestCase;
+import org.mule.api.endpoint.InboundEndpoint;
+import org.mule.module.client.MuleClient;
+import org.mule.tck.DynamicPortTestCase;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethodBase;
@@ -21,10 +23,18 @@ import org.apache.commons.httpclient.methods.OptionsMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.commons.httpclient.methods.TraceMethod;
 
-public class HttpMethodTestCase extends FunctionalTestCase
+public class HttpMethodTestCase extends DynamicPortTestCase
 {
 
     private HttpMethodBase method;
+    private MuleClient muleClient = null;
+        
+    @Override
+    protected void doSetUp() throws Exception
+    {
+        super.doSetUp();
+        muleClient = new MuleClient(muleContext);
+    }
 
     protected String getConfigResources()
     {
@@ -42,16 +52,15 @@ public class HttpMethodTestCase extends FunctionalTestCase
     public void testHead() throws Exception
     {
         HttpClient client = new HttpClient();
-        method = new HeadMethod("http://localhost:60200");
+        method = new HeadMethod(((InboundEndpoint) muleClient.getMuleContext().getRegistry().lookupObject("inHttpIn")).getEndpointURI().getAddress());
         int statusCode = client.executeMethod(method);
         assertEquals(Integer.toString(HttpStatus.SC_OK), Integer.toString(statusCode));
-
     }
 
     public void testOptions() throws Exception
     {
         HttpClient client = new HttpClient();
-        method = new OptionsMethod("http://localhost:60200");
+        method = new OptionsMethod(((InboundEndpoint) muleClient.getMuleContext().getRegistry().lookupObject("inHttpIn")).getEndpointURI().getAddress());
         int statusCode = client.executeMethod(method);
         assertEquals(Integer.toString(HttpStatus.SC_OK), Integer.toString(statusCode));
     }
@@ -59,7 +68,7 @@ public class HttpMethodTestCase extends FunctionalTestCase
     public void testPut() throws Exception
     {
         HttpClient client = new HttpClient();
-        method = new PutMethod("http://localhost:60200");
+        method = new PutMethod(((InboundEndpoint) muleClient.getMuleContext().getRegistry().lookupObject("inHttpIn")).getEndpointURI().getAddress());
         int statusCode = client.executeMethod(method);
         assertEquals(Integer.toString(HttpStatus.SC_OK), Integer.toString(statusCode));
     }
@@ -67,7 +76,7 @@ public class HttpMethodTestCase extends FunctionalTestCase
     public void testDelete() throws Exception
     {
         HttpClient client = new HttpClient();
-        method = new DeleteMethod("http://localhost:60200");
+        method = new DeleteMethod(((InboundEndpoint) muleClient.getMuleContext().getRegistry().lookupObject("inHttpIn")).getEndpointURI().getAddress());
         int statusCode = client.executeMethod(method);
         assertEquals(Integer.toString(HttpStatus.SC_OK), Integer.toString(statusCode));
     }
@@ -75,7 +84,7 @@ public class HttpMethodTestCase extends FunctionalTestCase
     public void testTrace() throws Exception
     {
         HttpClient client = new HttpClient();
-        method = new TraceMethod("http://localhost:60200");
+        method = new TraceMethod(((InboundEndpoint) muleClient.getMuleContext().getRegistry().lookupObject("inHttpIn")).getEndpointURI().getAddress());
         int statusCode = client.executeMethod(method);
         assertEquals(Integer.toString(HttpStatus.SC_OK), Integer.toString(statusCode));
     }
@@ -83,7 +92,7 @@ public class HttpMethodTestCase extends FunctionalTestCase
     public void testConnect() throws Exception
     {
         HttpClient client = new HttpClient();
-        method = new HttpMethodBase("http://localhost:60200")
+        method = new HttpMethodBase(((InboundEndpoint) muleClient.getMuleContext().getRegistry().lookupObject("inHttpIn")).getEndpointURI().getAddress())
         {
             public String getName()
             {
@@ -97,7 +106,7 @@ public class HttpMethodTestCase extends FunctionalTestCase
     public void testFoo() throws Exception
     {
         HttpClient client = new HttpClient();
-        method = new HttpMethodBase("http://localhost:60200")
+        method = new HttpMethodBase(((InboundEndpoint) muleClient.getMuleContext().getRegistry().lookupObject("inHttpIn")).getEndpointURI().getAddress())
         {
             public String getName()
             {
@@ -107,6 +116,10 @@ public class HttpMethodTestCase extends FunctionalTestCase
         int statusCode = client.executeMethod(method);
         assertEquals(Integer.toString(HttpStatus.SC_BAD_REQUEST), Integer.toString(statusCode));
     }
+
+    @Override
+    protected int getNumPortsToFind()
+    {
+        return 1;
+    }
 }
-
-

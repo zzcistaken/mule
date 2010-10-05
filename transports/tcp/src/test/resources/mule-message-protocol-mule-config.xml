@@ -23,14 +23,14 @@
             </inbound>
             <outbound>
                 <message-chunking-router messageSize="90">
-                    <tcp:outbound-endpoint host="localhost" port="63994"/>
+                    <tcp:outbound-endpoint host="localhost" port="${port1}"/>
                 </message-chunking-router>
             </outbound>
         </service>
 
         <service name="BridgeOut">
             <inbound>
-                <tcp:inbound-endpoint host="localhost" port="63994"/>
+                <tcp:inbound-endpoint host="localhost" port="${port1}"/>
                 <message-chunking-aggregator-router/>
             </inbound>
             <outbound>

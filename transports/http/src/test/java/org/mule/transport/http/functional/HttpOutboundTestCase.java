@@ -21,13 +21,13 @@ import edu.emory.mathcs.backport.java.util.concurrent.TimeUnit;
 
 public class HttpOutboundTestCase extends AbstractMockHttpServerTestCase
 {
-    private static final int LISTEN_PORT = 60215;
+    //private static final int LISTEN_PORT = 60215;
     private CountDownLatch testLatch = new CountDownLatch(1);
     private String httpMethod = null;
     
     protected MockHttpServer getHttpServer(CountDownLatch latch)
     {
-        return new SimpleHttpServer(LISTEN_PORT, latch, testLatch);
+        return new SimpleHttpServer(getPorts().get(0), latch, testLatch);
     }
 
     protected String getConfigResources()
@@ -93,5 +93,11 @@ public class HttpOutboundTestCase extends AbstractMockHttpServerTestCase
             String line = reader.readLine();
             httpMethod = new StringTokenizer(line).nextToken();            
         }
+    }
+
+    @Override
+    protected int getNumPortsToFind()
+    {
+        return 1;
     }
 }

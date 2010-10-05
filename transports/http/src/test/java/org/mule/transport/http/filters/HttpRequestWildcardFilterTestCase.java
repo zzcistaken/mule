@@ -11,20 +11,20 @@
 package org.mule.transport.http.filters;
 
 import org.mule.api.MuleMessage;
+import org.mule.api.endpoint.InboundEndpoint;
 import org.mule.module.client.MuleClient;
-import org.mule.tck.FunctionalTestCase;
+import org.mule.tck.DynamicPortTestCase;
 import org.mule.transport.http.HttpConnector;
 import org.mule.transport.http.HttpConstants;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class HttpRequestWildcardFilterTestCase extends FunctionalTestCase
+public class HttpRequestWildcardFilterTestCase extends DynamicPortTestCase
 {
-
-    private static final String HTTP_ENDPOINT = "http://localhost:60227";
-    private static final String REF_ENDPOINT = "http://localhost:60225";
-    private static final String TEST_MESSAGE = "Hello=World";
+    //private static final String HTTP_ENDPOINT = "http://localhost:60201";
+    //private static final String REF_ENDPOINT = "http://localhost:60225";
+    private static final String TEST_HTTP_MESSAGE = "Hello=World";
     private static final String TEST_BAD_MESSAGE = "xyz";
 
     protected String getConfigResources()
@@ -35,17 +35,15 @@ public class HttpRequestWildcardFilterTestCase extends FunctionalTestCase
     public void testReference() throws Exception
     {
         MuleClient client = new MuleClient();
-        MuleMessage result = client.send(REF_ENDPOINT, TEST_MESSAGE, null);
-
-        assertEquals(TEST_MESSAGE, result.getPayloadAsString());
+        MuleMessage result = client.send(((InboundEndpoint) client.getMuleContext().getRegistry().lookupObject("inReference")).getEndpointURI().getAddress(), TEST_HTTP_MESSAGE, null);
+        assertEquals(TEST_HTTP_MESSAGE, result.getPayloadAsString());
     }
 
     public void testHttpPost() throws Exception
     {
         MuleClient client = new MuleClient();
-        MuleMessage result = client.send(HTTP_ENDPOINT, TEST_MESSAGE, null);
-
-        assertEquals(TEST_MESSAGE, result.getPayloadAsString());
+        MuleMessage result = client.send(((InboundEndpoint) client.getMuleContext().getRegistry().lookupObject("inHttpIn")).getEndpointURI().getAddress(), TEST_HTTP_MESSAGE, null);
+        assertEquals(TEST_HTTP_MESSAGE, result.getPayloadAsString());
     }
 
     public void testHttpGetNotFiltered() throws Exception
@@ -54,9 +52,8 @@ public class HttpRequestWildcardFilterTestCase extends FunctionalTestCase
         props.put(HttpConstants.METHOD_GET, "true");
         
         MuleClient client = new MuleClient();
-        MuleMessage result = client.send(HTTP_ENDPOINT + "/" + "mulerulez", TEST_MESSAGE, props);
-
-        assertEquals(TEST_MESSAGE, result.getPayloadAsString());
+        MuleMessage result = client.send(((InboundEndpoint) client.getMuleContext().getRegistry().lookupObject("inHttpIn")).getEndpointURI().getAddress() + "/" + "mulerulez", TEST_HTTP_MESSAGE, props);
+        assertEquals(TEST_HTTP_MESSAGE, result.getPayloadAsString());
     }
 
     public void testHttpGetFiltered() throws Exception
@@ -65,10 +62,15 @@ public class HttpRequestWildcardFilterTestCase extends FunctionalTestCase
         props.put(HttpConstants.METHOD_GET, "true");
         
         MuleClient client = new MuleClient();
-        MuleMessage result = client.send(HTTP_ENDPOINT + "/" + TEST_BAD_MESSAGE, "mule", props);
+        MuleMessage result = client.send(((InboundEndpoint) client.getMuleContext().getRegistry().lookupObject("inHttpIn")).getEndpointURI().getAddress() + "/" + TEST_BAD_MESSAGE, "mule", props);
         
         assertEquals(HttpConstants.SC_NOT_ACCEPTABLE, result.getIntProperty(HttpConnector.HTTP_STATUS_PROPERTY, 0));
         assertNotNull(result.getExceptionPayload());
     }
     
+    @Override
+    protected int getNumPortsToFind()
+    {
+        return 2;
+    }
 }

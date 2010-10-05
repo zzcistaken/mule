@@ -11,8 +11,9 @@
 package org.mule.transport.http.functional;
 
 import org.mule.api.MuleMessage;
+import org.mule.api.endpoint.InboundEndpoint;
 import org.mule.module.client.MuleClient;
-import org.mule.tck.FunctionalTestCase;
+import org.mule.tck.DynamicPortTestCase;
 
 import java.net.SocketTimeoutException;
 import java.util.Date;
@@ -21,7 +22,7 @@ import java.util.Date;
  * See MULE-4491 "Http outbound endpoint does not use responseTimeout attribute"
  * See MULE-4743 "MuleClient.send() timeout is not respected with http transport"
  */
-public class HttpResponseTimeoutTestCase extends FunctionalTestCase
+public class HttpResponseTimeoutTestCase extends DynamicPortTestCase
 {
 
     protected static String PAYLOAD = "Eugene";
@@ -87,7 +88,7 @@ public class HttpResponseTimeoutTestCase extends FunctionalTestCase
         Date afterCall;
         try
         {
-            message = muleClient.send("http://localhost:60216/DelayService", getPayload(), null, 1000);
+            message = muleClient.send(((InboundEndpoint) muleClient.getMuleContext().getRegistry().lookupObject("inDelayService")).getEndpointURI().getAddress(), getPayload(), null, 1000);
             fail("SocketTimeoutException expected");
         }
         catch (Exception e)
@@ -103,7 +104,7 @@ public class HttpResponseTimeoutTestCase extends FunctionalTestCase
     public void testIncreaseMuleClientSendResponseTimeout() throws Exception
     {
         Date beforeCall = new Date();
-        MuleMessage message = muleClient.send("http://localhost:60216/DelayService", getPayload(), null, 3000);
+        MuleMessage message = muleClient.send(((InboundEndpoint) muleClient.getMuleContext().getRegistry().lookupObject("inDelayService")).getEndpointURI().getAddress(), getPayload(), null, 3000);
         Date afterCall = new Date();
 
         // If everything is good the we'll have received a result after more than 10s
@@ -113,4 +114,9 @@ public class HttpResponseTimeoutTestCase extends FunctionalTestCase
         assertTrue((afterCall.getTime() - beforeCall.getTime()) > DEFAULT_RESPONSE_TIMEOUT);
     }
 
+    @Override
+    protected int getNumPortsToFind()
+    {
+        return 1;
+    }
 }

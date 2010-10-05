@@ -12,7 +12,7 @@ package org.mule.transport.tcp.issues;
 
 import org.mule.api.MuleMessage;
 import org.mule.module.client.MuleClient;
-import org.mule.tck.FunctionalTestCase;
+import org.mule.tck.DynamicPortTestCase;
 import org.mule.transport.tcp.protocols.LengthProtocol;
 
 import java.io.BufferedInputStream;
@@ -26,7 +26,7 @@ import java.util.Map;
 import edu.emory.mathcs.backport.java.util.concurrent.atomic.AtomicBoolean;
 import edu.emory.mathcs.backport.java.util.concurrent.atomic.AtomicInteger;
 
-public class KeepSendSocketOpenMule1491TestCase extends FunctionalTestCase 
+public class KeepSendSocketOpenMule1491TestCase extends DynamicPortTestCase 
 {
 
     protected static String TEST_MESSAGE = "Test TCP Request";
@@ -66,12 +66,12 @@ public class KeepSendSocketOpenMule1491TestCase extends FunctionalTestCase
 
     public void testOpen() throws Exception
     {
-        useServer("tcp://localhost:60197?connector=openConnectorLength", 60197, 1);
+        useServer("tcp://localhost:" + getPorts().get(1) + "?connector=openConnectorLength", getPorts().get(1), 1);
     }
 
     public void testClose() throws Exception
     {
-        useServer("tcp://localhost:60196?connector=closeConnectorLength", 60196, 2);
+        useServer("tcp://localhost:" + getPorts().get(2) + "?connector=closeConnectorLength", getPorts().get(2), 2);
     }
 
     private class SimpleServerSocket implements Runnable
@@ -142,5 +142,10 @@ public class KeepSendSocketOpenMule1491TestCase extends FunctionalTestCase
             }
         }
     }
-
+    
+    @Override
+    protected int getNumPortsToFind()
+    {
+        return 3;
+    }
 }

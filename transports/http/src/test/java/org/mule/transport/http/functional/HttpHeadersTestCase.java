@@ -12,10 +12,11 @@ package org.mule.transport.http.functional;
 
 import org.mule.api.MuleMessage;
 import org.mule.module.client.MuleClient;
+import org.mule.tck.DynamicPortTestCase;
 import org.mule.tck.FunctionalTestCase;
 import org.mule.transport.http.HttpConstants;
 
-public class HttpHeadersTestCase extends FunctionalTestCase
+public class HttpHeadersTestCase extends DynamicPortTestCase
 {
 
     protected String getConfigResources()
@@ -59,4 +60,10 @@ public class HttpHeadersTestCase extends FunctionalTestCase
         assertNotNull(result.getAdapter().getProperty("X-Test"));
         assertEquals("foo", result.getAdapter().getProperty("X-Test"));
     }
+    @Override
+    protected int getNumPortsToFind()
+    {
+        return 2;
+    }
+
 }

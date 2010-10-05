@@ -12,9 +12,9 @@ package org.mule.transport.http.functional;
 
 import org.mule.api.MuleMessage;
 import org.mule.module.client.MuleClient;
-import org.mule.tck.FunctionalTestCase;
+import org.mule.tck.DynamicPortTestCase;
 
-public class HttpPollingFunctionalTestCase extends FunctionalTestCase
+public class HttpPollingFunctionalTestCase extends DynamicPortTestCase
 {
 
     public void testPollingHttpConnector() throws Exception
@@ -30,4 +30,11 @@ public class HttpPollingFunctionalTestCase extends FunctionalTestCase
         return "mule-http-polling-config.xml";
     }
 
+    @Override
+    protected int getNumPortsToFind()
+    {
+        return 1;
+    }
+
 }
+

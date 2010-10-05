@@ -15,7 +15,7 @@
     <model name="TestTcpReceiverModel">
         <service name="BounceTcpMMP">
             <inbound>
-                <tcp:inbound-endpoint host="localhost" port="61200" synchronous="true"/>
+                <tcp:inbound-endpoint host="localhost" port="${port1}" synchronous="true" name="inBounceTcpMMP"/>
             </inbound>
             <echo-component/>
         </service>

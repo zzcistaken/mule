@@ -15,7 +15,7 @@
     <model name="main">
         <service name="echo">
             <inbound>
-                <tcp:inbound-endpoint address="tcp://localhost:65432?endpointName=myEndpoint"/>
+                <tcp:inbound-endpoint address="tcp://localhost:${port1}?endpointName=myEndpoint" name="inEcho"/>
             </inbound>
             <echo-component/>
         </service>

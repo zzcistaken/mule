@@ -9,13 +9,14 @@
  */
 package org.mule.transport.http.functional;
 
+import org.mule.tck.DynamicPortTestCase;
 import org.mule.tck.FunctionalTestCase;
 import org.mule.tck.functional.CounterCallback;
 import org.mule.tck.functional.FunctionalTestComponent;
 
 import edu.emory.mathcs.backport.java.util.concurrent.atomic.AtomicInteger;
 
-public class PollingReceiversRestartTestCase extends FunctionalTestCase
+public class PollingReceiversRestartTestCase extends DynamicPortTestCase
 {
     private static final int WAIT_TIME = 2500;
 
@@ -58,6 +59,10 @@ public class PollingReceiversRestartTestCase extends FunctionalTestCase
         assertTrue("No polls performed", pollCounter.get() > 0);
     }
 
-
+    @Override
+    protected int getNumPortsToFind()
+    {
+        return 1;
+    }
 }
 
