@@ -24,37 +24,55 @@ import org.mule.transport.http.HttpConnector;
 import org.mule.transport.http.HttpConstants;
 import org.mule.util.concurrent.Latch;
 
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
 import junit.framework.Assert;
 
-import edu.emory.mathcs.backport.java.util.concurrent.CountDownLatch;
 import edu.emory.mathcs.backport.java.util.concurrent.TimeUnit;
+
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.methods.GetMethod;
 
 public class HttpEncodingNonAsciiFunctionalTestCase extends FunctionalTestCase
 {
+    private static final String CONTENT_TYPE_HEADER = "text/plain; charset=ISO-2022-JP";
+
     @Override
     protected String getConfigResources()
     {
         return "http-encoding-non-ascii-test.xml";
     }
 
-    public void XXX_testSendByGet() throws Exception
+    public void testSendViaGET() throws Exception
     {
-        Object messagePayload = getTestMessage(Locale.JAPAN);
-        Map<String, Object> messageProperties = new HashMap<String, Object>();
-        messageProperties.put(MuleProperties.MULE_ENCODING_PROPERTY, "ISO-2022-JP");
-        doTestSend("GET", messagePayload, messageProperties, "text/plain; charset=ISO-2022-JP");
+        Latch latch = new Latch();
+        setupAssertIncomingMessage(HttpConstants.METHOD_GET, latch, CONTENT_TYPE_HEADER);
+        
+        String testMessage = getTestMessage(Locale.JAPAN);
+        String encodedPayload = URLEncoder.encode(testMessage, "ISO-2022-JP");
+        String url = String.format("http://localhost:60224/get?%1s=%2s",
+            HttpConnector.DEFAULT_HTTP_GET_BODY_PARAM_PROPERTY, encodedPayload);
+        
+        GetMethod method = new GetMethod(url);
+        method.addRequestHeader(HttpConstants.HEADER_CONTENT_TYPE, CONTENT_TYPE_HEADER);
+        int status = new HttpClient().executeMethod(method);
+        assertEquals(HttpConstants.SC_OK, status);
+        
+        assertTrue(latch.await(RECEIVE_TIMEOUT, TimeUnit.MILLISECONDS));
+        String expected = testMessage + " Received";
+        String response = method.getResponseBodyAsString();
+        assertEquals(expected, response);
     }
-
+    
     public void testSendByPost() throws Exception
     {
         Object messagePayload = getTestMessage(Locale.JAPAN);
         Map<String, Object> messageProperties = new HashMap<String, Object>();
         messageProperties.put(MuleProperties.MULE_ENCODING_PROPERTY, "ISO-2022-JP");
-        doTestSend("POST", messagePayload, messageProperties, "text/plain; charset=ISO-2022-JP");
+        doTestSend("POST", messagePayload, messageProperties, CONTENT_TYPE_HEADER);
     }
 
     private void doTestSend(String method, Object messagePayload, Map<String, Object> messageProperties,
@@ -74,7 +92,7 @@ public class HttpEncodingNonAsciiFunctionalTestCase extends FunctionalTestCase
         assertEquals(getTestMessage(Locale.JAPAN) + " Received", reply.getPayloadAsString());
     }
 
-    private void setupAssertIncomingMessage(String method, final CountDownLatch cdl,
+    private void setupAssertIncomingMessage(String method, final Latch latch,
         final String expectedContentType) throws Exception
     {
         FunctionalTestComponent ftc = getFunctionalTestComponent("testReceive" + method);
@@ -103,7 +121,7 @@ public class HttpEncodingNonAsciiFunctionalTestCase extends FunctionalTestCase
                     fail();
                 }
 
-                cdl.countDown();
+                latch.countDown();
             }
         });
     }
@@ -111,9 +129,9 @@ public class HttpEncodingNonAsciiFunctionalTestCase extends FunctionalTestCase
     public static class ParamMapToString extends AbstractTransformer
     {
         @Override
+        @SuppressWarnings("unchecked")
         protected Object doTransform(Object src, String outputEncoding) throws TransformerException
         {
-            @SuppressWarnings("unchecked")
             Map<String, Object> map = (Map<String, Object>)src;
             return map.get(HttpConnector.DEFAULT_HTTP_GET_BODY_PARAM_PROPERTY);
         }
