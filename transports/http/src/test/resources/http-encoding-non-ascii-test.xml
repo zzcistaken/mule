@@ -34,8 +34,7 @@
 			</inbound>
 			<outbound>
 				<pass-through-router>
-                    <!-- TODO remove EP from the endpoint? -->
-					<http:outbound-endpoint address="http://localhost:60224/get" exchange-pattern="request-response"
+					<http:outbound-endpoint address="http://localhost:60224/get"
 						contentType="text/plain; charset=ISO-2022-JP" method="GET" transformer-refs="copyContentType"/>
 				</pass-through-router>
 			</outbound>
@@ -52,15 +51,14 @@
 			<test:component appendString=" Received" />
 		</service>
 
-		<!-- case 2 : a string payload sent by post and return appended one. -->
 		<service name="testSendByPOST">
 			<inbound>
-				<vm:inbound-endpoint path="sendByPOST" />
+				<vm:inbound-endpoint path="sendByPOST" exchange-pattern="request-response"/>
 			</inbound>
 			<outbound>
 				<pass-through-router>
 					<http:outbound-endpoint connector-ref="httpConnector" address="http://localhost:60224/post" 
-						contentType="text/plain; charset=ISO-2022-JP"  method="POST" exchange-pattern="request-response"/>						
+						contentType="text/plain; charset=ISO-2022-JP" method="POST"/>						
 				</pass-through-router>
 			</outbound>
 		</service>
@@ -68,7 +66,7 @@
 		<service name="testReceivePOST">
 			<inbound>
 				<http:inbound-endpoint connector-ref="httpConnector" address="http://localhost:60224/post" 
-					responseTransformer-refs="setResponseType" exchange-pattern="request-response"/>
+					responseTransformer-refs="setResponseType" />
 			</inbound>
 			<test:component appendString=" Received" />
 		</service>

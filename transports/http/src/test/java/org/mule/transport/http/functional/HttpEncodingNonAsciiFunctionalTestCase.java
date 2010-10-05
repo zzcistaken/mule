@@ -67,44 +67,39 @@ public class HttpEncodingNonAsciiFunctionalTestCase extends FunctionalTestCase
         MuleClient client = new MuleClient(muleContext);
         MuleMessage reply = client.send("vm://sendBy" + method, messagePayload, messageProperties);
 
+        assertTrue(latch.await(RECEIVE_TIMEOUT, TimeUnit.MILLISECONDS));
         assertNotNull(reply);
         // TODO see why the status code doesn't make it until here
 //        assertEquals(HttpConstants.SC_OK, reply.getProperty(HttpConnector.HTTP_STATUS_PROPERTY));
-        // TODO see why the Content-Type header does not make it up to here
 //        assertEquals("text/plain;charset=EUC-JP",
 //            reply.getProperty(HttpConstants.HEADER_CONTENT_TYPE).toString());
-//        assertEquals("EUC-JP", reply.getEncoding());
-//        assertEquals(getTestMessage(Locale.JAPAN) + " Received", reply.getPayloadAsString());
-
-        latch.await(RECEIVE_TIMEOUT, TimeUnit.MILLISECONDS);
+        assertEquals("EUC-JP", reply.getEncoding());
+        assertEquals(getTestMessage(Locale.JAPAN) + " Received", reply.getPayloadAsString());
     }
 
-    private void setupAssertIncomingMessage(String method, final CountDownLatch cdl, final String contentType)
-        throws Exception
+    private void setupAssertIncomingMessage(String method, final CountDownLatch cdl,
+        final String expectedContentType) throws Exception
     {
-        Object component = getComponent("testReceive" + method);
-        assertNotNull(component);
-        assertTrue("FunctionalTestComponent expected", component instanceof FunctionalTestComponent);
-        FunctionalTestComponent ftc = (FunctionalTestComponent)component;
+        FunctionalTestComponent ftc = getFunctionalTestComponent("testReceive" + method);
         ftc.setEventCallback(new EventCallback()
         {
-            public void eventReceived(MuleEventContext context, Object component) throws Exception
+            public void eventReceived(MuleEventContext context, Object serviceComponent) throws Exception
             {
                 MuleMessage message = context.getMessage();
 
-                Assert.assertEquals(contentType,
+                Assert.assertEquals(expectedContentType,
                     message.getInboundProperty(HttpConstants.HEADER_CONTENT_TYPE, null));
                 Assert.assertEquals("ISO-2022-JP", message.getEncoding());
 
                 Object payload = message.getPayload();
                 if (payload instanceof String)
                 {
-                    Assert.assertEquals(getTestMessage(Locale.JAPAN), payload);
+                    assertEquals(getTestMessage(Locale.JAPAN), payload);
                 }
                 else if (payload instanceof byte[])
                 {
-                    Assert.assertEquals(getTestMessage(Locale.JAPAN),
-                        new String((byte[])payload, message.getEncoding()));
+                    String payloadString = new String((byte[])payload, message.getEncoding());
+                    assertEquals(getTestMessage(Locale.JAPAN), payloadString);
                 }
                 else
                 {
@@ -119,7 +114,7 @@ public class HttpEncodingNonAsciiFunctionalTestCase extends FunctionalTestCase
     public static class ParamMapToString extends AbstractTransformer
     {
         @Override
-        protected Object doTransform(Object src, String encoding) throws TransformerException
+        protected Object doTransform(Object src, String outputEncoding) throws TransformerException
         {
             @SuppressWarnings("unchecked")
             Map<String, Object> map = (Map<String, Object>)src;
