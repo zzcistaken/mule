@@ -39,7 +39,7 @@ public abstract class AbstractObjectFactory implements ObjectFactory, FlowConstr
     public static final String ATTRIBUTE_OBJECT_CLASS = "objectClass";
 
     protected String objectClassName;
-    protected Class objectClass = null;
+    protected Class<?> objectClass = null;
     protected Map properties = null;
     protected List<InitialisationCallback> initialisationCallbacks = new ArrayList<InitialisationCallback>();
     protected FlowConstruct flowConstruct;
