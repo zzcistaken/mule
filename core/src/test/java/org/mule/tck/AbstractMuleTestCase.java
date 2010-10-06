@@ -694,17 +694,20 @@ public abstract class AbstractMuleTestCase extends TestCase implements TestCaseW
         return MuleTestUtils.getTestOutboundEndpoint(name, muleContext, null, transformers, null, null);
     }
 
-    public static InboundEndpoint getTestInboundEndpoint(String name, String uri, List transformers, Filter filter, Map properties, Connector connector) throws Exception
+    public static InboundEndpoint getTestInboundEndpoint(String name, String uri, 
+        List<Transformer> transformers, Filter filter, Map<Object, Object> properties, Connector connector) throws Exception
     {
         return MuleTestUtils.getTestInboundEndpoint(name, muleContext, uri, transformers, filter, properties, connector);
     }
 
-    public static OutboundEndpoint getTestOutboundEndpoint(String name, String uri, List transformers, Filter filter, Map properties) throws Exception
+    public static OutboundEndpoint getTestOutboundEndpoint(String name, String uri, 
+        List<Transformer> transformers, Filter filter, Map<Object, Object> properties) throws Exception
     {
         return MuleTestUtils.getTestOutboundEndpoint(name, muleContext, uri, transformers, filter, properties);
     }
 
-    public static OutboundEndpoint getTestOutboundEndpoint(String name, String uri, List transformers, Filter filter, Map properties, Connector connector) throws Exception
+    public static OutboundEndpoint getTestOutboundEndpoint(String name, String uri, 
+        List<Transformer> transformers, Filter filter, Map<Object, Object> properties, Connector connector) throws Exception
     {
         return MuleTestUtils.getTestOutboundEndpoint(name, muleContext, uri, transformers, filter, properties, connector);
     }
@@ -858,12 +861,12 @@ public abstract class AbstractMuleTestCase extends TestCase implements TestCaseW
             return testCount;
         }
 
-        public synchronized void incTestCount(String name)
+        public synchronized void incTestCount(String testName)
         {
-            if (!registeredTestMethod.contains(name))
+            if (!registeredTestMethod.contains(testName))
             {
                 testCount++;
-                registeredTestMethod.add(name);
+                registeredTestMethod.add(testName);
             }
         }
 
