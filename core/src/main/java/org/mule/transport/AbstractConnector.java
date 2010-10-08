@@ -58,7 +58,7 @@ import org.mule.context.notification.EndpointMessageNotification;
 import org.mule.context.notification.OptimisedNotificationHandler;
 import org.mule.endpoint.outbound.OutboundNotificationMessageProcessor;
 import org.mule.model.streaming.DelegatingInputStream;
-import org.mule.processor.AsyncInterceptingMessageProcessor;
+import org.mule.processor.OptionalAsyncInterceptingMessageProcessor;
 import org.mule.processor.builder.InterceptingChainMessageProcessorBuilder;
 import org.mule.retry.policies.NoRetryPolicyTemplate;
 import org.mule.routing.filters.WildcardFilter;
@@ -2489,16 +2489,23 @@ public abstract class AbstractConnector implements Connector, WorkListener
 
     public MessageProcessor createDispatcherMessageProcessor(OutboundEndpoint endpoint) throws MuleException
     {
-        InterceptingChainMessageProcessorBuilder builder = new InterceptingChainMessageProcessorBuilder();
-        builder.chain(new AsyncInterceptingMessageProcessor(new WorkManagerSource()
+        if (endpoint.getExchangePattern().hasResponse() || !getDispatcherThreadingProfile().isDoThreading())
         {
-            public WorkManager getWorkManager() throws MuleException
+            return new DispatcherMessageProcessor();
+        }
+        else
+        {
+            InterceptingChainMessageProcessorBuilder builder = new InterceptingChainMessageProcessorBuilder();
+            builder.chain(new OptionalAsyncInterceptingMessageProcessor(new WorkManagerSource()
             {
-                return getDispatcherWorkManager();
-            }
-        }, getDispatcherThreadingProfile().isDoThreading()));
-        builder.chain(new DispatcherMessageProcessor());
-        return builder.build();
+                public WorkManager getWorkManager() throws MuleException
+                {
+                    return getDispatcherWorkManager();
+                }
+            }));
+            builder.chain(new DispatcherMessageProcessor());
+            return builder.build();
+        }
     }
     
     public MessageExchangePattern getDefaultExchangePattern()
