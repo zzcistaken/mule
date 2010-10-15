@@ -64,5 +64,13 @@
       <file>src/main/java/config/PatternDefinitionParser.vm</file>
       <output>src/main/java/${patternConfigPackageDir}/${patternDefinitionParserClassName}.java</output>
     </template>
+    <template>
+      <file>src/test/java/config/PatternFunctionalTestCase.vm</file>
+      <output>src/test/java/${patternConfigPackageDir}/${patternClassName}FunctionalTestCase.java</output>
+    </template>
+    <template>
+      <file>src/test/resources/pattern-functional-test-config.vm</file>
+      <output>src/test/resources/${patternTagName}-functional-test-config.xml</output>
+    </template>
   </templates>
 </archetype>
