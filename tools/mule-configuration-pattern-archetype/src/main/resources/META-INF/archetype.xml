@@ -25,7 +25,8 @@
       <name>patternType</name>
       <description>What will be the type of this pattern? [mp] or [ms] or [si] or [siso]
       
-(mp:   the pattern is a pure message processor designed to be used within a flow alongside other message processors
+(Details of each type:
+ mp:   the pattern is a pure message processor designed to be used within a flow alongside other message processors
  ms:   the pattern receives messages from any kind of message source, like endpoints or routers
  si:   the pattern receives messages from a single inbound endpoint
  siso: the pattern receives messages from a single inbound endpoint and dispatches to a single outbound endpoint)</description>
@@ -36,17 +37,28 @@
   <templates>
     <!-- the Pattern todo should be run first since it sets up other variables and is always included -->
     <template>
-        <file>pattern.todo.vm</file>
-        <output>${patternTagName}.todo</output>
+      <file>pattern.todo.vm</file>
+      <output>${patternTagName}.todo</output>
     </template>
     <template>
-        <file>src/main/java/MPPattern.vm</file>
-        <output>src/main/java/${patternPackageDirs}/${patternClassName}.java</output>
-        <dependsOnVar>patternType=mp</dependsOnVar>
+      <file>src/test/java/PatternTestCase.vm</file>
+      <output>src/test/java/${patternPackageDir}/${patternClassName}TestCase.java</output>
+    </template>
+    <!-- Message processor patterns -->
+    <template>
+      <file>src/main/java/MPPattern.vm</file>
+      <output>src/main/java/${patternPackageDir}/${patternClassName}.java</output>
+      <dependsOnVar>patternType=mp</dependsOnVar>
     </template>
     <template>
-        <file>src/test/java/PatternTestCase.vm</file>
-        <output>src/test/java/${patternPackageDirs}/${patternClassName}TestCase.java</output>
+      <file>src/main/java/builder/MPPatternBuilder.vm</file>
+      <output>src/main/java/${patternBuilderPackageDir}/${patternBuilderClassName}.java</output>
+      <dependsOnVar>patternType=mp</dependsOnVar>
+    </template>
+    <template>
+      <file>src/test/java/builder/MPPatternBuilderTestCase.vm</file>
+      <output>src/test/java/${patternBuilderPackageDir}/${patternBuilderClassName}TestCase.java</output>
+      <dependsOnVar>patternType=mp</dependsOnVar>
     </template>
   </templates>
 </archetype>

@@ -4,22 +4,41 @@
 #set($patternXsdTypeName = "${patternVariableName}Type")
 ##
 #set($patternPackageName = $patternFQCN.substring(0, $patternFQCN.lastIndexOf('.')))
-#set($patternPackageDirs = $patternPackageName.replace('.', '/'))
+#set($patternPackageDir = $patternPackageName.replace('.', '/'))
 ##
-#set($patternBuilderPackageName = "$patternPackageName.builder")
-#set($patternBuilderPackageDirs = $patternBuilderPackageName.replace('.', '/'))
+#set($patternBuilderClassName = "${patternClassName}Builder")
+#set($patternBuilderPackageName = "${patternPackageName}.builder")
+#set($patternBuilderPackageDir = $patternBuilderPackageName.replace('.', '/'))
+#set($patternBuilderFQCN = "${patternBuilderPackageName}.${patternBuilderClassName}")
 ##
-#set($patternDefinitionParserClassName = "${patternClassName}DefinitionParser()")
 #set($patternConfigPackageName = "${patternPackageName}.config")
-#set($patternConfigPackageDirs = $patternConfigPackageName.replace('.', '/'))
+#set($patternConfigPackageDir = $patternConfigPackageName.replace('.', '/'))
 ##
+#set($patternFactoryBeanClassName = "${patternClassName}FactoryBean")
+#set($patternFactoryBeanFQCN = "${patternConfigPackageName}.${patternFactoryBeanClassName}")
+##
+#set($patternDefinitionParserClassName = "${patternClassName}DefinitionParser")
+#set($patternConfigFQCN = "${patternConfigPackageName}.${patternDefinitionParserClassName}")
+##
+**************************
+* Pattern Implementation *
+**************************
+
+Address all the TODOs in these generated classes:
+
+  - ${patternFQCN}
+  - ${patternBuilderFQCN}
+  - ${patternFactoryBeanFQCN}
+  - ${patternConfigFQCN}
+
+
 *********************
 * Namespace Handler *
 *********************
 
 Add the following line in your module's namespace handler init() method:
 
-registerBeanDefinitionParser("${patternTagName}", new $patternConfigPackageName.$patternDefinitionParserClassName);
+registerBeanDefinitionParser("${patternTagName}", new ${patternConfigFQCN}());
 
 
 *********************
