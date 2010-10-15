@@ -41,24 +41,28 @@
       <output>${patternTagName}.todo</output>
     </template>
     <template>
+      <file>src/main/java/Pattern.vm</file>
+      <output>src/main/java/${patternPackageDir}/${patternClassName}.java</output>
+    </template>
+    <template>
       <file>src/test/java/PatternTestCase.vm</file>
       <output>src/test/java/${patternPackageDir}/${patternClassName}TestCase.java</output>
     </template>
-    <!-- Message processor patterns -->
     <template>
-      <file>src/main/java/MPPattern.vm</file>
-      <output>src/main/java/${patternPackageDir}/${patternClassName}.java</output>
-      <dependsOnVar>patternType=mp</dependsOnVar>
-    </template>
-    <template>
-      <file>src/main/java/builder/MPPatternBuilder.vm</file>
+      <file>src/main/java/builder/PatternBuilder.vm</file>
       <output>src/main/java/${patternBuilderPackageDir}/${patternBuilderClassName}.java</output>
-      <dependsOnVar>patternType=mp</dependsOnVar>
     </template>
     <template>
-      <file>src/test/java/builder/MPPatternBuilderTestCase.vm</file>
+      <file>src/test/java/builder/PatternBuilderTestCase.vm</file>
       <output>src/test/java/${patternBuilderPackageDir}/${patternBuilderClassName}TestCase.java</output>
-      <dependsOnVar>patternType=mp</dependsOnVar>
+    </template>
+    <template>
+      <file>src/main/java/config/PatternFactoryBean.vm</file>
+      <output>src/main/java/${patternConfigPackageDir}/${patternFactoryBeanClassName}.java</output>
+    </template>
+    <template>
+      <file>src/main/java/config/PatternDefinitionParser.vm</file>
+      <output>src/main/java/${patternConfigPackageDir}/${patternDefinitionParserClassName}.java</output>
     </template>
   </templates>
 </archetype>

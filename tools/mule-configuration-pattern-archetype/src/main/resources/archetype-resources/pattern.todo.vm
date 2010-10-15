@@ -7,6 +7,7 @@
 #set($patternPackageDir = $patternPackageName.replace('.', '/'))
 ##
 #set($patternBuilderClassName = "${patternClassName}Builder")
+#set($patternBuilderVariableName = "${patternVariableName}Builder")
 #set($patternBuilderPackageName = "${patternPackageName}.builder")
 #set($patternBuilderPackageDir = $patternBuilderPackageName.replace('.', '/'))
 #set($patternBuilderFQCN = "${patternBuilderPackageName}.${patternBuilderClassName}")
