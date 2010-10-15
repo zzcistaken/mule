@@ -11,9 +11,9 @@
   </parent>
 
   <packaging>maven-plugin</packaging>
-  <artifactId>mule-configuration-pattern-archetype</artifactId>
+  <artifactId>mule-configuration-patterns-catalog-archetype</artifactId>
   <version>3.0.1-SNAPSHOT</version>
-  <name>An archetype for creating Mule configuration patterns.</name>
+  <name>Mule Configuration Patterns Catalog Artifact</name>
   
   <dependencies>
     <dependency>
