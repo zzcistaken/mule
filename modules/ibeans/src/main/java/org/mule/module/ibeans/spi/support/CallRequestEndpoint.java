@@ -37,7 +37,7 @@ import org.ibeans.api.channel.CHANNEL;
  *
  * @see CallOutboundEndpoint
  */
-public class CallRequestEndpoint extends DynamicRequestEndpoint
+public class    CallRequestEndpoint extends DynamicRequestEndpoint
 {
     /**
      * logger used by this class
