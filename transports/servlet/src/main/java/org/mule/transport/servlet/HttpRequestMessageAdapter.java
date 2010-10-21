@@ -26,11 +26,13 @@ import java.io.Serializable;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.collections.EnumerationUtils;
 import org.apache.commons.io.IOUtils;
 
 /**
@@ -39,9 +41,8 @@ import org.apache.commons.io.IOUtils;
  */
 public class HttpRequestMessageAdapter extends AbstractMessageAdapter
 {
-    /**
-     * Serial version
-     */
+    private static final String REMOTE_ADDRESS_HEADER = "remoteAddress";
+
     private static final long serialVersionUID = -4238448252206941125L;
 
     private PayloadHolder payloadHolder;
@@ -59,7 +60,7 @@ public class HttpRequestMessageAdapter extends AbstractMessageAdapter
             HttpServletRequest request = (HttpServletRequest) message;
 
             Enumeration<String> paramNames = request.getParameterNames();            
-            requestParameters = new HashMap();
+            requestParameters = new HashMap<String, String>();
             if (paramNames != null)
             {
                 while (paramNames.hasMoreElements())
@@ -99,43 +100,62 @@ public class HttpRequestMessageAdapter extends AbstractMessageAdapter
                     }
                 }
             }
-            String key;
-            for (Enumeration e = request.getAttributeNames(); e.hasMoreElements();)
+
+            for (Enumeration<?> e = request.getAttributeNames(); e.hasMoreElements();)
             {
-                key = (String) e.nextElement();
+                String key = (String) e.nextElement();
                 headers.put(key, request.getAttribute(key));
             }
-            String realKey;
-            for (Enumeration e = request.getHeaderNames(); e.hasMoreElements();)
-            {
-                key = (String)e.nextElement();
-                realKey = key;
-                if (key.startsWith(HttpConstants.X_PROPERTY_PREFIX))
-                {
-                    realKey = key.substring(2);
-                }
-
-                // Workaround for containers that strip the port from the Host header.
-                // This is needed so Mule components can figure out what port they're on.
-                String value = request.getHeader(key);
-                if (HttpConstants.HEADER_HOST.equalsIgnoreCase(key)) 
-                {
-                    realKey = HttpConstants.HEADER_HOST;
-                    int port = request.getLocalPort();
-                    if (!value.contains(":") && port != 80 && port != 443)
-                    {
-                        value = value + ":" + port;
-                    }
-                }
-                
-                headers.put(realKey, value);
-            }
+            
+            copyHeadersInto(request, headers);
+            headers.put(REMOTE_ADDRESS_HEADER, request.getRemoteAddr());
             
             addInboundProperties(headers);
         }
         else
         {
             throw new MessageTypeNotSupportedException(message, getClass());
+        }
+    }
+
+    private void copyHeadersInto(HttpServletRequest request, Map<Object, Object> headers)
+    {
+        for (Enumeration<?> e = request.getHeaderNames(); e.hasMoreElements();)
+        {
+            String key = (String)e.nextElement();
+            String realKey = key;
+            if (key.startsWith(HttpConstants.X_PROPERTY_PREFIX))
+            {
+                realKey = key.substring(2);
+            }
+
+            // Workaround for containers that strip the port from the Host header.
+            // This is needed so Mule components can figure out what port they're on.
+            if (HttpConstants.HEADER_HOST.equalsIgnoreCase(key)) 
+            {
+                realKey = HttpConstants.HEADER_HOST;
+             
+                String value = request.getHeader(key);
+                int port = request.getLocalPort();
+                if (!value.contains(":") && port != 80 && port != 443)
+                {
+                    value = value + ":" + port;
+                }
+                headers.put(realKey, value);
+            }
+            else
+            {
+                Enumeration<?> valueEnum = request.getHeaders(key);
+                List<?> values = EnumerationUtils.toList(valueEnum);
+                if (values.size() > 1)
+                {
+                    headers.put(realKey, values.toArray());
+                }
+                else
+                {
+                    headers.put(realKey, values.get(0));
+                }
+            }
         }
     }
 
