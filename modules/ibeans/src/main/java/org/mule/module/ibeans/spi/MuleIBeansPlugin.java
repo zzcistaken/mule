@@ -117,6 +117,9 @@ public class MuleIBeansPlugin implements IBeansPlugin<MuleRequestMessage, MuleRe
             }
         }
 
+        //TODO (requires API change)
+        // message.setInvocationProperty(MuleProperties.MULE_METHOD_PROPERTY, XXX);
+
         //Set the URI params so the correct URI can be constructed for this invocation
         message.setOutboundProperty(CHANNEL.URI_PARAM_PROPERTIES, data.getUriParams());
 
@@ -132,6 +135,13 @@ public class MuleIBeansPlugin implements IBeansPlugin<MuleRequestMessage, MuleRe
                 throw new IBeansException(e);
             }
         }
+
+        //Add the properties to the invocation scope
+        for (String key : data.getPropertyParams().keySet())
+        {
+            message.setInvocationProperty(key, data.getPropertyParams().get(key));
+        }
+
         request = new MuleRequestMessage(data, message);
 
         //TODO It may be useful to set the Method invoked on the request, In Mule,
