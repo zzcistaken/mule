@@ -59,6 +59,14 @@ public class CxfJaxWsTestCase extends FunctionalTestCase
                     "</soap:Body>" +
                 "</soap:Envelope>", httpMethod.getResponseBodyAsString());
     }
+    
+    public void testWebServiceContext() throws Exception
+    {
+        MuleClient client = new MuleClient();
+        MuleMessage result = client.send("cxf:http://localhost:63081/services/Echo?method=ensureWebSerivceContextIsSet", 
+            TEST_MESSAGE, null);
+        assertEquals(TEST_MESSAGE, result.getPayload());
+    }
 
     protected String getConfigResources()
     {

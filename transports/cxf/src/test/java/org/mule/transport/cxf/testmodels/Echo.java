@@ -10,14 +10,20 @@
 
 package org.mule.transport.cxf.testmodels;
 
+import javax.annotation.Resource;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebResult;
 import javax.jws.WebService;
+import javax.xml.ws.WebServiceContext;
+
+import junit.framework.Assert;
 
 @WebService
 public class Echo
 {
+    @Resource
+    private WebServiceContext context;
 
     @WebResult(name = "text")
     @WebMethod
@@ -25,5 +31,13 @@ public class Echo
     String s)
     {
         return s;
+    }
+    
+    @WebResult(name = "output")
+    @WebMethod
+    public String ensureWebSerivceContextIsSet(@WebParam(name = "input") String input)
+    {
+        Assert.assertNotNull(context);
+        return input;
     }
 }

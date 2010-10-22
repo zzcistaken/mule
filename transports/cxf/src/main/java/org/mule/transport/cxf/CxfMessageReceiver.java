@@ -60,6 +60,7 @@ import org.apache.cxf.interceptor.Interceptor;
 import org.apache.cxf.jaxws.JaxWsServerFactoryBean;
 import org.apache.cxf.service.factory.AbstractServiceConfiguration;
 import org.apache.cxf.service.factory.ReflectionServiceFactoryBean;
+import org.apache.cxf.service.invoker.Invoker;
 
 /**
  * Create a CXF service. All messages for the service will be sent to the Mule bus a
@@ -270,7 +271,12 @@ public class CxfMessageReceiver extends AbstractMessageReceiver
                 sync = true;
             }
 
-            sfb.setInvoker(new MuleInvoker(this, targetCls, sync));
+            Invoker invoker = new MuleInvoker(this, targetCls, sync);
+            if (CxfConstants.JAX_WS_FRONTEND.equals(frontend)) 
+            {
+                invoker = new MuleJAXWSInvoker(invoker);
+            }
+            sfb.setInvoker(invoker);
             sfb.setStart(false);
 
             Bus bus = connector.getCxfBus();
