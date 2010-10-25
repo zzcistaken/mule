@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesource.org/schema/mule/core/2.2"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:activiti="http://www.mulesource.org/schema/mule/activiti/2.2"
+    xsi:schemaLocation="
+       http://www.mulesource.org/schema/mule/core/2.2 http://www.mulesource.org/schema/mule/core/2.2/mule.xsd
+       http://www.mulesource.org/schema/mule/activiti/2.2 http://www.mulesource.org/schema/mule/activiti/2.2/mule-activiti.xsd">
+
+    <activiti:connector name="actServer" activitiServerURL="http://localhost:8080/activiti-rest/service/" 
+            username="kermit" password="kermit2" />
+       
+       <model>
+         <service name="Activiti service">
+            <inbound>
+                <activiti:inbound-endpoint activiti-server="actServer">
+                    <activiti:list-process-definitions />
+                </activiti:inbound-endpoint>
+            </inbound>
+         </service>
+       </model>
+</mule>
