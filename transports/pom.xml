@@ -14,7 +14,6 @@
     <modules>
         <module>all-transports</module>
         <module>axis</module>
-        <module>activiti</module>
         <module>bpm</module>
         <module>cxf</module>
         <module>ejb</module>

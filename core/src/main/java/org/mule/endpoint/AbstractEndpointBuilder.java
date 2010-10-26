@@ -257,7 +257,7 @@ public abstract class AbstractEndpointBuilder implements EndpointBuilder
         return name != null ? name : ObjectNameHelper.getEndpointName(endpointURI);
     }
 
-    public Map getProperties()
+    protected Map getProperties()
     {
         // Add properties from builder, endpointURI and then seal (make unmodifiable)
         LinkedList maps = new LinkedList();
