@@ -19,6 +19,7 @@ import org.mule.transport.email.GreenMailUtilities;
 import org.mule.transport.email.ImapConnector;
 import org.mule.transport.email.MailProperties;
 import org.mule.transport.email.Pop3Connector;
+import org.mule.util.SystemUtils;
 
 import com.icegreen.greenmail.util.GreenMail;
 import com.icegreen.greenmail.util.ServerSetup;
@@ -27,6 +28,8 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.activation.CommandMap;
+import javax.activation.MailcapCommandMap;
 import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.internet.MimeMessage;
@@ -78,7 +81,7 @@ public abstract class AbstractEmailFunctionalTestCase extends DynamicPortTestCas
                 DEFAULT_EMAIL, DEFAULT_USER, (locale == null ? DEFAULT_MESSAGE : getMessage(locale)), DEFAULT_PASSWORD, charset);
     }
 
-    protected AbstractEmailFunctionalTestCase(boolean isMimeMessage, String protocol, 
+    protected AbstractEmailFunctionalTestCase(boolean isMimeMessage, String protocol,
         String configFile, String email, String user, String message, String password, String charset)
     {
         this.isMimeMessage = isMimeMessage;
@@ -103,6 +106,21 @@ public abstract class AbstractEmailFunctionalTestCase extends DynamicPortTestCas
     {
         this.port = getPorts().get(0);
         startServer();
+        initDefaultCommandMap();
+    }
+
+    /**
+     * This is required to make all tests work on JDK5.
+     */
+    private void initDefaultCommandMap()
+    {
+        if (SystemUtils.JAVA_VERSION_FLOAT < 1.6f)
+        {
+            MailcapCommandMap commandMap = (MailcapCommandMap) CommandMap.getDefaultCommandMap();
+            commandMap.addMailcap("application/xml;;  x-java-content-handler=com.sun.mail.handlers.text_plain");
+            commandMap.addMailcap("application/text;; x-java-content-handler=com.sun.mail.handlers.text_plain");
+            CommandMap.setDefaultCommandMap(commandMap);
+        }
     }
 
     @Override
@@ -129,7 +147,7 @@ public abstract class AbstractEmailFunctionalTestCase extends DynamicPortTestCas
         {
             props = new HashMap<String, Object>();
             props.put(MailProperties.CONTENT_TYPE_PROPERTY, "text/plain; charset=" + charset);
-        } 
+        }
         if (addAttachments)
         {
             MuleMessage muleMessage = new DefaultMuleMessage(msg, props, muleContext);
