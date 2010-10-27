@@ -1,24 +1,26 @@
-/**
- * Created by IntelliJ IDEA.
- * User: mike.schilling
- * Date: Oct 15, 2010
- * Time: 3:00:34 PM
- * To change this template use File | Settings | File Templates.
+/*
+ * $Id$
+ * --------------------------------------------------------------------------------------
+ * Copyright (c) MuleSoft, Inc.  All rights reserved.  http://www.mulesoft.com
+ *
+ * The software in this package is published under the terms of the CPAL v1.0
+ * license, a copy of which has been included with this distribution in the
+ * LICENSE.txt file.
  */
 
 package org.mule.transport.email.transformers;
 
 import org.mule.transport.email.functional.AbstractEmailFunctionalTestCase;
 
-import javax.activation.MimeType;
-import javax.mail.BodyPart;
-import javax.mail.internet.MimeMultipart;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.activation.MimeType;
+import javax.mail.BodyPart;
+import javax.mail.internet.MimeMultipart;
+
 public class SmtpAttachmentsFunctionalInboundAttachmentsOnlyTestCase extends AbstractEmailFunctionalTestCase
 {
-
     public SmtpAttachmentsFunctionalInboundAttachmentsOnlyTestCase()
     {
         super(STRING_MESSAGE, "smtp", "smtp-functional-test-inbound-attachments-only.xml");
@@ -35,7 +37,7 @@ public class SmtpAttachmentsFunctionalInboundAttachmentsOnlyTestCase extends Abs
     {
         assertEquals(3, content.getCount());
         verifyMessage((String) content.getBodyPart(0).getContent());
-        List expectedTypes = Arrays.asList("text/plain", "text/xml");
+        List<String> expectedTypes = Arrays.asList("text/plain", "text/xml");
         for (int i = 1; i < 2; i++)
         {
             BodyPart part = content.getBodyPart(i);
