@@ -10,9 +10,6 @@
 
 package org.mule.transport.email.transformers;
 
-import org.mule.api.MuleMessage;
-import org.mule.api.transformer.TransformerException;
-import org.mule.transformer.AbstractMessageTransformer;
 import org.mule.transport.email.functional.AbstractEmailFunctionalTestCase;
 
 import java.util.Arrays;
@@ -40,31 +37,13 @@ public class SmtpAttachmentsFunctionalTestCase extends AbstractEmailFunctionalTe
     {
         assertEquals(4, content.getCount());
         verifyMessage((String) content.getBodyPart(0).getContent());
-        List expectedTypes = Arrays.asList("text/plain", "application/xml", "application/text");
+        List<String> expectedTypes = Arrays.asList("text/plain", "application/xml", "application/text");
         for (int i = 1; i < 4; i++)
         {
             BodyPart part = content.getBodyPart(i);
             String type = part.getContentType();
             MimeType mt = new MimeType(type);
             assertTrue(expectedTypes.contains(mt.getPrimaryType() + "/" + mt.getSubType()));
-        }
-    }
-
-    public static class AddOutboundAttachments extends AbstractMessageTransformer
-    {
-        @Override
-        public Object transformMessage(MuleMessage msg, String outputEncoding) throws TransformerException
-        {
-            try
-            {
-                msg.addOutboundAttachment("seeya", "seeya", "application/text");
-                msg.addOutboundAttachment("goodbye", "goodbye", "application/xml");
-            }
-            catch (Exception e)
-            {
-                throw new TransformerException(this, e);
-            }
-            return msg.getPayload();
         }
     }
 }
