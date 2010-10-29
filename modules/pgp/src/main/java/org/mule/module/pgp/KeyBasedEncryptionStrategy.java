@@ -20,6 +20,7 @@ import org.mule.security.AbstractNamedEncryptionStrategy;
 
 import cryptix.message.EncryptedMessage;
 import cryptix.message.EncryptedMessageBuilder;
+import cryptix.message.LiteralMessage;
 import cryptix.message.LiteralMessageBuilder;
 import cryptix.message.Message;
 import cryptix.message.MessageFactory;
@@ -115,7 +116,15 @@ public class KeyBasedEncryptionStrategy extends AbstractNamedEncryptionStrategy
                 
                 applyStrongEncryptionWorkaround(msg);
 
-                return new PGPArmouredMessage(msg).getEncoded();
+                if (msg instanceof LiteralMessage)
+                {
+                    LiteralMessage literal = (LiteralMessage) msg;
+                    return literal.getTextData().getBytes();
+                }
+                else
+                {
+                    return msg.getEncoded();
+                }
             }
         }
         catch (Exception e)
