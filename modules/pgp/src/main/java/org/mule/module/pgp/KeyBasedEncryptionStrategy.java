@@ -119,7 +119,14 @@ public class KeyBasedEncryptionStrategy extends AbstractNamedEncryptionStrategy
                 if (msg instanceof LiteralMessage)
                 {
                     LiteralMessage literal = (LiteralMessage) msg;
-                    return literal.getTextData().getBytes();
+                    if (literal.getDataType() == LiteralMessage.BINARY)
+                    {
+                        return literal.getBinaryData();
+                    }
+                    else
+                    {
+                        literal.getTextData();
+                    }
                 }
                 else
                 {
