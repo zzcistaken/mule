@@ -11,7 +11,7 @@
 
     <artifactId>ibean-archetype</artifactId>
     <packaging>maven-archetype</packaging>
-    <name>ibean-archetype</name>
+    <name>ibean Archetype</name>
     <description>Creates a new iBean project that talks to an external service i.e. Twitter, Amazon S3, Flickr). The project will define the dependencies and documented sample
         code for the ibean itself and a a working testcase.</description>
     <build>
@@ -36,19 +36,6 @@
         </plugins>
     </build>
     <distributionManagement>
-        <repository>
-            <id>muleforge.webdav.releases</id>
-            <url>dav:https://dav.muleforge.org/repository/ibeans</url>
-        </repository>
-        <snapshotRepository>
-            <uniqueVersion>false</uniqueVersion>
-            <id>muleforge.webdav.snapshots</id>
-            <url>dav:https://dav.muleforge.org/snapshots.repository/ibeans</url>
-        </snapshotRepository>
-        <site>
-            <id>muleforge.webdav.sites</id>
-            <url>dav:https://dav.muleforge.org/ibeans-contrib/maven/${version}</url>
-        </site>
         <downloadUrl>http://mulesoft.org/display/IBEANS/Download</downloadUrl>
     </distributionManagement>
 </project>
