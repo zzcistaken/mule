@@ -28,6 +28,7 @@ public class JmsAtomFeedConsumeTestCase extends FunctionalTestCase
     public void testConsumeFeed() throws Exception
     {
         LocalMuleClient client = muleContext.getClient();
+        FeedReceiver.receivedEntries.set(0);
         String feed = loadResourceAsString("sample-feed.atom");
         client.dispatch("jms://feed.in", feed, null);
         Thread.sleep(2000);
@@ -37,9 +38,10 @@ public class JmsAtomFeedConsumeTestCase extends FunctionalTestCase
     public void testConsumeSplitFeed() throws Exception
     {
         LocalMuleClient client = muleContext.getClient();
+        EntryReceiver.receivedEntries.set(0); //reset since the build reports that it's getting incremented someplace else
         String feed = loadResourceAsString("sample-feed.atom");
         client.dispatch("jms://feed.split.in", feed, null);
-        Thread.sleep(2000);                
+        Thread.sleep(5000);                
         assertEquals(25, EntryReceiver.receivedEntries.get());
     }
 }

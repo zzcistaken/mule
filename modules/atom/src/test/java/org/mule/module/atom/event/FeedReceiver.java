@@ -22,6 +22,7 @@ public class FeedReceiver
 
     public void processFeed(@Payload Feed feed) throws Exception
     {
+        receivedEntries.set(0);
         System.out.println("Received " + feed.getEntries().size() + " events");
         receivedEntries.set(feed.getEntries().size());
     }
