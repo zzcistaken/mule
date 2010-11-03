@@ -185,7 +185,13 @@ public class JdbcMessageReceiver extends TransactedPollingMessageReceiver
         return this.ackStmt != null;
     }
 
-    private List<MuleMessage> createMuleMessages(List records)
+    /**
+     * Creates a mule message per each data record.
+     *
+     * @param records data records used to created the payload of the new messages.
+     * @return the created messages
+     */
+    protected List<MuleMessage> createMuleMessages(List<Object> records)
     {
         List<MuleMessage> messages = new LinkedList<MuleMessage>();
         for (Object record : records)
