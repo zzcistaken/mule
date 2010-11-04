@@ -10,54 +10,16 @@
 
 package org.mule.transport.jdbc.config;
 
-import org.mule.config.spring.parsers.AbstractMuleBeanDefinitionParser;
-import org.mule.util.ClassUtils;
-import org.mule.util.StringUtils;
-
-import org.springframework.beans.MutablePropertyValues;
-import org.springframework.beans.factory.config.RuntimeBeanReference;
-import org.springframework.beans.factory.support.AbstractBeanDefinition;
-import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
-import org.springframework.beans.factory.xml.ParserContext;
-import org.w3c.dom.Element;
-
-public class SqlStatementStrategyFactoryDefinitionParser extends AbstractBeanDefinitionParser
+/**
+ * Parser for sqlStatementStrategyFactory property.
+ */
+public class SqlStatementStrategyFactoryDefinitionParser extends AbstractJdbcFactoryBeanParser
 {
 
-    protected AbstractBeanDefinition parseInternal(Element element, ParserContext parserContext)
+    @Override
+    protected String getPropertyName()
     {
-        final MutablePropertyValues parentProps = parserContext.getContainingBeanDefinition().getPropertyValues();
-
-        final String ref = element.getAttribute(AbstractMuleBeanDefinitionParser.ATTRIBUTE_REF);
-        final String clazz = element.getAttribute(AbstractMuleBeanDefinitionParser.ATTRIBUTE_CLASS);
-        if (StringUtils.isBlank(ref) && StringUtils.isBlank(clazz))
-        {
-            throw new IllegalArgumentException("Neither ref nor class attribute specified for the sqlStatementStrategyFactory element");
-        }
-
-
-        if (StringUtils.isNotBlank(ref))
-        {
-            // add a ref to other bean
-            parentProps.addPropertyValue(JdbcNamespaceHandler.ATTRIBUTE_SQL_STATEMENT_FACTORY, new RuntimeBeanReference(ref));
-        }
-        else
-        {
-            // class attributed specified, instantiate and set directly
-            final Object strategy;
-            try
-            {
-                strategy = ClassUtils.instanciateClass(clazz, ClassUtils.NO_ARGS, getClass());
-            }
-            catch (Exception e)
-            {
-                throw new RuntimeException(e);
-            }
-
-            parentProps.addPropertyValue(JdbcNamespaceHandler.ATTRIBUTE_SQL_STATEMENT_FACTORY, strategy);
-        }
-
-        return null;
+        return JdbcNamespaceHandler.SQL_STATEMENT_FACTORY_PROPERTY;
     }
 
 }
