@@ -3,3 +3,8 @@ org.mule.module.ibeans.IntegrationBeanAnnotationTestCase
 
 # Something may need updating in ibeans-core, wherever that is
 org.mule.module.ibeans.annotations.ExceptionListenerTestCase
+
+# re-enable these when the Flickr iBean is based on 3.0.1 and can set
+# @ContainsTransformerMethods
+org.mule.module.ibeans.FlickrSearchTestCase
+org.mule.module.ibeans.FlickrTestCase
