@@ -20,7 +20,7 @@
         </dependency>
         <dependency>
             <groupId>org.mule.transports</groupId>
-            <artifactId>mule-transport-jetty</artifactId>
+            <artifactId>mule-transport-http</artifactId>
             <version>${version}</version>
             <scope>provided</scope>
         </dependency>
@@ -29,12 +29,6 @@
             <artifactId>mule-transport-servlet</artifactId>
             <version>${version}</version>
             <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.mule.transports</groupId>
-                    <artifactId>mule-transport-http</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.mule.transports</groupId>

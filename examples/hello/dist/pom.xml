@@ -36,19 +36,13 @@
         </dependency>
         <dependency>
             <groupId>org.mule.transports</groupId>
-            <artifactId>mule-transport-jetty</artifactId>
+            <artifactId>mule-transport-http</artifactId>
             <version>${muleVersion}</version>
         </dependency>
         <dependency>
             <groupId>org.mule.transports</groupId>
             <artifactId>mule-transport-servlet</artifactId>
             <version>${muleVersion}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.mule.transports</groupId>
-                    <artifactId>mule-transport-http</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
