@@ -49,7 +49,6 @@ public class DefaultEntryPointResolverSet implements EntryPointResolverSet
                 }
                 else
                 {
-//System.out.println("****** " + System.identityHashCode(this) + " " + Thread.currentThread().getName() + " error: " + result.getErrorMessage());
                     if (result.hasError())
                     {
                         exceptions.add(result.getErrorMessage());
