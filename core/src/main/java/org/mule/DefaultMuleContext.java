@@ -110,8 +110,6 @@ public class DefaultMuleContext implements MuleContext
     /** Global exception handler which handles "system" exceptions (i.e., when no message is involved). */
     protected SystemExceptionHandler exceptionListener;
 
-    private SplashScreen startupScreen;
-    
     public DefaultMuleContext(MuleConfiguration config,
                               WorkManager workManager,
                               WorkListener workListener,
@@ -135,7 +133,6 @@ public class DefaultMuleContext implements MuleContext
         muleRegistryHelper = createRegistryHelper(registryBroker);
         localMuleClient = new DefaultLocalMuleClient(this);
         exceptionListener = new DefaultSystemExceptionStrategy(this);
-        startupScreen = buildStartupSplash();
     }
 
     protected DefaultRegistryBroker createRegistryBroker()
@@ -211,6 +208,7 @@ public class DefaultMuleContext implements MuleContext
 
         if (logger.isInfoEnabled())
         {
+            SplashScreen startupScreen = buildStartupSplash();
             logger.info(startupScreen.toString());
         }
     }
@@ -650,10 +648,5 @@ public class DefaultMuleContext implements MuleContext
     public void setExceptionListener(SystemExceptionHandler exceptionListener)
     {
         this.exceptionListener = exceptionListener;
-    }
-    
-    public SplashScreen getStartupScreen()
-    {
-        return startupScreen;
     }
 }
