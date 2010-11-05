@@ -346,7 +346,7 @@
     <xsd:element name="async" type="asyncType" substitutionGroup="abstract-message-processor">
         <xsd:annotation>
             <xsd:documentation>
-                Processes the nest list of message processors asychronously using a thread pool 
+                Processes the nested list of message processors asynchronously using a thread pool
             </xsd:documentation>
         </xsd:annotation>
     </xsd:element>
@@ -360,7 +360,7 @@
                 <xsd:attribute name="name" type="xsd:string" use="optional">
                     <xsd:annotation>
                         <xsd:documentation>
-                            Optional name that will be used to name the work managers thread pools
+                            Optional name that will be used to name the threads used by this flow.
                         </xsd:documentation>
                     </xsd:annotation>
                 </xsd:attribute>
