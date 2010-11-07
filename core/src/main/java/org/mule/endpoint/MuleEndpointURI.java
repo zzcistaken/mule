@@ -70,7 +70,7 @@ public class MuleEndpointURI implements EndpointURI
     private String userInfo;
     private String schemeMetaInfo;
     private String resourceInfo;
-    private boolean isDynamic;
+    private boolean dynamic;
     private transient MuleContext muleContext;
 
     MuleEndpointURI(String address,
@@ -144,7 +144,7 @@ public class MuleEndpointURI implements EndpointURI
         if (uri.indexOf("#[") >= 0)
         {
             address = uri;
-            isDynamic = true;
+            dynamic = true;
         }
         else
         {
@@ -331,7 +331,7 @@ public class MuleEndpointURI implements EndpointURI
     public String getFullScheme()
     {
         String scheme;
-        if (isDynamic)
+        if (dynamic)
         {
             int colon = address.indexOf(':');
             scheme = address.substring(0, colon);
@@ -507,7 +507,7 @@ public class MuleEndpointURI implements EndpointURI
 
     public boolean isDynamic()
     {
-        return isDynamic;
+        return dynamic;
     }
 
     @Override
