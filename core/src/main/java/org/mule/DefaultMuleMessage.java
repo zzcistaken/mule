@@ -5,7 +5,7 @@
  *
  * The software in this package is published under the terms of the CPAL v1.0
  * license, a copy of which has been included with this distribution in the
- * LICENSE.txt file.
+ * LICENSE.txt  file.
  */
 
 package org.mule;
@@ -148,7 +148,7 @@ public class DefaultMuleMessage implements MuleMessage, ThreadSafeAccess, Deseri
 
     public DefaultMuleMessage(Object message, Map<String, Object> outboundProperties, Map<String, DataHandler> attachments, MuleContext muleContext)
     {
-        this(message, null, outboundProperties, attachments, muleContext);   
+        this(message, null, outboundProperties, attachments, muleContext);
     }
 
     public DefaultMuleMessage(Object message, Map<String, Object> inboundProperties,
