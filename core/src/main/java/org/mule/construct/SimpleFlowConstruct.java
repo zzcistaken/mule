@@ -53,12 +53,12 @@ public class SimpleFlowConstruct extends AbstractFlowConstruct
         {
             threadingProfile = muleContext.getDefaultServiceThreadingProfile();
         }
-        
+
         final MuleConfiguration config = muleContext.getConfiguration();
         final boolean containerMode = config.isContainerMode();
         final String threadPrefix = containerMode
                                                  ? String.format("[%s].flow.%s", config.getId(), getName())
-                                                 : getName();
+                                                 : String.format("flow.%s", getName());
 
         builder.chain(new ProcessIfStartedMessageProcessor(this, getLifecycleState()));
         builder.chain(new OptionalAsyncInterceptingMessageProcessor(threadingProfile, threadPrefix,
