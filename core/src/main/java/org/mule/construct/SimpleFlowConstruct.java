@@ -11,9 +11,13 @@
 package org.mule.construct;
 
 import org.mule.api.MuleContext;
+import org.mule.api.config.ThreadingProfile;
+import org.mule.api.context.WorkManager;
 import org.mule.api.endpoint.InboundEndpoint;
 import org.mule.api.processor.MessageProcessor;
 import org.mule.api.processor.MessageProcessorBuilder;
+import org.mule.lifecycle.processor.ProcessIfStartedMessageProcessor;
+import org.mule.processor.OptionalAsyncInterceptingMessageProcessor;
 import org.mule.processor.builder.InterceptingChainMessageProcessorBuilder;
 
 import java.util.Collections;
@@ -32,15 +36,9 @@ public class SimpleFlowConstruct extends AbstractFlowConstruct
 {
     protected List<MessageProcessor> messageProcessors = Collections.emptyList();
 
-    public void setMessageProcessors(List<MessageProcessor> messageProcessors)
-    {
-        this.messageProcessors = messageProcessors;
-    }
+    protected ThreadingProfile threadingProfile;
 
-    public List<MessageProcessor> getMessageProcessors()
-    {
-        return messageProcessors;
-    }
+    protected WorkManager workManager;
 
     public SimpleFlowConstruct(String name, MuleContext muleContext)
     {
@@ -50,6 +48,15 @@ public class SimpleFlowConstruct extends AbstractFlowConstruct
     @Override
     protected void configureMessageProcessors(InterceptingChainMessageProcessorBuilder builder)
     {
+        if (threadingProfile == null)
+        {
+            threadingProfile = muleContext.getDefaultServiceThreadingProfile();
+        }
+
+        builder.chain(new ProcessIfStartedMessageProcessor(this, getLifecycleState()));
+        builder.chain(new OptionalAsyncInterceptingMessageProcessor(threadingProfile, "flow." + name,
+            muleContext.getConfiguration().getShutdownTimeout()));
+
         for (Object processor : messageProcessors)
         {
             if (processor instanceof MessageProcessor)
@@ -68,10 +75,30 @@ public class SimpleFlowConstruct extends AbstractFlowConstruct
         }
     }
 
+    public ThreadingProfile getThreadingProfile()
+    {
+        return threadingProfile;
+    }
+
+    public void setThreadingProfile(ThreadingProfile threadingProfile)
+    {
+        this.threadingProfile = threadingProfile;
+    }
+
+    public void setMessageProcessors(List<MessageProcessor> messageProcessors)
+    {
+        this.messageProcessors = messageProcessors;
+    }
+
+    public List<MessageProcessor> getMessageProcessors()
+    {
+        return messageProcessors;
+    }
+
     @Deprecated
     public void setEndpoint(InboundEndpoint endpoint)
     {
         this.messageSource = endpoint;
     }
-    
+
 }

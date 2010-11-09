@@ -30,7 +30,7 @@ public class AsyncMessageProcessorsFactoryBean implements FactoryBean, MuleConte
     protected MuleContext muleContext;
 
     protected List messageProcessors;
-    protected ThreadingProfile threadingProfile = ThreadingProfile.DEFAULT_THREADING_PROFILE;
+    protected ThreadingProfile threadingProfile;
     protected String name;
 
     public Class getObjectType()
@@ -50,6 +50,11 @@ public class AsyncMessageProcessorsFactoryBean implements FactoryBean, MuleConte
 
     public Object getObject() throws Exception
     {
+        if (threadingProfile == null)
+        {
+            threadingProfile = muleContext.getDefaultThreadingProfile();
+        }
+
         InterceptingChainMessageProcessorBuilder builder = new InterceptingChainMessageProcessorBuilder();
         final MuleConfiguration config = muleContext.getConfiguration();
         final boolean containerMode = config.isContainerMode();
