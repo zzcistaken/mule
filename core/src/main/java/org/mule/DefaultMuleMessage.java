@@ -536,20 +536,20 @@ public class DefaultMuleMessage implements MuleMessage, ThreadSafeAccess, Deseri
         return getPayloadAsString(getEncoding());
     }
 
-     /**
+    /**
      * {@inheritDoc}
      */
     public String getPayloadForLogging(String encoding)
     {
-    	try
-    	{
-    		return getPayloadAsString(encoding);
-    	}
-    	catch (Exception e) 
-    	{
-    		// TODO Auto-generated catch block
-    		return  "[Messaage could not be converted to string]";
-    	}
+        try
+        {
+            return getPayloadAsString(encoding);
+        }
+        catch (Exception e) 
+        {
+            // TODO Auto-generated catch block
+            return  "[Messaage could not be converted to string]";
+        }
     } 
     
     /**
@@ -557,15 +557,15 @@ public class DefaultMuleMessage implements MuleMessage, ThreadSafeAccess, Deseri
      */
     public String getPayloadForLogging()
     {
-    	try
-    	{
-    		return getPayloadAsString();
-    	}
-    	catch (Exception e) 
-    	{
-    		// TODO Auto-generated catch block
-    		return  "[Messaage could not be converted to string]";
-    	}
+        try
+        {
+            return getPayloadAsString();
+        }
+        catch (Exception e) 
+        {
+            // TODO Auto-generated catch block
+            return  "[Messaage could not be converted to string]";
+        }
     } 
 
     /**
