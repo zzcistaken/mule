@@ -41,7 +41,7 @@ public class JmsAtomFeedConsumeTestCase extends FunctionalTestCase
         EntryReceiver.receivedEntries.set(0); //reset since the build reports that it's getting incremented someplace else
         String feed = loadResourceAsString("sample-feed.atom");
         client.dispatch("jms://feed.split.in", feed, null);
-        Thread.sleep(5000);                
+        Thread.sleep(10000);                
         assertEquals(25, EntryReceiver.receivedEntries.get());
     }
 }
