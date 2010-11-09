@@ -11,6 +11,7 @@
 package org.mule.construct;
 
 import org.mule.api.MuleContext;
+import org.mule.api.config.MuleConfiguration;
 import org.mule.api.config.ThreadingProfile;
 import org.mule.api.context.WorkManager;
 import org.mule.api.endpoint.InboundEndpoint;
@@ -52,9 +53,15 @@ public class SimpleFlowConstruct extends AbstractFlowConstruct
         {
             threadingProfile = muleContext.getDefaultServiceThreadingProfile();
         }
+        
+        final MuleConfiguration config = muleContext.getConfiguration();
+        final boolean containerMode = config.isContainerMode();
+        final String threadPrefix = containerMode
+                                                 ? String.format("[%s].flow.%s", config.getId(), getName())
+                                                 : getName();
 
         builder.chain(new ProcessIfStartedMessageProcessor(this, getLifecycleState()));
-        builder.chain(new OptionalAsyncInterceptingMessageProcessor(threadingProfile, "flow." + name,
+        builder.chain(new OptionalAsyncInterceptingMessageProcessor(threadingProfile, threadPrefix,
             muleContext.getConfiguration().getShutdownTimeout()));
 
         for (Object processor : messageProcessors)
