@@ -21,12 +21,6 @@ libraries, compile the example classes, produce a jar file(s), and copy
 everything to $MULE_HOME/lib/user, which is where your custom classes and 
 configuration files should go.  
 
-(If you are unable to download the libraries it may be because you are behind a 
-firewall and have not configured your build tool to use your HTTP proxy.  Please 
-refer to the following information.)
-    Ant users:     http://ant.apache.org/manual-beta/proxy.html  
-    Maven users:   http://maven.apache.org/guides/mini/guide-proxies.html 
-
 +---------------------+
 | Running the example |
 +---------------------+
