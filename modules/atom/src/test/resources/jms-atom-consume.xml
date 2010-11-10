@@ -13,17 +13,18 @@
     <jms:activemq-connector name="test"/>
 
     <flow name="feedConsumer">
-        <jms:inbound-endpoint queue="feed.in"/>
+        <jms:inbound-endpoint queue="feed.in">
+        </jms:inbound-endpoint>
+
         <component class="org.mule.module.atom.event.FeedReceiver"/>
-        <threading-profile doThreading="false"/>
     </flow>
 
     <flow name="feedSplitterConsumer">
         <jms:inbound-endpoint queue="feed.split.in">
             <atom:feed-splitter/>
         </jms:inbound-endpoint>
+
         <component class="org.mule.module.atom.event.EntryReceiver"/>
-        <threading-profile doThreading="false"/>
     </flow>
 
 </mule>
