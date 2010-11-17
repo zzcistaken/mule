@@ -24,8 +24,14 @@ import org.w3c.dom.Element;
 /**
  * Defines a bean definition parser that checks for ref and class attributes.
  */
-public abstract class AbstractJdbcFactoryBeanParser extends AbstractBeanDefinitionParser
+public class JdbcFactoryBeanDefinitionParser extends AbstractBeanDefinitionParser
 {
+
+    private final String propertyName;
+
+    public JdbcFactoryBeanDefinitionParser(String propertyName) {
+        this.propertyName = propertyName;
+    }
 
     protected AbstractBeanDefinition parseInternal(Element element, ParserContext parserContext)
     {
@@ -35,14 +41,14 @@ public abstract class AbstractJdbcFactoryBeanParser extends AbstractBeanDefiniti
         final String clazz = element.getAttribute(AbstractMuleBeanDefinitionParser.ATTRIBUTE_CLASS);
         if (StringUtils.isBlank(ref) && StringUtils.isBlank(clazz))
         {
-            throw new IllegalArgumentException("Neither ref nor class attribute specified for the " + getPropertyName() + " element");
+            throw new IllegalArgumentException("Neither ref nor class attribute specified for the " + propertyName + " element");
         }
 
 
         if (StringUtils.isNotBlank(ref))
         {
             // Adds a ref to other bean
-            parentProps.addPropertyValue(getPropertyName(), new RuntimeBeanReference(ref));
+            parentProps.addPropertyValue(propertyName, new RuntimeBeanReference(ref));
         }
         else
         {
@@ -57,15 +63,10 @@ public abstract class AbstractJdbcFactoryBeanParser extends AbstractBeanDefiniti
                 throw new RuntimeException(e);
             }
 
-            parentProps.addPropertyValue(getPropertyName(), strategy);
+            parentProps.addPropertyValue(propertyName, strategy);
         }
 
         return null;
     }
-
-    /**
-     * Returns the name of the property that represents the bean.
-     */
-    protected abstract String getPropertyName();
 }
 
