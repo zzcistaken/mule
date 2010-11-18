@@ -37,6 +37,7 @@ public class MessageNotificationTestCase extends AbstractNotificationTestCase
         return new Node()
                 .parallel(new Node(EndpointMessageNotification.class, EndpointMessageNotification.MESSAGE_SENT, CLIENT))
                 .parallel(new Node(EndpointMessageNotification.class, EndpointMessageNotification.MESSAGE_RECEIVED, SERVICE_1))
+                .parallel(new Node(EndpointMessageNotification.class, EndpointMessageNotification.MESSAGE_SYNC_RECEIVED, SERVICE_1))
                 .parallel(new Node(EndpointMessageNotification.class, EndpointMessageNotification.MESSAGE_DISPATCHED, CLIENT))
                 .parallel(new Node(EndpointMessageNotification.class, EndpointMessageNotification.MESSAGE_RECEIVED, SERVICE_2))
                 .parallel(new Node(EndpointMessageNotification.class, EndpointMessageNotification.MESSAGE_DISPATCHED, SERVICE_2))

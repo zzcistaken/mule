@@ -38,12 +38,14 @@ public class EndpointMessageNotification extends ServerNotification
     public static final int MESSAGE_DISPATCHED = MESSAGE_EVENT_ACTION_START_RANGE + 2;
     public static final int MESSAGE_SENT = MESSAGE_EVENT_ACTION_START_RANGE + 3;
     public static final int MESSAGE_REQUESTED = MESSAGE_EVENT_ACTION_START_RANGE + 4;
+    public static final int MESSAGE_SYNC_RECEIVED = MESSAGE_EVENT_ACTION_START_RANGE + 5;
 
     static {
         registerAction("received", MESSAGE_RECEIVED);
         registerAction("dispatched", MESSAGE_DISPATCHED);
         registerAction("sent", MESSAGE_SENT);
         registerAction("requested", MESSAGE_REQUESTED);
+        registerAction("sync_received", MESSAGE_SYNC_RECEIVED);
     }
 
     private ImmutableEndpoint endpoint;

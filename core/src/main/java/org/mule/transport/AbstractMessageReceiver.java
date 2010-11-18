@@ -255,7 +255,17 @@ public abstract class AbstractMessageReceiver extends AbstractConnectable implem
                 return message;
             }
         }
-        return listener.onMessage(message, trans, synchronous, outputStream);
+        
+
+        MuleMessage returnMessage = listener.onMessage(message, trans, synchronous, outputStream);
+
+        if (connector.isEnableMessageEvents() && synchronous)
+        {
+            connector.fireNotification(
+                    new EndpointMessageNotification(returnMessage, endpoint, service.getName(), EndpointMessageNotification.MESSAGE_SYNC_RECEIVED));
+        }
+
+        return returnMessage;
     }
 
     protected MuleMessage handleUnacceptedFilter(MuleMessage message)
