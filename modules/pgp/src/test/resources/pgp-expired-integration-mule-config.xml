@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesource.org/schema/mule/core/2.2"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:file="http://www.mulesource.org/schema/mule/file/2.2"
+    xmlns:pgp="http://www.mulesource.org/schema/mule/pgp/2.2"
+    xmlns:vm="http://www.mulesource.org/schema/mule/vm/2.2"
+    xmlns:spring="http://www.springframework.org/schema/beans"
+
+    xsi:schemaLocation="
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+    http://www.mulesource.org/schema/mule/core/2.2 http://www.mulesource.org/schema/mule/core/2.2/mule.xsd
+    http://www.mulesource.org/schema/mule/file/2.2 http://www.mulesource.org/schema/mule/file/2.2/mule-file.xsd
+    http://www.mulesource.org/schema/mule/pgp/2.2 http://www.mulesource.org/schema/mule/pgp/2.2/mule-pgp.xsd
+    http://www.mulesource.org/schema/mule/vm/2.2 http://www.mulesource.org/schema/mule/vm/2.2/mule-vm.xsd
+    http://www.mulesource.org/schema/mule/ee/core/2.2 http://www.mulesource.org/schema/mule/ee/core/2.2/mule-ee.xsd">
+
+    <spring:bean id="pgpKeyManager" class="org.mule.module.pgp.PGPKeyRingImpl" init-method="initialise">
+        <spring:property name="publicKeyRingFileName" value="./expiredPublic.gpg"/>
+        <spring:property name="secretKeyRingFileName" value="./expiredPrivate.gpg"/>
+        <spring:property name="secretAliasId" value="2105276729000306766"/>
+        <spring:property name="secretPassphrase" value="TestingPassphrase"/>
+    </spring:bean>
+
+    <spring:bean id="fakeCredentialAccessor" class="org.mule.security.MuleHeaderCredentialsAccessor"/>
+
+    <pgp:security-manager>
+        <pgp:security-provider name="pgpSecurityProvider" keyManager-ref="pgpKeyManager"/>
+        <pgp:keybased-encryption-strategy name="keyBasedEncryptionStrategy" 
+                                          keyManager-ref="pgpKeyManager" 
+                                          credentialsAccessor-ref="fakeCredentialAccessor"
+                                          checkKeyExpirity="true" />
+    </pgp:security-manager>
+
+    <vm:connector name="vmConnector" queueEvents="true"/>
+    
+    <message-properties-transformer name="addProperty">
+        <add-message-property key="MULE_USER" value="Mulesoft &lt;mulesoft@mulesoft.com&gt;"/>
+    </message-properties-transformer>
+
+    <model>
+        <service name="pgpEncryptProcessor">
+            <inbound>
+                <vm:inbound-endpoint path="in" synchronous="true" />
+            </inbound>
+            <outbound>
+                <pass-through-router>
+                    <vm:outbound-endpoint path="encrypted" synchronous="true">
+                        <transformer ref="addProperty"/>
+                        <encrypt-transformer name="pgpEncrypt" strategy-ref="keyBasedEncryptionStrategy"/>
+                    </vm:outbound-endpoint>
+                </pass-through-router>     
+            </outbound>
+        </service>
+
+        <service name="pgpDecryptProcessor">
+            <inbound>
+                <vm:inbound-endpoint path="encrypted" synchronous="true"/>
+            </inbound>
+            <outbound>
+                <pass-through-router>
+                    <vm:outbound-endpoint path="out" synchronous="true">
+                        <transformer ref="addProperty"/>
+                        <decrypt-transformer name="pgpDecrypt" strategy-ref="keyBasedEncryptionStrategy"/>
+                    </vm:outbound-endpoint>
+                </pass-through-router>     
+            </outbound>
+        </service>
+
+
+    </model>
+
+</mule>
