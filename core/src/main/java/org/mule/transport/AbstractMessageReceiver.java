@@ -262,7 +262,7 @@ public abstract class AbstractMessageReceiver extends AbstractConnectable implem
         if (connector.isEnableMessageEvents() && synchronous)
         {
             connector.fireNotification(
-                    new EndpointMessageNotification(returnMessage, endpoint, service.getName(), EndpointMessageNotification.MESSAGE_SYNC_RECEIVED));
+                    new EndpointMessageNotification(returnMessage, endpoint, service.getName(), EndpointMessageNotification.MESSAGE_RESPONSE));
         }
 
         return returnMessage;
