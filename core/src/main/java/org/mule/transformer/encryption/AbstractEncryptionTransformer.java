@@ -16,10 +16,9 @@ import org.mule.api.security.CryptoFailureException;
 import org.mule.api.transformer.TransformerException;
 import org.mule.config.i18n.CoreMessages;
 import org.mule.transformer.AbstractTransformer;
-import org.mule.util.IOUtils;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 
 /**
  * <code>EncryptionTransformer</code> will transform an array of bytes or string
@@ -36,7 +35,7 @@ public abstract class AbstractEncryptionTransformer extends AbstractTransformer
         registerSourceType(byte[].class);
         registerSourceType(String.class);
         registerSourceType(InputStream.class);
-        setReturnClass(byte[].class);
+        setReturnClass(InputStream.class);
     }
 
     // @Override
@@ -55,52 +54,22 @@ public abstract class AbstractEncryptionTransformer extends AbstractTransformer
 
     public Object doTransform(Object src, String encoding) throws TransformerException
     {
-        byte[] buf;
+        InputStream input;
         if (src instanceof String)
         {
-            buf = src.toString().getBytes();
+            input = new ByteArrayInputStream(src.toString().getBytes());
         }
         else if (src instanceof InputStream)
         {
-            InputStream input = (InputStream) src;
-            try
-            {
-                buf = IOUtils.toByteArray(input);
-            }
-            finally
-            {
-                IOUtils.closeQuietly(input);
-            }
+            input = (InputStream) src;
         }
         else
         {
-            buf = (byte[]) src;
+            input = new ByteArrayInputStream((byte[]) src);
         }
         try
         {
-            byte[] result = getTransformedBytes(buf);
-            if (getReturnClass().equals(String.class))
-            {
-                if (encoding != null)
-                {
-                    try
-                    {
-                        return new String(result, encoding);
-                    }
-                    catch (UnsupportedEncodingException ex)
-                    {
-                        return new String(result);
-                    }
-                }
-                else
-                {
-                    return new String(result);
-                }
-            }
-            else
-            {
-                return result;
-            }
+            return this.primTransform(input);
         }
         catch (CryptoFailureException e)
         {
@@ -108,7 +77,7 @@ public abstract class AbstractEncryptionTransformer extends AbstractTransformer
         }
     }
 
-    protected abstract byte[] getTransformedBytes(byte[] buffer) throws CryptoFailureException;
+    protected abstract InputStream primTransform(InputStream stream) throws CryptoFailureException;
 
     /**
      * Template method were deriving classes can do any initialisation after the

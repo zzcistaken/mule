@@ -17,7 +17,7 @@
     <spring:bean id="pgpKeyManager" class="org.mule.module.pgp.PGPKeyRingImpl" init-method="initialise">
         <spring:property name="publicKeyRingFileName" value="./serverPublic.gpg"/>
         <spring:property name="secretKeyRingFileName" value="./serverPrivate.gpg"/>
-        <spring:property name="secretAliasId" value="0x6168F39C"/>
+        <spring:property name="secretAliasId" value="6247672658342245276"/>
         <spring:property name="secretPassphrase" value="TestingPassphrase"/>
     </spring:bean>
 
@@ -30,7 +30,7 @@
                                           credentialsAccessor-ref="fakeCredentialAccessor"/>
     </pgp:security-manager>
 
-    <vm:connector name="vm-normal" queueEvents="true"/>
+    <vm:connector name="vmConnector" queueEvents="true"/>
     
     <message-properties-transformer name="addProperty">
         <add-message-property key="MULE_USER" value="Mule server &lt;mule_server@mule.com&gt;"/>
@@ -39,11 +39,11 @@
     <model>
         <service name="pgpEncryptProcessor">
             <inbound>
-                <vm:inbound-endpoint path="in" />
+                <vm:inbound-endpoint path="in" synchronous="true" />
             </inbound>
             <outbound>
                 <pass-through-router>
-                    <vm:outbound-endpoint path="encrypted">
+                    <vm:outbound-endpoint path="encrypted" synchronous="true">
                         <transformer ref="addProperty"/>
                         <encrypt-transformer name="pgpEncrypt" strategy-ref="keyBasedEncryptionStrategy"/>
                     </vm:outbound-endpoint>
@@ -53,11 +53,12 @@
 
         <service name="pgpDecryptProcessor">
             <inbound>
-                <vm:inbound-endpoint path="encrypted"/>
+                <vm:inbound-endpoint path="encrypted" synchronous="true"/>
             </inbound>
             <outbound>
                 <pass-through-router>
-                    <vm:outbound-endpoint path="out">
+                    <vm:outbound-endpoint path="out" synchronous="true">
+                        <transformer ref="addProperty"/>
                         <decrypt-transformer name="pgpDecrypt" strategy-ref="keyBasedEncryptionStrategy"/>
                     </vm:outbound-endpoint>
                 </pass-through-router>     

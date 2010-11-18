@@ -12,9 +12,15 @@ package org.mule.module.pgp;
 
 import org.mule.DefaultMuleEvent;
 import org.mule.RequestContext;
+import org.mule.api.MuleEvent;
+import org.mule.api.config.MuleProperties;
 import org.mule.tck.testmodels.fruit.Orange;
 import org.mule.transformer.encryption.EncryptionTransformer;
 import org.mule.transformer.simple.ByteArrayToObject;
+
+import java.io.InputStream;
+
+import org.apache.commons.io.IOUtils;
 
 public class KBEStrategyUsingEncryptionTransformerTestCase extends AbstractEncryptionStrategyTestCase
 {    
@@ -22,8 +28,9 @@ public class KBEStrategyUsingEncryptionTransformerTestCase extends AbstractEncry
     {
         String msg = "Test Message";
         
-        DefaultMuleEvent event = (DefaultMuleEvent) getTestEvent(msg, getTestService("orange", Orange.class));
-        RequestContext.setEvent(event);
+        MuleEvent event = (DefaultMuleEvent) getTestEvent(msg, getTestService("orange", Orange.class));
+        event = RequestContext.setEvent(event);
+        event.getMessage().setProperty(MuleProperties.MULE_USER_PROPERTY, "Mule server <mule_server@mule.com>");
         
         EncryptionTransformer encryptionTransformer = new EncryptionTransformer();
         encryptionTransformer.setStrategy(kbStrategy);
@@ -31,7 +38,9 @@ public class KBEStrategyUsingEncryptionTransformerTestCase extends AbstractEncry
         Object result = encryptionTransformer.doTransform(msg.getBytes(), "UTF-8");
         assertNotNull(result);
         
-        String encrypted = (String) new ByteArrayToObject().doTransform(result,"UTF-8");
+        InputStream inputStream = (InputStream) result;
+        String message = IOUtils.toString(inputStream);
+        String encrypted = (String) new ByteArrayToObject().doTransform(message.getBytes(), "UTF-8");
         assertTrue(encrypted.startsWith("-----BEGIN PGP MESSAGE-----"));
     }
 }

@@ -26,10 +26,11 @@ public class PGPIntegrationTestCase extends FunctionalTestCase
 
     public void testEncryptDecrypt() throws Exception
     {
-        String payload = "this is a simple test";
+        String payload = "this is a super simple test. Hope it works!!!";
         MuleClient client = new MuleClient();
+        
         client.send("vm://in", new DefaultMuleMessage(payload));
-        MuleMessage message = client.request("vm://out", 10000);
+        MuleMessage message = client.request("vm://out", 5000);
         assertEquals(payload, message.getPayloadAsString());
     }
 }

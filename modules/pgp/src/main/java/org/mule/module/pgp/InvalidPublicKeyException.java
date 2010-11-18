@@ -10,14 +10,18 @@
 
 package org.mule.module.pgp;
 
-import org.bouncycastle.openpgp.PGPPublicKey;
-import org.bouncycastle.openpgp.PGPSecretKey;
+import org.mule.api.MuleRuntimeException;
+import org.mule.config.i18n.Message;
 
-public interface PGPKeyRing
+public class InvalidPublicKeyException extends MuleRuntimeException
 {
-    public abstract String getSecretPassphrase();
 
-    public abstract PGPSecretKey getSecretKey();
+    private static final long serialVersionUID = -6015475303289155166L;
 
-    public abstract PGPPublicKey getPublicKey(String principalId);
+    public InvalidPublicKeyException(Message message)
+    {
+        super(message);
+    }
 }
+
+

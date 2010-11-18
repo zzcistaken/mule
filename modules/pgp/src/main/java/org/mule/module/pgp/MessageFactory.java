@@ -10,14 +10,15 @@
 
 package org.mule.module.pgp;
 
-import org.bouncycastle.openpgp.PGPPublicKey;
-import org.bouncycastle.openpgp.PGPSecretKey;
 
-public interface PGPKeyRing
+public class MessageFactory
 {
-    public abstract String getSecretPassphrase();
 
-    public abstract PGPSecretKey getSecretKey();
+    public static Message getMessage(byte[] raw)
+    {
+        return new LiteralMessage(raw);
+    }
 
-    public abstract PGPPublicKey getPublicKey(String principalId);
 }
+
+
