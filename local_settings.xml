@@ -4,7 +4,7 @@
     (~/.m2/settings.xml by default)
 
     Refer to http://maven.apache.org/ref/current/maven-settings/settings.html for the
-    things which can be specified in this file.
+    things which can be specified in this file. 
 -->
 <settings>
     <!-- Required for WIN only.
