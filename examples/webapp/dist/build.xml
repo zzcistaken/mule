@@ -105,6 +105,7 @@
                 <include name="*slf4j*"/>
                 <include name="log4j-*.jar"/>
                 <include name="commons-codec*"/>
+                <include name="wrapper-*.jar"/>
             </lib>
             <fileset dir="${dir.webapp}"/>
             <classes dir="${dir.classes}"/>
