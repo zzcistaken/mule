@@ -31,9 +31,9 @@
             <xsl:with-param name="name"><xsl:value-of select="@name"/> </xsl:with-param>
         </xsl:apply-templates>
 
-        h3. Child Elements of &lt;<xsl:value-of select="@name"/>...&gt;
-        ||Name||Cardinality||Description||
         <xsl:if test="@type">
+            h3. Child Elements of &lt;<xsl:value-of select="@name"/>...&gt;
+            ||Name||Cardinality||Description||
             <xsl:variable name="type" select="@type"/>
             <xsl:apply-templates select="/xsd:schema/xsd:complexType[@name=$type]" mode="elements"/>
         </xsl:if>
