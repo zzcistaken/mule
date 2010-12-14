@@ -7,7 +7,7 @@
     <parent>
         <artifactId>mule-modules</artifactId>
         <groupId>org.mule.modules</groupId>
-        <version>3.1.0</version>
+        <version>3.1.0-RC2</version>
     </parent>
 
     <artifactId>mule-module-launcher</artifactId>
