@@ -31,6 +31,8 @@
             <xsl:with-param name="name"><xsl:value-of select="@name"/> </xsl:with-param>
         </xsl:apply-templates>
 
+        h3. Child Elements of &lt;<xsl:value-of select="@name"/>...&gt;
+        ||Name||Cardinality||Description||
         <xsl:if test="@type">
             <xsl:variable name="type" select="@type"/>
             <xsl:apply-templates select="/xsd:schema/xsd:complexType[@name=$type]" mode="elements"/>
@@ -48,11 +50,13 @@
         <xsl:apply-templates select="." mode="attributes"/>
         </xsl:if>
 
+        <!--
         <xsl:if test="(count(.//xsd:element) + count(.//xsd:choice)) > 0 ">
         h3. Child Elements of &lt;<xsl:value-of select="$name"/>...&gt;
         ||Name||Cardinality||Description||
         <xsl:call-template name="element-children"/>
         </xsl:if>
+        -->
     </xsl:template>
 
     <!-- TRANSFORMERS -->
