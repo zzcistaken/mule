@@ -36,7 +36,7 @@ public abstract class AbstractInterceptingMessageProcessor implements Intercepti
 
     protected ServerNotificationHandler notificationHandler;
 
-    private MuleContext muleContext;
+    protected MuleContext muleContext;
 
     public void setMuleContext(MuleContext context)
     {
