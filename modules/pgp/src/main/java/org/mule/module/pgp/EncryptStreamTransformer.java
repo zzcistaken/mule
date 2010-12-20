@@ -27,7 +27,7 @@ import org.bouncycastle.openpgp.PGPLiteralData;
 import org.bouncycastle.openpgp.PGPLiteralDataGenerator;
 import org.bouncycastle.openpgp.PGPPublicKey;
 
-public class EncryptOutputStreamWriter implements OutputStreamWriter
+public class EncryptStreamTransformer implements StreamTransformer
 {
     private static final long offset = 1 << 24;
     
@@ -40,7 +40,7 @@ public class EncryptOutputStreamWriter implements OutputStreamWriter
     private OutputStream armoredOut;
     private long bytesWrote;
 
-    public EncryptOutputStreamWriter(InputStream toBeEncrypted, PGPPublicKey publicKey) throws IOException
+    public EncryptStreamTransformer(InputStream toBeEncrypted, PGPPublicKey publicKey) throws IOException
     {
         this.toBeEncrypted = toBeEncrypted;
         this.publicKey = publicKey;

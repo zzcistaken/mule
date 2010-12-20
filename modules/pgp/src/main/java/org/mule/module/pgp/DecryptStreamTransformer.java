@@ -32,7 +32,7 @@ import org.bouncycastle.openpgp.PGPPublicKeyEncryptedData;
 import org.bouncycastle.openpgp.PGPSecretKey;
 import org.bouncycastle.openpgp.PGPUtil;
 
-public class DecryptOutputStreamWriter implements OutputStreamWriter
+public class DecryptStreamTransformer implements StreamTransformer
 {
     private static final long offset = 1 << 24;
     
@@ -46,7 +46,7 @@ public class DecryptOutputStreamWriter implements OutputStreamWriter
     private InputStream clearStream;
     private long bytesWrote;
 
-    public DecryptOutputStreamWriter(InputStream toBeDecrypted,
+    public DecryptStreamTransformer(InputStream toBeDecrypted,
                                      PGPPublicKey publicKey,
                                      PGPSecretKey secretKey,
                                      String password) throws IOException
