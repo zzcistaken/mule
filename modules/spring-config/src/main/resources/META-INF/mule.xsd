@@ -1683,7 +1683,7 @@
             </xsd:annotation>
         </xsd:attribute>
     </xsd:attributeGroup>
-
+    
     <xsd:attributeGroup name="restrictedEndpointAttributes">
         <xsd:attribute name="synchronous" type="substitutableBoolean">
             <xsd:annotation>
@@ -2154,6 +2154,20 @@
         </xsd:complexContent>
     </xsd:complexType>
 
+    <xsd:element name="custom-security-filter" type="customSecurityFilterType" substitutionGroup="abstract-security-filter">
+        <xsd:annotation>
+            <xsd:documentation>
+                Allows developers to configure custom security filters
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:complexType name="customSecurityFilterType">
+        <xsd:complexContent>
+            <xsd:extension base="abstractSecurityFilterType">
+                <xsd:attribute name="class" type="substitutableClass" use="required"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
 
     <!--==============================================================-->
     <!--   Transformer elements                                       -->
