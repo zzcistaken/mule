@@ -10,8 +10,14 @@
 
 package org.mule.module.pgp;
 
+import java.io.IOException;
+
 import edu.emory.mathcs.backport.java.util.concurrent.atomic.AtomicBoolean;
 import edu.emory.mathcs.backport.java.util.concurrent.atomic.AtomicLong;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * An abstract implementation of {@link TransformPolicy}.
@@ -20,22 +26,17 @@ import edu.emory.mathcs.backport.java.util.concurrent.atomic.AtomicLong;
  */
 public abstract class AbstractTransformPolicy implements TransformPolicy
 {
-    private StreamTransformer transformer;
-
+    protected static final Log logger = LogFactory.getLog(AbstractTransformPolicy.class);
+    
     private AtomicBoolean startedCopying;
-
     private Thread copyingThread;
-
     private LazyTransformedInputStream inputStream;
-    
     protected volatile boolean isClosed;
-    
     private AtomicLong bytesRequested;
 
-    public AbstractTransformPolicy(StreamTransformer transformer)
+    public AbstractTransformPolicy()
     {
         this.startedCopying = new AtomicBoolean(false);
-        this.transformer = transformer;
         this.isClosed = false;
         this.bytesRequested = new AtomicLong(0);
     }
@@ -87,7 +88,7 @@ public abstract class AbstractTransformPolicy implements TransformPolicy
 
     protected StreamTransformer getTransformer()
     {
-        return this.transformer;
+        return this.inputStream.getTransformer();
     }
 
     protected LazyTransformedInputStream getInputStream()
@@ -98,5 +99,45 @@ public abstract class AbstractTransformPolicy implements TransformPolicy
     protected AtomicLong getBytesRequested()
     {
         return bytesRequested;
+    }
+    
+    protected abstract class TransformerWork extends Thread
+    {
+        public synchronized void run()
+        {
+            try
+            {
+                execute();
+                IOUtils.closeQuietly(getInputStream().getOut());
+                // keep the thread alive so that we don't break the pipe
+                while (!isClosed)
+                {
+                    try
+                    {
+                        this.wait();
+                    }
+                    catch (InterruptedException e)
+                    {
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                logger.error(e.getMessage(), e);
+                /**
+                 * if an exception was thrown, the {@link PipedInputStream} may not even have a reference to this thread
+                 * and wait forever. Therefore, we write the message and finish so we break the pipe.
+                 */
+                try
+                {
+                    IOUtils.write(e.getMessage().toCharArray(), getInputStream().getOut());
+                }
+                catch (IOException exp)
+                {
+                }
+            }
+        }
+        
+        protected abstract void execute() throws Exception;
     }
 }

@@ -18,6 +18,7 @@ import java.util.Date;
 
 import edu.emory.mathcs.backport.java.util.concurrent.atomic.AtomicLong;
 
+import org.apache.commons.lang.Validate;
 import org.bouncycastle.bcpg.ArmoredOutputStream;
 import org.bouncycastle.openpgp.PGPCompressedData;
 import org.bouncycastle.openpgp.PGPCompressedDataGenerator;
@@ -42,6 +43,9 @@ public class EncryptStreamTransformer implements StreamTransformer
 
     public EncryptStreamTransformer(InputStream toBeEncrypted, PGPPublicKey publicKey) throws IOException
     {
+        Validate.notNull(toBeEncrypted, "The toBeEncrypted should not be null");
+        Validate.notNull(publicKey, "The publicKey should not be null");
+
         this.toBeEncrypted = toBeEncrypted;
         this.publicKey = publicKey;
         this.bytesWrote = 0;

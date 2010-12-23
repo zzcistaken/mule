@@ -15,6 +15,8 @@ import java.io.InputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 
+import org.apache.commons.lang.Validate;
+
 /**
  * A {@link LazyTransformedInputStream} represents an {@link InputStream} that
  * has been transformed when someone needs to read from it.
@@ -28,16 +30,20 @@ import java.io.PipedOutputStream;
  */
 public class LazyTransformedInputStream extends InputStream
 {
-
     private PipedInputStream in;
     private PipedOutputStream out;
     private TransformPolicy transformPolicy;
+    private StreamTransformer transformer;
     
-    public LazyTransformedInputStream(TransformPolicy transformPolicy) throws IOException
+    public LazyTransformedInputStream(TransformPolicy transformPolicy, StreamTransformer transformer) throws IOException
     {
+        Validate.notNull(transformPolicy, "The transformPolicy should not be null");
+        Validate.notNull(transformer, "The transformer should not be null");
+
         this.in = new PipedInputStream();
         this.out = new PipedOutputStream(this.in);
         this.transformPolicy = transformPolicy;
+        this.transformer = transformer;
         this.transformPolicy.initialize(this);
     }
 
@@ -110,5 +116,10 @@ public class LazyTransformedInputStream extends InputStream
     PipedOutputStream getOut()
     {
         return out;
+    }
+    
+    StreamTransformer getTransformer()
+    {
+        return transformer;
     }
 }

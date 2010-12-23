@@ -29,7 +29,7 @@ public class SignedMessage implements Message
     {
         StreamTransformer transformer = new DecryptStreamTransformer(toBeDecrypted, publicKey, secretKey,
             password);
-        this.encryptedMessage = new LazyTransformedInputStream(new TransformContinuouslyPolicy(transformer));
+        this.encryptedMessage = new LazyTransformedInputStream(new TransformContinuouslyPolicy(), transformer);
     }
 
     public boolean verify()

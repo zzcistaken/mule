@@ -18,16 +18,33 @@ import junit.framework.TestCase;
 
 import edu.emory.mathcs.backport.java.util.concurrent.atomic.AtomicLong;
 
+import org.apache.commons.io.IOUtils;
+
 public class LazyTransformedInputStreamTestCase extends TestCase
 {
+    private static String message = "abcdefghij";
+    private ByteArrayInputStream inputStream;
+    private LazyTransformedInputStream transformedInputStream;
+    private AddOneStreamTransformer simpleTransformer;
+
+    protected void setUp() throws Exception
+    {
+        super.setUp();
+        inputStream = new ByteArrayInputStream(message.getBytes());
+        simpleTransformer = new AddOneStreamTransformer(inputStream);
+    }
+
+    @Override
+    protected void tearDown() throws Exception
+    {
+        super.tearDown();
+        IOUtils.closeQuietly(inputStream);
+    }
 
     public void testTransformPerRequestPolicy() throws Exception
     {
-        String message = "abcdefghij";
-        ByteArrayInputStream inputStream = new ByteArrayInputStream(message.getBytes());
-        AddOneStreamTransformer simpleTransformer = new AddOneStreamTransformer(inputStream);
-        LazyTransformedInputStream transformedInputStream = new LazyTransformedInputStream(
-            new TransformPerRequestPolicy(simpleTransformer));
+        transformedInputStream = new LazyTransformedInputStream(new TransformPerRequestPolicy(),
+            simpleTransformer);
 
         for (int i = 0; i < message.length(); i++)
         {
@@ -38,21 +55,35 @@ public class LazyTransformedInputStreamTestCase extends TestCase
             Thread.sleep(50);
             assertEquals(i + 1, simpleTransformer.bytesRead);
         }
+    }
 
-        transformedInputStream.close();
+    public void testTransformPerRequestInChunksPolicy() throws Exception
+    {
+        int chunkSize = 4;
+        LazyTransformedInputStream transformedInputStream = new LazyTransformedInputStream(
+            new TransformPerRequestInChunksPolicy(chunkSize), simpleTransformer);
+
+        for (int i = 0; i < message.length(); i++)
+        {
+            int read = transformedInputStream.read();
+            assertEquals(message.charAt(i) + 1, read);
+            // only one byte more should be consumed at this point
+            int shouldBeTransformed = (int) Math.min(message.length(),
+                Math.ceil((double) simpleTransformer.bytesRead / (double) chunkSize) * chunkSize);
+            assertEquals(shouldBeTransformed, simpleTransformer.bytesRead);
+            Thread.sleep(50);
+            assertEquals(shouldBeTransformed, simpleTransformer.bytesRead);
+        }
     }
 
     public void testTransformContinuouslyPolicy() throws Exception
     {
-        String message = "abcdefghij";
-        ByteArrayInputStream inputStream = new ByteArrayInputStream(message.getBytes());
-        AddOneStreamTransformer simpleTransformer = new AddOneStreamTransformer(inputStream);
         LazyTransformedInputStream transformedInputStream = new LazyTransformedInputStream(
-            new TransformContinuouslyPolicy(simpleTransformer));
+            new TransformContinuouslyPolicy(), simpleTransformer);
 
         int i = 0;
         int read = transformedInputStream.read();
-        Thread.sleep(500);
+        Thread.sleep(100);
         // all input stream should be consumed at this point
         assertEquals(message.length(), simpleTransformer.bytesRead);
         do
@@ -62,17 +93,13 @@ public class LazyTransformedInputStreamTestCase extends TestCase
             i++;
         }
         while (i < message.length());
-
-        transformedInputStream.close();
     }
 
     private class AddOneStreamTransformer implements StreamTransformer
     {
 
         private InputStream inputStream;
-
         private int bytesRead;
-        
         private boolean finished;
 
         public AddOneStreamTransformer(InputStream inputStream)
@@ -84,7 +111,7 @@ public class LazyTransformedInputStreamTestCase extends TestCase
 
         public boolean write(OutputStream out, AtomicLong bytesRequested) throws Exception
         {
-            
+
             while (!this.finished && this.bytesRead + 1 <= bytesRequested.get())
             {
                 int byteRead = this.inputStream.read();

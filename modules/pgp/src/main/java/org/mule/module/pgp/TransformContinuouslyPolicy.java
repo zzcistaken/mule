@@ -12,10 +12,6 @@ package org.mule.module.pgp;
 
 import java.io.PipedOutputStream;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  * A {@link TransformPolicy} that copies the transformed bytes continuously into the {@link PipedOutputStream}
  * without taking into account about how many bytes the object has requested.
@@ -23,20 +19,17 @@ import org.apache.commons.logging.LogFactory;
 public class TransformContinuouslyPolicy extends AbstractTransformPolicy
 {
 
-    private static final Log logger = LogFactory.getLog(TransformContinuouslyPolicy.class);
-    
     public static final long DEFAULT_CHUNK_SIZE = 1 << 24;
     
     private long chunkSize;
 
-    public TransformContinuouslyPolicy(StreamTransformer transformer)
+    public TransformContinuouslyPolicy()
     {
-        this(transformer, DEFAULT_CHUNK_SIZE);
+        this(DEFAULT_CHUNK_SIZE);
     }
 
-    public TransformContinuouslyPolicy(StreamTransformer transformer, long chunkSize)
+    public TransformContinuouslyPolicy(long chunkSize)
     {
-        super(transformer);
         this.chunkSize = chunkSize;
     }
 
@@ -46,9 +39,11 @@ public class TransformContinuouslyPolicy extends AbstractTransformPolicy
     @Override
     public void readRequest(long length)
     {
-        //avoid calling super so that we don't add more bytes. 
-        //The ContinuousWork will add the requested bytes as necessary
-        //only start copying thread
+        /**
+         * Avoid calling super so that we don't add more bytes. 
+         * The ContinuousWork will add the requested bytes as necessary
+         * only start the copying thread
+         */
         startCopyingThread();
     }
     
@@ -61,40 +56,19 @@ public class TransformContinuouslyPolicy extends AbstractTransformPolicy
         return new ContinuousWork();
     }
 
-    private class ContinuousWork extends Thread
+    private class ContinuousWork extends TransformerWork
     {
-        public synchronized void run()
+        @Override
+        protected void execute() throws Exception
         {
-            try
+            getTransformer().initialize(getInputStream().getOut());
+            
+            boolean finishWriting = false;
+            while (!finishWriting)
             {
-                getTransformer().initialize(getInputStream().getOut());
-                
-                boolean finishWriting = false;
-                while (!finishWriting)
-                {
-                    getBytesRequested().addAndGet(chunkSize);
-                    finishWriting = getTransformer().write(getInputStream().getOut(), getBytesRequested());
-                }
-            }
-            catch (Exception e)
-            {
-                logger.error(e.getMessage(), e);
-            }
-            finally
-            {
-                IOUtils.closeQuietly(getInputStream().getOut());
-                //keep the thread alive so that we don't break the pipe
-                while (!isClosed)
-                {
-                    try
-                    {
-                        this.wait();
-                    }
-                    catch (InterruptedException e)
-                    {
-                    }
-                }
-            }
+                getBytesRequested().addAndGet(chunkSize);
+                finishWriting = getTransformer().write(getInputStream().getOut(), getBytesRequested());
+            }            
         }
     }
 }

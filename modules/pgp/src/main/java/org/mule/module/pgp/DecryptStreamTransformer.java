@@ -19,6 +19,7 @@ import java.util.Iterator;
 
 import edu.emory.mathcs.backport.java.util.concurrent.atomic.AtomicLong;
 
+import org.apache.commons.lang.Validate;
 import org.bouncycastle.openpgp.PGPCompressedData;
 import org.bouncycastle.openpgp.PGPEncryptedDataList;
 import org.bouncycastle.openpgp.PGPException;
@@ -51,6 +52,11 @@ public class DecryptStreamTransformer implements StreamTransformer
                                      PGPSecretKey secretKey,
                                      String password) throws IOException
     {
+        Validate.notNull(toBeDecrypted, "The toBeDecrypted should not be null");
+        Validate.notNull(publicKey, "The publicKey should not be null");
+        Validate.notNull(secretKey, "The secretKey should not be null");
+        Validate.notNull(password, "The password should not be null");
+
         this.toBeDecrypted = toBeDecrypted;
         this.publicKey = publicKey;
         this.secretKey = secretKey;
