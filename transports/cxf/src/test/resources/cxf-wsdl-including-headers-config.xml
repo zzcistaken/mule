@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesource.org/schema/mule/core/2.2"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:cxf="http://www.mulesource.org/schema/mule/cxf/2.2"
+      xsi:schemaLocation="
+          http://www.mulesource.org/schema/mule/cxf/2.2 http://www.mulesource.org/schema/mule/cxf/2.2/mule-cxf.xsd
+          http://www.mulesource.org/schema/mule/core/2.2 http://www.mulesource.org/schema/mule/core/2.2/mule.xsd">
+
+    <model>
+        <service name="testEnvelopePayload">
+            <inbound>
+                <cxf:inbound-endpoint address="http://localhost:9080/services/Sample"
+                                      proxy="true" synchronous="true" applyTransformersToProtocol="false"
+                                      payload="envelope"
+                                      wsdlLocation="simplewithheader.wsdl"
+                                      serviceName="simplewithheader">
+                    <property key="namespace" value="http://www.example.org/simplewithheader/"/>
+                </cxf:inbound-endpoint>
+            </inbound>
+        </service>
+
+        <service name="testBodyPayload">
+            <inbound>
+                <cxf:inbound-endpoint address="http://localhost:9080/services/Sample2"
+                                      proxy="true" synchronous="true" applyTransformersToProtocol="false"
+                                      payload="body"
+                                      wsdlLocation="simplewithheader.wsdl"
+                                      serviceName="simplewithheader">
+                    <property key="namespace" value="http://www.example.org/simplewithheader/"/>
+                </cxf:inbound-endpoint>
+            </inbound>
+        </service>
+
+        <service name="testBodyPayloadWithTransformer">
+            <inbound>
+
+                <cxf:inbound-endpoint address="http://localhost:9080/services/Sample4"
+                                      proxy="true" synchronous="true" applyTransformersToProtocol="false"
+                                      wsdlLocation="simplewithheader.wsdl"
+                                      serviceName="simplewithheader"
+                                      payload="body">
+                    <property key="namespace" value="http://www.example.org/simplewithheader/"/>
+                    <transformers>
+                        <custom-transformer class="org.mule.transport.cxf.ObjectArrayToObject"/>
+                    </transformers>
+                </cxf:inbound-endpoint>
+            </inbound>
+        </service>
+    </model>
+</mule>
