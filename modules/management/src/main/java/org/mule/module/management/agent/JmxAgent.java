@@ -43,7 +43,6 @@ import org.mule.module.management.support.JmxSupport;
 import org.mule.module.management.support.JmxSupportFactory;
 import org.mule.module.management.support.SimplePasswordJmxAuthenticator;
 import org.mule.transport.AbstractConnector;
-import org.mule.util.ClassUtils;
 import org.mule.util.StringUtils;
 
 import java.lang.management.ManagementFactory;
@@ -63,7 +62,6 @@ import javax.management.MBeanServerFactory;
 import javax.management.MalformedObjectNameException;
 import javax.management.NotCompliantMBeanException;
 import javax.management.ObjectName;
-import javax.management.remote.JMXAuthenticator;
 import javax.management.remote.JMXConnectorServer;
 import javax.management.remote.JMXConnectorServerFactory;
 import javax.management.remote.JMXServiceURL;
@@ -110,7 +108,7 @@ public class JmxAgent extends AbstractAgent
 
     private JmxSupportFactory jmxSupportFactory = AutoDiscoveryJmxSupportFactory.getInstance();
     private JmxSupport jmxSupport = jmxSupportFactory.getJmxSupport();
-
+    private ConfigurableJMXAuthenticator jmxAuthenticator;
 
     /**
      * Username/password combinations for JMX Remoting authentication.
@@ -235,15 +233,13 @@ public class JmxAgent extends AbstractAgent
                 {
                     connectorServerProperties = new HashMap<String, Object>(DEFAULT_CONNECTOR_SERVER_PROPERTIES);
                 }
-                // TODO custom authenticator may have its own security config,
-                // refactor
+
                 if (!credentials.isEmpty())
                 {
-                    JMXAuthenticator jmxAuthenticator = (JMXAuthenticator)ClassUtils.instanciateClass(DEFAULT_JMX_AUTHENTICATOR);
-                    // TODO support for custom authenticators
-                    ((SimplePasswordJmxAuthenticator)jmxAuthenticator).setCredentials(credentials);
-                    connectorServerProperties.put(JMXConnectorServer.AUTHENTICATOR, jmxAuthenticator);
+                    connectorServerProperties.put(JMXConnectorServer.AUTHENTICATOR,
+                        this.getJmxAuthenticator());
                 }
+                
                 connectorServer = JMXConnectorServerFactory.newJMXConnectorServer(url,
                     connectorServerProperties, mBeanServer);
                 connectorServer.start();
@@ -664,5 +660,20 @@ public class JmxAgent extends AbstractAgent
                 unregisterMBeansIfNecessary();
             }
         }
+    }
+
+    public ConfigurableJMXAuthenticator getJmxAuthenticator()
+    {
+        if (this.jmxAuthenticator == null)
+        {
+            this.jmxAuthenticator = new SimplePasswordJmxAuthenticator();
+            this.jmxAuthenticator.configure(credentials);
+        }
+        return jmxAuthenticator;
+    }
+
+    public void setJmxAuthenticator(ConfigurableJMXAuthenticator jmxAuthenticator)
+    {
+        this.jmxAuthenticator = jmxAuthenticator;
     }
 }

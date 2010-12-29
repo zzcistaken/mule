@@ -37,6 +37,8 @@ public class DefaultJmxSupportAgent extends AbstractAgent
     private boolean loadProfilerAgent = false;
     private String port;
     private String host;
+    
+    private ConfigurableJMXAuthenticator jmxAuthenticator;
 
     public DefaultJmxSupportAgent()
     {
@@ -228,6 +230,7 @@ public class DefaultJmxSupportAgent extends AbstractAgent
             agent.setCredentials(credentials);
         }
         agent.setConnectorServerUrl(remotingUri);
+        agent.setJmxAuthenticator(this.jmxAuthenticator);
         return agent;
     }
 
@@ -334,4 +337,13 @@ public class DefaultJmxSupportAgent extends AbstractAgent
         this.credentials = credentials;
     }
 
+    public ConfigurableJMXAuthenticator getJmxAuthenticator()
+    {
+        return jmxAuthenticator;
+    }
+
+    public void setJmxAuthenticator(ConfigurableJMXAuthenticator jmxAuthenticator)
+    {
+        this.jmxAuthenticator = jmxAuthenticator;
+    }
 }
