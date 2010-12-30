@@ -10,8 +10,14 @@
 
 package org.mule.module.pgp;
 
+import java.io.PipedOutputStream;
+
 import edu.emory.mathcs.backport.java.util.concurrent.Semaphore;
 
+/**
+ * A {@link TransformPolicy} that copies the requested transformed bytes in chunks
+ * into the {@link PipedOutputStream}.
+ */
 public class TransformPerRequestInChunksPolicy extends AbstractTransformPolicy
 {
 
