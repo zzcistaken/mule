@@ -16,6 +16,7 @@ import static org.mule.util.ClassUtils.hash;
 import org.mule.api.MuleMessage;
 import org.mule.api.routing.filter.Filter;
 import org.mule.api.routing.filter.ObjectFilter;
+import org.mule.util.ClassUtils;
 import org.mule.util.StringUtils;
 
 import org.apache.commons.logging.Log;
@@ -120,7 +121,7 @@ public class WildcardFilter implements Filter, ObjectFilter
                     String className = pattern.substring(0, pattern.length() - 1);
                     try
                     {
-                        Class<?> theClass = Class.forName(className);
+                        Class<?> theClass = ClassUtils.getClass(className);
                         if (theClass.isInstance(object))
                         {
                             return true;
