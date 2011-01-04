@@ -121,7 +121,7 @@ public class WildcardFilter implements Filter, ObjectFilter
                     String className = pattern.substring(0, pattern.length() - 1);
                     try
                     {
-                        Class<?> theClass = ClassUtils.getClass(className);
+                        Class<?> theClass = ClassUtils.loadClass(className, this.getClass());
                         if (theClass.isInstance(object))
                         {
                             return true;
