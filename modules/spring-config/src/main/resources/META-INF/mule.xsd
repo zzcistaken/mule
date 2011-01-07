@@ -2600,6 +2600,7 @@
                     <xsd:enumeration value="payload"/>
                     <xsd:enumeration value="mule"/>
                     <xsd:enumeration value="xpath"/>
+                    <xsd:enumeration value="xpath-node"/>
                     <xsd:enumeration value="jxpath"/>
                     <xsd:enumeration value="bean"/>
                     <xsd:enumeration value="ognl"/>
