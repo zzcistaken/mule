@@ -12,11 +12,13 @@ package org.mule.transport.soap.axis.extensions;
 
 import org.mule.DefaultMuleEvent;
 import org.mule.DefaultMuleMessage;
+import org.mule.DefaultMuleSession;
 import org.mule.MuleServer;
 import org.mule.RegistryContext;
 import org.mule.RequestContext;
 import org.mule.api.MuleContext;
 import org.mule.api.MuleEvent;
+import org.mule.api.MuleEventContext;
 import org.mule.api.MuleException;
 import org.mule.api.MuleMessage;
 import org.mule.api.MuleSession;
@@ -163,6 +165,7 @@ public class UniversalSender extends BasicHandler
                     props.put(name, msgContext.getProperty(name));
                 }
             }
+            MuleEventContext eventContext = RequestContext.getEventContext();
 
             // add all custom headers, filter out all mule headers (such as
             // MULE_SESSION) except
@@ -172,7 +175,7 @@ public class UniversalSender extends BasicHandler
             if ((RequestContext.getEvent() != null)
                 && (RequestContext.getEvent().getMessage() != null))
             {
-                props = AxisCleanAndAddProperties.cleanAndAdd(RequestContext.getEventContext());
+                props = AxisCleanAndAddProperties.cleanAndAdd(eventContext);
             }
             
             // with jms and vm the default SOAPAction will result in the name of the endpoint, which we may not necessarily want. This should be set manually on the endpoint
@@ -204,7 +207,16 @@ public class UniversalSender extends BasicHandler
                 props.put(HttpConstants.HEADER_CONTENT_TYPE, contentType);
             }
             MuleMessage message = new DefaultMuleMessage(payload, props);
-            MuleSession session = RequestContext.getEventContext().getSession();
+
+            MuleSession session;
+            if (eventContext == null)
+            {
+                session = new DefaultMuleSession(MuleServer.getMuleContext());
+            }
+            else
+            {
+                session = eventContext.getSession();
+            }
 
             logger.info("Making Axis soap request on: " + uri);
             if (logger.isDebugEnabled())
