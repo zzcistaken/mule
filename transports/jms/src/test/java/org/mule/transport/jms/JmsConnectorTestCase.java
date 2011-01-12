@@ -14,17 +14,17 @@ import org.mule.api.transaction.Transaction;
 import org.mule.tck.AbstractMuleTestCase;
 import org.mule.transaction.TransactionCoordination;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.Session;
 
 import org.mockito.Matchers;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class JmsConnectorTestCase extends AbstractMuleTestCase
 {
@@ -111,10 +111,17 @@ public class JmsConnectorTestCase extends AbstractMuleTestCase
         Transaction transaction = mock(Transaction.class);
         TransactionCoordination.getInstance().bindTransaction(transaction);
 
-        JmsConnector connector = new JmsConnector();
+        try
+        {
+            JmsConnector connector = new JmsConnector();
 
-        Session session = mock(Session.class);
-        connector.closeSessionIfNoTransactionActive(session);
-        verify(session, never()).close();
+            Session session = mock(Session.class);
+            connector.closeSessionIfNoTransactionActive(session);
+            verify(session, never()).close();
+        }
+        finally
+        {
+            TransactionCoordination.getInstance().unbindTransaction(transaction);
+        }
     }
 }
