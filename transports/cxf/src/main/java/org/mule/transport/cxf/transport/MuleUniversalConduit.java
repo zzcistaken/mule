@@ -447,7 +447,10 @@ public class MuleUniversalConduit extends AbstractConduit
         // to the raw message instead of the pojos
         if (applyTransformersToProtocol)
         {
-            message.applyTransformers(((OutboundEndpoint) prev.getEndpoint()).getTransformers());
+            if (prev != null)
+            {
+                message.applyTransformers(((OutboundEndpoint) prev.getEndpoint()).getTransformers());
+            }
             
             // The underlying endpoint transformers
             event.transformMessage();
