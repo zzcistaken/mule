@@ -17,6 +17,7 @@ import org.mule.api.MuleMessage;
 import org.mule.api.endpoint.InboundEndpoint;
 import org.mule.api.lifecycle.CreateException;
 import org.mule.api.routing.RoutingException;
+import org.mule.api.routing.filter.Filter;
 import org.mule.api.service.Service;
 import org.mule.api.transport.Connector;
 import org.mule.api.transport.ReceiveException;
@@ -134,7 +135,8 @@ public class RetrieveMessageReceiver extends AbstractPollingMessageReceiver impl
                         }
                         else
                         {
-                            if (this.getEndpoint().getFilter().accept(message))
+                            Filter filter = getEndpoint().getFilter();
+                            if (filter != null && filter.accept(message))
                             {
                                 Flags.Flag flag = castConnector().getDefaultProcessMessageAction();
                                 if (flag != null)
@@ -146,7 +148,7 @@ public class RetrieveMessageReceiver extends AbstractPollingMessageReceiver impl
                             {
                                 messages[i].setFlag(Flags.Flag.SEEN, false);
                             }
-                       }
+                        }
                         routeMessage(message, endpoint.isSynchronous());
                     }
                 }
