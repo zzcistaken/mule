@@ -396,7 +396,6 @@ public class ObjectToHttpClientMethodRequest extends AbstractMessageAwareTransfo
             // must set this for receiver to properly parse attachments
             httpMethod.addRequestHeader(HttpConstants.HEADER_CONTENT_TYPE, "multipart/related");
         }
-
     }
 
     protected String paramToString(Object param)
@@ -426,5 +425,20 @@ public class ObjectToHttpClientMethodRequest extends AbstractMessageAwareTransfo
         {
             return param.toString();
         }
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode ()
+    {
+        return name.hashCode();
     }
 }

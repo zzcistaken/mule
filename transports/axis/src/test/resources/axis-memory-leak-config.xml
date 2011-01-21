@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesource.org/schema/mule/core/2.2"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:axis="http://www.mulesource.org/schema/mule/axis/2.2"
+      xmlns:vm="http://www.mulesource.org/schema/mule/vm/2.2"
+      xsi:schemaLocation="
+       http://www.mulesource.org/schema/mule/core/2.2 http://www.mulesource.org/schema/mule/core/2.2/mule.xsd
+       http://www.mulesource.org/schema/mule/axis/2.2 http://www.mulesource.org/schema/mule/axis/2.2/mule-axis.xsd
+       http://www.mulesource.org/schema/mule/vm/2.2 http://www.mulesource.org/schema/mule/vm/2.2/mule-vm.xsd">
+
+    <vm:connector name="VMConnector"/>
+
+    <model name="test">
+        <service name="testService">
+            <inbound>
+                <vm:inbound-endpoint path="testaddress" connector-ref="VMConnector"/>
+            </inbound>
+            <axis:wrapper-component addressFromMessage="true" style="WRAPPED" use="LITERAL"/>
+        </service>
+
+        <service name="TestUMO">
+            <inbound>
+                <axis:inbound-endpoint address="http://localhost:65081/services" style="WRAPPED" use="LITERAL"/>
+            </inbound>
+            <component class="org.mule.tck.testmodels.services.TestComponent"/>
+        </service>
+    </model>
+</mule>
