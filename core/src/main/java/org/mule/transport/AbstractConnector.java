@@ -526,6 +526,23 @@ public abstract class AbstractConnector implements Connector, WorkListener
                     }
                 }
 
+                // TODO We shouldn't need to automatically disconnect just because we're stopping, these are 
+                // discrete stages in the connector's lifecycle.  
+                if (isConnected())
+                {
+                    try
+                    {
+                        disconnect();
+                    }
+                    catch (Exception e)
+                    {
+                        //TODO We only log here since we need to make sure we stop with
+                        //a consistent state. Another option would be to collect exceptions
+                        //and handle them at the end of this message
+                        logger.error("Failed to disconnect: " + e.getMessage(), e);
+                    }
+                }
+
                 // Now that dispatchers are borrowed/returned in worker thread we need to
                 // dispose workManager before clearing object pools
                 disposeWorkManagers();
@@ -1285,15 +1302,7 @@ public abstract class AbstractConnector implements Connector, WorkListener
             MessageReceiver receiver = receivers.remove(getReceiverKey(flowConstruct, endpoint));
             if (receiver != null)
             {
-                if (isConnected())
-                {
-                    receiver.disconnect();
-                }
-
-                if (isStarted())
-                {
-                    receiver.stop();
-                }
+                // This will automatically stop and disconnect before disposing.
                 destroyReceiver(receiver, endpoint);
                 doUnregisterListener(flowConstruct, endpoint, receiver);
             }
@@ -1619,11 +1628,7 @@ public abstract class AbstractConnector implements Connector, WorkListener
 
     public void disconnect() throws Exception
     {
-        if (isStarted())
-        {
-            startOnConnect = true;
-            stop();
-        }
+        startOnConnect = isStarted();
 
         if (receivers != null)
         {
@@ -1646,6 +1651,10 @@ public abstract class AbstractConnector implements Connector, WorkListener
         }
         try
         {
+	        if (isStarted() && !isStopping())
+    	    {
+        	    stop();
+	        }
             this.doDisconnect();
             if (logger.isInfoEnabled())
             {
