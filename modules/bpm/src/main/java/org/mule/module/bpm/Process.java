@@ -20,7 +20,7 @@ import org.mule.api.MuleException;
 import org.mule.api.MuleMessage;
 import org.mule.api.config.MuleProperties;
 import org.mule.api.construct.FlowConstruct;
-import org.mule.api.endpoint.EndpointBuilder;
+import org.mule.api.endpoint.EndpointCache;
 import org.mule.api.endpoint.OutboundEndpoint;
 import org.mule.api.lifecycle.Disposable;
 import org.mule.api.lifecycle.Initialisable;
@@ -28,6 +28,7 @@ import org.mule.api.lifecycle.InitialisationException;
 import org.mule.api.transport.DispatchException;
 import org.mule.api.transport.PropertyScope;
 import org.mule.config.i18n.MessageFactory;
+import org.mule.endpoint.SimpleEndpointCache;
 import org.mule.session.DefaultMuleSession;
 import org.mule.transport.NullPayload;
 import org.mule.util.StringUtils;
@@ -84,6 +85,8 @@ public class Process implements Initialisable, Disposable, MessageService
     public static final String PROCESS_VARIABLE_INCOMING_SOURCE = "incomingSource";
     public static final String PROCESS_VARIABLE_DATA = "data";
 
+    private final EndpointCache endpointCache;
+    
     protected transient Log logger = LogFactory.getLog(getClass());
 
     public Process(BPMS bpms, String name, String resource, FlowConstruct flowConstruct, MuleContext muleContext)
@@ -99,6 +102,7 @@ public class Process implements Initialisable, Disposable, MessageService
         this.processIdField = processIdField;
         this.flowConstruct = flowConstruct;
         this.muleContext = muleContext;
+        this.endpointCache = new SimpleEndpointCache(muleContext);
     }
 
     public void initialise() throws InitialisationException
@@ -270,15 +274,12 @@ public class Process implements Initialisable, Disposable, MessageService
         message.addProperties(messageProperties, PropertyScope.INBOUND);
         message.addProperties(messageProperties, PropertyScope.INVOCATION);
 
-        //TODO should probably cache this
-        EndpointBuilder endpointBuilder = muleContext.getEndpointFactory().getEndpointBuilder(endpoint);
-        endpointBuilder.setExchangePattern(exchangePattern);
-        OutboundEndpoint ep = endpointBuilder.buildOutboundEndpoint();
-       
+        // Use an endpoint cache to prevent memory leaks (see MULE-5422)
+        OutboundEndpoint ep = endpointCache.getOutboundEndpoint(endpoint, exchangePattern, null);
         DefaultMuleEvent event = new DefaultMuleEvent(message, ep, new DefaultMuleSession(flowConstruct, muleContext));
+        RequestContext.setEvent(event);
 
         // Set correlation properties in SESSION scope so that they get propagated to response messages.
-        RequestContext.setEvent(event);
         if (messageProperties.get(PROPERTY_PROCESS_TYPE) != null)
         {
             event.getMessage().setSessionProperty(PROPERTY_PROCESS_TYPE, messageProperties.get(PROPERTY_PROCESS_TYPE));
