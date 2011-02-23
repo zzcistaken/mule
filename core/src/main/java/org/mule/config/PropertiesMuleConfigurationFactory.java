@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Map.Entry;
 
@@ -80,8 +81,14 @@ public class PropertiesMuleConfigurationFactory
 
     private void initializeFromProperties(DefaultMuleConfiguration configuration)
     {
-        for (Entry<Object, Object> entry : this.properties.entrySet())
+        initializeFromProperties(configuration, this.properties);
+    }
+    
+    public static void initializeFromProperties(DefaultMuleConfiguration configuration, Map properties)
+    {
+        for (Object entryObject : properties.entrySet())
         {
+            Entry entry = (Entry) entryObject;
             String key = (String) entry.getKey();
             String value = (String) entry.getValue();
 
