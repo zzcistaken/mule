@@ -24,10 +24,12 @@ import java.io.IOException;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
+import org.apache.commons.net.ftp.FTPListParseEngine;
 import org.apache.commons.net.ftp.FTPReply;
 
 public class FtpMessageRequester extends AbstractMessageRequester
 {
+    private final static int FTP_LIST_PAGE_SIZE = 25;
     protected final FtpConnector connector;
 
     public FtpMessageRequester(InboundEndpoint endpoint)
@@ -119,10 +121,15 @@ public class FtpMessageRequester extends AbstractMessageRequester
 
     protected FTPFile findFileToProcess(FTPClient client) throws Exception
     {
-        FTPFile[] files = listFiles(client);
-
-        if (files != null)
+        FTPListParseEngine engine = client.initiateListParsing();
+        FTPFile[] files = null;
+        while (engine.hasNext())
         {
+            files = engine.getNext(FTP_LIST_PAGE_SIZE);
+            if (files == null)
+            {
+                break;
+            }
             FilenameFilter filenameFilter = getFilenameFilter();
             for (int i = 0; i < files.length; i++)
             {
@@ -140,24 +147,18 @@ public class FtpMessageRequester extends AbstractMessageRequester
                 }
             }
         }
+        if (!FTPReply.isPositiveCompletion(client.getReplyCode()))
+        {
+            throw new IOException("Ftp error: " + client.getReplyCode());
+        }
         
         return null;
     }
 
     protected FTPFile[] listFiles(FTPClient client) throws IOException
     {
-        FTPFile[] files = client.listFiles();
-        if (!FTPReply.isPositiveCompletion(client.getReplyCode()))
-        {
-            throw new IOException("Ftp error: " + client.getReplyCode());
-        }
-        
-        if (files == null || files.length == 0)
-        {
-            return null;
-        }
-        
-        return files;
+        // no longer used, only kept to preserve the class protected API
+        return null;
     }
 
     protected FilenameFilter getFilenameFilter()
