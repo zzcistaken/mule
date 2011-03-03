@@ -42,6 +42,7 @@
             <plugin>
                  <groupId>org.mortbay.jetty</groupId>
                  <artifactId>maven-jetty-plugin</artifactId>
+                 <version>${jettyVersion}</version>
                  <configuration>
                     <contextPath>/${webappName}</contextPath>
                     <webApp>${project.build.directory}/${webappName}.war</webApp>
