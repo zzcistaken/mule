@@ -18,9 +18,9 @@ import org.mule.api.transport.Connector;
 import org.mule.config.i18n.CoreMessages;
 import org.mule.util.ObjectUtils;
 
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Map;
 
 import edu.emory.mathcs.backport.java.util.concurrent.Future;
 import edu.emory.mathcs.backport.java.util.concurrent.RejectedExecutionException;
@@ -45,7 +45,7 @@ public abstract class AbstractPollingMessageReceiver extends AbstractMessageRece
     private TimeUnit timeUnit = DEFAULT_POLL_TIMEUNIT;
 
     // @GuardedBy(itself)
-    protected final List<ScheduledFuture> schedules = new LinkedList<ScheduledFuture>();
+    protected final Map<ScheduledFuture, PollingReceiverWorker> schedules = new HashMap<ScheduledFuture, PollingReceiverWorker>();
 
     public AbstractPollingMessageReceiver(Connector connector,
                                           FlowConstruct flowConstruct,
@@ -78,14 +78,14 @@ public abstract class AbstractPollingMessageReceiver extends AbstractMessageRece
      * This method registers this receiver for periodic polling ticks with the connectors
      * scheduler. Subclasses can override this in case they want to handle their polling
      * differently.
-     * 
+     *
      * @throws RejectedExecutionException
      * @throws NullPointerException
      * @throws IllegalArgumentException
      * @see ScheduledExecutorService#scheduleWithFixedDelay(Runnable, long, long, TimeUnit)
      */
     protected void schedule()
-        throws RejectedExecutionException, NullPointerException, IllegalArgumentException
+            throws RejectedExecutionException, NullPointerException, IllegalArgumentException
     {
         synchronized (schedules)
         {
@@ -93,10 +93,11 @@ public abstract class AbstractPollingMessageReceiver extends AbstractMessageRece
             // polling takes longer than the specified frequency, e.g. when the
             // polled database or network is slow or returns large amounts of
             // data.
+            PollingReceiverWorker pollingReceiverWorker = this.createWork();
             ScheduledFuture schedule = connector.getScheduler().scheduleWithFixedDelay(
-                new PollingReceiverWorkerSchedule(this.createWork()), DEFAULT_STARTUP_DELAY,
-                this.getFrequency(), this.getTimeUnit());
-            schedules.add(schedule);
+                    new PollingReceiverWorkerSchedule(pollingReceiverWorker), DEFAULT_STARTUP_DELAY,
+                    this.getFrequency(), this.getTimeUnit());
+            schedules.put(schedule, pollingReceiverWorker);
 
             if (logger.isDebugEnabled())
             {
@@ -109,7 +110,7 @@ public abstract class AbstractPollingMessageReceiver extends AbstractMessageRece
 
     /**
      * This method cancels the schedules which were created in {@link #schedule()}.
-     * 
+     *
      * @see Future#cancel(boolean)
      */
     protected void unschedule()
@@ -117,10 +118,27 @@ public abstract class AbstractPollingMessageReceiver extends AbstractMessageRece
         synchronized (schedules)
         {
             // cancel our schedules gently: do not interrupt when polling is in progress
-            for (Iterator<ScheduledFuture> i = schedules.iterator(); i.hasNext();)
+            for (Iterator<ScheduledFuture> i = schedules.keySet().iterator(); i.hasNext();)
             {
                 ScheduledFuture schedule = i.next();
                 schedule.cancel(false);
+                // Wait until in-progress PollingRecevierWorker completes.
+                int shutdownTimeout = connector.getMuleContext().getConfiguration().getShutdownTimeout();
+                PollingReceiverWorker worker = schedules.get(schedule);
+                for (int elapsed = 0; worker.isRunning() && elapsed < shutdownTimeout; elapsed += 50)
+                {
+                    try
+                    {
+                        Thread.sleep(50);
+                    }
+                    catch (InterruptedException e)
+                    {
+                        logger.warn(
+                                ObjectUtils.identityToShortString(this) + "  interrupted while waiting for poll() to complete as part of message receiver stop.",
+                                e);
+                        break;
+                    }
+                }
                 i.remove();
 
                 if (logger.isDebugEnabled())
@@ -131,7 +149,7 @@ public abstract class AbstractPollingMessageReceiver extends AbstractMessageRece
             }
         }
     }
-    
+
     public void disableNativeScheduling()
     {
         this.unschedule();
@@ -169,6 +187,27 @@ public abstract class AbstractPollingMessageReceiver extends AbstractMessageRece
     public void setTimeUnit(TimeUnit timeUnit)
     {
         this.timeUnit = timeUnit;
+    }
+    
+    /**
+     * The preferred number of messages to process in the current batch. We need to
+     * drain the queue quickly, but not by slamming the workManager too hard. It is
+     * impossible to determine this more precisely without proper load
+     * statistics/feedback or some kind of "event cost estimate". Therefore we just
+     * try to use half of the receiver's workManager, since it is shared with
+     * receivers for other endpoints. TODO make this user-settable
+     * 
+     * @param available the number if messages currently available to be processed
+     */
+    protected int getBatchSize(int available)
+    {
+        if (available <= 0)
+        {
+            return 0;
+        }
+
+        int maxThreads = connector.getReceiverThreadingProfile().getMaxThreadsActive();
+        return Math.max(1, Math.min(available, ((maxThreads / 2) - 1)));
     }
 
     public abstract void poll() throws Exception;
