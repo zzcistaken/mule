@@ -68,6 +68,7 @@ import javax.management.remote.JMXServiceURL;
 import javax.management.remote.rmi.RMIConnectorServer;
 
 import edu.emory.mathcs.backport.java.util.concurrent.atomic.AtomicBoolean;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -213,7 +214,7 @@ public class JmxAgent extends AbstractAgent
             muleContext.registerListener(new MuleContextStartedListener());
             // and unregister once context stopped
             muleContext.registerListener(new MuleContextStoppedListener());
-        } 
+        }
         catch (NotificationException e)
         {
             throw new InitialisationException(e, this);
@@ -239,7 +240,7 @@ public class JmxAgent extends AbstractAgent
                     connectorServerProperties.put(JMXConnectorServer.AUTHENTICATOR,
                         this.getJmxAuthenticator());
                 }
-                
+
                 connectorServer = JMXConnectorServerFactory.newJMXConnectorServer(url,
                     connectorServerProperties, mBeanServer);
                 connectorServer.start();
@@ -293,7 +294,7 @@ public class JmxAgent extends AbstractAgent
         // nothing to do
     }
 
-    /** 
+    /**
      * {@inheritDoc}
      */
     public void unregistered()
@@ -363,14 +364,16 @@ public class JmxAgent extends AbstractAgent
     protected void registerServiceServices() throws NotCompliantMBeanException, MBeanRegistrationException,
             InstanceAlreadyExistsException, MalformedObjectNameException
     {
-        String rawName;
         for (Iterator<Service> iterator = muleContext.getRegistry().lookupObjects(Service.class).iterator(); iterator.hasNext();)
         {
-            rawName = iterator.next().getName();
-            final String name = jmxSupport.escape(rawName);
-            final String jmxName = String.format("%s:%s%s", jmxSupport.getDomainName(muleContext), ServiceServiceMBean.DEFAULT_JMX_NAME_PREFIX, name);
+            String rawName = iterator.next().getName();
+            String escapedName = jmxSupport.escape(rawName);
+            String jmxName = String.format("%s:%s%s", jmxSupport.getDomainName(muleContext),
+                ServiceServiceMBean.DEFAULT_JMX_NAME_PREFIX, escapedName);
             ObjectName on = jmxSupport.getObjectName(jmxName);
+
             ServiceServiceMBean serviceMBean = new ServiceService(rawName);
+
             logger.debug("Registering service with name: " + on);
             mBeanServer.registerMBean(serviceMBean, on);
         }
@@ -415,7 +418,7 @@ public class JmxAgent extends AbstractAgent
     protected String buildFullyQualifiedEndpointName(EndpointServiceMBean mBean, Connector connector)
     {
         String rawName = jmxSupport.escape(mBean.getName());
-        
+
         StringBuilder fullName = new StringBuilder(128);
         fullName.append(jmxSupport.getDomainName(muleContext));
         fullName.append(":type=org.mule.Endpoint,service=");

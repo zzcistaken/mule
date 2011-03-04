@@ -50,7 +50,6 @@ public class ServiceService implements ServiceServiceMBean, MBeanRegistration, S
     {
         this.name = name;
         this.statistics = getComponent().getStatistics();
-
     }
 
     public int getQueueSize()
@@ -73,7 +72,7 @@ public class ServiceService implements ServiceServiceMBean, MBeanRegistration, S
      * queued messages you can set the 'recoverableMode' property on the
      * Muleconfiguration to true. this causes all internal queues to store their
      * state.
-     * 
+     *
      * @throws org.mule.api.MuleException if the service failed to pause.
      * @see org.mule.config.MuleConfiguration
      */
@@ -85,7 +84,7 @@ public class ServiceService implements ServiceServiceMBean, MBeanRegistration, S
     /**
      * Resumes the Service that has been paused. If the service is not paused
      * nothing is executed.
-     * 
+     *
      * @throws org.mule.api.MuleException if the service failed to resume
      */
     public void resume() throws MuleException
@@ -128,22 +127,11 @@ public class ServiceService implements ServiceServiceMBean, MBeanRegistration, S
         getComponent().start();
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.mule.management.mbeans.ServiceServiceMBean#getStatistics()
-     */
     public ObjectName getStatistics()
     {
         return statsName;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see javax.management.MBeanRegistration#preRegister(javax.management.MBeanServer,
-     *      javax.management.ObjectName)
-     */
     public ObjectName preRegister(MBeanServer server, ObjectName name) throws Exception
     {
         this.server = server;
@@ -151,26 +139,24 @@ public class ServiceService implements ServiceServiceMBean, MBeanRegistration, S
         return name;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see javax.management.MBeanRegistration#postRegister(java.lang.Boolean)
-     */
     public void postRegister(Boolean registrationDone)
     {
         try
         {
             if (getComponent().getStatistics() != null)
             {
-                statsName = new ObjectName(objectName.getDomain() + ":type=org.mule.Statistics,service="
-                                           + getName());
+                String quotedName = ObjectName.quote(getName());
+
+                statsName = new ObjectName(objectName.getDomain() +
+                    ":type=org.mule.Statistics,service=" + quotedName);
+
                 // unregister old version if exists
-                if (this.server.isRegistered(statsName))
+                if (server.isRegistered(statsName))
                 {
-                    this.server.unregisterMBean(statsName);
+                    server.unregisterMBean(statsName);
                 }
 
-                this.server.registerMBean(new ServiceStats(getComponent().getStatistics()), this.statsName);
+                server.registerMBean(new ServiceStats(getComponent().getStatistics()), statsName);
             }
         }
         catch (Exception e)
@@ -179,11 +165,6 @@ public class ServiceService implements ServiceServiceMBean, MBeanRegistration, S
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see javax.management.MBeanRegistration#preDeregister()
-     */
     public void preDeregister() throws Exception
     {
         try
@@ -199,11 +180,6 @@ public class ServiceService implements ServiceServiceMBean, MBeanRegistration, S
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see javax.management.MBeanRegistration#postDeregister()
-     */
     public void postDeregister()
     {
         // nothing to do

@@ -10,8 +10,8 @@
 
 package org.mule.module.management.mbean;
 
-import org.mule.management.stats.ServiceStatistics;
 import org.mule.management.stats.RouterStatistics;
+import org.mule.management.stats.ServiceStatistics;
 
 import javax.management.MBeanRegistration;
 import javax.management.MBeanServer;
@@ -45,7 +45,7 @@ public class ServiceStats implements ServiceStatsMBean, MBeanRegistration
     }
 
     /**
-     * 
+     *
      */
     public void clearStatistics()
     {
@@ -196,12 +196,6 @@ public class ServiceStats implements ServiceStatsMBean, MBeanRegistration
         return statistics.getTotalExecutionTime();
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see javax.management.MBeanRegistration#preRegister(javax.management.MBeanServer,
-     *      javax.management.ObjectName)
-     */
     public ObjectName preRegister(MBeanServer server, ObjectName name) throws Exception
     {
         this.server = server;
@@ -209,63 +203,51 @@ public class ServiceStats implements ServiceStatsMBean, MBeanRegistration
         return name;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see javax.management.MBeanRegistration#postRegister(java.lang.Boolean)
-     */
     public void postRegister(Boolean registrationDone)
     {
-
         try
         {
-            RouterStatistics is = this.statistics.getInboundRouterStat();
+            RouterStatistics is = statistics.getInboundRouterStat();
             if (is != null)
             {
+                String quotedStatsName = ObjectName.quote(statistics.getName());
                 inboundName = new ObjectName(name.getDomain() + ":type=org.mule.Statistics,service="
-                                             + statistics.getName() + ",router=inbound");
+                                             + quotedStatsName + ",router=inbound");
+
                 // unregister old version if exists
-                if (this.server.isRegistered(inboundName))
+                if (server.isRegistered(inboundName))
                 {
-                    this.server.unregisterMBean(inboundName);
+                    server.unregisterMBean(inboundName);
                 }
-                this.server.registerMBean(new RouterStats(is), this.inboundName);
+                server.registerMBean(new RouterStats(is), this.inboundName);
             }
+
             RouterStatistics os = this.statistics.getOutboundRouterStat();
             if (os != null)
             {
+                String quotedStatsName = ObjectName.quote(statistics.getName());
                 outboundName = new ObjectName(name.getDomain() + ":type=org.mule.Statistics,service="
-                                              + statistics.getName() + ",router=outbound");
+                                              + quotedStatsName + ",router=outbound");
+
                 // unregister old version if exists
-                if (this.server.isRegistered(outboundName))
+                if (server.isRegistered(outboundName))
                 {
-                    this.server.unregisterMBean(outboundName);
+                    server.unregisterMBean(outboundName);
                 }
-                this.server.registerMBean(new RouterStats(os), this.outboundName);
+                server.registerMBean(new RouterStats(os), this.outboundName);
             }
         }
         catch (Exception e)
         {
             LOGGER.error("Error post-registering MBean", e);
         }
-
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see javax.management.MBeanRegistration#preDeregister()
-     */
     public void preDeregister() throws Exception
     {
         // nothing to do
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see javax.management.MBeanRegistration#postDeregister()
-     */
     public void postDeregister()
     {
         try
@@ -292,21 +274,11 @@ public class ServiceStats implements ServiceStatsMBean, MBeanRegistration
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.mule.management.mbeans.ServiceStatsMBean#getInboundRouter()
-     */
     public ObjectName getRouterInbound()
     {
         return this.inboundName;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.mule.management.mbeans.ServiceStatsMBean#getOutboundRouter()
-     */
     public ObjectName getRouterOutbound()
     {
         return this.outboundName;
