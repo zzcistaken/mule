@@ -12,6 +12,7 @@ package org.mule.module.launcher.application;
 
 import org.mule.api.MuleContext;
 import org.mule.module.launcher.DeploymentStartException;
+import org.mule.module.launcher.GoodCitizenClassLoader;
 import org.mule.module.launcher.InstallException;
 import org.mule.module.launcher.descriptor.ApplicationDescriptor;
 
@@ -35,9 +36,30 @@ public class ApplicationWrapper implements Application
 
     public void dispose()
     {
-        // moved wrapper logic into the actual implementation, as redeploy() invokes it directly, bypassing
-        // classloader cleanup
-        delegate.dispose();
+        final ClassLoader originalCl = Thread.currentThread().getContextClassLoader();
+        try
+        {
+            ClassLoader appCl = getDeploymentClassLoader();
+            // if not initialized yet, it can be null
+            if (appCl != null)
+            {
+                Thread.currentThread().setContextClassLoader(appCl);
+            }
+            delegate.dispose();
+            if (appCl != null)
+            {
+                // close classloader to release jar connections in lieu of Java 7's ClassLoader.close()
+                if (appCl instanceof GoodCitizenClassLoader)
+                {
+                    GoodCitizenClassLoader classLoader = (GoodCitizenClassLoader) appCl;
+                    classLoader.close();
+                }
+            }
+        }
+        finally
+        {
+            Thread.currentThread().setContextClassLoader(originalCl);
+        }
     }
 
     public ClassLoader getDeploymentClassLoader()

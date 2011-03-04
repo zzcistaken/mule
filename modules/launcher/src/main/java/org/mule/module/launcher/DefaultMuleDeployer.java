@@ -103,7 +103,8 @@ public class DefaultMuleDeployer implements MuleDeployer
         }
         catch (Throwable t)
         {
-            logger.error(t);
+            // TODO logging
+            t.printStackTrace();
         }
         finally
         {
