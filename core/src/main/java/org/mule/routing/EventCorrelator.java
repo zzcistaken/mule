@@ -13,7 +13,10 @@ import org.mule.DefaultMuleEvent;
 import org.mule.DefaultMuleSession;
 import org.mule.api.MuleContext;
 import org.mule.api.MuleEvent;
+import org.mule.api.MuleException;
 import org.mule.api.MuleMessage;
+import org.mule.api.lifecycle.Startable;
+import org.mule.api.lifecycle.Stoppable;
 import org.mule.api.routing.MessageInfoMapping;
 import org.mule.api.routing.ResponseTimeoutException;
 import org.mule.api.routing.RoutingException;
@@ -33,21 +36,17 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import javax.resource.spi.work.Work;
-import javax.resource.spi.work.WorkException;
-
 import edu.emory.mathcs.backport.java.util.concurrent.ConcurrentHashMap;
 import edu.emory.mathcs.backport.java.util.concurrent.ConcurrentMap;
 import edu.emory.mathcs.backport.java.util.concurrent.TimeUnit;
 import edu.emory.mathcs.backport.java.util.concurrent.atomic.AtomicBoolean;
-
 import org.apache.commons.collections.buffer.BoundedFifoBuffer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
  */
-public class EventCorrelator
+public class EventCorrelator implements Startable, Stoppable
 {
     /**
      * logger used by this class
@@ -94,6 +93,7 @@ public class EventCorrelator
     private EventCorrelatorCallback callback;
 
     private AtomicBoolean timerStarted = new AtomicBoolean(false);
+    private EventCorrelator.ExpiringGroupMonitoringThread expiringGroupMonitoringThread;
 
 
     public EventCorrelator(EventCorrelatorCallback callback, MessageInfoMapping messageInfoMapping, MuleContext context)
@@ -115,16 +115,6 @@ public class EventCorrelator
         this.context = context;
 
 
-    }
-
-    public void enableTimeoutMonitor() throws WorkException
-    {
-        if (timerStarted.get())
-        {
-            return;
-        }
-
-        this.context.getWorkManager().scheduleWork(new ExpiringGroupWork());
     }
 
     /**
@@ -485,20 +475,41 @@ public class EventCorrelator
     {
         this.timeout = timeout;
     }
-    
-    private final class ExpiringGroupWork implements Work, Expirable
+
+    public void start() throws MuleException
+    {
+        if (timeout != 0)
+        {
+            expiringGroupMonitoringThread = new ExpiringGroupMonitoringThread();
+            expiringGroupMonitoringThread.start();
+        }
+    }
+
+    public void stop() throws MuleException
+    {
+        if (expiringGroupMonitoringThread != null)
+        {
+            expiringGroupMonitoringThread.stopProcessing();
+        }
+    }
+
+    private final class ExpiringGroupMonitoringThread extends Thread implements Expirable
     {
         private static final long ONE_DAY_IN_MILLI = 1000 * 60 * 60 * 24;
+
         protected long groupTimeToLive = ONE_DAY_IN_MILLI;
+
         private ExpiryMonitor expiryMonitor;
-        
+        private volatile boolean stopRequested;
+
         /**
          * A map with keys = group id and values = group creation time
          */
         private Map expiredAndDispatchedGroups = new ConcurrentHashMap();
 
-        public ExpiringGroupWork()
+        public ExpiringGroupMonitoringThread()
         {
+            setName("event.correlator");
             this.expiryMonitor = new ExpiryMonitor("EventCorrelator", 1000 * 60);
             //clean up every 30 minutes
             this.expiryMonitor.addExpirable(1000 * 60 * 30, TimeUnit.MILLISECONDS, this);
@@ -529,6 +540,12 @@ public class EventCorrelator
         {
             while (true)
             {
+                if (stopRequested)
+                {
+                    logger.debug("Received request to stop monitoring");
+                    break;
+                }
+
                 List<EventGroup> expired = new ArrayList<EventGroup>(1);
                 for (Object o : eventGroups.values())
                 {
@@ -597,6 +614,7 @@ public class EventCorrelator
                         }
                     }
                 }
+
                 try
                 {
                     Thread.sleep(100);
@@ -605,6 +623,26 @@ public class EventCorrelator
                 {
                     break;
                 }
+            }
+
+            logger.debug("Monitoring fully stopped");
+        }
+
+        /**
+         * Stops the monitoring of the expired groups.
+         */
+        public void stopProcessing()
+        {
+            logger.debug("Requesting stop processing");
+            stopRequested = true;
+
+            try
+            {
+                this.join();
+            }
+            catch (InterruptedException e)
+            {
+                // Ignoring
             }
         }
     }

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesource.org/schema/mule/core/2.2"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:vm="http://www.mulesource.org/schema/mule/vm/2.2"
+      xsi:schemaLocation="
+         http://www.mulesource.org/schema/mule/core/2.2 http://www.mulesource.org/schema/mule/core/2.2/mule.xsd
+         http://www.mulesource.org/schema/mule/vm/2.2 http://www.mulesource.org/schema/mule/vm/2.2/mule-vm.xsd">
+
+    <model name="testModel">
+        <service name="Service1">
+            <inbound>
+                <vm:inbound-endpoint path="Service1.in"/>
+                <collection-aggregator-router timeout="60000" failOnTimeout="false"/>
+            </inbound>
+        </service>
+
+        <service name="Service2">
+            <inbound>
+                <vm:inbound-endpoint path="Service2.in"/>
+                <collection-aggregator-router timeout="60000" failOnTimeout="false"/>
+            </inbound>
+        </service>
+        
+        <service name="Service3">
+            <inbound>
+                <vm:inbound-endpoint path="Service3.in"/>
+                <collection-aggregator-router timeout="60000" failOnTimeout="false"/>
+            </inbound>
+        </service>
+        
+        <service name="Service4">
+            <inbound>
+                <vm:inbound-endpoint path="Service4.in"/>
+                <collection-aggregator-router timeout="60000" failOnTimeout="false"/>
+            </inbound>
+        </service>
+        
+        <service name="Service5">
+            <inbound>
+                <vm:inbound-endpoint path="Service5.in"/>
+                <collection-aggregator-router timeout="60000" failOnTimeout="false"/>
+            </inbound>
+        </service>
+
+        <service name="Service6">
+            <inbound>
+                <vm:inbound-endpoint path="Service6.in"/>
+                <collection-aggregator-router timeout="60000" failOnTimeout="false"/>
+            </inbound>
+        </service>
+
+        <service name="Service7">
+            <inbound>
+                <vm:inbound-endpoint path="Service7.in"/>
+                <collection-aggregator-router timeout="60000" failOnTimeout="false"/>
+            </inbound>
+        </service>
+
+        <service name="Service8">
+            <inbound>
+                <vm:inbound-endpoint path="Service8.in"/>
+                <collection-aggregator-router timeout="60000" failOnTimeout="false"/>
+            </inbound>
+        </service>
+    </model>
+</mule>

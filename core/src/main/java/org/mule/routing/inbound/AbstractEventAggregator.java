@@ -13,12 +13,11 @@ package org.mule.routing.inbound;
 import org.mule.DefaultMuleEvent;
 import org.mule.api.MessagingException;
 import org.mule.api.MuleEvent;
+import org.mule.api.MuleException;
 import org.mule.api.MuleMessage;
 import org.mule.api.lifecycle.InitialisationException;
 import org.mule.routing.EventCorrelator;
 import org.mule.routing.EventCorrelatorCallback;
-
-import javax.resource.spi.work.WorkException;
 
 /**
  * <code>AbstractEventAggregator</code> will aggregate a set of messages into a
@@ -37,25 +36,48 @@ public abstract class AbstractEventAggregator extends SelectiveConsumer
     @Override
     public void initialise() throws InitialisationException
     {
-        eventCorrelator = new EventCorrelator(getCorrelatorCallback(), getMessageInfoMapping(), muleContext);
-        if (timeout != 0)
+        if (eventCorrelator == null)
         {
-            eventCorrelator.setTimeout(timeout);
-            eventCorrelator.setFailOnTimeout(isFailOnTimeout());
-            try
+            eventCorrelator = new EventCorrelator(getCorrelatorCallback(), getMessageInfoMapping(), muleContext);
+
+            if (timeout != 0)
             {
-                eventCorrelator.enableTimeoutMonitor();
-            }
-            catch (WorkException e)
-            {
-                throw new InitialisationException(e, this);
+                eventCorrelator.setTimeout(timeout);
+                eventCorrelator.setFailOnTimeout(isFailOnTimeout());
+
+                try
+                {
+                    eventCorrelator.start();
+                }
+                catch (MuleException e)
+                {
+                    throw new InitialisationException(e, this);
+                }
             }
         }
+
         super.initialise();
     }
 
-    protected abstract EventCorrelatorCallback getCorrelatorCallback();
+    @Override
+    public void dispose()
+    {
+        try
+        {
+            if (eventCorrelator != null)
+            {
+                eventCorrelator.stop();
+            }
+        }
+        catch (MuleException e)
+        {
+            // Ignoring
+        }
 
+        super.dispose();
+    }
+
+    protected abstract EventCorrelatorCallback getCorrelatorCallback();
 
     @Override
     public MuleEvent[] process(MuleEvent event) throws MessagingException

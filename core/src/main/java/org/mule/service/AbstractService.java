@@ -417,6 +417,10 @@ public abstract class AbstractService implements Service
         }
         doDispose();
         component.dispose();
+        inboundRouter.dispose();
+        outboundRouter.dispose();
+        responseRouter.dispose();
+
         initialised.set(false);
         fireServiceNotification(ServiceNotification.SERVICE_DISPOSED);
         muleContext.getStatistics().remove(stats);
