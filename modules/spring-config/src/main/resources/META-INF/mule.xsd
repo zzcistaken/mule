@@ -2950,10 +2950,10 @@
                 <xsd:sequence>
                     <xsd:element ref="abstract-outbound-endpoint" minOccurs="0" maxOccurs="unbounded"/>
                 </xsd:sequence>
-                <xsd:attribute name="stopFurtherProcessing" type="substitutableBoolean" default="false" use="optional">
+                <xsd:attribute name="stopMessageProcessing" type="substitutableBoolean" default="false" use="optional">
                     <xsd:annotation>
                         <xsd:documentation>
-                            Stops the service that owns the exception strategy so no more messages get consumed.
+                            Stops the service that owns the exception strategy when an exception is managed in the strategy so no more messages get consumed.
                         </xsd:documentation>
                     </xsd:annotation>
                 </xsd:attribute>
