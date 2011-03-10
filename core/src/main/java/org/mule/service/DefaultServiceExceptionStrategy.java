@@ -29,7 +29,7 @@ import java.util.List;
  */
 public class DefaultServiceExceptionStrategy extends DefaultExceptionStrategy
 {
-    private boolean stopService;
+    private boolean stopFurtherProcessing;
 
     public DefaultServiceExceptionStrategy()
     {
@@ -100,7 +100,7 @@ public class DefaultServiceExceptionStrategy extends DefaultExceptionStrategy
     {
         super.handleMessagingException(message, t);
 
-        if (stopService) {
+        if (stopFurtherProcessing) {
             stopService();
         }
     }
@@ -124,13 +124,13 @@ public class DefaultServiceExceptionStrategy extends DefaultExceptionStrategy
         }
     }
 
-    public boolean isStopService()
+    public boolean isStopFurtherProcessing()
     {
-        return stopService;
+        return stopFurtherProcessing;
     }
 
-    public void setStopService(boolean stopService)
+    public void setStopFurtherProcessing(boolean stopFurtherProcessing)
     {
-        this.stopService = stopService;
+        this.stopFurtherProcessing = stopFurtherProcessing;
     }
 }

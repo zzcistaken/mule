@@ -38,7 +38,7 @@
                 <vm:inbound-endpoint path="in3"/>
             </inbound>
             <test:component throwException="true"/>
-            <default-service-exception-strategy stopService="true">
+            <default-service-exception-strategy stopFurtherProcessing="true">
                 <vm:outbound-endpoint path="out3" connector-ref="vmConnector"/>
             </default-service-exception-strategy>
         </service>
