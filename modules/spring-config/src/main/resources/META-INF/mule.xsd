@@ -2926,6 +2926,15 @@
             </xsd:documentation>
         </xsd:annotation>
     </xsd:element>
+    <xsd:element name="stopping-service-exception-strategy" type="endpointExceptionStrategyType"
+                 substitutionGroup="abstract-exception-strategy">
+        <xsd:annotation>
+            <xsd:documentation>
+                Provide exception handling for a service via an endpoint. Stops the service when an exception
+                occurs to avoid further messages to be consumed.
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
     <xsd:element name="default-connector-exception-strategy" type="endpointExceptionStrategyType"
                  substitutionGroup="abstract-exception-strategy">
         <xsd:annotation>
