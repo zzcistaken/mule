@@ -2947,9 +2947,6 @@
     <xsd:complexType name="serviceExceptionStrategyType">
         <xsd:complexContent>
             <xsd:extension base="endpointExceptionStrategyType">
-                <xsd:sequence>
-                    <xsd:element ref="abstract-outbound-endpoint" minOccurs="0" maxOccurs="unbounded"/>
-                </xsd:sequence>
                 <xsd:attribute name="stopMessageProcessing" type="substitutableBoolean" default="false" use="optional">
                     <xsd:annotation>
                         <xsd:documentation>
