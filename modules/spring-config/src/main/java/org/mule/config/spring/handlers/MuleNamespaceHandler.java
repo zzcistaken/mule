@@ -12,7 +12,6 @@ package org.mule.config.spring.handlers;
 
 import org.mule.DefaultExceptionStrategy;
 import org.mule.RouteableExceptionStrategy;
-import org.mule.StoppingServiceExceptionStrategy;
 import org.mule.api.config.MuleProperties;
 import org.mule.component.DefaultJavaComponent;
 import org.mule.component.PooledJavaComponent;
@@ -180,7 +179,6 @@ public class MuleNamespaceHandler extends AbstractMuleNamespaceHandler
         registerBeanDefinitionParser("threading-profile", new ThreadingProfileDefinitionParser("threadingProfile", MuleProperties.OBJECT_DEFAULT_SERVICE_THREADING_PROFILE));
         registerBeanDefinitionParser("custom-exception-strategy", new ChildDefinitionParser("exceptionListener", null));
         registerBeanDefinitionParser("default-service-exception-strategy", new ChildDefinitionParser("exceptionListener", DefaultServiceExceptionStrategy.class));
-        registerBeanDefinitionParser("stopping-service-exception-strategy", new ChildDefinitionParser("exceptionListener", StoppingServiceExceptionStrategy.class));
         registerBeanDefinitionParser("commit-transaction", new ExceptionTXFilterDefinitionParser("commitTxFilter"));
         registerBeanDefinitionParser("rollback-transaction", new ExceptionTXFilterDefinitionParser("rollbackTxFilter"));
 

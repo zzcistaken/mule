@@ -2918,20 +2918,11 @@
     <!--   Exception strategies                                       -->
     <!--==============================================================-->
 
-    <xsd:element name="default-service-exception-strategy" type="endpointExceptionStrategyType"
+    <xsd:element name="default-service-exception-strategy" type="serviceExceptionStrategyType"
                  substitutionGroup="abstract-exception-strategy">
         <xsd:annotation>
             <xsd:documentation>
                 Provide default exception handling for a service via an endpoint.
-            </xsd:documentation>
-        </xsd:annotation>
-    </xsd:element>
-    <xsd:element name="stopping-service-exception-strategy" type="endpointExceptionStrategyType"
-                 substitutionGroup="abstract-exception-strategy">
-        <xsd:annotation>
-            <xsd:documentation>
-                Provide exception handling for a service via an endpoint. Stops the service when an exception
-                occurs to avoid further messages to be consumed.
             </xsd:documentation>
         </xsd:annotation>
     </xsd:element>
@@ -2949,6 +2940,23 @@
                 <xsd:sequence>
                     <xsd:element ref="abstract-outbound-endpoint" minOccurs="0" maxOccurs="unbounded"/>
                 </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="serviceExceptionStrategyType">
+        <xsd:complexContent>
+            <xsd:extension base="endpointExceptionStrategyType">
+                <xsd:sequence>
+                    <xsd:element ref="abstract-outbound-endpoint" minOccurs="0" maxOccurs="unbounded"/>
+                </xsd:sequence>
+                <xsd:attribute name="stopService" type="substitutableBoolean" default="false" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            Stops the service that owns the exception strategy so no more messages get consumed.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>

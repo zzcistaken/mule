@@ -13,8 +13,10 @@ package org.mule.service;
 import org.mule.DefaultExceptionStrategy;
 import org.mule.RequestContext;
 import org.mule.api.MuleEvent;
+import org.mule.api.MuleException;
 import org.mule.api.MuleMessage;
 import org.mule.api.endpoint.ImmutableEndpoint;
+import org.mule.api.service.Service;
 import org.mule.management.stats.ServiceStatistics;
 import org.mule.util.CollectionUtils;
 
@@ -27,6 +29,8 @@ import java.util.List;
  */
 public class DefaultServiceExceptionStrategy extends DefaultExceptionStrategy
 {
+    private boolean stopService;
+
     public DefaultServiceExceptionStrategy()
     {
         super();
@@ -89,5 +93,44 @@ public class DefaultServiceExceptionStrategy extends DefaultExceptionStrategy
         {
             return event.getService().getStatistics();
         }
+    }
+
+    @Override
+    public void handleMessagingException(MuleMessage message, Throwable t)
+    {
+        super.handleMessagingException(message, t);
+
+        if (stopService) {
+            stopService();
+        }
+    }
+
+    private void stopService()
+    {
+        final MuleEvent event = RequestContext.getEvent();
+
+        if (event != null)
+        {
+            Service service = event.getService();
+            try
+            {
+                logger.info("Stopping service '" + service.getName() + "' due to exception");
+                service.stop();
+            }
+            catch (MuleException e)
+            {
+                logger.error("Unable to stop service '" + service.getName() + "'", e);
+            }
+        }
+    }
+
+    public boolean isStopService()
+    {
+        return stopService;
+    }
+
+    public void setStopService(boolean stopService)
+    {
+        this.stopService = stopService;
     }
 }
