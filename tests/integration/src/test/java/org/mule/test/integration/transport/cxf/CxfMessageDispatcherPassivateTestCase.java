@@ -60,7 +60,8 @@ public class CxfMessageDispatcherPassivateTestCase extends FunctionalTestCase
                 Client client = clientWrapper.getClient();
 
                 final Map<String, Object> requestContext = client.getRequestContext();
-                assertTrue("Request context should be empty", requestContext.isEmpty());
+                assertFalse("Request context should not contain 'holder' key",
+                    requestContext.containsKey("holder"));
 
                 final Map<String, Object> responseContext = client.getResponseContext();
                 assertTrue("Response context should be empty", responseContext.isEmpty());

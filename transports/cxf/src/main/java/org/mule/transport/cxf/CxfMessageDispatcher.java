@@ -100,6 +100,8 @@ public class CxfMessageDispatcher extends AbstractMessageDispatcher
     public void passivate()
     {
         // MULE-4899: cleans up client's request and response context to avoid a memory leak.
+        // EE-2125: remove only "holder" key (Message) from request context as the
+        // other properties may be needed for subsequent messages.
         try
         {
             super.passivate();
@@ -107,7 +109,7 @@ public class CxfMessageDispatcher extends AbstractMessageDispatcher
         finally
         {
             Map<String, Object> requestContext = wrapper.client.getRequestContext();
-            requestContext.clear();
+            requestContext.remove("holder");
             Map<String, Object> responseContext = wrapper.client.getResponseContext();
             responseContext.clear();
         }
