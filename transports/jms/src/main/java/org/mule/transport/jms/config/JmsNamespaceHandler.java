@@ -29,6 +29,7 @@ import org.mule.transport.jms.activemq.ActiveMQJmsConnector;
 import org.mule.transport.jms.activemq.ActiveMQXAJmsConnector;
 import org.mule.transport.jms.filters.JmsPropertyFilter;
 import org.mule.transport.jms.filters.JmsSelectorFilter;
+import org.mule.transport.jms.jndi.SimpleJndiNameResolver;
 import org.mule.transport.jms.mulemq.MuleMQJmsConnector;
 import org.mule.transport.jms.mulemq.MuleMQXAJmsConnector;
 import org.mule.transport.jms.transformers.JMSMessageToObject;
@@ -76,6 +77,8 @@ public class JmsNamespaceHandler extends AbstractMuleNamespaceHandler
         registerBeanDefinitionParser("object-to-jmsmessage-transformer", new TransformerDefinitionParser(ObjectToJMSMessage.class));
         registerBeanDefinitionParser("property-filter", new FilterDefinitionParser(JmsPropertyFilter.class));
         registerBeanDefinitionParser("selector", new ChildDefinitionParser(FilterDefinitionParser.FILTER, JmsSelectorFilter.class));
+        registerBeanDefinitionParser("default-jndi-name-resolver", new ChildDefinitionParser("jndiNameResolver", SimpleJndiNameResolver.class));
+        registerBeanDefinitionParser("custom-jndi-name-resolver", new ChildDefinitionParser("jndiNameResolver"));
     }
 
     /**

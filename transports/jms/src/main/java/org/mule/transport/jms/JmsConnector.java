@@ -34,11 +34,12 @@ import org.mule.transaction.TransactionCoordination;
 import org.mule.transport.AbstractConnector;
 import org.mule.transport.ConnectException;
 import org.mule.transport.jms.i18n.JmsMessages;
+import org.mule.transport.jms.jndi.JndiNameResolver;
+import org.mule.transport.jms.jndi.SimpleJndiNameResolver;
 import org.mule.transport.jms.xa.ConnectionFactoryWrapper;
 import org.mule.util.BeanUtils;
 
 import java.text.MessageFormat;
-import java.util.Hashtable;
 import java.util.Map;
 
 import javax.jms.Connection;
@@ -52,8 +53,6 @@ import javax.jms.TemporaryQueue;
 import javax.jms.TemporaryTopic;
 import javax.jms.XAConnectionFactory;
 import javax.naming.CommunicationException;
-import javax.naming.Context;
-import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 import edu.emory.mathcs.backport.java.util.concurrent.atomic.AtomicInteger;
@@ -77,7 +76,7 @@ public class JmsConnector extends AbstractConnector implements ConnectionNotific
     public static final int REDELIVERY_IGNORE = -1;
 
     private AtomicInteger receiverReportedExceptionCount = new AtomicInteger();
-    
+
     ////////////////////////////////////////////////////////////////////////
     // Properties
     ////////////////////////////////////////////////////////////////////////
@@ -111,7 +110,7 @@ public class JmsConnector extends AbstractConnector implements ConnectionNotific
     private Connection connection;
 
     private ConnectionFactory connectionFactory;
-    
+
     private Map connectionFactoryProperties;
 
     public String username = null;
@@ -121,13 +120,6 @@ public class JmsConnector extends AbstractConnector implements ConnectionNotific
     ////////////////////////////////////////////////////////////////////////
     // JNDI Connection
     ////////////////////////////////////////////////////////////////////////
-    
-    private Context jndiContext = null;
-
-    /**
-     * This object guards all access to the jndiContext
-     */
-    private final Object jndiLock = new Object();
 
     private String jndiProviderUrl;
 
@@ -140,6 +132,11 @@ public class JmsConnector extends AbstractConnector implements ConnectionNotific
     private boolean jndiDestinations = false;
 
     private boolean forceJndiDestinations = false;
+
+    /**
+     * Resolves JNDI names if the connector uses {@link #jndiDestinations}
+     */
+    private JndiNameResolver jndiNameResolver;
 
     ////////////////////////////////////////////////////////////////////////
     // Strategy classes
@@ -156,8 +153,8 @@ public class JmsConnector extends AbstractConnector implements ConnectionNotific
     /** determines whether a temporary JMSReplyTo destination will be used when using synchronous outbound JMS endpoints */
     private boolean disableTemporaryReplyToDestinations = false;
 
-    /** 
-     * If disableTemporaryReplyToDestinations = "true", this flag causes the original JMS Message to be returned as a 
+    /**
+     * If disableTemporaryReplyToDestinations = "true", this flag causes the original JMS Message to be returned as a
      * synchronous response with any properties set on it by the JMS Provider (e.g., JMSMessageID).
      * @see EE-1688/MULE-3059
      */
@@ -199,13 +196,13 @@ public class JmsConnector extends AbstractConnector implements ConnectionNotific
         {
             throw new InitialisationException(JmsMessages.errorCreatingConnectionFactory(), ne, this);
         }
-        
+
         if ((connectionFactoryProperties != null) && !connectionFactoryProperties.isEmpty())
         {
             // apply connection factory properties
             BeanUtils.populateWithoutFail(connectionFactory, connectionFactoryProperties, true);
         }
-        
+
         if (topicResolver == null)
         {
             topicResolver = new DefaultJmsTopicResolver(this);
@@ -254,14 +251,18 @@ public class JmsConnector extends AbstractConnector implements ConnectionNotific
     {
         // if an initial factory class was configured that takes precedence over the 
         // spring-configured connection factory or the one that our subclasses may provide
-        if (jndiInitialFactory != null)
+        if (jndiInitialFactory != null || jndiNameResolver != null)
         {
-            this.initJndiContext();
+            if (jndiNameResolver == null)
+            {
+                jndiNameResolver = createDefaultJndiResolver();
+            }
+            jndiNameResolver.initialise();
 
-            Object temp = jndiContext.lookup(connectionFactoryJndiName);
+            Object temp = jndiNameResolver.lookup(connectionFactoryJndiName);
             if (temp instanceof ConnectionFactory)
             {
-                return (ConnectionFactory)temp;
+                return (ConnectionFactory) temp;
             }
             else
             {
@@ -280,7 +281,7 @@ public class JmsConnector extends AbstractConnector implements ConnectionNotific
             {
                 return connectionFactory;
             }
-            
+
             // no spring-configured connection factory. See if there is a default one (e.g. from
             // subclass)
             ConnectionFactory factory = this.getDefaultConnectionFactory();
@@ -288,14 +289,29 @@ public class JmsConnector extends AbstractConnector implements ConnectionNotific
             {
                 return factory;
             }
-            
+
             // no connection factory ... give up
             throw new InitialisationException(JmsMessages.noConnectionFactoryConfigured(), this);
         }
     }
-    
-    /** 
-     * Override this method to provide a default ConnectionFactory for a vendor-specific JMS Connector. 
+
+    private JndiNameResolver createDefaultJndiResolver()
+    {
+        if (logger.isDebugEnabled())
+        {
+            logger.debug("Creating default JndiNameResolver");
+        }
+
+        SimpleJndiNameResolver jndiContextFactory = new SimpleJndiNameResolver();
+        jndiContextFactory.setJndiProviderUrl(jndiProviderUrl);
+        jndiContextFactory.setJndiInitialFactory(jndiInitialFactory);
+        jndiContextFactory.setJndiProviderProperties(jndiProviderProperties);
+
+        return jndiContextFactory;
+    }
+
+    /**
+     * Override this method to provide a default ConnectionFactory for a vendor-specific JMS Connector.
      */
     protected ConnectionFactory getDefaultConnectionFactory()
     {
@@ -316,81 +332,37 @@ public class JmsConnector extends AbstractConnector implements ConnectionNotific
             }
             connection = null;
         }
-        
-        if (jndiContext != null)
+
+        if (jndiNameResolver != null)
         {
-            try
-            {
-                jndiContext.close();
-            }
-            catch (NamingException ne)
-            {
-                logger.error("Jms connector failed to dispose properly: ", ne);
-            }
-            finally
-            {
-                jndiContext = null;
-            }
-        }
-    }
-
-    protected void initJndiContext() throws NamingException, InitialisationException
-    {
-        synchronized (jndiLock)
-        {
-            Hashtable<String, Object> props = new Hashtable<String, Object>();
-
-            if (jndiInitialFactory != null)
-            {
-                props.put(Context.INITIAL_CONTEXT_FACTORY, jndiInitialFactory);
-            }
-            else if (jndiProviderProperties == null
-                     || !jndiProviderProperties.containsKey(Context.INITIAL_CONTEXT_FACTORY))
-            {
-                throw new InitialisationException(CoreMessages.objectIsNull("jndiInitialFactory"), this);
-            }
-
-            if (jndiProviderUrl != null)
-            {
-                props.put(Context.PROVIDER_URL, jndiProviderUrl);
-            }
-
-            if (jndiProviderProperties != null)
-            {
-                props.putAll(jndiProviderProperties);
-            }
-            
-            jndiContext = new InitialContext(props);
+            jndiNameResolver.dispose();
         }
     }
 
     protected Object lookupFromJndi(String jndiName) throws NamingException
     {
-        synchronized (jndiLock)
+        try
+        {
+            return jndiNameResolver.lookup(jndiName);
+        }
+        catch (CommunicationException ce)
         {
             try
             {
-                return jndiContext.lookup(jndiName);
+                final Transaction tx = TransactionCoordination.getInstance().getTransaction();
+                if (tx != null)
+                {
+                    tx.setRollbackOnly();
+                }
             }
-            catch (CommunicationException ce)
+            catch (TransactionException e)
             {
-                try
-                {
-                    final Transaction tx = TransactionCoordination.getInstance().getTransaction();
-                    if (tx != null)
-                    {
-                        tx.setRollbackOnly();
-                    }
-                }
-                catch (TransactionException e)
-                {
-                    throw new MuleRuntimeException(
-                            MessageFactory.createStaticMessage("Failed to mark transaction for rollback: "), e);
-                }
-
-                // re-throw
-                throw ce;
+                throw new MuleRuntimeException(
+                        MessageFactory.createStaticMessage("Failed to mark transaction for rollback: "), e);
             }
+
+            // re-throw
+            throw ce;
         }
     }
 
@@ -442,8 +414,8 @@ public class JmsConnector extends AbstractConnector implements ConnectionNotific
         final JmsConnector jmsConnector = JmsConnector.this;
         Map receivers = jmsConnector.getReceivers();
         boolean isMultiConsumerReceiver = false;
-        
-        if (!receivers.isEmpty()) 
+
+        if (!receivers.isEmpty())
         {
             Map.Entry entry = (Map.Entry) receivers.entrySet().iterator().next();
             if (entry.getValue() instanceof MultiConsumerJmsMessageReceiver)
@@ -451,56 +423,25 @@ public class JmsConnector extends AbstractConnector implements ConnectionNotific
                 isMultiConsumerReceiver = true;
             }
         }
-        
-        int expectedReceiverCount = isMultiConsumerReceiver ? 1 : 
+
+        int expectedReceiverCount = isMultiConsumerReceiver ? 1 :
             (jmsConnector.getReceivers().size() * jmsConnector.getNumberOfConcurrentTransactedReceivers());
-        
+
         if (logger.isDebugEnabled())
         {
             logger.debug("About to recycle myself due to remote JMS connection shutdown but need "
-                + "to wait for all active receivers to report connection loss. Receiver count: " 
+                + "to wait for all active receivers to report connection loss. Receiver count: "
                 + (receiverReportedExceptionCount.get() + 1) + '/' + expectedReceiverCount);
         }
-        
+
         if (receiverReportedExceptionCount.incrementAndGet() >= expectedReceiverCount)
         {
             receiverReportedExceptionCount.set(0);
-        
+
             handleException(new ConnectException(jmsException, this));
         }
     }
 
-      // TODO This might make retry work a bit better w/ JMS
-//    @Override
-//    public boolean validateConnection() throws Exception
-//    {
-//        logger.debug("Creating a temporary session to verify that we have a healthy connection...");
-//
-//        Connection connection;
-//        Session session;
-//        try
-//        {
-//            connection = createConnection();
-//            if (connection == null)
-//            {
-//                return false;
-//            }
-//            session = connection.createSession(false, 1);
-//            if (session == null)
-//            {
-//                return false;
-//            }
-//            session.close();
-//            connection.close();
-//            return true;
-//        }
-//        finally
-//        {
-//            session = null;
-//            connection = null;
-//        }
-//    }
-    
     @Override
     protected void doConnect() throws Exception
     {
@@ -626,6 +567,11 @@ public class JmsConnector extends AbstractConnector implements ConnectionNotific
                 throw new StartException(CoreMessages.failedToStart("Jms Connection"), e, this);
             }
         }
+
+        if (jndiNameResolver != null)
+        {
+            jndiNameResolver.start();
+        }
     }
 
     /**
@@ -663,6 +609,11 @@ public class JmsConnector extends AbstractConnector implements ConnectionNotific
             {
                 throw new StopException(CoreMessages.failedToStop("Jms Connection"), e, this);
             }
+        }
+
+        if (jndiNameResolver != null)
+        {
+            jndiNameResolver.stop();
         }
     }
 
@@ -1116,12 +1067,12 @@ public class JmsConnector extends AbstractConnector implements ConnectionNotific
     {
         this.connectionFactory = connectionFactory;
     }
-    
+
     public RedeliveryHandlerFactory getRedeliveryHandlerFactory()
     {
         return redeliveryHandlerFactory;
     }
-    
+
     public void setRedeliveryHandlerFactory(RedeliveryHandlerFactory redeliveryHandlerFactory)
     {
         this.redeliveryHandlerFactory = redeliveryHandlerFactory;
@@ -1131,99 +1082,123 @@ public class JmsConnector extends AbstractConnector implements ConnectionNotific
      * Sets the <code>honorQosHeaders</code> property, which determines whether
      * {@link JmsMessageDispatcher} should honor incoming message's QoS headers
      * (JMSPriority, JMSDeliveryMode).
-     * 
+     *
      * @param honorQosHeaders <code>true</code> if {@link JmsMessageDispatcher}
      *            should honor incoming message's QoS headers; otherwise
      *            <code>false</code> Default is <code>false</code>, meaning that
      *            connector settings will override message headers.
      */
-   public void setHonorQosHeaders(boolean honorQosHeaders)
-   {
-       this.honorQosHeaders = honorQosHeaders;
-   }
+    public void setHonorQosHeaders(boolean honorQosHeaders)
+    {
+        this.honorQosHeaders = honorQosHeaders;
+    }
 
-   /**
+    /**
      * Gets the value of <code>honorQosHeaders</code> property.
-     * 
+     *
      * @return <code>true</code> if <code>JmsMessageDispatcher</code> should
      *         honor incoming message's QoS headers; otherwise <code>false</code>
      *         Default is <code>false</code>, meaning that connector settings will
      *         override message headers.
      */
-   public boolean isHonorQosHeaders()
-   {
-       return honorQosHeaders;
-   }
+    public boolean isHonorQosHeaders()
+    {
+        return honorQosHeaders;
+    }
 
-   public Context getJndiContext()
-   {
-       return jndiContext;
-   }
+    /**
+     * @Deprecated use a {@link JndiNameResolver} instead of access this property
+     */
+    @Deprecated
+    public String getJndiInitialFactory()
+    {
+        return jndiInitialFactory;
+    }
 
-   public void setJndiContext(Context jndiContext)
-   {
-       this.jndiContext = jndiContext;
-   }
+    /**
+     * @Deprecated use a {@link JndiNameResolver} instead of access this property
+     */
+    @Deprecated
+    public void setJndiInitialFactory(String jndiInitialFactory)
+    {
+        this.jndiInitialFactory = jndiInitialFactory;
+    }
 
-   public String getJndiInitialFactory()
-   {
-       return jndiInitialFactory;
-   }
+    /**
+     * @Deprecated use a {@link JndiNameResolver} instead of access this property
+     */
+    @Deprecated
+    public String getJndiProviderUrl()
+    {
+        return jndiProviderUrl;
+    }
 
-   public void setJndiInitialFactory(String jndiInitialFactory)
-   {
-       this.jndiInitialFactory = jndiInitialFactory;
-   }
+    /**
+     * @Deprecated use a {@link JndiNameResolver} instead of access this property
+     */
+    @Deprecated
+    public void setJndiProviderUrl(String jndiProviderUrl)
+    {
+        this.jndiProviderUrl = jndiProviderUrl;
+    }
 
-   public String getJndiProviderUrl()
-   {
-       return jndiProviderUrl;
-   }
+    /**
+     * @Deprecated use a {@link JndiNameResolver} instead of access this property
+     */
+    @Deprecated
+    public Map getJndiProviderProperties()
+    {
+        return jndiProviderProperties;
+    }
 
-   public void setJndiProviderUrl(String jndiProviderUrl)
-   {
-       this.jndiProviderUrl = jndiProviderUrl;
-   }
+    /**
+     * @Deprecated use a {@link JndiNameResolver} instead of access this property
+     */
+    @Deprecated
+    public void setJndiProviderProperties(Map jndiProviderProperties)
+    {
+        this.jndiProviderProperties = jndiProviderProperties;
+    }
 
-   public Map getJndiProviderProperties()
-   {
-       return jndiProviderProperties;
-   }
+    public JndiNameResolver getJndiNameResolver()
+    {
+        return jndiNameResolver;
+    }
 
-   public void setJndiProviderProperties(Map jndiProviderProperties)
-   {
-       this.jndiProviderProperties = jndiProviderProperties;
-   }
+    public void setJndiNameResolver(JndiNameResolver jndiNameResolver)
+    {
+        this.jndiNameResolver = jndiNameResolver;
+    }
 
-   public String getConnectionFactoryJndiName()
-   {
-       return connectionFactoryJndiName;
-   }
+    public String getConnectionFactoryJndiName()
+    {
+        return connectionFactoryJndiName;
+    }
 
-   public void setConnectionFactoryJndiName(String connectionFactoryJndiName)
-   {
-       this.connectionFactoryJndiName = connectionFactoryJndiName;
-   }
+    public void setConnectionFactoryJndiName(String connectionFactoryJndiName)
+    {
+        this.connectionFactoryJndiName = connectionFactoryJndiName;
+    }
 
-   public boolean isJndiDestinations()
-   {
-       return jndiDestinations;
-   }
+    public boolean isJndiDestinations()
+    {
+        return jndiDestinations;
+    }
 
-   public void setJndiDestinations(boolean jndiDestinations)
-   {
-       this.jndiDestinations = jndiDestinations;
-   }
+    public void setJndiDestinations(boolean jndiDestinations)
+    {
+        this.jndiDestinations = jndiDestinations;
+    }
 
-   public boolean isForceJndiDestinations()
-   {
-       return forceJndiDestinations;
-   }
+    public boolean isForceJndiDestinations()
+    {
+        return forceJndiDestinations;
+    }
 
-   public void setForceJndiDestinations(boolean forceJndiDestinations)
-   {
-       this.forceJndiDestinations = forceJndiDestinations;
-   }
+    public void setForceJndiDestinations(boolean forceJndiDestinations)
+    {
+        this.forceJndiDestinations = forceJndiDestinations;
+    }
 
     public boolean isDisableTemporaryReplyToDestinations()
     {
@@ -1245,26 +1220,27 @@ public class JmsConnector extends AbstractConnector implements ConnectionNotific
         this.returnOriginalMessageAsReply = returnOriginalMessageAsReply;
     }
 
-   /**
-    * @return Returns underlying connection factory properties.
-    */
-   public Map getConnectionFactoryProperties()
-   {
-       return connectionFactoryProperties;
-   }
+    /**
+     * @return Returns underlying connection factory properties.
+     */
+    public Map getConnectionFactoryProperties()
+    {
+        return connectionFactoryProperties;
+    }
 
-   /**
-    * @param connectionFactoryProperties properties to be set on the underlying
-    *            ConnectionFactory.
-    */
-   public void setConnectionFactoryProperties(Map connectionFactoryProperties)
-   {
-       this.connectionFactoryProperties = connectionFactoryProperties;
-   }
+    /**
+     * @param connectionFactoryProperties properties to be set on the underlying
+     *                                    ConnectionFactory.
+     */
+    public void setConnectionFactoryProperties(Map connectionFactoryProperties)
+    {
+        this.connectionFactoryProperties = connectionFactoryProperties;
+    }
 
     /**
      * A synonym for {@link #numberOfConcurrentTransactedReceivers}. Note that
      * it affects both transactional and non-transactional scenarios.
+     *
      * @param count number of consumers
      */
     public void setNumberOfConsumers(int count)
@@ -1274,6 +1250,7 @@ public class JmsConnector extends AbstractConnector implements ConnectionNotific
 
     /**
      * A synonym for {@link #numberOfConcurrentTransactedReceivers}.
+     *
      * @return number of consumers
      */
     public int getNumberOfConsumers()
