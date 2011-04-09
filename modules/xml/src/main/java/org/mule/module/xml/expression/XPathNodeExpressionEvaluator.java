@@ -51,14 +51,21 @@ public class XPathNodeExpressionEvaluator extends XPathExpressionEvaluator
         }
         else if (result instanceof org.w3c.dom.Element)
         {
-            Document doc = builder.newDocument();
-            doc.appendChild((org.w3c.dom.Element) result);
-            return doc;
+            return extractW3CElement(result);
         }
         else
         {
             return result;
         }
+    }
+
+    protected Object extractW3CElement(Object result)
+    {
+        org.w3c.dom.Element element = (org.w3c.dom.Element) result;
+
+        Document doc = builder.newDocument();
+        doc.appendChild(doc.importNode(element, true));
+        return doc;
     }
 
     /**

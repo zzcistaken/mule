@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesource.org/schema/mule/core/2.2"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:spring="http://www.springframework.org/schema/beans"
+      xmlns:vm="http://www.mulesource.org/schema/mule/vm/2.2"
+      xmlns:mxml="http://www.mulesource.org/schema/mule/xml/2.2"
+      xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+        http://www.mulesource.org/schema/mule/core/2.2 http://www.mulesource.org/schema/mule/core/2.2/mule.xsd
+        http://www.mulesource.org/schema/mule/vm/2.2 http://www.mulesource.org/schema/mule/vm/2.2/mule-vm.xsd
+        http://www.mulesource.org/schema/mule/xml/2.2 http://www.mulesource.org/schema/mule/xml/2.2/mule-xml.xsd">
+
+    <mxml:xml-to-dom-transformer name="xmlToDomDocumentTransformer" returnClass="org.w3c.dom.Document"/>
+
+    <model>
+        <service name="testService">
+            <inbound>
+                <vm:inbound-endpoint path="test" synchronous="true">
+                    <transformers>
+                        <transformer ref="xmlToDomDocumentTransformer"/>
+                        <expression-transformer>
+                            <return-argument custom-evaluator="xpath-node" expression="//root/table/name" evaluator="custom"/>
+                        </expression-transformer>
+                    </transformers>
+                </vm:inbound-endpoint>
+            </inbound>
+        </service>
+    </model>
+</mule>
