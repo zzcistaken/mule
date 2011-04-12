@@ -32,9 +32,13 @@ import org.apache.commons.logging.LogFactory;
 
 public class RegExFilter implements Filter, ObjectFilter
 {
+    private static final int NO_FLAGS = 0;
+
     protected transient Log logger = LogFactory.getLog(getClass());
 
     private Pattern pattern;
+
+    private int flags = NO_FLAGS;
 
     public RegExFilter()
     {
@@ -43,7 +47,12 @@ public class RegExFilter implements Filter, ObjectFilter
 
     public RegExFilter(String pattern)
     {
-        this.pattern = Pattern.compile(pattern);
+        this(pattern, NO_FLAGS);
+    }
+
+    public RegExFilter(String pattern, int flags)
+    {
+        this.pattern = Pattern.compile(pattern, flags);
     }
 
     public boolean accept(MuleMessage message)
@@ -100,7 +109,17 @@ public class RegExFilter implements Filter, ObjectFilter
 
     public void setPattern(String pattern)
     {
-        this.pattern = (pattern != null ? Pattern.compile(pattern) : null);
+        this.pattern = (pattern != null ? Pattern.compile(pattern, flags) : null);
+    }
+
+    public int getFlags()
+    {
+        return flags;
+    }
+
+    public void setFlags(int flags)
+    {
+        this.pattern = (this.pattern != null ? Pattern.compile(pattern.pattern(), flags) : null);
     }
 
     /**
@@ -122,7 +141,7 @@ public class RegExFilter implements Filter, ObjectFilter
     {
         setPattern(expression);
     }
-    
+
     public boolean equals(Object obj)
     {
         if (this == obj) return true;
