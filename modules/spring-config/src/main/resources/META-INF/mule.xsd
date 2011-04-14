@@ -173,7 +173,7 @@
         <xsd:attribute name="name" type="substitutableName">
             <xsd:annotation>
                 <xsd:documentation>
-                    Identifies the endpoint in the registry. There is no need to set the 'name' attribute on inbound or outbound endpoints, only on global endpoints. 
+                    Identifies the endpoint in the registry. There is no need to set the 'name' attribute on inbound or outbound endpoints, only on global endpoints.
                 </xsd:documentation>
             </xsd:annotation>
         </xsd:attribute>
@@ -281,7 +281,7 @@
     <xsd:element name="abstract-filter" abstract="true" type="abstractFilterType">
         <xsd:annotation>
             <xsd:documentation>
-                A placeholder for filter elements, which control which messages are handled. 
+                A placeholder for filter elements, which control which messages are handled.
             </xsd:documentation>
         </xsd:annotation>
     </xsd:element>
@@ -396,7 +396,7 @@
         <xsd:attribute name="shutdownTimeout" type="substitutableInt" default="5000">
             <xsd:annotation>
                 <xsd:documentation>
-                    (As of Mule 2.2.2) The time in milliseconds to wait for any in-progress messages to finish processing before Mule shuts down. After this threshold has been reached, Mule starts interrupting threads, and messages can be lost. If you have a very large number of services in the same Mule instance, if you have components that take more than a couple seconds to process, or if you are using large payloads and/or slower transports, you should increase this value to allow more time for graceful shutdown. The value you specify is applied to services and separately to dispatchers, so the default value of 5000 milliseconds specifies that Mule has ten seconds to process and dispatch messages gracefully after shutdown is initiated. 
+                    (As of Mule 2.2.2) The time in milliseconds to wait for any in-progress messages to finish processing before Mule shuts down. After this threshold has been reached, Mule starts interrupting threads, and messages can be lost. If you have a very large number of services in the same Mule instance, if you have components that take more than a couple seconds to process, or if you are using large payloads and/or slower transports, you should increase this value to allow more time for graceful shutdown. The value you specify is applied to services and separately to dispatchers, so the default value of 5000 milliseconds specifies that Mule has ten seconds to process and dispatch messages gracefully after shutdown is initiated.
                 </xsd:documentation>
             </xsd:annotation>
         </xsd:attribute>
@@ -1142,7 +1142,7 @@
     <xsd:element name="component" type="defaultJavaComponentType" substitutionGroup="abstract-component">
         <xsd:annotation>
             <xsd:documentation>
-                A simple POJO (Plain Old Java Object) component that will be invoked by Mule when a message is received. The class or object instance to be used can be specified using a child object factory element, or via the 'class' attribute.  If the 'class' attribute is used, an object factory cannot be configured as well. Using the 'class' attribute is equivilant to using the propotype object factory ('prototype-object' child element). 
+                A simple POJO (Plain Old Java Object) component that will be invoked by Mule when a message is received. The class or object instance to be used can be specified using a child object factory element, or via the 'class' attribute.  If the 'class' attribute is used, an object factory cannot be configured as well. Using the 'class' attribute is equivilant to using the propotype object factory ('prototype-object' child element).
             </xsd:documentation>
         </xsd:annotation>
     </xsd:element>
@@ -1415,7 +1415,7 @@
                 <xsd:attribute name="interactWithExternal" type="xsd:boolean">
                     <xsd:annotation>
                         <xsd:documentation>
-                            If this is set to "true", Mule interacts with transactions begun outside of Mule.  E.g. if an external transaction is active, then BEGIN_OR_JOIN wil join it, and ALWAYS_BEGIN will cause an exception to be thrown. 
+                            If this is set to "true", Mule interacts with transactions begun outside of Mule.  E.g. if an external transaction is active, then BEGIN_OR_JOIN wil join it, and ALWAYS_BEGIN will cause an exception to be thrown.
                         </xsd:documentation>
                     </xsd:annotation>
                 </xsd:attribute>
@@ -1683,7 +1683,7 @@
             </xsd:annotation>
         </xsd:attribute>
     </xsd:attributeGroup>
-    
+
     <xsd:attributeGroup name="restrictedEndpointAttributes">
         <xsd:attribute name="synchronous" type="substitutableBoolean">
             <xsd:annotation>
@@ -1925,13 +1925,26 @@
     </xsd:complexType>
 
 
-    <xsd:element name="regex-filter" type="patternFilterType" substitutionGroup="abstract-filter">
+    <xsd:element name="regex-filter" type="regexFilterType" substitutionGroup="abstract-filter">
         <xsd:annotation>
             <xsd:documentation>
                 A filter that matches string messages against a regular expression. The Java regular expression engine (java.util.regex.Pattern) is used.
             </xsd:documentation>
         </xsd:annotation>
     </xsd:element>
+    <xsd:complexType name="regexFilterType">
+        <xsd:complexContent>
+            <xsd:extension base="patternFilterType">
+                <xsd:attribute name="flags" type="xsd:string" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            Comma-separated list of flags for compiling the pattern. Valid values are CASE_INSENSITIVE, MULTILINE, DOTALL, UNICODE_CASE and CANON_EQ.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
     <xsd:complexType name="patternFilterType">
         <xsd:complexContent>
             <xsd:extension base="abstractFilterType">
@@ -2554,7 +2567,7 @@
                         <xsd:element name="return-argument">
                             <xsd:annotation>
                                 <xsd:documentation>
-                                    A list of expressions, each of which is evaluated and equates to an element in the result message. If just one 'return-argument' is configured, the result will be the evaluation of that expression rather than an object array. 
+                                    A list of expressions, each of which is evaluated and equates to an element in the result message. If just one 'return-argument' is configured, the result will be the evaluation of that expression rather than an object array.
                                 </xsd:documentation>
                             </xsd:annotation>
                             <xsd:complexType>
@@ -3848,7 +3861,7 @@
                  substitutionGroup="abstract-outbound-router">
         <xsd:annotation>
             <xsd:documentation>
-                Allows you to configure a custom outbound router by specifying the custom router class and by using Spring properties. 
+                Allows you to configure a custom outbound router by specifying the custom router class and by using Spring properties.
             </xsd:documentation>
         </xsd:annotation>
     </xsd:element>
@@ -3913,7 +3926,7 @@
                         <xsd:documentation>
                             Fully qualified class name of the custom catch-all strategy to be used.
                         </xsd:documentation>
-                    </xsd:annotation>                
+                    </xsd:annotation>
                 </xsd:attribute>
             </xsd:extension>
         </xsd:complexContent>
@@ -3956,7 +3969,7 @@
                         <xsd:documentation>
                             Fully qualified class name of the custom forwarding catch-all strategy to be used.
                         </xsd:documentation>
-                    </xsd:annotation>                
+                    </xsd:annotation>
                 </xsd:attribute>
             </xsd:extension>
         </xsd:complexContent>
@@ -4063,7 +4076,7 @@
     <xsd:complexType name="abstractObjectFactoryType">
         <xsd:annotation>
             <xsd:documentation>
-                An object factory is used to obtain object instances. The object factory is responsible for object creation and can implement different patterns, such a singleton or prototype, or lookup an instance from other object containers.  
+                An object factory is used to obtain object instances. The object factory is responsible for object creation and can implement different patterns, such a singleton or prototype, or lookup an instance from other object containers.
             </xsd:documentation>
         </xsd:annotation>
         <xsd:sequence>
@@ -4314,7 +4327,7 @@
             <xsd:documentation>
                 Configures a direct trust store. TLS/SSL connections are made to trusted systems. The public certificates of trusted systems are stored in a keystore (called a trust store) and used to verify that the connection made to a remote system is the expected identity.
             </xsd:documentation>
-        </xsd:annotation>    
+        </xsd:annotation>
         <xsd:complexContent>
             <xsd:extension base="tlsTrustStoreType">
                 <xsd:attribute name="class" type="substitutableClass"/>
@@ -4343,7 +4356,7 @@
                 <xsd:attribute name="requireClientAuthentication" type="substitutableBoolean">
                     <xsd:annotation>
                         <xsd:documentation>
-                            If a server socket is constructed directly, this attribute is used to determine whether client authentication is required. This does not apply to client connections. 
+                            If a server socket is constructed directly, this attribute is used to determine whether client authentication is required. This does not apply to client connections.
                         </xsd:documentation>
                     </xsd:annotation>
                 </xsd:attribute>
@@ -4765,7 +4778,7 @@
             </xsd:documentation>
         </xsd:annotation>
     </xsd:attribute>
-    
+
     -->
 
 

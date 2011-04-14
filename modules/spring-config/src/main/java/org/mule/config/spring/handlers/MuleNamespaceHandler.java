@@ -52,6 +52,7 @@ import org.mule.config.spring.parsers.specific.NotificationDefinitionParser;
 import org.mule.config.spring.parsers.specific.NotificationDisableDefinitionParser;
 import org.mule.config.spring.parsers.specific.ObjectFactoryDefinitionParser;
 import org.mule.config.spring.parsers.specific.PoolingProfileDefinitionParser;
+import org.mule.config.spring.parsers.specific.RegExFilterDefinitionParser;
 import org.mule.config.spring.parsers.specific.RouterDefinitionParser;
 import org.mule.config.spring.parsers.specific.ServiceDefinitionParser;
 import org.mule.config.spring.parsers.specific.ServiceOverridesDefinitionParser;
@@ -95,7 +96,6 @@ import org.mule.routing.filters.ExceptionTypeFilter;
 import org.mule.routing.filters.ExpressionFilter;
 import org.mule.routing.filters.MessagePropertyFilter;
 import org.mule.routing.filters.PayloadTypeFilter;
-import org.mule.routing.filters.RegExFilter;
 import org.mule.routing.filters.WildcardFilter;
 import org.mule.routing.filters.logic.AndFilter;
 import org.mule.routing.filters.logic.NotFilter;
@@ -212,7 +212,7 @@ public class MuleNamespaceHandler extends AbstractMuleNamespaceHandler
         registerBeanDefinitionParser("return-argument", new ChildDefinitionParser("argument", ExpressionArgument.class));
 
         registerBeanDefinitionParser("bean-builder-transformer", new TransformerDefinitionParser(BeanBuilderTransformer.class));
-        
+
         ChildDefinitionParser beanPropertyParser = new ChildDefinitionParser("argument", ExpressionArgument.class);
         beanPropertyParser.addAlias("property-name", "name");
         registerBeanDefinitionParser("bean-property", beanPropertyParser);
@@ -290,7 +290,7 @@ public class MuleNamespaceHandler extends AbstractMuleNamespaceHandler
         registerBeanDefinitionParser("pass-through-component", new ComponentDefinitionParser(PassThroughComponent.class));
         registerBeanDefinitionParser("log-component", new SimpleComponentDefinitionParser(SimpleCallableJavaComponent.class, LogComponent.class));
         registerBeanDefinitionParser("null-component", new SimpleComponentDefinitionParser(SimpleCallableJavaComponent.class, NullComponent.class));
-        registerBeanDefinitionParser("static-component", new StaticComponentDefinitionParser());        
+        registerBeanDefinitionParser("static-component", new StaticComponentDefinitionParser());
         registerIgnoredElement("return-data"); // Handled by StaticComponentDefinitionParser
 
         // We need to use DefaultJavaComponent for the echo component because some tests invoke EchoComponent with method name and therefore we need an entry point resolver
@@ -362,7 +362,7 @@ public class MuleNamespaceHandler extends AbstractMuleNamespaceHandler
         registerBeanDefinitionParser("and-filter", new FilterDefinitionParser(AndFilter.class));
         registerBeanDefinitionParser("or-filter", new FilterDefinitionParser(OrFilter.class));
         registerBeanDefinitionParser("not-filter", new FilterDefinitionParser(NotFilter.class));
-        registerBeanDefinitionParser("regex-filter", new FilterDefinitionParser(RegExFilter.class));
+        registerBeanDefinitionParser("regex-filter", new RegExFilterDefinitionParser());
         registerBeanDefinitionParser("exception-type-filter", new FilterDefinitionParser(ExceptionTypeFilter.class));
         registerBeanDefinitionParser("message-property-filter", new FilterDefinitionParser(MessagePropertyFilter.class));
         registerBeanDefinitionParser("payload-type-filter", new FilterDefinitionParser(PayloadTypeFilter.class));
@@ -391,7 +391,7 @@ public class MuleNamespaceHandler extends AbstractMuleNamespaceHandler
         registerMuleBeanDefinitionParser("secret-key-encryption-strategy", new ChildDefinitionParser("encryptionStrategy", SecretKeyEncryptionStrategy.class)).registerPreProcessor(new CheckExclusiveAttributes(new String[][]{new String[]{"key"}, new String[]{"keyFactory-ref"}}));
         registerBeanDefinitionParser("encryption-security-filter", new ChildDefinitionParser("securityFilter", MuleEncryptionEndpointSecurityFilter.class));
         registerBeanDefinitionParser("custom-security-filter", new ChildDefinitionParser("securityFilter"));
-        
+
         //Interceptors
         registerBeanDefinitionParser("interceptor-stack", new InterceptorStackDefinitionParser());
         registerBeanDefinitionParser("custom-interceptor", new InterceptorDefinitionParser());
