@@ -46,12 +46,9 @@
             <artifactId>servlet-api</artifactId>
         </dependency>
         <dependency>
-            <!-- OSGi-ready -->
             <groupId>org.mortbay.jetty</groupId>
             <artifactId>jetty-management</artifactId>
-            <version>6.1.22</version>
         </dependency>
-
         <!-- for functional tests only -->
         <dependency>
             <groupId>org.mule.tests</groupId>

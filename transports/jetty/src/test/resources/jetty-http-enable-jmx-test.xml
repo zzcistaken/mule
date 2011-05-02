@@ -12,7 +12,7 @@
        http://www.mulesource.org/schema/mule/jetty/2.2 http://www.mulesource.org/schema/mule/jetty/2.2/mule-jetty.xsd
        http://www.mulesource.org/schema/mule/management/2.2 http://www.mulesource.org/schema/mule/management/2.2/mule-management.xsd">
 
-    <jetty:connector name="jetty" useContinuations="false" statsOn="true" />
+    <jetty:connector name="jetty" useContinuations="false" statsEnabled="true" />
 
     <!-- for this test the client and server endponts have to be different since, Jetty is a server-only transport so
          we still use the http transport on the client side-->

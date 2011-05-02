@@ -20,7 +20,7 @@
         <https:tls-server path="trustStore" storePassword="mulepassword"/>
     </https:connector>
 
-    <jetty:connector name="jettyConnector" statsOn="true">
+    <jetty:connector name="jettyConnector" statsEnabled="true">
         <jetty:tls-client path="clientKeystore" storePassword="mulepassword"/>
         <jetty:tls-key-store path="serverKeystore" keyPassword="mulepassword" storePassword="mulepassword"/>
         <jetty:tls-server path="trustStore" storePassword="mulepassword"/>

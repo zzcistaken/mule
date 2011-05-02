@@ -53,7 +53,7 @@
                         </xsd:documentation>
                     </xsd:annotation>
                 </xsd:attribute>
-                <xsd:attribute name="statsOn" type="mule:substitutableBoolean">
+                <xsd:attribute name="statsEnabled" type="mule:substitutableBoolean">
                     <xsd:annotation>
                         <xsd:documentation>
                             Enable to Jetty's Connector statistics.
