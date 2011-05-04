@@ -57,8 +57,6 @@ public class JettyHttpConnector extends AbstractConnector
 
     private boolean useContinuations = false;
 
-    private boolean statsEnabled;
-
     public JettyHttpConnector()
     {
         super();
@@ -216,9 +214,7 @@ public class JettyHttpConnector extends AbstractConnector
 
     protected org.mortbay.jetty.AbstractConnector createJettyConnector()
     {
-        org.mortbay.jetty.AbstractConnector cnn = new SelectChannelConnector();
-        cnn.setStatsOn(isStatsEnabled());
-        return cnn;
+        return new SelectChannelConnector();
     }
 
     public boolean unregisterListener(MessageReceiver receiver)
@@ -284,16 +280,6 @@ public class JettyHttpConnector extends AbstractConnector
     public void setUseContinuations(boolean useContinuations)
     {
         this.useContinuations = useContinuations;
-    }
-
-    public boolean isStatsEnabled()
-    {
-        return statsEnabled;
-    }
-
-    public void setStatsEnabled(boolean statsEnabled)
-    {
-    	this.statsEnabled = statsEnabled;
     }
 
 

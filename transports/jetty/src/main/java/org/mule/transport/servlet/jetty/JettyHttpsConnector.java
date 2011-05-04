@@ -44,8 +44,6 @@ public class JettyHttpsConnector extends JettyHttpConnector implements TlsDirect
 
     private TlsConfiguration tls = new TlsConfiguration(TlsConfiguration.DEFAULT_KEYSTORE);
 
-    private boolean statsEnabled;
-
     public JettyHttpsConnector()
     {
         super();
@@ -266,22 +264,10 @@ public class JettyHttpsConnector extends JettyHttpConnector implements TlsDirect
         tls.setTrustStoreType(trustStoreType);
     }
     
-    public boolean isStatsEnabled()
-    {
-        return statsEnabled;
-    }
-
-    public void setStatsEnabled(boolean statsEnabled)
-    {
-    	this.statsEnabled = statsEnabled;
-    }
-
     @Override
     protected AbstractConnector createJettyConnector()
     {
         SslSocketConnector cnn = new SslSocketConnector();
-        
-        cnn.setStatsOn(isStatsEnabled());
         
         if (SystemUtils.isIbmJDK())
         {
