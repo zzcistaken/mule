@@ -120,6 +120,7 @@ import org.mule.routing.outbound.ListMessageSplitter;
 import org.mule.routing.outbound.MessageChunkingRouter;
 import org.mule.routing.outbound.MulticastingRouter;
 import org.mule.routing.outbound.OutboundPassThroughRouter;
+import org.mule.routing.outbound.SequenceRouter;
 import org.mule.routing.outbound.StaticRecipientList;
 import org.mule.routing.outbound.TemplateEndpointRouter;
 import org.mule.routing.response.DefaultResponseRouterCollection;
@@ -341,6 +342,7 @@ public class MuleNamespaceHandler extends AbstractMuleNamespaceHandler
         registerBeanDefinitionParser("template-endpoint-router", new RouterDefinitionParser(TemplateEndpointRouter.class));
         registerBeanDefinitionParser("custom-outbound-router", new RouterDefinitionParser(null));
         registerBeanDefinitionParser("reply-to", new EndpointRefParser("replyTo"));
+        registerBeanDefinitionParser("sequence-router", new RouterDefinitionParser(SequenceRouter.class));
 
         //Response Routers
         registerBeanDefinitionParser("custom-async-reply-router", new RouterDefinitionParser(null));
