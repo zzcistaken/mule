@@ -169,6 +169,7 @@ public class JmxAgentConfigurer implements MuleContextAware
             agent.setCreateServer(isCreateServer());
             agent.setLocateServer(isLocateServer());
             agent.setEnableStatistics(isEnableStatistics());
+            agent.setCredentials(credentials);
         }
         catch (RegistrationException e)
         {
