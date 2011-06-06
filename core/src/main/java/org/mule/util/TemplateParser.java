@@ -42,6 +42,8 @@ public final class TemplateParser
     public static final Pattern CURLY_TEMPLATE_PATTERN = Pattern.compile("\\{[^\\}]+\\}");
     public static final Pattern WIGGLY_MULE_TEMPLATE_PATTERN = Pattern.compile("#\\[[^#]+\\]");
 
+    private static final String DOLLAR_ESCAPE = "@@@";
+
     private final Pattern pattern;
     private final int pre;
     private final int post;
@@ -163,6 +165,12 @@ public final class TemplateParser
             {
                 String matchRegex = escape(match);
                 String valueString = value.toString();
+                //need to escape $ as they resolve into group references, escaping them was not enough
+                //This smells a bit like a hack, but one way or another these characters need to be escaped
+                if (valueString.indexOf('$') != -1)
+                {
+                    valueString = valueString.replaceAll("\\$", DOLLAR_ESCAPE);
+                }
 
                 if (valueString.indexOf('\\') != -1)
                 {
@@ -171,6 +179,10 @@ public final class TemplateParser
 
                 result = result.replaceAll(matchRegex, valueString);
             }
+        }
+        if (result.indexOf(DOLLAR_ESCAPE) != -1)
+        {
+            result = result.replaceAll(DOLLAR_ESCAPE, "\\$");
         }
         return result;
     }
