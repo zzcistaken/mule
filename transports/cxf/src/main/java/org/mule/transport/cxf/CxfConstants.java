@@ -35,6 +35,7 @@ public class CxfConstants
     public static final String OUT_FAULT_INTERCEPTORS = "outFaultInterceptors";
     public static final String MTOM_ENABLED = "mtomEnabled";
     public static final String MULE_MESSAGE = "mule.message";
+    public static final String SOAP_VERSION = "soapVersion";
     
     public static final String APPLY_FILTERS_TO_PROTOCOL = "applyFiltersToProtocol";
     public static final String APPLY_TRANSFORMERS_TO_PROTOCOL = "applyTransformersToProtocol";

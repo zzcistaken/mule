@@ -48,6 +48,7 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.cxf.Bus;
 import org.apache.cxf.aegis.databinding.AegisDatabinding;
 import org.apache.cxf.binding.Binding;
+import org.apache.cxf.binding.soap.SoapBindingConstants;
 import org.apache.cxf.binding.soap.interceptor.CheckFaultInterceptor;
 import org.apache.cxf.binding.soap.interceptor.Soap11FaultInInterceptor;
 import org.apache.cxf.binding.soap.interceptor.Soap12FaultInInterceptor;
@@ -305,6 +306,7 @@ public class ClientWrapper
     private void createClientWithAegisBinding(final Bus bus) throws CreateException
     {
         String wsdlLocation = (String) endpoint.getProperty(CxfConstants.WSDL_LOCATION);
+        String soapVersion = (String) endpoint.getProperty(CxfConstants.SOAP_VERSION);
         String serviceClassString = (String) endpoint.getProperty(CxfConstants.SERVICE_CLASS);
         final AegisDatabinding aDB;
         List<AegisDatabinding> list = (List<AegisDatabinding>) this.endpoint.getProperties().get(
@@ -331,6 +333,10 @@ public class ClientWrapper
         cpf.setDataBinding(aDB);
         cpf.setAddress(endpoint.getEndpointURI().getAddress());
         cpf.setBus(bus);
+        if(soapVersion != null)
+        {
+            cpf.setBindingId(CxfUtils.getBindingIdForSoapVersion(soapVersion));
+        }
 
         if (wsdlLocation != null)
         {
@@ -344,6 +350,7 @@ public class ClientWrapper
     {
         // TODO: Specify WSDL
         String wsdlLocation = (String) endpoint.getProperty(CxfConstants.WSDL_LOCATION);
+        String soapVersion = (String) endpoint.getProperty(CxfConstants.SOAP_VERSION);
         
         ClientProxyFactoryBean cpf = new ClientProxyFactoryBean();
         cpf.setServiceClass(ProxyService.class);
@@ -351,12 +358,17 @@ public class ClientWrapper
         cpf.getFeatures().add(new StaxDataBindingFeature());
         cpf.setAddress(endpoint.getEndpointURI().getAddress());
         cpf.setBus(bus);
-        
+
         if (wsdlLocation != null) 
         {
             cpf.setWsdlLocation(wsdlLocation);
         }
-        
+
+        if(soapVersion != null)
+        {
+            cpf.setBindingId(CxfUtils.getBindingIdForSoapVersion(soapVersion));
+        }
+
         this.client = ClientProxy.getClient(cpf.create());
 
         proxy = true;

@@ -99,6 +99,7 @@ public class CxfMessageReceiver extends AbstractMessageReceiver
             String frontend = (String) endpointProps.get(CxfConstants.FRONTEND);
             String serviceClassName = (String) endpointProps.get(CxfConstants.SERVICE_CLASS);
             String mtomEnabled = (String) endpointProps.get(CxfConstants.MTOM_ENABLED);
+            String soapVersion = (String) endpointProps.get(CxfConstants.SOAP_VERSION);
             List<DataBinding> databinding = (List<DataBinding>) endpointProps.get(CxfConstants.DATA_BINDING);
             List<AbstractFeature> features = (List<AbstractFeature>) endpointProps.get(CxfConstants.FEATURES);
             String proxyStr = (String) endpointProps.get(CxfConstants.PROXY);
@@ -181,7 +182,13 @@ public class CxfMessageReceiver extends AbstractMessageReceiver
             {
                 sfb.setBindingId(bindingId);
             }
-            
+
+            if(soapVersion != null)
+            {
+                sfb.setBindingId(CxfUtils.getBindingIdForSoapVersion(soapVersion));
+            }
+
+
             if (features != null) 
             {
                 sfb.getFeatures().addAll(features);
