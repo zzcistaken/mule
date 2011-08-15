@@ -44,22 +44,35 @@ public class TcpMessageDispatcher extends AbstractMessageDispatcher
     protected synchronized void doDispatch(MuleEvent event) throws Exception
     {
         Socket socket = connector.getSocket(event.getEndpoint());
-        try 
+        try
         {
             dispatchToSocket(socket, event);
         }
-        finally 
+        finally
         {
             connector.releaseSocket(socket, event.getEndpoint());
         }
     }
 
+    private void doDispatchToSocket(Socket socket, MuleEvent event) throws Exception
+    {
+        try
+        {
+            dispatchToSocket(socket, event);
+        }
+        catch(Exception e)
+        {
+            connector.releaseSocket(socket, event.getEndpoint());
+            throw new Exception(e);
+        }
+
+    }
+
     protected synchronized MuleMessage doSend(MuleEvent event) throws Exception
     {
         Socket socket = connector.getSocket(event.getEndpoint());
-        dispatchToSocket(socket, event);
-
-        try 
+        doDispatchToSocket(socket, event);
+        try
         {
             if (returnResponse(event))
             {

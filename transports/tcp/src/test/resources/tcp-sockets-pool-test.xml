@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesource.org/schema/mule/core/2.2"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tcp="http://www.mulesource.org/schema/mule/tcp/2.2"
+       xmlns:test="http://www.mulesource.org/schema/mule/test/2.2"
+    xsi:schemaLocation="
+       http://www.mulesource.org/schema/mule/core/2.2 http://www.mulesource.org/schema/mule/core/2.2/mule.xsd
+       http://www.mulesource.org/schema/mule/test/2.2 http://www.mulesource.org/schema/mule/test/2.2/mule-test.xsd
+       http://www.mulesource.org/schema/mule/tcp/2.2 http://www.mulesource.org/schema/mule/tcp/2.2/mule-tcp.xsd">
+
+    <tcp:connector name="connectorWithException" socketMaxWait="3000">
+        <dispatcher-threading-profile maxThreadsActive="8"/>
+        <tcp:custom-protocol class="org.mule.transport.tcp.TcpSocketsPoolTestCase$MockTcpProtocol"/>
+    </tcp:connector>
+
+    <tcp:connector name="tcpConnector" keepSendSocketOpen="true">
+        <tcp:direct-protocol payloadOnly="true"/>
+    </tcp:connector>
+
+    <tcp:endpoint name="clientWithExceptionEndpoint" host="localhost" port="${port1}" connector-ref="connectorWithException"/>
+
+    <model name="main">
+        <service name="testComponentException">
+            <inbound>
+                <inbound-endpoint ref="clientWithExceptionEndpoint"/>
+            </inbound>
+            <test:component appendString=" Received"/>
+        </service>
+    </model>
+</mule>
