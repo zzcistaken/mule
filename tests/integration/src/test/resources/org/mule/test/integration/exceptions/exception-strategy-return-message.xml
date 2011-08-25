@@ -11,7 +11,7 @@
     <model>
         <service name="InputService">
             <inbound>
-                <vm:inbound-endpoint path="in" synchronous="true" />
+                <vm:inbound-endpoint path="in-custom-strategy" synchronous="true"/>
             </inbound>
             <outbound>
                 <pass-through-router>
@@ -19,13 +19,32 @@
                 </pass-through-router>
             </outbound>
         </service>
-        
+
+        <service name="InputService2">
+            <inbound>
+                <vm:inbound-endpoint path="in-default-strategy" synchronous="true"/>
+            </inbound>
+            <outbound>
+                <pass-through-router>
+                    <vm:outbound-endpoint path="badService2" synchronous="true"/>
+                </pass-through-router>
+            </outbound>
+        </service>
+
+
         <service name="ExceptionService">
             <inbound>
-                <vm:inbound-endpoint path="badService" />
+                <vm:inbound-endpoint path="badService" synchronous="true"/>
             </inbound>
             <test:component throwException="true" />
             <custom-exception-strategy class="org.mule.test.integration.exceptions.TestExceptionStrategy" /> 
+        </service>
+
+        <service name="ExceptionService2">
+            <inbound>
+                <vm:inbound-endpoint path="badService2" synchronous="true"/>
+            </inbound>
+            <test:component throwException="true" />
         </service>
     </model>
 </mule>

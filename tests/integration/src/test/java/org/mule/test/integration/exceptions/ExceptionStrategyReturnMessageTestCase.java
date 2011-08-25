@@ -13,6 +13,7 @@ package org.mule.test.integration.exceptions;
 import org.mule.api.MuleMessage;
 import org.mule.module.client.MuleClient;
 import org.mule.tck.FunctionalTestCase;
+import org.mule.transport.NullPayload;
 
 public class ExceptionStrategyReturnMessageTestCase extends FunctionalTestCase
 {
@@ -22,10 +23,23 @@ public class ExceptionStrategyReturnMessageTestCase extends FunctionalTestCase
         return "org/mule/test/integration/exceptions/exception-strategy-return-message.xml";
     }
 
-    public void testExceptionMessage() throws Exception
+    public void testReturnPayloadDefaultStrategy() throws Exception
     {
-        MuleClient client = new MuleClient();
-        MuleMessage msg = client.send("vm://in", "Test Message", null);
+        MuleClient client = new MuleClient(muleContext);
+        MuleMessage msg = client.send("vm://in-default-strategy", "Test Message", null);
+
+        assertNotNull(msg);
+        assertNotNull(msg.getExceptionPayload());
+        assertEquals("Functional Test Service Exception", msg.getExceptionPayload().getMessage());
+
+        assertNotNull(msg.getPayload());
+        assertTrue(msg.getPayload() instanceof NullPayload);
+    }
+
+    public void testReturnPayloadCustomStrategy() throws Exception
+    {
+        MuleClient client = new MuleClient(muleContext);
+        MuleMessage msg = client.send("vm://in-custom-strategy", "Test Message", null);
 
         assertNotNull(msg);
         assertNotNull(msg.getExceptionPayload());
