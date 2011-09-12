@@ -189,14 +189,22 @@ public class FileMessageReceiver extends AbstractPollingMessageReceiver
             throw new DefaultMuleException(FileMessages.fileDoesNotExist(sourceFileOriginalName));
         }
 
-        // don't process a file that is locked by another process (probably still being written)
-        if (!attemptFileLock(sourceFile))
+        // when polling with more than one mule instance attemptFileLock may create
+        // zero-sized files depending on the timing, so we skip attemptFileLock in
+        // combination with workDir to avoid this. Some sensible fileAge value should
+        // be used to avoid processing files still being written
+        if (workDir == null)
         {
-            return;
-        }
-        else if(logger.isInfoEnabled())
-        {
-            logger.info("Lock obtained on file: " + sourceFile.getAbsolutePath());
+            // don't process a file that is locked by another process (probably still
+            // being written)
+            if (!attemptFileLock(sourceFile))
+            {
+                return;
+            }
+            else if (logger.isInfoEnabled())
+            {
+                logger.info("Lock obtained on file: " + sourceFile.getAbsolutePath());
+            }
         }
 
         // This isn't nice but is needed as MessageAdaptor is required to resolve
@@ -206,7 +214,7 @@ public class FileMessageReceiver extends AbstractPollingMessageReceiver
         fileParserMsgAdaptor.setProperty(FileConnector.PROPERTY_ORIGINAL_FILENAME, sourceFileOriginalName);
         
         File workFile = null;
-        if (workDir != null && (moveDir == null || (moveDir != null && fileConnector.isStreaming())))
+        if (workDir != null)
         {
             String workFileName = sourceFileOriginalName;
             
