@@ -201,14 +201,16 @@ public abstract class AbstractEndpointBuilder implements EndpointBuilder
                 ((MessageFilter) mp).setThrowOnUnaccepted(true);
             }
         }
-        
-        return new DefaultInboundEndpoint(connector, endpointURI,
+
+        DefaultInboundEndpoint inboundEndpoint = new DefaultInboundEndpoint(connector, endpointURI,
                 getName(endpointURI), getProperties(), getTransactionConfig(),
                 getDefaultDeleteUnacceptedMessages(connector),
                 messageExchangePattern, getResponseTimeout(connector), getInitialState(connector),
                 getEndpointEncoding(connector), name, muleContext, getRetryPolicyTemplate(connector),
                 getMessageProcessorsFactory(), mergedProcessors, mergedResponseProcessors,
                 isDisableTransportTransformer(), mimeType);
+        postProcessEndpointBuild(inboundEndpoint);
+        return inboundEndpoint;
     }
 
     protected OutboundEndpoint doBuildOutboundEndpoint() throws InitialisationException, EndpointException
@@ -247,13 +249,26 @@ public abstract class AbstractEndpointBuilder implements EndpointBuilder
 
         checkOutboundExchangePattern();
 
-        return new DefaultOutboundEndpoint(connector, endpointURI,
+        DefaultOutboundEndpoint outboundEndpoint = new DefaultOutboundEndpoint(connector, endpointURI,
                 getName(endpointURI), getProperties(), getTransactionConfig(),
-                getDefaultDeleteUnacceptedMessages(connector), 
+                getDefaultDeleteUnacceptedMessages(connector),
                 messageExchangePattern, getResponseTimeout(connector), getInitialState(connector),
                 getEndpointEncoding(connector), name, muleContext, getRetryPolicyTemplate(connector),
-                responsePropertiesList,  getMessageProcessorsFactory(), mergedProcessors,
+                responsePropertiesList, getMessageProcessorsFactory(), mergedProcessors,
                 mergedResponseProcessors, isDisableTransportTransformer(), mimeType);
+        postProcessEndpointBuild(outboundEndpoint);
+        return outboundEndpoint;
+    }
+
+    protected void postProcessEndpointBuild(ImmutableEndpoint immutableEndpoint)
+    {
+        for (MessageProcessor responseMessageProcessor : responseMessageProcessors)
+        {
+            if (responseMessageProcessor instanceof EndpointAware)
+            {
+                ((EndpointAware) responseMessageProcessor).setEndpoint(immutableEndpoint);
+            }
+        }
     }
 
     private String getDynamicUriFrom(String uri)
