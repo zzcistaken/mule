@@ -16,6 +16,7 @@ import org.mule.api.MuleEvent;
 import org.mule.api.MuleException;
 import org.mule.api.routing.OutboundRouterCollection;
 import org.mule.api.service.Service;
+import org.mule.api.transport.ReplyToHandler;
 import org.mule.component.simple.PassThroughComponent;
 import org.mule.processor.AbstractInterceptingMessageProcessor;
 import org.mule.transport.NullPayload;
@@ -79,8 +80,12 @@ public class ServiceOutboundMessageProcessor extends AbstractInterceptingMessage
                     // If there was no component, then we really want to return
                     // the response from the outbound router as the actual
                     // payload - even if it's null.
+                    Object replyToDestination = event.getReplyToDestination();
+                    ReplyToHandler replyToHandler = event.getReplyToHandler();
                     event = new DefaultMuleEvent(new DefaultMuleMessage(NullPayload.getInstance(),
                         event.getMessage(), service.getMuleContext()), event);
+                    event.setReplyToDestination(replyToDestination);
+                    event.setReplyToHandler(replyToHandler);
                 }
             }
             else

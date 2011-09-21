@@ -780,4 +780,11 @@ public class DefaultMuleEvent extends EventObject implements MuleEvent, ThreadSa
         return replyToHanlder;
     }
 
+    public void setReplyToDestination(Object replyToDestination) {
+        this.replyToDestination = replyToDestination;
+    }
+
+    public void setReplyToHandler(ReplyToHandler replyToHandler) {
+        this.replyToHanlder = replyToHandler;
+    }
 }

@@ -27,6 +27,7 @@ import org.mule.api.processor.MessageProcessor;
 import org.mule.api.retry.RetryPolicyTemplate;
 import org.mule.api.transaction.TransactionConfig;
 import org.mule.api.transport.Connector;
+import org.mule.api.transport.ReplyToHandler;
 import org.mule.transport.AbstractConnector;
 import org.mule.util.StringUtils;
 
@@ -87,13 +88,21 @@ public class DefaultOutboundEndpoint extends AbstractEndpoint implements Outboun
 
     public MuleEvent process(MuleEvent event) throws MuleException
     {
+        Object currentReplyToDestination = event.getReplyToDestination();
+        ReplyToHandler replyToHandler = event.getReplyToHandler();
         // Update event endpoint for outbound endpoint
         if ((event.getEndpoint() == null || !event.getEndpoint().equals(this)))
         {
             event = new DefaultMuleEvent(event.getMessage(), this, event.getSession(), null, event.getProcessingTime(), null);
         }
 
-        return getMessageProcessorChain(event.getFlowConstruct()).process(event);
+        MuleEvent resultEvent = getMessageProcessorChain(event.getFlowConstruct()).process(event);
+        if (resultEvent != null)
+        {
+            resultEvent.setReplyToDestination(currentReplyToDestination);
+            resultEvent.setReplyToHandler(replyToHandler);
+        }
+        return resultEvent;
     }
 
     @Override

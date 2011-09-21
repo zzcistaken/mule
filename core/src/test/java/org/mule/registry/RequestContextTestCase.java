@@ -275,6 +275,14 @@ public class RequestContextTestCase extends AbstractMuleTestCase
         public void captureReplyToDestination() {
             // no action
         }
+
+        public void setReplyToDestination(Object replyToDestination) {
+            //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        public void setReplyToHandler(ReplyToHandler replyToHandler) {
+            //To change body of implemented methods use File | Settings | File Templates.
+        }
     }
 
 }

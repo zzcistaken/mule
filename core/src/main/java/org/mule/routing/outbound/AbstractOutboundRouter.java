@@ -34,6 +34,7 @@ import org.mule.api.routing.RoutingException;
 import org.mule.api.transaction.TransactionCallback;
 import org.mule.api.transaction.TransactionConfig;
 import org.mule.api.transport.DispatchException;
+import org.mule.api.transport.ReplyToHandler;
 import org.mule.config.i18n.CoreMessages;
 import org.mule.management.stats.RouterStatistics;
 import org.mule.processor.AbstractMessageProcessorOwner;
@@ -467,7 +468,11 @@ public abstract class AbstractOutboundRouter extends AbstractMessageProcessorOwn
      */
     protected MuleEvent createEventToRoute(MuleEvent routedEvent, MuleMessage message, MessageProcessor route)
     {
+        ReplyToHandler replyToHandler = routedEvent.getReplyToHandler();
+        Object replyToDestination = routedEvent.getReplyToDestination();
         MuleEvent event = new DefaultMuleEvent(message, routedEvent.getEndpoint(), routedEvent.getSession(), routedEvent.getProcessingTime());
+        event.setReplyToHandler(replyToHandler);
+        event.setReplyToDestination(replyToDestination);
         return event;
     }
 

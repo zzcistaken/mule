@@ -20,6 +20,7 @@ import org.mule.api.processor.MessageProcessor;
 import org.mule.api.processor.RequestReplyRequesterMessageProcessor;
 import org.mule.api.routing.ResponseTimeoutException;
 import org.mule.api.source.MessageSource;
+import org.mule.api.transport.ReplyToHandler;
 import org.mule.config.i18n.CoreMessages;
 import org.mule.context.notification.RoutingNotification;
 import org.mule.processor.AbstractInterceptingMessageProcessor;
@@ -62,10 +63,13 @@ public abstract class AbstractAsyncRequestReplyRequester extends AbstractInterce
         else
         {
             locks.put(getAsyncReplyCorrelationId(event), new Latch());
-
+            Object replyToDestination = event.getReplyToDestination();
+            ReplyToHandler replyToHandler = event.getReplyToHandler();
             sendAsyncRequest(event);
-
-            return receiveAsyncReply(event);
+            MuleEvent resultEvent = receiveAsyncReply(event);
+            resultEvent.setReplyToDestination(replyToDestination);
+            resultEvent.setReplyToHandler(replyToHandler);
+            return resultEvent;
         }
     }
 

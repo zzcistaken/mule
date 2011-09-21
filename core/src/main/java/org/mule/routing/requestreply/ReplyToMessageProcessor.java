@@ -29,27 +29,19 @@ public class ReplyToMessageProcessor extends AbstractInterceptingMessageProcesso
     public MuleEvent process(MuleEvent event) throws MuleException
     {
         MuleEvent resultEvent;
-        //In config is service then this is executed by ServiceInternalMessageProcessor
-        if (event.getFlowConstruct() instanceof SimpleFlowConstruct)
-        {
-            Object replyTo = event.getReplyToDestination();
-            ReplyToHandler replyToHandler = event.getReplyToHandler();
-            // Do not propagate REPLY_TO
-            event.getMessage().setReplyTo(null);
+        Object replyTo = event.getReplyToDestination();
+        ReplyToHandler replyToHandler = event.getReplyToHandler();
+        // Do not propagate REPLY_TO
+        event.getMessage().setReplyTo(null);
 
-            resultEvent = processNext(event);
+        resultEvent = processNext(event);
 
-            // Allow components to stop processing of the ReplyTo property (e.g. CXF)
-            final String replyToStop = resultEvent.getMessage().getInvocationProperty(
-                    MuleProperties.MULE_REPLY_TO_STOP_PROPERTY);
-            if (resultEvent != null && !BooleanUtils.toBoolean(replyToStop))
-            {
-                processReplyTo(event, resultEvent, replyToHandler, replyTo);
-            }
-        }
-        else
+        // Allow components to stop processing of the ReplyTo property (e.g. CXF)
+        final String replyToStop = resultEvent.getMessage().getInvocationProperty(
+                MuleProperties.MULE_REPLY_TO_STOP_PROPERTY);
+        if (resultEvent != null && !BooleanUtils.toBoolean(replyToStop))
         {
-            resultEvent = processNext(event);
+            processReplyTo(event, resultEvent, replyToHandler, replyTo);
         }
         return resultEvent;
     }

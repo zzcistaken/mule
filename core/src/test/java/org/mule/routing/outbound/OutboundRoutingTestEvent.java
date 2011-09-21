@@ -224,4 +224,12 @@ public class OutboundRoutingTestEvent implements MuleEvent
     }
 
     public void captureReplyToDestination() {}
+
+    public void setReplyToDestination(Object replyToDestination) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public void setReplyToHandler(ReplyToHandler replyToHandler) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
 }

@@ -45,20 +45,25 @@ public class ServiceInternalMessageProcessor extends AbstractInterceptingMessage
         MuleEvent resultEvent;
         try
         {
-            Object replyTo = event.getReplyToDestination();
-            ReplyToHandler replyToHandler = event.getReplyToHandler();
 
             resultEvent = service.getComponent().process(event);
             resultEvent = processNext(resultEvent);
 
-            // Allow components to stop processing of the ReplyTo property (e.g.
-            // CXF)
-            if (resultEvent != null && replyTo != null)
+            if (shouldProcessEvent(resultEvent))
             {
-                String replyToStop = resultEvent.getMessage().getInvocationProperty(MuleProperties.MULE_REPLY_TO_STOP_PROPERTY);
-                if (!event.getEndpoint().getExchangePattern().hasResponse() || !BooleanUtils.toBoolean(replyToStop))
+
+                Object replyTo = event.getReplyToDestination();
+                ReplyToHandler replyToHandler = event.getReplyToHandler();
+
+                // Allow components to stop processing of the ReplyTo property (e.g.
+                // CXF)
+                if (resultEvent != null && replyTo != null && shouldProcessEvent(resultEvent))
                 {
-                    processReplyTo(event, resultEvent, replyToHandler, replyTo);
+                    String replyToStop = resultEvent.getMessage().getInvocationProperty(MuleProperties.MULE_REPLY_TO_STOP_PROPERTY);
+                    if (!event.getEndpoint().getExchangePattern().hasResponse() || !BooleanUtils.toBoolean(replyToStop))
+                    {
+                        processReplyTo(event, resultEvent, replyToHandler, replyTo);
+                    }
                 }
             }
             return resultEvent;
@@ -90,6 +95,17 @@ public class ServiceInternalMessageProcessor extends AbstractInterceptingMessage
                 replyToHandler.processReplyTo(event, result.getMessage(), replyTo);
             }
         }
+    }
+
+    protected boolean shouldProcessEvent(final MuleEvent event) throws MessagingException
+    {
+        Object messageProperty = event.getMessage().getInboundProperty(MuleProperties.MULE_FORCE_SYNC_PROPERTY);
+        boolean forceSync = Boolean.TRUE.equals(messageProperty);
+
+        boolean hasResponse = event.getEndpoint().getExchangePattern().hasResponse();
+        boolean isTransacted = event.getEndpoint().getTransactionConfig().isTransacted();
+
+        return !forceSync && !hasResponse && !isTransacted;
     }
 
 }

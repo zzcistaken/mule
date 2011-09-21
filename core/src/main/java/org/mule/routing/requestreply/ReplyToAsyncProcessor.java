@@ -14,6 +14,7 @@ import org.mule.api.MessagingException;
 import org.mule.api.MuleEvent;
 import org.mule.api.MuleException;
 import org.mule.api.config.MuleProperties;
+import org.mule.construct.SimpleFlowConstruct;
 
 /**
  * ReplyToMessageProcessor for async flow.
@@ -44,7 +45,7 @@ public class ReplyToAsyncProcessor extends ReplyToMessageProcessor
         boolean hasResponse = event.getEndpoint().getExchangePattern().hasResponse();
         boolean isTransacted = event.getEndpoint().getTransactionConfig().isTransacted();
 
-        return !forceSync && !hasResponse && !isTransacted;
+        return !forceSync && !hasResponse && !isTransacted && event.getFlowConstruct() instanceof SimpleFlowConstruct;
     }
 
 }

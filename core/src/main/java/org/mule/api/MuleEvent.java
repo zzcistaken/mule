@@ -277,4 +277,8 @@ public interface MuleEvent extends Serializable
      * prevent any further propagation.
      */
     void captureReplyToDestination();
+
+    public void setReplyToDestination(Object replyToDestination);
+
+    void setReplyToHandler(ReplyToHandler replyToHandler);
 }
