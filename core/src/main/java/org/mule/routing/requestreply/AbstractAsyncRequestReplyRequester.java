@@ -67,8 +67,11 @@ public abstract class AbstractAsyncRequestReplyRequester extends AbstractInterce
             ReplyToHandler replyToHandler = event.getReplyToHandler();
             sendAsyncRequest(event);
             MuleEvent resultEvent = receiveAsyncReply(event);
-            resultEvent.setReplyToDestination(replyToDestination);
-            resultEvent.setReplyToHandler(replyToHandler);
+            if (resultEvent != null)
+            {
+                resultEvent.setReplyToDestination(replyToDestination);
+                resultEvent.setReplyToHandler(replyToHandler);
+            }
             return resultEvent;
         }
     }
