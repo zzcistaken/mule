@@ -107,6 +107,24 @@ public class ObjectToHttpClientMethodRequestTestCase extends AbstractMuleTestCas
         assertTrue(response instanceof HttpMethod);
         HttpMethod httpMethod = (HttpMethod) response;
         
+        assertEquals("fruits=apple%20orange", httpMethod.getQueryString());
+    }
+
+    public void testAppendedUrlWithBody() throws Exception
+    {
+        MuleMessage message = setupRequestContext("http://mycompany.com/test?fruits=apple%20orange");
+        // transforming a payload here will add it as body=xxx query parameter
+        message.setPayload("test");
+        message.setStringProperty(HttpConnector.HTTP_GET_BODY_PARAM_PROPERTY, "body");
+
+        ObjectToHttpClientMethodRequest transformer = new ObjectToHttpClientMethodRequest();
+        transformer.setEndpoint(getTestInboundEndpoint("test"));
+        transformer.initialise();
+        Object response = transformer.transform(message);
+
+        assertTrue(response instanceof HttpMethod);
+        HttpMethod httpMethod = (HttpMethod) response;
+
         assertEquals("fruits=apple%20orange&body=test", httpMethod.getQueryString());
     }
 

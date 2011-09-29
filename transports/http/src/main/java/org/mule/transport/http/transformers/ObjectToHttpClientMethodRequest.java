@@ -145,24 +145,26 @@ public class ObjectToHttpClientMethodRequest extends AbstractMessageAwareTransfo
             if (HttpConstants.METHOD_GET.equals(method))
             {
                 httpMethod = new GetMethod(uri.toString());
-                String paramName = URLEncoder.encode(msg.getStringProperty(HttpConnector.HTTP_GET_BODY_PARAM_PROPERTY,
-                                                                           HttpConnector.DEFAULT_HTTP_GET_BODY_PARAM_PROPERTY), outputEncoding);
-                String paramValue = URLEncoder.encode(src.toString(), outputEncoding);
-
-                String query = uri.getRawQuery();
-                if (!(src instanceof NullPayload) && !StringUtils.EMPTY.equals(src))
+                String paramName = msg.getStringProperty(HttpConnector.HTTP_GET_BODY_PARAM_PROPERTY, null);
+                if (paramName != null)
                 {
-                    if (query == null)
-                    {
-                        query = paramName + "=" + paramValue;
-                    }
-                    else
-                    {
-                        query += "&" + paramName + "=" + paramValue;
-                    }
-                }
-                httpMethod.setQueryString(query);
+                    paramName = URLEncoder.encode(paramName, outputEncoding);
+                    String paramValue = URLEncoder.encode(src.toString(), outputEncoding);
 
+                    String query = uri.getRawQuery();
+                    if (!(src instanceof NullPayload) && !StringUtils.EMPTY.equals(src))
+                    {
+                        if (query == null)
+                        {
+                            query = paramName + "=" + paramValue;
+                        }
+                        else
+                        {
+                            query += "&" + paramName + "=" + paramValue;
+                        }
+                    }
+                    httpMethod.setQueryString(query);
+                }
             }
             else if (HttpConstants.METHOD_POST.equalsIgnoreCase(method))
             {
