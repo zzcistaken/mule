@@ -4,3 +4,6 @@
 
 # MULE-3711
 org.mule.example.loanbroker.esb.LoanBrokerEsbProgramaticTestCase
+
+# EE-2518
+org.mule.example.loanbroker.esb.LoanBrokerEsbContainerTestCase
