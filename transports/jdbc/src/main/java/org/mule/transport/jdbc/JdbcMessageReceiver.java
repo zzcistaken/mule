@@ -122,11 +122,12 @@ public class JdbcMessageReceiver extends TransactedPollingMessageReceiver
         Transaction tx = TransactionCoordination.getInstance().getTransaction();
         try
         {
-            con = this.connector.getConnection();
             MessageAdapter msgAdapter = this.connector.getMessageAdapter(message);
             MuleMessage muleMessage = new DefaultMuleMessage(msgAdapter);
             if (hasAckStatement())
             {
+                con = this.connector.getConnection();
+
                 if (aggregateResult)
                 {
                     List<MuleMessage> messages = createMuleMessages((List) message);
