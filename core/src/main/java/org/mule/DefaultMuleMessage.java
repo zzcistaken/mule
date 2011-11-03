@@ -41,6 +41,7 @@ import javax.activation.DataHandler;
 
 import edu.emory.mathcs.backport.java.util.concurrent.CopyOnWriteArrayList;
 
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -59,7 +60,7 @@ public class DefaultMuleMessage implements MuleMessage, ThreadSafeAccess
     private transient MessageAdapter originalAdapter = null;
     private transient List<Integer> appliedTransformerHashCodes;
     private transient byte[] cache;
-    
+
     private static final List<Class> consumableClasses = new ArrayList<Class>();
     
     static
@@ -601,16 +602,33 @@ public class DefaultMuleMessage implements MuleMessage, ThreadSafeAccess
 
     public void applyTransformers(List transformers, Class outputType) throws TransformerException
     {
-        if (!transformers.isEmpty() && !appliedTransformerHashCodes.contains(transformers.hashCode()))
+        int transformersHashCode = generateTransformerListHashCode(transformers);
+        if (!transformers.isEmpty() && !appliedTransformerHashCodes.contains(transformersHashCode))
         {
             applyAllTransformers(transformers);
-            appliedTransformerHashCodes.add(transformers.hashCode());
+            appliedTransformerHashCodes.add(transformersHashCode);
         }
 
         if (null != outputType && !getPayload().getClass().isAssignableFrom(outputType))
         {
             setPayload(getPayload(outputType));
         }
+    }
+
+    // Workaround for MULE-5790, under heavy load and with the ibm jdk the same hashcode was generated for two
+    // different transformers resulting in the list of transformers not being applied.
+    // Adding the name of the transformer to the hashcode solved the issue.
+    private int generateTransformerListHashCode(List transformers)
+    {
+        int hashCode = 1;
+        for(Object oTransformer : transformers)
+        {
+            Transformer transformer = (Transformer)oTransformer;
+            int transformerHashCode = new HashCodeBuilder().append(transformer.getName()).
+                    appendSuper(transformer.hashCode()).toHashCode();
+            hashCode = 31 * hashCode + transformerHashCode;
+        }
+        return hashCode;
     }
 
     protected void applyAllTransformers(List transformers) throws TransformerException
