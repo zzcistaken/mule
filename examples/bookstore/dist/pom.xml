@@ -12,7 +12,7 @@
     <description>Bookstore Example App</description>
 
     <properties>
-        <muleVersion>3.2.1-RC2</muleVersion>
+        <muleVersion>3.2.1-RC3</muleVersion>
     </properties>
 
     <dependencies>
