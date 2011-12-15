@@ -14,6 +14,7 @@ import org.mule.util.FileUtils;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -100,9 +101,12 @@ public class FilePersistenceTestCase extends AbstractTransactionQueueManagerTest
         ps.setMuleContext(muleContext);
         ps.open();
         String path = muleContext.getConfiguration().getWorkingDirectory() + File.separator + DEFAULT_QUEUE_STORE;
-        String queue = "queue";
-        String id = "unhealthy";
-        FileUtils.stringToFile(path + File.separator + queue + File.separator + id + ".msg", "\u00AC\u00ED");
+        String queue = "queue2";
+        String id = (String) ps.store(queue, "test");
+        File file = new File(path + File.separator + queue + File.separator + id + ".msg");
+        byte[] data = FileUtils.readFileToByteArray(file);
+        // generate a crippled message by removing the last byte
+        FileUtils.writeByteArrayToFile(file, Arrays.copyOf(data, data.length - 1));
         Object result = ps.load(queue, id);
         assertNull(result);
     }
