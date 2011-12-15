@@ -15,6 +15,7 @@ import org.mule.api.context.MuleContextAware;
 import org.mule.util.FileUtils;
 import org.mule.util.file.DeleteException;
 
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -109,6 +110,11 @@ public class FilePersistenceStrategy implements QueuePersistenceStrategy, MuleCo
         catch (ClassNotFoundException e)
         {
             throw (IOException) new IOException("Error loading persistent object").initCause(e);
+        }
+        catch (EOFException e)
+        {
+            logger.warn("Error loading persistent object: unhealthy message found, removing it.");
+            return null;
         }
         finally
         {

@@ -10,12 +10,17 @@
 
 package org.mule.util.queue;
 
+import org.mule.util.FileUtils;
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import static org.mule.util.queue.FilePersistenceStrategy.DEFAULT_QUEUE_STORE;
 
 public class FilePersistenceTestCase extends AbstractTransactionQueueManagerTestCase
 {
@@ -76,4 +81,29 @@ public class FilePersistenceTestCase extends AbstractTransactionQueueManagerTest
         }
     }
 
+    public void testUnhealthyEmptyMessage() throws Exception
+    {
+        FilePersistenceStrategy ps = new FilePersistenceStrategy();
+        ps.setMuleContext(muleContext);
+        ps.open();
+        String path = muleContext.getConfiguration().getWorkingDirectory() + File.separator + DEFAULT_QUEUE_STORE;
+        String queue = "queue";
+        String id = "unhealthy";
+        FileUtils.createFile(path + File.separator + queue + File.separator + id + ".msg");
+        Object result = ps.load(queue, id);
+        assertNull(result);
+    }
+
+    public void testUnhealthyMessage() throws Exception
+    {
+        FilePersistenceStrategy ps = new FilePersistenceStrategy();
+        ps.setMuleContext(muleContext);
+        ps.open();
+        String path = muleContext.getConfiguration().getWorkingDirectory() + File.separator + DEFAULT_QUEUE_STORE;
+        String queue = "queue";
+        String id = "unhealthy";
+        FileUtils.stringToFile(path + File.separator + queue + File.separator + id + ".msg", "\u00AC\u00ED");
+        Object result = ps.load(queue, id);
+        assertNull(result);
+    }
 }
