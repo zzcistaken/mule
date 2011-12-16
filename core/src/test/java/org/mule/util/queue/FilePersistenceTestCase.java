@@ -14,7 +14,6 @@ import org.mule.util.FileUtils;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -106,8 +105,16 @@ public class FilePersistenceTestCase extends AbstractTransactionQueueManagerTest
         File file = new File(path + File.separator + queue + File.separator + id + ".msg");
         byte[] data = FileUtils.readFileToByteArray(file);
         // generate a crippled message by removing the last byte
-        FileUtils.writeByteArrayToFile(file, Arrays.copyOf(data, data.length - 1));
+        FileUtils.writeByteArrayToFile(file, copyOf(data, data.length - 1));
         Object result = ps.load(queue, id);
         assertNull(result);
     }
+
+    private byte[] copyOf(byte[] original, int newLength)
+    {
+        byte[] copy = new byte[newLength];
+        System.arraycopy(original, 0, copy, 0, newLength);
+        return copy;
+    }
+
 }
