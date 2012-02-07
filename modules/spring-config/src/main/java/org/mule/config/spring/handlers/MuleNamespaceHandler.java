@@ -111,9 +111,11 @@ import org.mule.context.notification.ListenerSubscriptionPair;
 import org.mule.endpoint.EndpointURIEndpointBuilder;
 import org.mule.enricher.MessageEnricher;
 import org.mule.enricher.MessageEnricher.EnrichExpressionPair;
-import org.mule.exception.CatchMessagingExceptionStrategy;
 import org.mule.exception.ChoiceMessagingExceptionStrategy;
 import org.mule.exception.DefaultMessagingExceptionStrategy;
+import org.mule.exception.CatchMessagingExceptionStrategy;
+import org.mule.exception.RedeliveryExceeded;
+import org.mule.exception.RollbackMessagingExceptionStrategy;
 import org.mule.expression.ExpressionConfig;
 import org.mule.expression.transformers.BeanBuilderTransformer;
 import org.mule.expression.transformers.ExpressionArgument;
@@ -132,7 +134,6 @@ import org.mule.model.seda.SedaModel;
 import org.mule.model.seda.SedaService;
 import org.mule.object.PrototypeObjectFactory;
 import org.mule.object.SingletonObjectFactory;
-import org.mule.processor.ForeachMessageProcessor;
 import org.mule.processor.IdempotentRedeliveryPolicy;
 import org.mule.processor.InvokerMessageProcessor;
 import org.mule.processor.NullMessageProcessor;
@@ -147,6 +148,7 @@ import org.mule.routing.CollectionSplitter;
 import org.mule.routing.ExpressionMessageInfoMapping;
 import org.mule.routing.ExpressionSplitter;
 import org.mule.routing.FirstSuccessful;
+import org.mule.routing.ForeachMessageProcessor;
 import org.mule.routing.ForwardingCatchAllStrategy;
 import org.mule.routing.IdempotentMessageFilter;
 import org.mule.routing.IdempotentSecureHashMessageFilter;
@@ -220,7 +222,6 @@ import org.mule.transformer.simple.StringAppendTransformer;
 import org.mule.util.store.InMemoryObjectStore;
 import org.mule.util.store.ManagedObjectStore;
 import org.mule.util.store.TextFileObjectStore;
-
 import org.springframework.beans.factory.xml.BeanDefinitionParser;
 
 /**
@@ -248,6 +249,8 @@ public class MuleNamespaceHandler extends AbstractMuleNamespaceHandler
         // Exception Strategies
         registerBeanDefinitionParser("default-exception-strategy", new ExceptionStrategyDefinitionParser(DefaultMessagingExceptionStrategy.class));
         registerBeanDefinitionParser("catch-exception-strategy", new ExceptionStrategyDefinitionParser(CatchMessagingExceptionStrategy.class));
+        registerBeanDefinitionParser("rollback-exception-strategy", new ExceptionStrategyDefinitionParser(RollbackMessagingExceptionStrategy.class));
+        registerBeanDefinitionParser("on-redelivery-attempts-exceeded", new ChildDefinitionParser("redeliveryExceeded", RedeliveryExceeded.class));
         registerBeanDefinitionParser("choice-exception-strategy", new ExceptionStrategyDefinitionParser(ChoiceMessagingExceptionStrategy.class));
         registerMuleBeanDefinitionParser("exception-strategy", new ReferenceExceptionStrategyDefinitionParser());
         registerDeprecatedBeanDefinitionParser("default-service-exception-strategy", new ChildDefinitionParser("exceptionListener", DefaultMessagingExceptionStrategy.class), "Use default-exception-strategy instead.");
