@@ -171,7 +171,7 @@ public class SessionPropertiesTestCase extends org.mule.tck.junit4.FunctionalTes
         MuleEvent result = dispatcher.process(event);
 
         assertNotNull(result);
-        assertNotSame(event, result);
+        assertSame(event, result);
         assertEquals("val", result.getSession().getProperty("keyNonSerializable"));
         assertEquals(nonSerializable, result.getSession().getProperty("keyNonSerializable2"));
         assertEquals("value2NEW", result.getSession().getProperty("key2"));

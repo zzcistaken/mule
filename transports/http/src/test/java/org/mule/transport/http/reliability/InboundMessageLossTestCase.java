@@ -10,7 +10,9 @@
 
 package org.mule.transport.http.reliability;
 
-import org.mule.DefaultMuleEvent;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import org.mule.DefaultMuleMessage;
 import org.mule.api.MessagingException;
 import org.mule.api.MuleContext;
@@ -29,9 +31,6 @@ import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.junit.Rule;
 import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Verify that no inbound messages are lost when exceptions occur.  
@@ -143,7 +142,8 @@ public class InboundMessageLossTestCase extends FunctionalTestCase
         public MuleEvent handleException(Exception ex, MuleEvent event)
         {
             doHandleException(ex, event);
-            return new DefaultMuleEvent(new DefaultMuleMessage("Success!", muleContext), event);
+            event.getMessage().setPayload("Success!");
+            return event;
         }
     }
 
@@ -164,7 +164,8 @@ public class InboundMessageLossTestCase extends FunctionalTestCase
             DefaultMuleMessage message = new DefaultMuleMessage(NullPayload.getInstance(), muleContext);
             message.setExceptionPayload(
                 new DefaultExceptionPayload(new MessagingException(event, new RuntimeException("Bad news!"))));
-            return new DefaultMuleEvent(message, event);
+            event.setMessage(message);
+            return event;
         }
     }
 }

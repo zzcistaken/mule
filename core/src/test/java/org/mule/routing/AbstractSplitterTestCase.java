@@ -13,6 +13,7 @@ package org.mule.routing;
 import org.mule.DefaultMessageCollection;
 import org.mule.DefaultMuleEvent;
 import org.mule.DefaultMuleMessage;
+import org.mule.MessageExchangePattern;
 import org.mule.api.MuleEvent;
 import org.mule.api.MuleException;
 import org.mule.api.MuleMessage;
@@ -53,7 +54,7 @@ public class AbstractSplitterTestCase extends AbstractMuleContextTestCase
         fruitBowl.addFruit(orange);
 
         MuleEvent inEvent = new DefaultMuleEvent(new DefaultMuleMessage(fruitBowl, muleContext),
-            getTestEvent(""));
+            MessageExchangePattern.ONE_WAY, getTestService());
 
         MuleEvent resultEvent = splitter.process(inEvent);
 

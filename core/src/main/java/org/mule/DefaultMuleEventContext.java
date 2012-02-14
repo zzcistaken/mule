@@ -493,7 +493,9 @@ public class DefaultMuleEventContext implements MuleEventContext
                 throw new EndpointNotFoundException(
                     CoreMessages.noOutboundRouterSetOn(flowConstruct.getName()));
             }
-            processor.process(new DefaultMuleEvent(message, RequestContext.getEvent()));
+            MuleEvent event = RequestContext.getEvent();
+            event.setMessage(message);
+            processor.process(event);
         }
     }
 

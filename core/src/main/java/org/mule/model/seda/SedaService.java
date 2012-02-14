@@ -30,7 +30,6 @@ import org.mule.service.processor.ServiceInternalMessageProcessor;
 import org.mule.service.processor.ServiceLoggingMessageProcessor;
 import org.mule.service.processor.ServiceOutboundMessageProcessor;
 import org.mule.service.processor.ServiceOutboundStatisticsMessageProcessor;
-import org.mule.service.processor.ServiceSetEventRequestContextMessageProcessor;
 import org.mule.service.processor.ServiceStatisticsMessageProcessor;
 import org.mule.util.concurrent.ThreadNameHelper;
 
@@ -81,7 +80,6 @@ public class SedaService extends AbstractService
         builder.chain(new ProcessingTimeInterceptor(null, this));
         builder.chain(new ServiceLoggingMessageProcessor(this));
         builder.chain(new ServiceStatisticsMessageProcessor(this));
-        builder.chain(new ServiceSetEventRequestContextMessageProcessor());
         if (getThreadingProfile().isDoThreading())
         {
             sedaStage = new LaxSedaStageInterceptingMessageProcessor(ThreadNameHelper.sedaService(

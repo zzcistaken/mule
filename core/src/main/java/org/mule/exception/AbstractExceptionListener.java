@@ -10,7 +10,6 @@
 
 package org.mule.exception;
 
-import org.mule.DefaultMuleEvent;
 import org.mule.DefaultMuleMessage;
 import org.mule.api.MessagingException;
 import org.mule.api.MuleContext;
@@ -205,7 +204,8 @@ public abstract class AbstractExceptionListener extends AbstractMessageProcessor
                 router.setMuleContext(muleContext);
 
                 // Route the ExceptionMessage to the new router
-                router.route(new DefaultMuleEvent(exceptionMessage, event));
+                event.setMessage(exceptionMessage);
+                router.route(event);
             }
             catch (Exception e)
             {

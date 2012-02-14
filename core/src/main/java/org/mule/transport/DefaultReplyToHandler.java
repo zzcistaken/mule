@@ -10,7 +10,6 @@
 
 package org.mule.transport;
 
-import org.mule.DefaultMuleEvent;
 import org.mule.DefaultMuleMessage;
 import org.mule.api.MuleContext;
 import org.mule.api.MuleEvent;
@@ -92,7 +91,7 @@ public class DefaultReplyToHandler implements ReplyToHandler, Serializable, Dese
         returnMessage = new DefaultMuleMessage(returnMessage.getPayload(), returnMessage, muleContext);
 
         // Create the replyTo event asynchronous
-        MuleEvent replyToEvent = new DefaultMuleEvent(returnMessage, event);
+        event.setMessage(returnMessage);
 
         // carry over properties
         List<String> responseProperties = endpoint.getResponseProperties();
@@ -101,7 +100,7 @@ public class DefaultReplyToHandler implements ReplyToHandler, Serializable, Dese
             Object propertyValue = event.getMessage().getInboundProperty(propertyName);
             if (propertyValue != null)
             {
-                replyToEvent.getMessage().setOutboundProperty(propertyName, propertyValue);
+                event.getMessage().setOutboundProperty(propertyName, propertyValue);
             }
         }
 
@@ -116,7 +115,7 @@ public class DefaultReplyToHandler implements ReplyToHandler, Serializable, Dese
                     stats.incSentReplyToEvent();
                 }
             }
-            endpoint.process(replyToEvent);
+            endpoint.process(event);
             if (logger.isInfoEnabled())
             {
                 logger.info("reply to sent: " + endpoint);
@@ -125,7 +124,7 @@ public class DefaultReplyToHandler implements ReplyToHandler, Serializable, Dese
         catch (Exception e)
         {
             throw new DispatchException(CoreMessages.failedToDispatchToReplyto(endpoint),
-                replyToEvent, endpoint, e);
+                event, endpoint, e);
         }
 
     }

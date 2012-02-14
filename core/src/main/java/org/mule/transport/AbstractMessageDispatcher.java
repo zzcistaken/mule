@@ -10,8 +10,6 @@
 
 package org.mule.transport;
 
-import org.mule.DefaultMuleEvent;
-import org.mule.RequestContext;
 import org.mule.api.MuleEvent;
 import org.mule.api.MuleException;
 import org.mule.api.MuleMessage;
@@ -56,7 +54,7 @@ public abstract class AbstractMessageDispatcher extends AbstractTransportMessage
         return getConnector().getName() + ".dispatcher." + System.identityHashCode(this);
     }
 
-    public MuleEvent process(MuleEvent event) throws MuleException
+    public MuleEvent process(final MuleEvent event) throws MuleException
     {
         try
         {
@@ -84,9 +82,8 @@ public abstract class AbstractMessageDispatcher extends AbstractTransportMessage
                     MuleSession storedSession = connector.getSessionHandler().retrieveSessionInfoFromMessage(
                         resultMessage);
                     event.getSession().merge(storedSession);
-                    MuleEvent resultEvent = new DefaultMuleEvent(resultMessage, event);
-                    RequestContext.setEvent(resultEvent);
-                    return resultEvent;
+                    event.setMessage(resultMessage);
+                    return event;
                 }
                 else
                 {

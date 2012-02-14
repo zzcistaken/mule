@@ -10,7 +10,6 @@
 
 package org.mule.routing.requestreply;
 
-import org.mule.DefaultMuleEvent;
 import org.mule.OptimizedRequestContext;
 import org.mule.api.MessagingException;
 import org.mule.api.MuleEvent;
@@ -94,10 +93,9 @@ public abstract class AbstractAsyncRequestReplyRequester extends AbstractInterce
             {
                 // Merge async-reply session properties with exiting session properties
                 event.getSession().merge(resultEvent.getSession());
-                resultEvent = org.mule.RequestContext.setEvent(new DefaultMuleEvent(resultEvent.getMessage(),
-                    event));
+                event.setMessage(resultEvent.getMessage());
             }
-            return resultEvent;
+            return event;
         }
     }
 

@@ -301,7 +301,7 @@
                 <vm:outbound-endpoint path="tmp3" />
             </processor-chain>
         </all>
-        <test:assert expression="#[header:INVOCATION:P1]" />
+        <test:assert expression="#[groovy:message.getInvocationProperty('P1')==null]" />
     </flow>
     <flow name="AllAsync">
         <processor ref="addP1" />

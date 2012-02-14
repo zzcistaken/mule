@@ -10,11 +10,9 @@
 
 package org.mule.routing;
 
-import java.io.Serializable;
-import java.util.concurrent.TimeUnit;
-
 import org.mule.DefaultMuleEvent;
 import org.mule.DefaultMuleMessage;
+import org.mule.OptimizedRequestContext;
 import org.mule.api.MessagingException;
 import org.mule.api.MuleEvent;
 import org.mule.api.MuleException;
@@ -36,6 +34,9 @@ import org.mule.retry.policies.SimpleRetryPolicyTemplate;
 import org.mule.routing.filters.ExpressionFilter;
 import org.mule.routing.outbound.AbstractOutboundRouter;
 import org.mule.util.SystemUtils;
+
+import java.io.Serializable;
+import java.util.concurrent.TimeUnit;
 
 /**
  * UntilSuccessful attempts to route a message to the message processor it contains in an asynchronous manner. Routing
@@ -216,8 +217,8 @@ public class UntilSuccessful extends AbstractOutboundRouter
             final Object ackResponsePayload = muleContext.getExpressionManager().evaluate(ackExpression,
                 event.getMessage());
 
-            return new DefaultMuleEvent(new DefaultMuleMessage(ackResponsePayload, event.getMessage(),
-                muleContext), event);
+            event.getMessage().setPayload(ackResponsePayload);
+            return event;   
         }
         catch (final Exception e)
         {
@@ -306,7 +307,8 @@ public class UntilSuccessful extends AbstractOutboundRouter
         try
         {
             final MuleEvent event = objectStore.remove(eventStoreKey);
-            final MuleEvent mutableEvent = threadSafeCopy(event);
+            final MuleEvent mutableEvent = DefaultMuleEvent.copy(event);
+            OptimizedRequestContext.unsafeSetEvent(mutableEvent);
 
             final MuleMessage message = mutableEvent.getMessage();
             final Integer deliveryAttemptCount = message.getInvocationProperty(
@@ -363,7 +365,8 @@ public class UntilSuccessful extends AbstractOutboundRouter
     private void retrieveAndProcessEvent(final EventStoreKey eventStoreKey) throws ObjectStoreException
     {
         final MuleEvent persistedEvent = objectStore.retrieve(eventStoreKey);
-        final MuleEvent mutableEvent = threadSafeCopy(persistedEvent);
+        final MuleEvent mutableEvent = DefaultMuleEvent.copy(persistedEvent);
+        OptimizedRequestContext.unsafeSetEvent(mutableEvent);
         processEvent(mutableEvent);
     }
 
@@ -404,14 +407,6 @@ public class UntilSuccessful extends AbstractOutboundRouter
                 MessageFactory.createStaticMessage("Failure expression positive when processing event: "
                                                    + event));
         }
-    }
-
-    private DefaultMuleEvent threadSafeCopy(final MuleEvent event)
-    {
-        final DefaultMuleMessage message = new DefaultMuleMessage(event.getMessage().getPayload(),
-            event.getMessage(), muleContext);
-
-        return new DefaultMuleEvent(message, event);
     }
 
     private void ensurePayloadSerializable(final MuleEvent event) throws Exception

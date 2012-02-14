@@ -312,21 +312,17 @@ public class InvokerMessageProcessor implements MessageProcessor, Initialisable,
     {
         if (result instanceof MuleMessage)
         {
-            return new DefaultMuleEvent((MuleMessage) result, event);
+            event.setMessage((MuleMessage) result);
         }
         else if (result != null)
         {
-            event.getMessage().applyTransformers(
-                event,
-                Collections.<Transformer> singletonList(new TransformerTemplate(
-                    new TransformerTemplate.OverwitePayloadCallback(result))));
-            return event;
+            event.getMessage().setPayload(result);
         }
         else
         {
-            return new DefaultMuleEvent(new DefaultMuleMessage(NullPayload.getInstance(),
-                event.getMuleContext()), event);
+            event.getMessage().setPayload(NullPayload.getInstance());
         }
+        return event;
     }
 
     public String getName()

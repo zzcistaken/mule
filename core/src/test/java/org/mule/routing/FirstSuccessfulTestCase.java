@@ -106,7 +106,8 @@ public class FirstSuccessfulTestCase extends AbstractMuleContextTestCase
             @Override
             public MuleEvent process(MuleEvent event) throws MuleException
             {
-                return new DefaultMuleEvent(null, event);
+                event.setMessage(null);
+                return event;
             }
         };
         FirstSuccessful fs = createFirstSuccessfulRouter(nullEventMp);

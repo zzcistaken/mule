@@ -10,8 +10,6 @@
 
 package org.mule.transformer.simple;
 
-import org.mule.DefaultMuleEvent;
-import org.mule.DefaultMuleMessage;
 import org.mule.api.MuleEvent;
 import org.mule.api.MuleException;
 import org.mule.api.MuleMessage;
@@ -65,8 +63,8 @@ public class CombineCollectionsTransformer implements MessageProcessor
             payload.add(msg.getPayload());
         }
 
-        DefaultMuleMessage listMessage = new DefaultMuleMessage(payload, msg, msg.getMuleContext());
-        return new DefaultMuleEvent(listMessage, event);
+        event.getMessage().setPayload(payload);
+        return event;
     }
 
     private void add(List<Object> newPayload, Collection existingPayload)

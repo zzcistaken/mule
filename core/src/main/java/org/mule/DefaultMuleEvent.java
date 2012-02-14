@@ -210,6 +210,7 @@ public class DefaultMuleEvent implements MuleEvent, ThreadSafeAccess, Deserializ
         this.timeout = timeout;
         this.transacted = false;
         this.synchronous = resolveEventSynchronicity();
+        OptimizedRequestContext.unsafeSetEvent(this);
     }
 
     // Constructors for inbound endpoint
@@ -251,6 +252,7 @@ public class DefaultMuleEvent implements MuleEvent, ThreadSafeAccess, Deserializ
         this.transacted = endpoint.getTransactionConfig().isTransacted();
         fillProperties(endpoint);
         this.synchronous = resolveEventSynchronicity();
+        OptimizedRequestContext.unsafeSetEvent(this);
     }
 
     // Constructors to copy MuleEvent
@@ -260,6 +262,7 @@ public class DefaultMuleEvent implements MuleEvent, ThreadSafeAccess, Deserializ
      * 
      * @param message The message to use as the current payload of the event
      * @param rewriteEvent the previous event that will be used as a template for this event
+     * @deprecated
      */
     public DefaultMuleEvent(MuleMessage message, MuleEvent rewriteEvent)
     {
@@ -355,6 +358,7 @@ public class DefaultMuleEvent implements MuleEvent, ThreadSafeAccess, Deserializ
         this.timeout = timeout;
         this.outputStream = outputStream;
         this.replyToDestination = replyToDestination;
+        OptimizedRequestContext.unsafeSetEvent(this);
     }
 
     protected boolean resolveEventSynchronicity()
@@ -933,13 +937,22 @@ public class DefaultMuleEvent implements MuleEvent, ThreadSafeAccess, Deserializ
                 setFlowVariable(name, message.getInvocationProperty(name));
             }
             ((DefaultMuleMessage) message).setInvocationProperties(flowVariables);
-            if (session instanceof DefaultMuleSession)
-            {
-                ((DefaultMuleMessage) message).setSessionProperties(((DefaultMuleSession) session).getProperties());
-            }
+        }
+        if (session instanceof DefaultMuleSession)
+        {
+            ((DefaultMuleMessage) message).setSessionProperties(((DefaultMuleSession) session).getProperties());
         }
     }
 
+    /** 
+     * Copies MuleEvent by:
+     *  - Making a new thread copy of the MuleMessage
+     *  - Copying all MuleEvent state (same references)
+     *  - Creating a new map of flow variables and copying entries
+     *  - Reset message access control
+     * @param event
+     * @return
+     */
     public static MuleEvent copy(MuleEvent event)
     {
         MuleMessage messageCopy = (MuleMessage) ((ThreadSafeAccess) event.getMessage()).newThreadCopy();
@@ -947,6 +960,15 @@ public class DefaultMuleEvent implements MuleEvent, ThreadSafeAccess, Deserializ
             event.getSession()));
         eventCopy.flowVariables = new CaseInsensitiveHashMap(((DefaultMuleEvent) event).flowVariables);
         ((DefaultMuleMessage) messageCopy).setInvocationProperties(eventCopy.flowVariables);
+        ((DefaultMuleMessage) messageCopy).resetAccessControl();
+        return eventCopy;
+    }
+
+    public static MuleEvent copyKeepFlowVariablesMap(MuleEvent event)
+    {
+        MuleMessage messageCopy = (MuleMessage) ((ThreadSafeAccess) event.getMessage()).newThreadCopy();
+        DefaultMuleEvent eventCopy = new DefaultMuleEvent(messageCopy, event, new DefaultMuleSession(
+            event.getSession()));
         ((DefaultMuleMessage) messageCopy).resetAccessControl();
         return eventCopy;
     }

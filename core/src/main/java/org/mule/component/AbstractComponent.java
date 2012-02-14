@@ -10,9 +10,6 @@
 
 package org.mule.component;
 
-import org.mule.DefaultMuleEvent;
-import org.mule.DefaultMuleMessage;
-import org.mule.OptimizedRequestContext;
 import org.mule.VoidResult;
 import org.mule.api.AnnotatedObject;
 import org.mule.api.MuleContext;
@@ -32,7 +29,6 @@ import org.mule.api.lifecycle.LifecycleException;
 import org.mule.api.processor.MessageProcessor;
 import org.mule.api.processor.MessageProcessorChain;
 import org.mule.api.service.Service;
-import org.mule.api.transformer.Transformer;
 import org.mule.config.i18n.CoreMessages;
 import org.mule.config.i18n.MessageFactory;
 import org.mule.construct.SimpleService;
@@ -40,7 +36,6 @@ import org.mule.context.notification.ComponentMessageNotification;
 import org.mule.context.notification.OptimisedNotificationHandler;
 import org.mule.management.stats.ComponentStatistics;
 import org.mule.processor.chain.DefaultMessageProcessorChainBuilder;
-import org.mule.transformer.TransformerTemplate;
 import org.mule.transport.NullPayload;
 import org.mule.util.ClassUtils;
 
@@ -98,9 +93,6 @@ public abstract class AbstractComponent implements Component, MuleContextAware, 
 
     private MuleEvent invokeInternal(MuleEvent event) throws MuleException
     {
-        // Ensure we have event in ThreadLocal
-        OptimizedRequestContext.unsafeSetEvent(event);
-
         if (logger.isTraceEnabled())
         {
             logger.trace(String.format("Invoking %s component for service %s", this.getClass().getName(),
@@ -165,7 +157,7 @@ public abstract class AbstractComponent implements Component, MuleContextAware, 
     {
         if (result instanceof MuleMessage)
         {
-            return new DefaultMuleEvent((MuleMessage) result, event);
+            event.setMessage((MuleMessage) result);
         }
         else if (result instanceof VoidResult)
         {
@@ -173,18 +165,13 @@ public abstract class AbstractComponent implements Component, MuleContextAware, 
         }
         else if (result != null)
         {
-            event.getMessage().applyTransformers(
-                event,
-                Collections.<Transformer> singletonList(new TransformerTemplate(
-                    new TransformerTemplate.OverwitePayloadCallback(result))));
-            return event;
+            event.getMessage().setPayload(result);
         }
         else
         {
-            DefaultMuleMessage emptyMessage = new DefaultMuleMessage(NullPayload.getInstance(), muleContext);
-            emptyMessage.propagateRootId(event.getMessage());
-            return new DefaultMuleEvent(emptyMessage, event);
+            event.getMessage().setPayload(NullPayload.getInstance());
         }
+        return event;
     }
 
     protected abstract Object doInvoke(MuleEvent event) throws Exception;

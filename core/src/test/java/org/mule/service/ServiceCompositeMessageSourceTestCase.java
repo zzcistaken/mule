@@ -10,8 +10,10 @@
 
 package org.mule.service;
 
-import org.mule.DefaultMuleEvent;
-import org.mule.DefaultMuleMessage;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import org.mule.api.MuleEvent;
 import org.mule.api.MuleException;
 import org.mule.api.MuleMessage;
@@ -22,10 +24,6 @@ import org.mule.source.StartableCompositeMessageSource;
 import org.mule.source.StartableCompositeMessageSourceTestCase;
 
 import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 
 public class ServiceCompositeMessageSourceTestCase extends StartableCompositeMessageSourceTestCase
 {
@@ -84,9 +82,8 @@ public class ServiceCompositeMessageSourceTestCase extends StartableCompositeMes
 
         public MuleEvent process(MuleEvent event) throws MuleException
         {
-            return processNext(new DefaultMuleEvent(new DefaultMuleMessage(event.getMessage().getPayload()
-                                                                           + appendString, ServiceCompositeMessageSourceTestCase.muleContext),
-                event));
+            event.getMessage().setPayload(event.getMessage().getPayload() + appendString);
+            return processNext(event);
         }
     }
 

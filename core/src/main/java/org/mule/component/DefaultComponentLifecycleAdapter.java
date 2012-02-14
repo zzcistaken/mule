@@ -356,7 +356,7 @@ public class DefaultComponentLifecycleAdapter implements LifecycleAdapter
         }
         catch (Exception e)
         {
-            throw new ComponentException(RequestContext.getEvent(), component, e);
+            throw new ComponentException(event, component, e);
         }
 
         return result;

@@ -10,6 +10,7 @@
 
 package org.mule.processor.chain;
 
+import org.mule.DefaultMuleEvent;
 import org.mule.MessageExchangePattern;
 import org.mule.OptimizedRequestContext;
 import org.mule.api.MuleEvent;
@@ -33,7 +34,7 @@ public class DefaultMessageProcessorChain extends AbstractMessageProcessorChain
 {
 
     protected DefaultMessageProcessorChain(List<MessageProcessor> processors)
-    {   
+    {
         super(null, processors);
     }
 
@@ -66,7 +67,7 @@ public class DefaultMessageProcessorChain extends AbstractMessageProcessorChain
     {
         return new DefaultMessageProcessorChainBuilder().chain(messageProcessors).build();
     }
-    
+
     protected MuleEvent doProcess(MuleEvent event) throws MuleException
     {
         FlowConstruct flowConstruct = event.getFlowConstruct();
@@ -90,10 +91,9 @@ public class DefaultMessageProcessorChain extends AbstractMessageProcessorChain
             fireNotification(event.getFlowConstruct(), event, processor,
                 MessageProcessorNotification.MESSAGE_PROCESSOR_PRE_INVOKE);
 
-            if (flowConstruct instanceof Flow && nextProcessor != null
-                && processorMayReturnNull(processor))
+            if (flowConstruct instanceof Flow && nextProcessor != null && processorMayReturnNull(processor))
             {
-                copy = OptimizedRequestContext.criticalSetEvent(currentEvent);
+                copy = DefaultMuleEvent.copy(currentEvent);
             }
 
             resultEvent = processor.process(currentEvent);
@@ -122,6 +122,7 @@ public class DefaultMessageProcessorChain extends AbstractMessageProcessorChain
                 if (copy != null)
                 {
                     currentEvent = copy;
+                    OptimizedRequestContext.unsafeSetEvent(currentEvent);
                 }
                 else
                 {

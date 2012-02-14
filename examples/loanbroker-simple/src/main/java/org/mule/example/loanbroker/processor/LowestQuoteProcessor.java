@@ -10,8 +10,6 @@
 
 package org.mule.example.loanbroker.processor;
 
-import org.mule.DefaultMuleEvent;
-import org.mule.DefaultMuleMessage;
 import org.mule.api.MuleEvent;
 import org.mule.api.processor.MessageProcessor;
 import org.mule.api.transformer.TransformerException;
@@ -52,7 +50,8 @@ public class LowestQuoteProcessor implements MessageProcessor
                 }
             }
         }
-        return new DefaultMuleEvent(new DefaultMuleMessage(lowestQuote, event.getMuleContext()), event);
+        event.getMessage().setPayload(lowestQuote);
+        return event;
     }
 
 }

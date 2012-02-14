@@ -10,8 +10,15 @@
 
 package org.mule.routing;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import org.mule.DefaultMuleEvent;
 import org.mule.DefaultMuleMessage;
+import org.mule.MessageExchangePattern;
 import org.mule.api.MuleEvent;
 import org.mule.tck.junit4.AbstractMuleContextTestCase;
 import org.mule.util.UUID;
@@ -23,12 +30,6 @@ import java.util.Set;
 
 import org.apache.commons.collections.IteratorUtils;
 import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 public class EventGroupTestCase extends AbstractMuleContextTestCase
 {
@@ -180,7 +181,7 @@ public class EventGroupTestCase extends AbstractMuleContextTestCase
         assertTrue(es.endsWith("[" + firstId + "]}"));
 
         MuleEvent secondEvent = new DefaultMuleEvent(new DefaultMuleMessage("foo2", muleContext),
-            getTestEvent("foo2"));
+            MessageExchangePattern.ONE_WAY, getTestService());
         String secondId = secondEvent.getMessage().getUniqueId();
         eg.addEvent(secondEvent);
         es = eg.toString();

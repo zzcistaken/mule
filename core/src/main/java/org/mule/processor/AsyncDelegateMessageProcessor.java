@@ -14,8 +14,6 @@ import org.mule.DefaultMuleEvent;
 import org.mule.api.MessagingException;
 import org.mule.api.MuleEvent;
 import org.mule.api.MuleException;
-import org.mule.api.MuleMessage;
-import org.mule.api.ThreadSafeAccess;
 import org.mule.api.lifecycle.Initialisable;
 import org.mule.api.lifecycle.InitialisationException;
 import org.mule.api.lifecycle.Startable;
@@ -109,8 +107,7 @@ public class AsyncDelegateMessageProcessor extends AbstractMessageProcessorOwner
         if (target != null)
         {
             // Clone event and make it async
-            MuleEvent newEvent = new DefaultMuleEvent(
-                (MuleMessage)((ThreadSafeAccess)event.getMessage()).newThreadCopy(), event, false);
+            MuleEvent newEvent = new DefaultMuleEvent(event.getMessage(), event, false);
             target.process(newEvent);
         }
         return event;

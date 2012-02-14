@@ -15,7 +15,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.mule.api.MuleEventContext;
-import org.mule.api.MuleMessage;
 import org.mule.tck.functional.EventCallback;
 import org.mule.tck.functional.FunctionalStreamingTestComponent;
 
@@ -49,7 +48,7 @@ public class FtpStreamingTestCase extends AbstractFtpServerTestCase
     public void testRequest() throws Exception
     {
         final CountDownLatch latch = new CountDownLatch(1);
-        final AtomicReference<MuleMessage> messageHolder = new AtomicReference<MuleMessage>();
+        final AtomicReference<Object> messageHolder = new AtomicReference<Object>();
 
         EventCallback callback = new EventCallback()
         {
@@ -60,7 +59,7 @@ public class FtpStreamingTestCase extends AbstractFtpServerTestCase
                 {
                     if (1 == latch.getCount())
                     {
-                        messageHolder.set(context.getMessage());
+                        messageHolder.set(context.getMessage().getPayload());
                         latch.countDown();
                     }
                 }
@@ -82,8 +81,8 @@ public class FtpStreamingTestCase extends AbstractFtpServerTestCase
         // poll and pull back through test service
         assertTrue(latch.await(getTimeout(), TimeUnit.MILLISECONDS));
 
-        MuleMessage message = messageHolder.get();
-        assertNotNull(message);
-        assertTrue(message.getPayload() instanceof InputStream);
+        Object payload = messageHolder.get();
+        assertNotNull(payload);
+        assertTrue(payload instanceof InputStream);
     }
 }

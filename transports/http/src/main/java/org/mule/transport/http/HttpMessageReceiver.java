@@ -12,7 +12,6 @@ package org.mule.transport.http;
 
 import org.mule.DefaultMuleEvent;
 import org.mule.DefaultMuleMessage;
-import org.mule.OptimizedRequestContext;
 import org.mule.RequestContext;
 import org.mule.api.DefaultMuleException;
 import org.mule.api.MessagingException;
@@ -391,7 +390,6 @@ public class HttpMessageReceiver extends TcpMessageReceiver
         {
             MuleMessage message = createMuleMessage(null);
             MuleEvent event = new DefaultMuleEvent(message, (InboundEndpoint) endpoint, flowConstruct);
-            OptimizedRequestContext.unsafeSetEvent(event);
             HttpResponse response = new HttpResponse();
             response.setStatusLine(requestLine.getHttpVersion(), HttpConstants.SC_METHOD_NOT_ALLOWED);
             response.setBody(HttpMessages.methodNotAllowed(method).toString() + HttpConstants.CRLF);
@@ -402,7 +400,6 @@ public class HttpMessageReceiver extends TcpMessageReceiver
         {
             MuleMessage message = createMuleMessage(null);
             MuleEvent event = new DefaultMuleEvent(message, (InboundEndpoint) endpoint, flowConstruct);
-            OptimizedRequestContext.unsafeSetEvent(event);
             HttpResponse response = new HttpResponse();
             response.setStatusLine(requestLine.getHttpVersion(), HttpConstants.SC_BAD_REQUEST);
             response.setBody(HttpMessages.malformedSyntax().toString() + HttpConstants.CRLF);

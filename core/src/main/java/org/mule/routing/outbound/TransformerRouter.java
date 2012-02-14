@@ -10,7 +10,6 @@
 
 package org.mule.routing.outbound;
 
-import org.mule.DefaultMuleEvent;
 import org.mule.DefaultMuleMessage;
 import org.mule.api.MessagingException;
 import org.mule.api.MuleEvent;
@@ -22,8 +21,9 @@ import org.mule.api.transformer.TransformerException;
 import org.mule.config.i18n.CoreMessages;
 
 /**
- * Simply applies a transformer before continuing on to the next router.
- * This can be useful with the {@link ChainingRouter}.
+ * Simply applies a transformer before continuing on to the next router. This can be useful with the
+ * {@link ChainingRouter}.
+ * 
  * @deprecated
  */
 public class TransformerRouter extends AbstractOutboundRouter
@@ -45,11 +45,19 @@ public class TransformerRouter extends AbstractOutboundRouter
             }
             catch (TransformerException e)
             {
-                throw new RoutingException(CoreMessages.transformFailedBeforeFilter(), event, 
-                    routes.get(0), e);
+                throw new RoutingException(CoreMessages.transformFailedBeforeFilter(), event, routes.get(0),
+                    e);
             }
         }
-        return message == null ? null : new DefaultMuleEvent(message, event);
+        if (message != null)
+        {
+            event.setMessage(message);
+            return event;
+        }
+        else
+        {
+            return null;
+        }
     }
 
     public boolean isMatch(MuleMessage message) throws MuleException
@@ -67,4 +75,3 @@ public class TransformerRouter extends AbstractOutboundRouter
         this.transformer = transformer;
     }
 }
-

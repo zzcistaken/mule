@@ -9,8 +9,6 @@
  */
 package org.mule.transport.http.components;
 
-import org.mule.DefaultMuleEvent;
-import org.mule.DefaultMuleMessage;
 import org.mule.api.MuleEvent;
 import org.mule.api.MuleException;
 import org.mule.api.config.ConfigurationException;
@@ -76,7 +74,7 @@ public class StaticResourceMessageProcessor implements MessageProcessor, Initial
         else if (file.isDirectory())
         {
             // Return a 302 with the new location
-            resultEvent = new DefaultMuleEvent(new DefaultMuleMessage(NullPayload.getInstance(), event.getMuleContext()), event);
+            resultEvent.getMessage().setPayload(NullPayload.getInstance());
             resultEvent.getMessage().setOutboundProperty(HttpConnector.HTTP_STATUS_PROPERTY, String.valueOf(HttpConstants.SC_MOVED_TEMPORARILY));
             resultEvent.getMessage().setOutboundProperty(HttpConstants.HEADER_CONTENT_LENGTH, 0);
             resultEvent.getMessage().setOutboundProperty(HttpConstants.HEADER_LOCATION,
@@ -91,13 +89,6 @@ public class StaticResourceMessageProcessor implements MessageProcessor, Initial
             in = new FileInputStream(file);
             byte[] buffer;
 
-            if (in == null)
-            {
-                resultEvent = new DefaultMuleEvent(new DefaultMuleMessage(NullPayload.getInstance(), event.getMuleContext()), event);
-                resultEvent.getMessage().setOutboundProperty(HttpConnector.HTTP_STATUS_PROPERTY, String.valueOf(HttpConstants.SC_NOT_FOUND));
-                return resultEvent;
-            }
-
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             IOUtils.copyLarge(in, baos);
 
@@ -110,7 +101,7 @@ public class StaticResourceMessageProcessor implements MessageProcessor, Initial
                 mimetype = DEFAULT_MIME_TYPE;
             }
 
-            resultEvent = new DefaultMuleEvent(new DefaultMuleMessage(buffer, event.getMuleContext()), event);
+            resultEvent.getMessage().setPayload(buffer);
             resultEvent.getMessage().setOutboundProperty(HttpConnector.HTTP_STATUS_PROPERTY, String.valueOf(HttpConstants.SC_OK));
             resultEvent.getMessage().setOutboundProperty(HttpConstants.HEADER_CONTENT_TYPE, mimetype);
             resultEvent.getMessage().setOutboundProperty(HttpConstants.HEADER_CONTENT_LENGTH, buffer.length);

@@ -10,8 +10,6 @@
 
 package org.mule.component;
 
-import org.mule.OptimizedRequestContext;
-import org.mule.RequestContext;
 import org.mule.api.MuleEvent;
 import org.mule.api.MuleException;
 import org.mule.api.MuleRuntimeException;
@@ -41,8 +39,7 @@ public class DefaultInterfaceBinding implements InterfaceBinding
 
     public MuleEvent process(MuleEvent event) throws MuleException
     {
-        OptimizedRequestContext.unsafeRewriteEvent(event.getMessage());
-        return outboundRouter.process(RequestContext.getEvent());
+        return outboundRouter.process(event);
     }
 
     public void setInterface(Class<?> interfaceClass)

@@ -10,8 +10,13 @@
 
 package org.mule.work;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import org.mule.DefaultMuleMessage;
-import org.mule.OptimizedRequestContext;
 import org.mule.RequestContext;
 import org.mule.api.MuleEvent;
 import org.mule.api.ThreadSafeAccess;
@@ -19,13 +24,8 @@ import org.mule.tck.junit4.AbstractMuleContextTestCase;
 import org.mule.util.concurrent.Latch;
 
 import java.util.concurrent.TimeUnit;
-import org.junit.Test;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import org.junit.Test;
 
 /**
  * Test case to reproduce issue described in MULE-4407 and validate fix.
@@ -44,7 +44,6 @@ public class MuleEventWorkTestCase extends AbstractMuleContextTestCase
         originalEvent = getTestEvent("test");
         originalEvent.getMessage().setOutboundProperty("test", "val");
         originalEvent.getMessage().setOutboundProperty("test2", "val2");
-        OptimizedRequestContext.unsafeSetEvent(originalEvent);
     }
 
     @Test

@@ -10,8 +10,7 @@
 
 package org.mule.routing.outbound;
 
-import org.mule.DefaultMuleEvent;
-import org.mule.api.MuleEvent;
+    import org.mule.api.MuleEvent;
 import org.mule.api.MuleException;
 import org.mule.api.MuleMessage;
 import org.mule.api.lifecycle.InitialisationException;
@@ -23,8 +22,8 @@ import org.mule.config.i18n.CoreMessages;
 import org.mule.transport.NullPayload;
 
 /**
- * <code>ChainingRouter</code> is used to pass a Mule event through multiple
- * targets using the result of the first as the input for the second.
+ * <code>ChainingRouter</code> is used to pass a Mule event through multiple targets using the result of the
+ * first as the input for the second.
  */
 public class ChainingRouter extends FilteringOutboundRouter
 {
@@ -81,9 +80,8 @@ public class ChainingRouter extends FilteringOutboundRouter
                     // is no guarantee that an external system will preserve headers
                     // (in fact most will not)
                     if (localResult != null &&
-                        // null result can be wrapped in a NullPayload
-                        localResult.getPayload() != NullPayload.getInstance() &&
-                        intermediaryResult != null)
+                    // null result can be wrapped in a NullPayload
+                        localResult.getPayload() != NullPayload.getInstance() && intermediaryResult != null)
                     {
                         processIntermediaryResult(localResult, intermediaryResult);
                     }
@@ -95,11 +93,20 @@ public class ChainingRouter extends FilteringOutboundRouter
                                      + (intermediaryResult != null ? intermediaryResult.toString() : "null"));
                     }
 
-                    if (intermediaryResult == null || intermediaryResult.getPayload() == NullPayload.getInstance())
+                    if (intermediaryResult == null
+                        || intermediaryResult.getPayload() == NullPayload.getInstance())
                     {
                         // if there was an error in the first link of the chain, make sure we propagate back
                         // any exception payloads alongside the NullPayload
-                        resultToReturn = intermediaryResult == null ? null : new DefaultMuleEvent(intermediaryResult, resultToReturn);
+                        if (intermediaryResult != null)
+                        {
+                            event.setMessage(intermediaryResult);
+                            resultToReturn = event;
+                        }
+                        else
+                        {
+                            resultToReturn = null;
+                        }
                         logger.warn("Chaining router cannot process any further targets. "
                                     + "There was no result returned from endpoint invocation: " + endpoint);
                         break;
@@ -112,9 +119,11 @@ public class ChainingRouter extends FilteringOutboundRouter
                     resultToReturn = sendRequest(resultToReturn, intermediaryResult, endpoint, true);
                     if (logger.isDebugEnabled())
                     {
-                        MuleMessage resultMessage = resultToReturn == null ? null : resultToReturn.getMessage();
+                        MuleMessage resultMessage = resultToReturn == null
+                                                                          ? null
+                                                                          : resultToReturn.getMessage();
                         logger.debug("Received final Chain result '" + i + "': "
-                            + (resultMessage == null ? "null" : resultMessage.toString()));
+                                     + (resultMessage == null ? "null" : resultMessage.toString()));
                     }
                 }
             }
@@ -128,22 +137,21 @@ public class ChainingRouter extends FilteringOutboundRouter
     }
 
     /**
-     * Process intermediary result of invocation. The method will be invoked
-     * <strong>only</strong> if both local and intermediary results are available
-     * (not null).
+     * Process intermediary result of invocation. The method will be invoked <strong>only</strong> if both
+     * local and intermediary results are available (not null).
      * <p/>
-     * Overriding methods must call <code>super(localResult, intermediaryResult)</code>,
-     * unless they are modifying the correlation workflow (if you know what that means,
-     * you know what you are doing and when to do it).
+     * Overriding methods must call <code>super(localResult, intermediaryResult)</code>, unless they are
+     * modifying the correlation workflow (if you know what that means, you know what you are doing and when
+     * to do it).
      * <p/>
-     * Default implementation propagates
-     * the following properties:
+     * Default implementation propagates the following properties:
      * <ul>
      * <li>correlationId
      * <li>correlationSequence
      * <li>correlationGroupSize
      * <li>replyTo
      * </ul>
+     * 
      * @param localResult result of the last endpoint invocation
      * @param intermediaryResult the message travelling across the targets
      */

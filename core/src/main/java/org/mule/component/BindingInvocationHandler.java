@@ -10,7 +10,6 @@
 
 package org.mule.component;
 
-import org.mule.DefaultMuleEvent;
 import org.mule.DefaultMuleMessage;
 import org.mule.RequestContext;
 import org.mule.api.MuleContext;
@@ -92,7 +91,8 @@ public class BindingInvocationHandler implements InvocationHandler
         }
 
         MuleEvent currentEvent = RequestContext.getEvent();
-        MuleEvent replyEvent = router.process(new DefaultMuleEvent(message,currentEvent));
+        currentEvent.setMessage(message);
+        MuleEvent replyEvent = router.process(currentEvent);
 
         if (replyEvent != null && replyEvent.getMessage()!=null)
         {

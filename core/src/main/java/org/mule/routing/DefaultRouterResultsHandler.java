@@ -97,10 +97,11 @@ public class DefaultRouterResultsHandler implements RouterResultsHandler
         }
         coll.propagateRootId(previous.getMessage());
         MuleEvent resultEvent = new DefaultMuleEvent(coll, previous, previous.getSession());
+        OptimizedRequestContext.unsafeSetEvent(resultEvent);
         for (String name : previous.getFlowVariableNames())
         {
             resultEvent.setFlowVariable(name, previous.getFlowVariable(name));
         }
-        return OptimizedRequestContext.unsafeSetEvent(resultEvent);
+        return resultEvent;
     }
 }

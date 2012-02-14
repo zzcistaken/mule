@@ -14,8 +14,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-import org.mule.DefaultMuleEvent;
-import org.mule.DefaultMuleMessage;
 import org.mule.api.MuleEvent;
 import org.mule.api.MuleException;
 import org.mule.api.construct.FlowConstruct;
@@ -61,8 +59,8 @@ public class MessageProcessorPollingMessageReceiverTestCase extends AbstractMule
         {
             public MuleEvent process(MuleEvent event) throws MuleException
             {
-                return new DefaultMuleEvent(new DefaultMuleMessage(NullPayload.getInstance(), muleContext),
-                    event);
+                event.getMessage().setPayload(NullPayload.getInstance());
+                return event;
             }
         });
 
@@ -82,7 +80,8 @@ public class MessageProcessorPollingMessageReceiverTestCase extends AbstractMule
         {
             public MuleEvent process(MuleEvent event) throws MuleException
             {
-                return new DefaultMuleEvent(new DefaultMuleMessage("", muleContext), event);
+                event.getMessage().setPayload("");
+                return event;
             }
         });
 
