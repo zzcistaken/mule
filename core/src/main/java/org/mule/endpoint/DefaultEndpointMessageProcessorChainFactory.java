@@ -33,7 +33,7 @@ import org.mule.endpoint.outbound.OutboundRootMessageIdPropertyMessageProcessor;
 import org.mule.endpoint.outbound.OutboundSessionHandlerMessageProcessor;
 import org.mule.lifecycle.processor.ProcessIfStartedMessageProcessor;
 import org.mule.processor.AbstractRedeliveryPolicy;
-import org.mule.processor.TransactionalInterceptingMessageProcessor;
+import org.mule.processor.EndpointTransactionalInterceptingMessageProcessor;
 import org.mule.processor.chain.DefaultMessageProcessorChainBuilder;
 import org.mule.routing.requestreply.ReplyToPropertyRequestReplyReplier;
 
@@ -78,8 +78,8 @@ public class DefaultEndpointMessageProcessorChainFactory implements EndpointMess
         list.add(new OutboundLoggingMessageProcessor());
         list.add(new ProcessIfStartedMessageProcessor(connector, connector.getLifecycleState()));
 
-        // Everything is processed within ProcessingTemplate
-        list.add(new TransactionalInterceptingMessageProcessor(endpoint.getTransactionConfig()));
+        // Everything is processed within ExecutionTemplate
+        list.add(new EndpointTransactionalInterceptingMessageProcessor(endpoint.getTransactionConfig()));
 
         list.add(new OutboundEventTimeoutMessageProcessor());
 

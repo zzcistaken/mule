@@ -9,6 +9,7 @@
  */
 package org.mule.exception;
 
+import org.mule.api.MessagingException;
 import org.mule.api.MuleContext;
 import org.mule.api.MuleEvent;
 import org.mule.api.MuleException;
@@ -21,32 +22,70 @@ import org.mule.management.stats.FlowConstructStatistics;
 import org.mule.message.DefaultExceptionPayload;
 import org.mule.processor.chain.DefaultMessageProcessorChainBuilder;
 import org.mule.routing.requestreply.ReplyToPropertyRequestReplyReplier;
+import org.mule.transaction.TransactionCoordination;
 
 public abstract class TemplateMessagingExceptionStrategy extends AbstractExceptionListener implements MessagingExceptionHandlerAcceptor
 {
 
     private MessageProcessorChain configuredMessageProcessors;
     private MessageProcessor replyToMessageProcessor = new ReplyToPropertyRequestReplyReplier();
-    private String expression;
+    private String when;
+    private boolean handleException;
 
     final public MuleEvent handleException(Exception exception, MuleEvent event)
     {
-        FlowConstruct flowConstruct = event.getFlowConstruct();
-        fireNotification(exception);
-        logException(exception);
-        processStatistics(event);
-        event.getMessage().setExceptionPayload(new DefaultExceptionPayload(exception));
-        event = beforeRouting(exception, event);
-        event = route(event, exception);
-        processOutboundRouterStatistics(flowConstruct);
-        event = afterRouting(exception, event);
-        if (event != null)
+        try
         {
-            processReplyTo(event, exception);
-            closeStream(event.getMessage());
-            nullifyExceptionPayloadIfRequired(event);
+            FlowConstruct flowConstruct = event.getFlowConstruct();
+            fireNotification(exception);
+            logException(exception);
+            processStatistics(event);
+            event.getMessage().setExceptionPayload(new DefaultExceptionPayload(exception));
+            event = beforeRouting(exception, event);
+            event = route(event, exception);
+            processOutboundRouterStatistics(flowConstruct);
+            event = afterRouting(exception, event);
+            markExceptionAsHandledIfRequired(exception);
+            if (event != null)
+            {
+                processReplyTo(event, exception);
+                closeStream(event.getMessage());
+                nullifyExceptionPayloadIfRequired(event);
+            }
+            return event;
         }
-        return event;
+        catch (Exception e)
+        {
+            MessagingException messagingException = new MessagingException(event, e);
+            try
+            {
+                logger.error("Exception during exception strategy execution");
+                logException(e);
+                TransactionCoordination.getInstance().rollbackCurrentTransaction();
+            }
+            catch (Exception ex)
+            {
+                //Do nothing
+            }
+            event.getMessage().setExceptionPayload(new DefaultExceptionPayload(messagingException));
+            return event;
+        }
+    }
+
+    private void markExceptionAsHandledIfRequired(Exception exception)
+    {
+        if (handleException)
+        {
+            markExceptionAsHandled(exception);
+        }
+    }
+    
+    protected void markExceptionAsHandled(Exception exception)
+    {
+        if (exception instanceof MessagingException)
+        {
+            ((MessagingException)exception).setHandled(true);
+        }
     }
 
     protected void processReplyTo(MuleEvent event, Exception e)
@@ -63,6 +102,10 @@ public abstract class TemplateMessagingExceptionStrategy extends AbstractExcepti
 
     protected void nullifyExceptionPayloadIfRequired(MuleEvent event)
     {
+        if (this.handleException)
+        {
+            event.getMessage().setExceptionPayload(null);
+        }
     }
 
     private void processStatistics(MuleEvent event)
@@ -109,20 +152,20 @@ public abstract class TemplateMessagingExceptionStrategy extends AbstractExcepti
     }
 
 
-    public void setExpression(String expression)
+    public void setWhen(String when)
     {
-        this.expression = expression;
+        this.when = when;
     }
 
     public boolean accept(MuleEvent event)
     {
-        return acceptsAll() || muleContext.getExpressionManager().evaluateBoolean(expression,event.getMessage());
+        return acceptsAll() || muleContext.getExpressionManager().evaluateBoolean(when, event);
     }
 
     @Override
     public boolean acceptsAll()
     {
-        return expression == null;
+        return when == null;
     }
 
     protected MuleEvent afterRouting(Exception exception, MuleEvent event)
@@ -133,5 +176,10 @@ public abstract class TemplateMessagingExceptionStrategy extends AbstractExcepti
     protected MuleEvent beforeRouting(Exception exception, MuleEvent event)
     {
         return event;
+    }
+
+    public void setHandleException(boolean handleException)
+    {
+        this.handleException = handleException;
     }
 }

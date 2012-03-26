@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:spring="http://www.springframework.org/schema/beans" xmlns:test="http://www.mulesoft.org/schema/mule/test"
+    xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+       http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+       http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+
+    <configuration>
+        <expression-language autoResolveVariables="false">
+            <import name="loc" class="java.util.Locale" />
+            <import class="org.mule.util.StringUtils" />
+            <import class="java.text.DateFormat" />
+            <alias name="appName" expression="app.name" />
+            <global-functions src="org/mule/test/el/functions.txt">
+                def echo(text) {text}
+                def hello() {'Hello '+appName+'!'}
+                def appendPayload() {payload+'appended'}
+                def reversePayload() {StringUtils.reverse(payload)}
+            </global-functions>
+        </expression-language>
+    </configuration>
+
+    <flow name="flow">
+        <test:assert expression="#[payload == 'foo']" />
+        <eval expression="#[payload='bar']" />
+        <test:assert expression="#[payload == 'bar']" />
+        <test:assert expression="#[loc.getName().equals('java.util.Locale')]" />
+    </flow>
+
+</mule>

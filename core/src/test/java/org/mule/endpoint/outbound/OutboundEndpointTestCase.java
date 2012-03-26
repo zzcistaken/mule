@@ -19,6 +19,7 @@ import static org.junit.Assert.fail;
 
 import org.mule.MessageExchangePattern;
 import org.mule.RequestContext;
+import org.mule.api.MessagingException;
 import org.mule.api.MuleEvent;
 import org.mule.api.MuleException;
 import org.mule.api.MuleMessage;
@@ -232,7 +233,7 @@ public class OutboundEndpointTestCase extends AbstractMessageProcessorTestCase
             endpoint.process(testOutboundEvent);
             fail("Exception expected");
         }
-        catch (LifecycleException e)
+        catch (MessagingException e)
         {
             // expected
         }

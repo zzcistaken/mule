@@ -10,9 +10,12 @@
 
 package org.mule.api;
 
+import org.mule.config.ExceptionHelper;
 import org.mule.config.MuleManifest;
 import org.mule.config.i18n.CoreMessages;
 import org.mule.config.i18n.Message;
+import org.mule.routing.filters.RegExFilter;
+import org.mule.routing.filters.WildcardFilter;
 import org.mule.transport.NullPayload;
 import org.mule.util.StringUtils;
 
@@ -41,6 +44,7 @@ public class MessagingException extends MuleException
     protected transient MuleEvent processedEvent;
 
     private boolean causeRollback;
+    private boolean handled;
 
     /**
      * @deprecated use MessagingException(Message, MuleEvent)
@@ -132,11 +136,19 @@ public class MessagingException extends MuleException
         return muleMessage;
     }
 
+    /**
+     * @return event associated with the exception
+     */
     public MuleEvent getEvent()
     {
         return processedEvent != null ? processedEvent : event;
     }
 
+    /**
+     * Sets the event that should be processed once this exception is caught
+     *
+     * @param processedEvent event bounded to the exception
+     */
     public void setProcessedEvent(MuleEvent processedEvent)
     {
         if (processedEvent != null)
@@ -151,14 +163,154 @@ public class MessagingException extends MuleException
         }
     }
 
-    public boolean isCauseRollback()
+    /**
+     * Evaluates if the exception was caused (instance of) by the provided exception type
+     *
+     * @param e exception type to check against
+     * @return true if the cause exception is an instance of the provided exception type
+     */
+    public boolean causedBy(final Class e)
+    {
+        if (e == null)
+        {
+            throw new IllegalArgumentException("Class cannot be null");
+        }
+        return (ExceptionHelper.traverseCauseHierarchy(this, new ExceptionHelper.ExceptionEvaluator<Object>()
+        {
+            @Override
+            public Object evaluate(Throwable causeException)
+            {
+                if (e.isAssignableFrom(causeException.getClass()))
+                {
+                    return causeException;
+                }
+                return null;
+            }
+        }) != null);
+    }
+
+    /**
+     * Evaluates if the exception was caused by the type and only the type provided exception type
+     *
+     * i,e: if cause exception is NullPointerException will only return true if provided exception type is NullPointerException
+     *
+     * @param e exception type to check against
+     * @return true if the cause exception is exaclty the provided exception type
+     */
+    public boolean causedExactlyBy(final Class e)
+    {
+        if (e == null)
+        {
+            throw new IllegalArgumentException("Class cannot be null");
+        }
+        return (ExceptionHelper.traverseCauseHierarchy(this, new ExceptionHelper.ExceptionEvaluator<Object>()
+        {
+            @Override
+            public Object evaluate(Throwable causeException)
+            {
+                if (causeException.getClass().equals(e))
+                {
+                    return causeException;
+                }
+                return null;
+            }
+        }) != null);
+    }
+
+    /**
+     * @return the exception thrown by the failing message processor
+     */
+    public Exception getCauseException()
+    {
+        Throwable rootException = ExceptionHelper.getRootException(this);
+        if (rootException == null)
+        {
+            rootException = this;
+        }
+        return (Exception) rootException;
+    }
+
+    /**
+     * Checks the cause exception type name matches the provided regex.
+     *
+     * Supports any java regex plus *, * prefix, * sufix
+     *
+     * @param regex regular expression to match against the exception type name
+     * @return true if the exception matches the regex, false otherwise
+     */
+    public boolean causeMatches(final String regex)
+    {
+        if (regex == null)
+        {
+            throw new IllegalArgumentException("regex cannot be null");
+        }
+        return (ExceptionHelper.traverseCauseHierarchy(this,new ExceptionHelper.ExceptionEvaluator<Object>()
+        {
+            @Override
+            public Object evaluate(Throwable e)
+            {
+                WildcardFilter wildcardFilter = new WildcardFilter(regex);
+                if (wildcardFilter.accept(e.getClass().getName()))
+                {
+                    return e;
+                }
+                try
+                {
+                    RegExFilter regExFilter = new RegExFilter(regex);
+                    if (regExFilter.accept(e.getClass().getName()))
+                    {
+                        return e;
+                    }
+                }
+                catch (Exception regexEx)
+                {
+                    //Do nothing, regex such as *, *something, something* will fail, just don't match
+                }
+                return null;
+            }
+        })) != null;
+    }
+
+    /**
+     * Signals if the exception cause rollback of any current transaction if any
+     * or if the message source should rollback incoming message
+     *
+     * @return true if exception cause rollback, false otherwise
+     */
+    public boolean causedRollback()
     {
         return causeRollback;
     }
 
+    /**
+     * Marks exception as rollback cause. Useful for message sources that can
+     * provide some rollback mechanism.
+     *
+     * @param causeRollback
+     */
     public void setCauseRollback(boolean causeRollback)
     {
         this.causeRollback = causeRollback;
+    }
+
+    /**
+     * Marks an exception as handled so it won't be re-throwed
+     *
+     * @param handled true if the exception must be mark as handled, false otherwise
+     */
+    public void setHandled(boolean handled)
+    {
+        this.handled = handled;
+    }
+
+    /**
+     * Signals if exception has been handled or not
+     *
+     * @return true if exception has been handled, false otherwise
+     */
+    public boolean handled()
+    {
+        return handled;
     }
 }
 

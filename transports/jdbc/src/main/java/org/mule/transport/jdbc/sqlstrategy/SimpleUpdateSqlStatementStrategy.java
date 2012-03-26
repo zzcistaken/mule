@@ -35,7 +35,7 @@ public  class SimpleUpdateSqlStatementStrategy implements SqlStatementStrategy
 
     @Override
     public MuleMessage executeStatement(JdbcConnector connector,
-            ImmutableEndpoint endpoint, MuleEvent event,long timeout) throws Exception
+                                        ImmutableEndpoint endpoint, MuleEvent event, long timeout, Connection connection) throws Exception
     {
         //Unparsed SQL statement (with #[foo] format parameters)
         String statement = connector.getStatement(endpoint);
@@ -55,47 +55,26 @@ public  class SimpleUpdateSqlStatementStrategy implements SqlStatementStrategy
             event.getMessage().getPayload(), message, event.getMuleContext()), endpoint.getEndpointURI().getAddress());
 
         Transaction tx = TransactionCoordination.getInstance().getTransaction();
-        Connection con = null;
 
-        try
+        if (logger.isDebugEnabled())
         {
-            con = connector.getConnection();
-
-
-            if (logger.isDebugEnabled())
-            {
-                logger.debug("SQL UPDATE: " + sql + ", params = " + ArrayUtils.toString(paramValues));
-            }
-
-            int nbRows = connector.getQueryRunnerFor(endpoint).update(con, sql, paramValues);
-            if (logger.isInfoEnabled())
-            {
-                logger.info("Executing SQL statement: " + nbRows + " row(s) updated");
-            }
-
-            // TODO Why should it always be 1?  Can't we update more than one row at a time with
-            // an update statement?  Or no rows depending on the contents of the table and/or
-            // parameters?
-            //if (nbRows != 1)
-            //{
-            //    logger.warn("Row count for write should be 1 and not " + nbRows);
-            //}
-            if (tx == null)
-            {
-                JdbcUtils.commitAndClose(con);
-            }
-            logger.debug("MuleEvent dispatched succesfuly");
-        }
-        catch (Exception e)
-        {
-            logger.debug("Error dispatching event: " + e.getMessage(), e);
-            if (tx == null)
-            {
-                JdbcUtils.rollbackAndClose(con);
-            }
-            throw e;
+            logger.debug("SQL UPDATE: " + sql + ", params = " + ArrayUtils.toString(paramValues));
         }
 
+        int nbRows = connector.getQueryRunnerFor(endpoint).update(connection, sql, paramValues);
+        if (logger.isInfoEnabled())
+        {
+            logger.info("Executing SQL statement: " + nbRows + " row(s) updated");
+        }
+
+        // TODO Why should it always be 1?  Can't we update more than one row at a time with
+        // an update statement?  Or no rows depending on the contents of the table and/or
+        // parameters?
+        //if (nbRows != 1)
+        //{
+        //    logger.warn("Row count for write should be 1 and not " + nbRows);
+        //}
+        logger.debug("MuleEvent dispatched succesfuly");
         return event.getMessage();
     }
 

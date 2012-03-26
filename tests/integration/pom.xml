@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.mule.tests</groupId>
         <artifactId>mule-tests</artifactId>
-        <version>3.3-M3-SNAPSHOT</version>
+        <version>3.3-RC1-SNAPSHOT</version>
     </parent>
     <artifactId>mule-tests-integration</artifactId>
     <name>Integration Tests</name>
@@ -170,11 +170,11 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
         <dependency>
-            <groupId>net.sf.ehcache</groupId>
-            <artifactId>ehcache-core</artifactId>
-            <version>2.3.1</version>
+            <groupId>org.mule.transports</groupId>
+            <artifactId>mule-transport-jdbc</artifactId>
+            <version>${project.version}</version>
+            <classifier>tests</classifier>
             <scope>test</scope>
         </dependency>
     </dependencies>

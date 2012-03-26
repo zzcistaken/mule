@@ -14,19 +14,18 @@ import org.mule.DefaultMuleEvent;
 import org.mule.RequestContext;
 import org.mule.api.*;
 import org.mule.api.endpoint.InboundEndpoint;
+import org.mule.api.execution.ExecutionCallback;
+import org.mule.api.execution.ExecutionTemplate;
 import org.mule.api.processor.MessageProcessor;
 import org.mule.api.processor.MessageProcessorChainBuilder;
 import org.mule.api.processor.ProcessingStrategy;
 import org.mule.api.processor.ProcessingStrategy.StageNameSource;
-import org.mule.api.transaction.TransactionCallback;
 import org.mule.config.i18n.CoreMessages;
 import org.mule.construct.flow.DefaultFlowProcessingStrategy;
 import org.mule.construct.processor.FlowConstructStatisticsMessageProcessor;
+import org.mule.execution.ErrorHandlingExecutionTemplate;
 import org.mule.interceptor.ProcessingTimeInterceptor;
 import org.mule.management.stats.FlowConstructStatistics;
-import org.mule.process.ErrorHandlingProcessingTemplate;
-import org.mule.process.ProcessingCallback;
-import org.mule.process.ProcessingTemplate;
 import org.mule.processor.strategy.AsynchronousProcessingStrategy;
 import org.mule.routing.requestreply.AsyncReplyToPropertyRequestReplyReplier;
 
@@ -60,8 +59,8 @@ public class Flow extends AbstractPipeline implements MessageProcessor
         RequestContext.setEvent(newEvent);
         try
         {
-            ProcessingTemplate<MuleEvent> exceptionHandlingProcessingTemplate = new ErrorHandlingProcessingTemplate(muleContext,getExceptionListener());
-            MuleEvent result = exceptionHandlingProcessingTemplate.execute(new ProcessingCallback<MuleEvent>()
+            ExecutionTemplate<MuleEvent> executionTemplate = ErrorHandlingExecutionTemplate.createErrorHandlingExecutionTemplate(muleContext, getExceptionListener());
+            MuleEvent result = executionTemplate.execute(new ExecutionCallback<MuleEvent>()
             {
 
                 @Override

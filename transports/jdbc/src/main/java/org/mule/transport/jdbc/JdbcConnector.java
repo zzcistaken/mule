@@ -10,6 +10,7 @@
 
 package org.mule.transport.jdbc;
 
+import org.mule.api.DefaultMuleException;
 import org.mule.api.MuleContext;
 import org.mule.api.MuleException;
 import org.mule.api.MuleMessage;
@@ -17,6 +18,7 @@ import org.mule.api.construct.FlowConstruct;
 import org.mule.api.endpoint.ImmutableEndpoint;
 import org.mule.api.endpoint.InboundEndpoint;
 import org.mule.api.expression.ExpressionManager;
+import org.mule.api.expression.ExpressionRuntimeException;
 import org.mule.api.lifecycle.InitialisationException;
 import org.mule.api.retry.RetryContext;
 import org.mule.api.transaction.Transaction;
@@ -34,6 +36,7 @@ import org.mule.util.StringUtils;
 import org.mule.util.TemplateParser;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
@@ -106,7 +109,8 @@ public class JdbcConnector extends AbstractConnector
             }
             else
             {
-                queryRunner = new QueryRunner();
+                // Fix for MULE-5825 (Mariano Capurro) -> Adding dataSource parameter
+                queryRunner = new QueryRunner(dataSource);
             }
         }
     }
@@ -328,28 +332,22 @@ public class JdbcConnector extends AbstractConnector
     protected Object getParamValue(ImmutableEndpoint endpoint, MuleMessage message, String param)
     {
         Object value = null;
-        // If we find a value and it happens to be null, that is acceptable
-        boolean foundValue = false;
-        boolean validExpression = muleContext.getExpressionManager().isValidExpression(param);
-
-        //There must be an expression namespace to use the ExpressionEvaluator i.e. header:type
-        if (message != null && validExpression)
+        if (muleContext.getExpressionManager().isValidExpression(param))
         {
-            value = muleContext.getExpressionManager().evaluate(param, message);
-            foundValue = value != null;
-        }
-        if (!foundValue)
-        {
-            String name = getNameFromParam(param);
-            //MULE-3597
-            if (!validExpression)
+            try
             {
-                logger.warn(MessageFormat.format("Config is using the legacy param format {0} (no evaluator defined)." +
-                                                 " This expression can be replaced with {1}header:{2}{3}",
-                                                 param, ExpressionManager.DEFAULT_EXPRESSION_PREFIX,
-                                                 name, ExpressionManager.DEFAULT_EXPRESSION_POSTFIX));
+                value = muleContext.getExpressionManager().evaluate(param, message);
             }
-            value = endpoint.getProperty(name);
+            catch (ExpressionRuntimeException e)
+            {
+                // If expression evaluation fails then give the legacy approach a chance.
+                logger.warn(MessageFormat.format(
+                    "Config is using the legacy param format {0} (no evaluator defined)."
+                                    + " This expression can be replaced with {1}header:{2}{3}", param,
+                    ExpressionManager.DEFAULT_EXPRESSION_PREFIX, name,
+                    ExpressionManager.DEFAULT_EXPRESSION_POSTFIX));
+                value = endpoint.getProperty(getNameFromParam(param));
+            }
         }
         return value;
     }
@@ -366,7 +364,19 @@ public class JdbcConnector extends AbstractConnector
 
     protected void doConnect() throws Exception
     {
-        // template method
+        Connection connection = null;
+
+        try
+        {
+            connection = getConnection();
+        }
+        finally
+        {
+            if (connection != null)
+            {
+                connection.close();
+            }
+        }
     }
 
     /** 
@@ -551,5 +561,24 @@ public class JdbcConnector extends AbstractConnector
     public void setQueryTimeout(int queryTimeout)
     {
         this.queryTimeout = queryTimeout;
+    }
+
+    @Override
+    protected <T> T getOperationResourceFactory()
+    {
+        return (T) getDataSource();
+    }
+
+    @Override
+    protected <T> T createOperationResource(ImmutableEndpoint endpoint) throws MuleException
+    {
+        try
+        {
+            return (T) getDataSource().getConnection();
+        }
+        catch (SQLException e)
+        {
+            throw new DefaultMuleException(e);
+        }
     }
 }

@@ -14,16 +14,24 @@ package org.mule.transport.http.config;
 import org.mule.config.spring.handlers.AbstractMuleNamespaceHandler;
 import org.mule.config.spring.parsers.collection.ChildListEntryDefinitionParser;
 import org.mule.config.spring.parsers.collection.ChildMapEntryDefinitionParser;
+import org.mule.config.spring.parsers.generic.ChildDefinitionParser;
 import org.mule.config.spring.parsers.generic.MuleOrphanDefinitionParser;
 import org.mule.config.spring.parsers.generic.ParentDefinitionParser;
+import org.mule.config.spring.parsers.generic.TextDefinitionParser;
+import org.mule.config.spring.parsers.processors.CheckExclusiveAttributes;
 import org.mule.config.spring.parsers.specific.ComponentDefinitionParser;
 import org.mule.config.spring.parsers.specific.FilterDefinitionParser;
 import org.mule.config.spring.parsers.specific.MessageProcessorDefinitionParser;
 import org.mule.config.spring.parsers.specific.SecurityFilterDefinitionParser;
 import org.mule.endpoint.URIBuilder;
+import org.mule.transport.http.CacheControlHeader;
+import org.mule.transport.http.CookieWrapper;
 import org.mule.transport.http.HttpConnector;
 import org.mule.transport.http.HttpConstants;
 import org.mule.transport.http.HttpPollingConnector;
+import org.mule.transport.http.builder.HttpCookiesDefinitionParser;
+import org.mule.transport.http.builder.HttpResponseDefinitionParser;
+import org.mule.transport.http.components.HttpResponseBuilder;
 import org.mule.transport.http.components.RestServiceWrapper;
 import org.mule.transport.http.components.StaticResourceMessageProcessor;
 import org.mule.transport.http.filters.HttpBasicAuthenticationFilter;
@@ -65,5 +73,17 @@ public class HttpNamespaceHandler extends AbstractMuleNamespaceHandler
 
         registerMuleBeanDefinitionParser("static-resource-handler",
                 new MessageProcessorDefinitionParser(StaticResourceMessageProcessor.class));
+
+        registerBeanDefinitionParser("response-builder", new MessageProcessorDefinitionParser(HttpResponseBuilder.class));
+        registerMuleBeanDefinitionParser("header", new ChildMapEntryDefinitionParser("headers", "name", "value")).addCollection("headers");
+        registerMuleBeanDefinitionParser("set-cookie", new HttpCookiesDefinitionParser("cookie", CookieWrapper.class)).registerPreProcessor(new CheckExclusiveAttributes(new String[][] {new String[] {"maxAge"}, new String[] {"expiryDate"}}));
+        registerMuleBeanDefinitionParser("body", new TextDefinitionParser("body"));
+        registerMuleBeanDefinitionParser("location", new HttpResponseDefinitionParser("header"));
+        registerMuleBeanDefinitionParser("cache-control", new ChildDefinitionParser("cacheControl", CacheControlHeader.class));
+        registerMuleBeanDefinitionParser("expires", new HttpResponseDefinitionParser("header"));
+
+
+
+
     }
 }

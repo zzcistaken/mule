@@ -125,34 +125,6 @@ public abstract class AbstractTransformer implements Transformer, AnnotatedObjec
         }
         return event;
     }
-    
-    protected Object checkReturnClass(Object object) throws TransformerException
-    {
-        //Null is a valid return type
-        if(object==null || object instanceof NullPayload && isAllowNullReturn())
-        {
-            return object;
-        }
-
-        if (returnType != null)
-        {
-            DataType<?> dt = DataTypeFactory.create(object.getClass());
-            if (!returnType.isCompatibleWith(dt))
-            {
-                throw new TransformerException(
-                        CoreMessages.transformUnexpectedType(dt, returnType),
-                        this);
-            }
-        }
-
-        if (logger.isDebugEnabled())
-        {
-            logger.debug("The transformed object is of expected type. Type is: " +
-                    ClassUtils.getSimpleName(object.getClass()));
-        }
-
-        return object;
-    }
 
     /**
      * Register a supported data type with this transformer.  The will allow objects that match this data type to be
@@ -400,7 +372,7 @@ public abstract class AbstractTransformer implements Transformer, AnnotatedObjec
 
         if (!isSourceDataTypeSupported(sourceType))
         {
-            if (ignoreBadInput)
+            if (ignoreBadInput && !useExtendedTransformations())
             {
                 logger.debug("Source type is incompatible with this transformer and property 'ignoreBadInput' is set to true, so the transformer chain will continue.");
                 return payload;
@@ -432,9 +404,22 @@ public abstract class AbstractTransformer implements Transformer, AnnotatedObjec
             logger.debug(String.format("Object after transform: %s", StringMessageUtils.toString(result)));
         }
 
-        result = checkReturnClass(result);
+        TransformerUtils.checkTransformerReturnClass(this, result);
+
         return result;
     }
+
+    private boolean useExtendedTransformations()
+    {
+        boolean result = true;
+        if (muleContext != null && muleContext.getConfiguration() != null)
+        {
+            result = muleContext.getConfiguration().useExtendedTransformations();
+        }
+
+        return result;
+    }
+
 
     protected String getEncoding(Object src)
     {

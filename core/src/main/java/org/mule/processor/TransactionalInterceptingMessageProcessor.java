@@ -11,30 +11,26 @@
 package org.mule.processor;
 
 import org.mule.api.DefaultMuleException;
-import org.mule.api.MessagingException;
 import org.mule.api.MuleEvent;
 import org.mule.api.MuleException;
-import org.mule.api.processor.MessageProcessor;
-import org.mule.api.transaction.TransactionCallback;
-import org.mule.api.transaction.TransactionConfig;
+import org.mule.api.exception.MessagingExceptionHandler;
+import org.mule.api.execution.ExecutionCallback;
+import org.mule.api.execution.ExecutionTemplate;
+import org.mule.api.lifecycle.Initialisable;
+import org.mule.api.lifecycle.InitialisationException;
 import org.mule.config.i18n.CoreMessages;
-import org.mule.process.ProcessingCallback;
-import org.mule.process.ProcessingTemplate;
-import org.mule.process.TransactionalProcessingTemplate;
+import org.mule.execution.TransactionalErrorHandlingExecutionTemplate;
+import org.mule.transaction.MuleTransactionConfig;
 
 /**
- * Wraps the invocation of the next {@link MessageProcessor} with a transaction. If
- * the {@link TransactionConfig} is null then no transaction is used and the next
- * {@link MessageProcessor} is invoked directly.
+ * Wraps the invocation of the next {@link org.mule.api.processor.MessageProcessor} with a transaction. If
+ * the {@link org.mule.api.transaction.TransactionConfig} is null then no transaction is used and the next
+ * {@link org.mule.api.processor.MessageProcessor} is invoked directly.
  */
-public class TransactionalInterceptingMessageProcessor extends AbstractInterceptingMessageProcessor
+public class TransactionalInterceptingMessageProcessor extends AbstractInterceptingMessageProcessor implements Initialisable
 {
-    protected TransactionConfig transactionConfig;
-
-    public TransactionalInterceptingMessageProcessor(TransactionConfig transactionConfig)
-    {
-        this.transactionConfig = transactionConfig;
-    }
+    protected MessagingExceptionHandler exceptionListener;
+    protected MuleTransactionConfig transactionConfig;
 
     public MuleEvent process(final MuleEvent event) throws MuleException
     {
@@ -44,8 +40,8 @@ public class TransactionalInterceptingMessageProcessor extends AbstractIntercept
         }
         else
         {
-            ProcessingTemplate<MuleEvent> processingTemplate = new TransactionalProcessingTemplate<MuleEvent>(muleContext,transactionConfig);
-            ProcessingCallback<MuleEvent> processingCallback = new ProcessingCallback<MuleEvent>()
+            ExecutionTemplate<MuleEvent> executionTemplate = TransactionalErrorHandlingExecutionTemplate.createScopeExecutionTemplate(muleContext, transactionConfig, exceptionListener);
+            ExecutionCallback<MuleEvent> processingCallback = new ExecutionCallback<MuleEvent>()
             {
                 public MuleEvent process() throws Exception
                 {
@@ -55,7 +51,7 @@ public class TransactionalInterceptingMessageProcessor extends AbstractIntercept
 
             try
             {
-                return processingTemplate.execute(processingCallback);
+                return executionTemplate.execute(processingCallback);
             }
             catch (MuleException e)
             {
@@ -67,5 +63,24 @@ public class TransactionalInterceptingMessageProcessor extends AbstractIntercept
                     next, transactionConfig), e);
             }
         }
+    }
+
+    public void setExceptionListener(MessagingExceptionHandler exceptionListener)
+    {
+        this.exceptionListener = exceptionListener;
+    }
+
+    @Override
+    public void initialise() throws InitialisationException
+    {
+        if (this.exceptionListener == null)
+        {
+            this.exceptionListener = muleContext.getDefaultExceptionStrategy();
+        }
+    }
+
+    public void setTransactionConfig(MuleTransactionConfig transactionConfig)
+    {
+        this.transactionConfig = transactionConfig;
     }
 }

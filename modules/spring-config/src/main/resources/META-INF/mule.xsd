@@ -202,6 +202,16 @@
         </xsd:complexContent>
     </xsd:complexType>
 
+    <xsd:element name="eval" substitutionGroup="abstract-message-processor">
+        <xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="abstractMessageProcessorType">
+                    <xsd:attribute name="expression" use="required"/>
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+    </xsd:element>
+    
     <xsd:element name="abstract-connector" abstract="true" type="abstractConnectorType">
         <xsd:annotation>
             <xsd:documentation>
@@ -846,25 +856,35 @@
             </xsd:complexContent>
         </xsd:complexType>
     </xsd:element>
+    -->
 
-    <xsd:element name="transactional" substitutionGroup="abstract-message-processor">
+    <xsd:element name="transactional" type="abstractTransactional" substitutionGroup="abstract-message-processor">
         <xsd:annotation>
             <xsd:documentation>
-                Processes the nest list of message processors asychronously using a thread pool
+                Processes the nest list of message processors within a transaction
             </xsd:documentation>
         </xsd:annotation>
-        <xsd:complexType>
-            <xsd:complexContent>
-                <xsd:extension base="abstractMessageProcessorType">
-                    <xsd:sequence>
-                        <xsd:element ref="abstract-transaction"/>
-                        <xsd:group ref="messageProcessorOrOutboundEndpoint" maxOccurs="unbounded"/>
-                    </xsd:sequence>
-                </xsd:extension>
-            </xsd:complexContent>
-        </xsd:complexType>
     </xsd:element>
-    -->
+
+    <xsd:complexType name="abstractTransactional">
+        <xsd:complexContent>
+            <xsd:extension base="abstractMessageProcessorType">
+                <xsd:sequence>
+                    <xsd:group ref="messageProcessorOrOutboundEndpoint" maxOccurs="unbounded"/>
+                    <xsd:element ref="abstract-exception-strategy" minOccurs="0"/>
+                </xsd:sequence>
+                <xsd:attribute name="action" type="transactionalActionType" default="ALWAYS_BEGIN"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:simpleType name="transactionalActionType">
+        <xsd:restriction base="xsd:NMTOKEN">
+            <xsd:enumeration value="ALWAYS_BEGIN"/>
+            <xsd:enumeration value="BEGIN_OR_JOIN"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
 
     <!-- Message Sources -->
     <xsd:element name="abstract-message-source" abstract="true" type="abstractMessageSourceType">
@@ -1145,6 +1165,39 @@
                             </xsd:documentation>
                         </xsd:annotation>
                     </xsd:element>
+                    <xsd:element name="expression-language" minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation>
+                                Configuration of Mule Expression Language
+                            </xsd:documentation>
+                        </xsd:annotation>
+                        <xsd:complexType>
+                            <xsd:complexContent mixed="true">
+                                <xsd:extension base="abstractMixedContentExtensionType">
+                                    <xsd:sequence>
+                                        <xsd:element minOccurs="0" maxOccurs="unbounded" name="import">
+                                            <xsd:complexType>
+                                                <xsd:attribute name="name" type="nonBlankString" />
+                                                <xsd:attribute name="class" use="required" type="substitutableClass" />
+                                            </xsd:complexType>
+                                        </xsd:element>
+                                        <xsd:element minOccurs="0" maxOccurs="unbounded" name="alias">
+                                            <xsd:complexType>
+                                                <xsd:attribute name="name" use="required" type="nonBlankString" />
+                                                <xsd:attribute name="expression" use="required" type="nonBlankString" />
+                                            </xsd:complexType>
+                                        </xsd:element>
+                                        <xsd:element minOccurs="0" maxOccurs="1" name="global-functions" >
+                                            <xsd:complexType mixed="true">
+                                                <xsd:attribute name="src" type="nonBlankString" />
+                                            </xsd:complexType>
+                                        </xsd:element>
+                                    </xsd:sequence>
+                                    <xsd:attribute name="autoResolveVariables" default="true" type="substitutableBoolean" />
+                                </xsd:extension>
+                            </xsd:complexContent>
+                        </xsd:complexType>
+                    </xsd:element>
                 </xsd:sequence>
                 <xsd:attribute name="defaultResponseTimeout" type="xsd:string" default="10000">
                     <xsd:annotation>
@@ -1171,6 +1224,13 @@
                     <xsd:annotation>
                         <xsd:documentation>
                             (As of Mule 2.2.2) The time in milliseconds to wait for any in-progress messages to finish processing before Mule shuts down. After this threshold has been reached, Mule starts interrupting threads, and messages can be lost. If you have a very large number of services in the same Mule instance, if you have components that take more than a couple seconds to process, or if you are using large payloads and/or slower transports, you should increase this value to allow more time for graceful shutdown. The value you specify is applied to services and separately to dispatchers, so the default value of 5000 milliseconds specifies that Mule has ten seconds to process and dispatch messages gracefully after shutdown is initiated.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="useExtendedTransformations" type="substitutableBoolean" default="true">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            (As of Mule 3.3) Enables/disable extended transformation support: enforcement of transformations, implicit transformations and no direct transformer lookup.
                         </xsd:documentation>
                     </xsd:annotation>
                 </xsd:attribute>
@@ -1813,10 +1873,10 @@
                         </xsd:documentation>
                     </xsd:annotation>
                 </xsd:attribute>
-                <xsd:attribute name="expression" type="xsd:string" use="optional">
+                <xsd:attribute name="when" type="xsd:string" use="optional">
                     <xsd:annotation>
                         <xsd:documentation>
-                            The expression that will be evaluated to determine if this expcetion strategy should be executed. This should always be a boolean expression.
+                            The expression that will be evaluated to determine if this exception strategy should be executed. This should always be a boolean expression.
                         </xsd:documentation>
                     </xsd:annotation>
                 </xsd:attribute>
@@ -2159,6 +2219,19 @@
                         </xsd:annotation>
                     </xsd:element>
                 </xsd:sequence>
+                <xsd:attribute name="initialState" default="started">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            The initial state of the flow. Usually a flow is started automatically ("started"), but this attribute can be used to disable initial startup ("stopped").
+                        </xsd:documentation>
+                    </xsd:annotation>
+                    <xsd:simpleType>
+                        <xsd:restriction base="xsd:NMTOKEN">
+                            <xsd:enumeration value="started"/>
+                            <xsd:enumeration value="stopped"/>
+                        </xsd:restriction>
+                    </xsd:simpleType>
+                </xsd:attribute>
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>
@@ -2963,6 +3036,7 @@
                     BEGIN_OR_JOIN - If a transaction is already in progress when a message is received, join the transaction if possible. Otherwise, start a new transaction.
                     ALWAYS_JOIN - Always expects a transaction to be in progress when a message is received. If there is no transaction, an exception is thrown.
                     JOIN_IF_POSSIBLE - Join the current transaction if one is available. Otherwise, no transaction is created.
+                    NOT_SUPPORTED - Execute outside any existent transaction
                 </xsd:documentation>
             </xsd:annotation>
             <xsd:simpleType>
@@ -2972,6 +3046,7 @@
                     <xsd:enumeration value="BEGIN_OR_JOIN"/>
                     <xsd:enumeration value="ALWAYS_JOIN"/>
                     <xsd:enumeration value="JOIN_IF_POSSIBLE"/>
+                    <xsd:enumeration value="NOT_SUPPORTED"/>
                 </xsd:restriction>
             </xsd:simpleType>
         </xsd:attribute>
@@ -4060,7 +4135,7 @@
                         </xsd:documentation>
                     </xsd:annotation>
                 </xsd:attribute>
-                <xsd:attribute name="scope" use="optional">
+                <xsd:attribute name="scope" use="optional" default="outbound">
                     <xsd:annotation>
                         <xsd:documentation>
                             Property scope to/from which properties are added/removed.  The scope determines the lifespan of the properties. Default scope is outbound.
@@ -4078,6 +4153,147 @@
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>
+    
+    <xsd:element name="set-property" type="setPropertyType" substitutionGroup="abstract-transformer">
+        <xsd:annotation>
+            <xsd:documentation>
+                A transformer that adds outbound message properties.
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:complexType name="setPropertyType">
+        <xsd:complexContent>
+            <xsd:extension base="commonTransformerType">
+                <xsd:attribute name="propertyName" type="attributeType" use="required"/>
+                <xsd:attribute name="value" type="attributeType" use="required"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:element name="remove-property" type="removePropertyType" substitutionGroup="abstract-transformer">
+        <xsd:annotation>
+            <xsd:documentation>
+                A transformer that remove outbound message properties by name or regular expression.
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:complexType name="removePropertyType">
+        <xsd:complexContent>
+            <xsd:extension base="commonTransformerType">
+                <xsd:attribute name="propertyName" type="attributeType"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:element name="copy-properties" type="copyPropertiesType" substitutionGroup="abstract-transformer">
+        <xsd:annotation>
+            <xsd:documentation>
+                A transformer that copy properties from inbound to outbound scope by name or regular expression.
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:complexType name="copyPropertiesType">
+        <xsd:complexContent>
+            <xsd:extension base="commonTransformerType">
+                <xsd:attribute name="propertyName" type="attributeType" use="required"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:element name="set-variable" type="setVariableType" substitutionGroup="abstract-transformer">
+        <xsd:annotation>
+            <xsd:documentation>
+                A transformer that adds variables.
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:complexType name="setVariableType">
+        <xsd:complexContent>
+            <xsd:extension base="commonTransformerType">
+                <xsd:attribute name="variableName" type="attributeType" use="required"/>
+                <xsd:attribute name="value" type="attributeType" use="required"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:element name="remove-variable" type="removeVariableType" substitutionGroup="abstract-transformer">
+        <xsd:annotation>
+            <xsd:documentation>
+                A transformer that remove variables by name or regular expression.
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:complexType name="removeVariableType">
+        <xsd:complexContent>
+            <xsd:extension base="commonTransformerType">
+                <xsd:attribute name="variableName" type="attributeType"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:element name="set-session-variable" type="setVariableType" substitutionGroup="abstract-transformer">
+        <xsd:annotation>
+            <xsd:documentation>
+                A transformer that adds session variables.
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+
+    <xsd:element name="remove-session-variable" type="removeVariableType" substitutionGroup="abstract-transformer">
+        <xsd:annotation>
+            <xsd:documentation>
+                A transformer that remove session variables by name or regular expression.
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+
+    <xsd:element name="set-attachment" type="setAttachmentType" substitutionGroup="abstract-transformer">
+        <xsd:annotation>
+            <xsd:documentation>
+                A transformer that adds an attachment to the outbound scope.
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:complexType name="setAttachmentType">
+        <xsd:complexContent>
+            <xsd:extension base="commonTransformerType">
+                <xsd:attribute name="attachmentName" type="attributeType" use="required"/>
+                <xsd:attribute name="value" type="attributeType" use="required"/>
+                <xsd:attribute name="contentType" type="attributeType" use="required"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:element name="remove-attachment" type="removeAttachmentType" substitutionGroup="abstract-transformer">
+        <xsd:annotation>
+            <xsd:documentation>
+                A transformer that removes an attachment in the outbound scope.
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:complexType name="removeAttachmentType">
+        <xsd:complexContent>
+            <xsd:extension base="commonTransformerType">
+                <xsd:attribute name="attachmentName" type="attributeType"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:element name="copy-attachments" type="copyAttachmentType" substitutionGroup="abstract-transformer">
+        <xsd:annotation>
+            <xsd:documentation>
+                A transformer that copy inbound attachment to outbound attachment scope by name or regular expression.
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:complexType name="copyAttachmentType">
+        <xsd:complexContent>
+            <xsd:extension base="commonTransformerType">
+                <xsd:attribute name="attachmentName" type="attributeType"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
 
     <xsd:element name="base64-encoder-transformer" type="abstractTransformerType"
                  substitutionGroup="abstract-transformer">
@@ -4248,6 +4464,50 @@
                     <xsd:annotation>
                         <xsd:documentation>
                             The string to append.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:element name="parse-template" type="parseTemplateTransformerType" substitutionGroup="abstract-transformer">
+        <xsd:annotation>
+            <xsd:documentation>
+                A transformer that parses a template in a given location
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+
+    <xsd:complexType name="parseTemplateTransformerType">
+        <xsd:complexContent>
+            <xsd:extension base="abstractTransformerType">
+                <xsd:attribute name="location" type="xsd:string" use="required">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            The location of the template. The order in which the transformer will attempt to load the file are: from the file system, from a URL or from the classpath.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:element name="set-payload" type="setPayloadTransformerType" substitutionGroup="abstract-transformer">
+        <xsd:annotation>
+            <xsd:documentation>
+                A transformer that sets the paylaod with the provided value
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+
+    <xsd:complexType name="setPayloadTransformerType">
+        <xsd:complexContent>
+            <xsd:extension base="abstractTransformerType">
+                <xsd:attribute name="value" type="xsd:string" use="required">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            The value to be set on the payload. Supports expressions.
                         </xsd:documentation>
                     </xsd:annotation>
                 </xsd:attribute>
@@ -5694,11 +5954,17 @@
                 <xsd:sequence>
                     <xsd:group ref="messageProcessorOrOutboundEndpoint" minOccurs="1" maxOccurs="unbounded"/>
                 </xsd:sequence>
-				<xsd:attributeGroup ref="optionalExpressionAttributes"/>
-                <xsd:attribute name="groupSize" use="optional" type="xsd:integer">
+                <xsd:attribute name="collection" use="optional" type="xsd:string">
                     <xsd:annotation>
                         <xsd:documentation>
-                            Partitions the collection in subcollections of the specified group size.
+                            An expression to that returns a java collection, object array, map or DOM nodes.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="batchSize" use="optional" type="xsd:integer">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            Partitions the collection in subcollections of the specified size.
                         </xsd:documentation>
                     </xsd:annotation>
                 </xsd:attribute>
@@ -7394,6 +7660,10 @@
         <xsd:attribute name="key" type="xsd:string"/>
     </xsd:complexType>
 
+    <xsd:complexType name="nameType">
+        <xsd:attribute name="name" type="xsd:string"/>
+    </xsd:complexType>
+
     <xsd:complexType name="valueType">
         <xsd:attribute name="value" type="xsd:string"/>
         <xsd:attribute name="value-ref" type="xsd:string"/>
@@ -7407,6 +7677,19 @@
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>
+
+    <xsd:complexType name="nameValueType">
+        <xsd:complexContent>
+            <xsd:extension base="nameType">
+                <xsd:attribute name="value" type="xsd:string"/>
+                <xsd:attribute name="value-ref" type="xsd:string"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:simpleType name="attributeType">
+        <xsd:restriction base="xsd:string"/>
+    </xsd:simpleType>
 
     <!--==============================================================-->
     <!--   Connector support                                          -->
@@ -7629,7 +7912,6 @@
 
     -->
 
-
     <!--==============================================================-->
     <!--  Cache                                                       -->
     <!--==============================================================-->
@@ -7646,111 +7928,10 @@
     <xsd:complexType name="abstractCachingStrategyType">
         <xsd:complexContent>
             <xsd:extension base="abstractExtensionType">
-                <xsd:sequence>
-                    <xsd:element name="object-store" type="abstractObjectStoreType" minOccurs="0" maxOccurs="1">
-                        <xsd:annotation>
-                            <xsd:documentation>
-                                An object store to be managed by the caching strategy.
-                            </xsd:documentation>
-                        </xsd:annotation>
-                    </xsd:element>
-                </xsd:sequence>
-
                 <xsd:attribute name="name" use="optional" type="xsd:string">
                     <xsd:annotation>
                         <xsd:documentation>
                             The name of the caching strategy.
-                        </xsd:documentation>
-                    </xsd:annotation>
-                </xsd:attribute>
-            </xsd:extension>
-        </xsd:complexContent>
-    </xsd:complexType>
-
-    <xsd:element name="caching-strategy" type="objectStoreCachingStrategyType"
-                 substitutionGroup="abstract-caching-strategy">
-        <xsd:annotation>
-            <xsd:documentation>
-                A placeholder to define caching strategies.
-            </xsd:documentation>
-        </xsd:annotation>
-    </xsd:element>
-    <xsd:complexType name="objectStoreCachingStrategyType">
-        <xsd:complexContent>
-            <xsd:extension base="abstractCachingStrategyType">
-                <xsd:sequence>
-                    <xsd:element ref="abstract-object-store" minOccurs="0" maxOccurs="1"/>
-                </xsd:sequence>
-
-                <xsd:attribute name="keyGenerationExpression" use="optional" type="xsd:string">
-                    <xsd:annotation>
-                        <xsd:documentation>
-                            The expression to generate the object's key to store them in the caching strategy. Do not
-                            use this property if keyGenerator-ref is used.
-                        </xsd:documentation>
-                    </xsd:annotation>
-                </xsd:attribute>
-
-                <xsd:attribute name="keyGenerator-ref" use="optional" type="xsd:string">
-                    <xsd:annotation>
-                        <xsd:documentation>
-                            Reference to the key generator object used to create the object's key to store them in the
-                            caching strategy. Do not use this property if keyGenerationExpression is used.
-                        </xsd:documentation>
-                    </xsd:annotation>
-                </xsd:attribute>
-
-                <xsd:attribute name="responseGenerator-ref" use="optional" type="xsd:string">
-                    <xsd:annotation>
-                        <xsd:documentation>
-                            Reference to the response generator object used to create the responses returned by the
-                            caching strategy.
-                        </xsd:documentation>
-                    </xsd:annotation>
-                </xsd:attribute>
-                <xsd:attribute name="consumableFilter-ref" use="optional" type="xsd:string">
-                    <xsd:annotation>
-                        <xsd:documentation>
-                            Reference to the message filter used to detect whether a given message contains a consumable
-                            payload.
-                            A message is not cacheable if its payload is consumable.
-                        </xsd:documentation>
-                    </xsd:annotation>
-                </xsd:attribute>
-            </xsd:extension>
-        </xsd:complexContent>
-    </xsd:complexType>
-
-    <xsd:element name="cache" type="cacheProcessorType"
-                 substitutionGroup="abstract-intercepting-message-processor"/>
-    <xsd:complexType name="cacheProcessorType">
-        <xsd:complexContent>
-            <xsd:extension base="abstractInterceptingMessageProcessorType">
-
-                <xsd:sequence>
-                    <xsd:group ref="messageProcessorOrOutboundEndpoint" minOccurs="1" maxOccurs="unbounded"/>
-                </xsd:sequence>
-
-                <xsd:attribute name="cachingStrategy-ref" use="optional" type="xsd:string">
-                    <xsd:annotation>
-                        <xsd:documentation>
-                            Reference to the caching strategy object that will be provide the caching of messages.
-                        </xsd:documentation>
-                    </xsd:annotation>
-                </xsd:attribute>
-                <xsd:attribute name="filterExpression" use="optional" type="xsd:string">
-                    <xsd:annotation>
-                        <xsd:documentation>
-                            The expression used to filter which messages should be processed using the caching strategy
-                            or not. Do not se this property if filter-ref is used.
-                        </xsd:documentation>
-                    </xsd:annotation>
-                </xsd:attribute>
-                <xsd:attribute name="filter-ref" use="optional" type="xsd:string">
-                    <xsd:annotation>
-                        <xsd:documentation>
-                            Reference to a message filter that will determine if the message should be processed using
-                            the caching strategy or not. Do not use this property if filterExpression is used.
                         </xsd:documentation>
                     </xsd:annotation>
                 </xsd:attribute>

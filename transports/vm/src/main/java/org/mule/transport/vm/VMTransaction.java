@@ -24,10 +24,18 @@ public class VMTransaction extends AbstractSingleResourceTransaction
 
     public VMTransaction(MuleContext muleContext) throws TransactionException
     {
+        this(muleContext, false);
+    }
+
+    public VMTransaction(MuleContext muleContext, boolean initialize) throws TransactionException
+    {
         super(muleContext);
-        QueueManager qm = muleContext.getQueueManager();
-        QueueSession qs = qm.getQueueSession();
-        bindResource(qm, qs);
+        if (initialize)
+        {
+            QueueManager qm = muleContext.getQueueManager();
+            QueueSession qs = qm.getQueueSession();
+            bindResource(qm, qs);
+        }
     }
 
     public void bindResource(Object key, Object resource) throws TransactionException
@@ -38,10 +46,6 @@ public class VMTransaction extends AbstractSingleResourceTransaction
                 CoreMessages.transactionCanOnlyBindToResources("QueueManager/QueueSession"));
         }
         super.bindResource(key, resource);
-    }
-
-    protected void doBegin() throws TransactionException
-    {
         try
         {
             ((QueueSession)resource).begin();
@@ -52,11 +56,18 @@ public class VMTransaction extends AbstractSingleResourceTransaction
         }
     }
 
+    protected void doBegin() throws TransactionException
+    {
+    }
+
     protected void doCommit() throws TransactionException
     {
         try
         {
-            ((QueueSession)resource).commit();
+            if (resource != null)
+            {
+                ((QueueSession)resource).commit();
+            }
         }
         catch (ResourceManagerException e)
         {
@@ -68,7 +79,10 @@ public class VMTransaction extends AbstractSingleResourceTransaction
     {
         try
         {
-            ((QueueSession)resource).rollback();
+            if (resource != null)
+            {
+                ((QueueSession)resource).rollback();
+            }
         }
         catch (ResourceManagerException e)
         {
@@ -76,4 +90,15 @@ public class VMTransaction extends AbstractSingleResourceTransaction
         }
     }
 
+    @Override
+    protected Class getResourceType()
+    {
+        return QueueSession.class;
+    }
+
+    @Override
+    protected Class getKeyType()
+    {
+        return QueueManager.class;
+    }
 }

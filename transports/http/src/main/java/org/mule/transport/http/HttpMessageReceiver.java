@@ -31,8 +31,8 @@ import org.mule.api.transport.PropertyScope;
 import org.mule.config.ExceptionHelper;
 import org.mule.config.i18n.Message;
 import org.mule.config.i18n.MessageFactory;
-import org.mule.process.ProcessingCallback;
-import org.mule.process.ProcessingTemplate;
+import org.mule.api.execution.ExecutionCallback;
+import org.mule.api.execution.ExecutionTemplate;
 import org.mule.transport.ConnectException;
 import org.mule.transport.NullPayload;
 import org.mule.transport.http.i18n.HttpMessages;
@@ -281,16 +281,21 @@ public class HttpMessageReceiver extends TcpMessageReceiver
             // A) the request was not served or B) a null result was returned
             if (receiver != null)
             {
+                String contextPath = HttpConnector.normalizeUrl(receiver.getEndpointURI().getPath());
                 message.setProperty(HttpConnector.HTTP_CONTEXT_PATH_PROPERTY,
-                                           HttpConnector.normalizeUrl(receiver.getEndpointURI().getPath()),
+                                           contextPath,
                                            PropertyScope.INBOUND);
 
-                ProcessingTemplate<MuleEvent> processingTemplate = createProcessingTemplate();
+                message.setProperty(HttpConnector.HTTP_RELATIVE_PATH_PROPERTY,
+                                    processRelativePath(contextPath, path),
+                                    PropertyScope.INBOUND);
+
+                ExecutionTemplate<MuleEvent> executionTemplate = createExecutionTemplate();
 
                 MuleEvent returnEvent;
                 try
                 {
-                    returnEvent = processingTemplate.execute(new ProcessingCallback<MuleEvent>()
+                    returnEvent = executionTemplate.execute(new ExecutionCallback<MuleEvent>()
                     {
                         @Override
                         public MuleEvent process() throws Exception
@@ -386,6 +391,7 @@ public class HttpMessageReceiver extends TcpMessageReceiver
             return true;
         }
 
+
         protected HttpResponse doOtherValid(RequestLine requestLine, String method) throws MuleException
         {
             MuleMessage message = createMuleMessage(null);
@@ -464,6 +470,16 @@ public class HttpMessageReceiver extends TcpMessageReceiver
             conn.close();
             conn = null;
         }
+    }
+
+    protected String processRelativePath(String contextPath, String path)
+    {
+        String relativePath = path.substring(contextPath.length());
+        if(relativePath.startsWith("/"))
+        {
+            return relativePath.substring(1);
+        }
+        return relativePath;
     }
 
     protected MessageReceiver getTargetReceiver(MuleMessage message, ImmutableEndpoint ep)

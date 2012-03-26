@@ -14,15 +14,14 @@ import org.mule.api.MuleMessage;
 import org.mule.api.config.MuleProperties;
 import org.mule.api.endpoint.EndpointBuilder;
 import org.mule.api.endpoint.ImmutableEndpoint;
+import org.mule.api.execution.ExecutionCallback;
+import org.mule.api.execution.ExecutionTemplate;
 import org.mule.api.transaction.Transaction;
-import org.mule.api.transaction.TransactionCallback;
 import org.mule.api.transaction.TransactionConfig;
 import org.mule.endpoint.EndpointURIEndpointBuilder;
 import org.mule.endpoint.URIBuilder;
 import org.mule.module.client.MuleClient;
-import org.mule.process.ProcessingCallback;
-import org.mule.process.ProcessingTemplate;
-import org.mule.process.TransactionalProcessingTemplate;
+import org.mule.execution.TransactionalExecutionTemplate;
 import org.mule.tck.junit4.FunctionalTestCase;
 import org.mule.transaction.MuleTransactionConfig;
 import org.mule.transaction.TransactionCoordination;
@@ -74,8 +73,8 @@ public class MuleClientTransactionTestCase extends FunctionalTestCase
                 .getOutboundEndpoint(endpointBuilder);
         client.getMuleContext().getRegistry().registerEndpoint(inboundEndpoint);
 
-        ProcessingTemplate<Void> processingTemplate = new TransactionalProcessingTemplate<Void>(muleContext, tc);
-        processingTemplate.execute(new ProcessingCallback<Void>()
+        ExecutionTemplate<Void> executionTemplate = TransactionalExecutionTemplate.createTransactionalExecutionTemplate(muleContext, tc);
+        executionTemplate.execute(new ExecutionCallback<Void>()
         {
             public Void process() throws Exception
             {
@@ -122,10 +121,10 @@ public class MuleClientTransactionTestCase extends FunctionalTestCase
                 .getOutboundEndpoint(endpointBuilder);
         client.getMuleContext().getRegistry().registerEndpoint(inboundEndpoint);
 
-        ProcessingTemplate<Void> processingTemplate = new TransactionalProcessingTemplate<Void>(muleContext, tc);
+        ExecutionTemplate<Void> executionTemplate = TransactionalExecutionTemplate.createTransactionalExecutionTemplate(muleContext, tc);
         try
         {
-            processingTemplate.execute(new ProcessingCallback<Void>()
+            executionTemplate.execute(new ExecutionCallback<Void>()
             {
                 public Void process() throws Exception
                 {
@@ -176,8 +175,8 @@ public class MuleClientTransactionTestCase extends FunctionalTestCase
                 .getOutboundEndpoint(endpointBuilder);
         client.getMuleContext().getRegistry().registerEndpoint(inboundEndpoint);
 
-        ProcessingTemplate<Void> processingTemplate = new TransactionalProcessingTemplate<Void>(muleContext, tc);
-        processingTemplate.execute(new ProcessingCallback<Void>()
+        ExecutionTemplate<Void> executionTemplate = TransactionalExecutionTemplate.createTransactionalExecutionTemplate(muleContext, tc);
+        executionTemplate.execute(new ExecutionCallback<Void>()
         {
             public Void process() throws Exception
             {
@@ -203,8 +202,8 @@ public class MuleClientTransactionTestCase extends FunctionalTestCase
         final MuleClient client = new MuleClient(muleContext);
         MuleTransactionConfig tc = new MuleTransactionConfig(TransactionConfig.ACTION_ALWAYS_BEGIN);
         tc.setFactory(new JmsTransactionFactory());
-        ProcessingTemplate<Void> processingTemplate = new TransactionalProcessingTemplate<Void>(muleContext, tc);
-        processingTemplate.execute(new ProcessingCallback<Void>()
+        ExecutionTemplate<Void> executionTemplate = TransactionalExecutionTemplate.createTransactionalExecutionTemplate(muleContext, tc);
+        executionTemplate.execute(new ExecutionCallback<Void>()
         {
             public Void process() throws Exception
             {

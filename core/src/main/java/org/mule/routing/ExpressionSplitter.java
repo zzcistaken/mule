@@ -58,8 +58,9 @@ public class ExpressionSplitter extends AbstractSplitter
 
     protected List<MuleMessage> splitMessage(MuleEvent event)
     {
-        Object result = event.getMuleContext().getExpressionManager().evaluate(
-            config.getFullExpression(expressionManager), event.getMessage());
+        Object result = event.getMuleContext()
+            .getExpressionManager()
+            .evaluate(config.getFullExpression(expressionManager), event);
         if (result instanceof List<?>)
         {
             List<MuleMessage> messages = new ArrayList<MuleMessage>();
@@ -109,7 +110,7 @@ public class ExpressionSplitter extends AbstractSplitter
     public void setEvaluator(String evaluator)
     {
         // Switch to XPath node since we want the Dom nodes not the value of the node
-        if (evaluator.equals("xpath"))
+        if (evaluator != null && evaluator.equals("xpath"))
         {
             evaluator = "xpath-node";
         }

@@ -3,8 +3,8 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:mule="http://www.mulesoft.org/schema/mule/core"
        xsi:schemaLocation="
-       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
-       http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/3.2/mule.xsd"
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+       http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd"
        default-init-method="initialise">
     <!-- Marker for MULE-4813-->
 
@@ -64,6 +64,10 @@
 
     <bean name="_defaultThreadingProfile" class="org.mule.config.ChainedThreadingProfile"/>
 
+    <bean name="_converterResolver" class="org.mule.DynamicDataTypeConversionResolver">
+        <constructor-arg ref="_muleContext"/>
+    </bean>
+
     <bean name="_defaultMessageDispatcherThreadingProfile" class="org.mule.config.ChainedThreadingProfile">
         <constructor-arg ref="_defaultThreadingProfile"/>
     </bean>
@@ -81,6 +85,10 @@
     </bean>
 
     <bean name="_defaultRetryPolicyTemplate" class="org.mule.retry.policies.NoRetryPolicyTemplate"/>
+
+    <bean name="_muleExpressionLanguage" class="org.mule.el.mvel.MVELExpressionLanguage">
+        <constructor-arg ref="_muleContext"/>
+    </bean>
 
     <!-- Default Transformers are now loaded from META-INF/services/org/mule/config/registry-bootstrap.properties so that
     the transformers will be available even when using the TransientRegistry only -->

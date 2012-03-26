@@ -19,6 +19,7 @@ import org.mule.api.MuleRuntimeException;
 import org.mule.api.ThreadSafeAccess;
 import org.mule.api.config.MuleProperties;
 import org.mule.api.transformer.DataType;
+import org.mule.api.transformer.DiscoverableTransformer;
 import org.mule.api.transformer.MessageTransformer;
 import org.mule.api.transformer.Transformer;
 import org.mule.api.transformer.TransformerException;
@@ -27,6 +28,7 @@ import org.mule.api.transport.OutputHandler;
 import org.mule.api.transport.PropertyScope;
 import org.mule.config.MuleManifest;
 import org.mule.config.i18n.CoreMessages;
+import org.mule.transformer.TransformerUtils;
 import org.mule.transformer.types.DataTypeFactory;
 import org.mule.transformer.types.MimeTypes;
 import org.mule.transport.NullPayload;
@@ -1349,25 +1351,9 @@ public class DefaultMuleMessage implements MuleMessage, ThreadSafeAccess, Deseri
     {
         if (!transformers.isEmpty())
         {
-            for (Transformer transformer : transformers)
+            for (int index = 0; index < transformers.size(); index++)
             {
-                if (getPayload() == null)
-                {
-                    if (transformer.isAcceptNull())
-                    {
-                        setPayload(NullPayload.getInstance());
-                        setDataType(null);
-                    }
-                    else
-                    {
-                        if (logger.isDebugEnabled())
-                        {
-                            logger.debug("Transformer " + transformer +
-                                    " doesn't support the null payload, exiting from transformer chain.");
-                        }
-                        break;
-                    }
-                }
+                Transformer transformer = transformers.get(index);
 
                 Class<?> srcCls = getPayload().getClass();
                 DataType<?> originalSourceType = DataTypeFactory.create(srcCls);
@@ -1382,13 +1368,83 @@ public class DefaultMuleMessage implements MuleMessage, ThreadSafeAccess, Deseri
                     {
                         logger.debug("Transformer " + transformer + " doesn't support the source payload: " + srcCls);
                     }
-                    if (!transformer.isIgnoreBadInput())
+
+                    if (useExtendedTransformations())
                     {
-                        throw new IllegalArgumentException("Cannot apply transformer " + transformer + " on source payload: " + srcCls);
+                        if (canSkipTransformer(transformers, index))
+                        {
+                            continue;
+                        }
+
+                        // Resolves implicit conversion if possible
+                        Transformer implicitTransformer = muleContext.getDataTypeConverterResolver().resolve(originalSourceType, transformer.getSourceDataTypes());
+
+                        if (implicitTransformer != null)
+                        {
+                            transformMessage(event, implicitTransformer);
+                            transformMessage(event, transformer);
+                        }
+                        else
+                        {
+                            throw new IllegalArgumentException("Cannot apply transformer " + transformer + " on source payload: " + srcCls);
+                        }
+                    }
+                    else if (!transformer.isIgnoreBadInput())
+                    {
+                        if (logger.isDebugEnabled())
+                        {
+                            logger.debug("Exiting from transformer chain (ignoreBadInput = false)");
+                        }
+                        break;
                     }
                 }
             }
         }
+    }
+
+    private boolean canSkipTransformer(List<? extends Transformer> transformers, int index)
+    {
+        Transformer transformer = transformers.get(index);
+
+        boolean skipConverter = false;
+
+        if (transformer instanceof DiscoverableTransformer)
+        {
+            if (index == transformers.size() - 1)
+            {
+                try
+                {
+                    TransformerUtils.checkTransformerReturnClass(transformer, payload);
+                    skipConverter = true;
+                }
+                catch (TransformerException e)
+                {
+                    // Converter cannot be skipped
+                }
+            }
+            else
+            {
+                skipConverter= true;
+            }
+        }
+
+        if (skipConverter)
+        {
+            logger.debug("Skipping converter: " + transformer);
+        }
+
+        return skipConverter;
+    }
+
+    private boolean useExtendedTransformations()
+    {
+        boolean result = true;
+        if (muleContext != null && muleContext.getConfiguration() != null)
+        {
+            result = muleContext.getConfiguration().useExtendedTransformations();
+        }
+
+        return result;
     }
 
     private void transformMessage(MuleEvent event, Transformer transformer) throws TransformerMessagingException, TransformerException
@@ -1902,17 +1958,17 @@ public class DefaultMuleMessage implements MuleMessage, ThreadSafeAccess, Deseri
         newMessage.clearProperties(PropertyScope.INVOCATION);
         newMessage.clearProperties(PropertyScope.OUTBOUND);
 
-        for (String s : newInboundProperties.keySet())
+        for (Map.Entry<String, Object> s : newInboundProperties.entrySet())
         {
-            newMessage.setInboundProperty(s, newInboundProperties.get(s));
+            newMessage.setInboundProperty(s.getKey(), s.getValue());
         }
 
         newMessage.inboundAttachments.clear();
         newMessage.outboundAttachments.clear();
 
-        for (String s : attachments.keySet())
+        for (Map.Entry<String, DataHandler> s : attachments.entrySet())
         {
-            newMessage.addInboundAttachment(s, attachments.get(s));
+            newMessage.addInboundAttachment(s.getKey(), s.getValue());
         }
 
         newMessage.setCorrelationId(getCorrelationId());

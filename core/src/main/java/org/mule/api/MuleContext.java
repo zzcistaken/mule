@@ -9,12 +9,14 @@
  */
 package org.mule.api;
 
+import org.mule.DataTypeConversionResolver;
 import org.mule.api.client.LocalMuleClient;
 import org.mule.api.config.MuleConfiguration;
 import org.mule.api.config.ThreadingProfile;
 import org.mule.api.context.WorkManager;
 import org.mule.api.context.notification.ServerNotification;
 import org.mule.api.context.notification.ServerNotificationListener;
+import org.mule.api.el.ExpressionLanguage;
 import org.mule.api.endpoint.EndpointFactory;
 import org.mule.api.exception.MessagingExceptionHandler;
 import org.mule.api.exception.RollbackSourceCallback;
@@ -282,5 +284,21 @@ public interface MuleContext extends Lifecycle
      * @return default exception strategy. If no default exception strategy was configured it returns {@link org.mule.exception.DefaultMessagingExceptionStrategy}
      */
     MessagingExceptionHandler getDefaultExceptionStrategy();
+
+    /**
+     * @return single resource transaction factory manager. Used to retrieve a transaction factory for each transactional resource (i.e jdbc DataSource, jms Connection)
+     */
+    SingleResourceTransactionFactoryManager getTransactionFactoryManager();
+
+    /**
+     * @return a non null {@link org.mule.DataTypeConversionResolver} instance to resolve implicit data type conversions
+     */
+    DataTypeConversionResolver getDataTypeConverterResolver();
+    
+    /**
+     * Expression Language for evaluating expressions using Mule as the context
+     * @return 
+     */
+    ExpressionLanguage getExpressionLanguage();
 }
 

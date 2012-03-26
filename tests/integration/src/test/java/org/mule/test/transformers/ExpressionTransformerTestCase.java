@@ -10,6 +10,11 @@
 
 package org.mule.test.transformers;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import org.mule.DefaultMuleMessage;
 import org.mule.api.MuleMessage;
 import org.mule.api.transformer.TransformerException;
@@ -20,20 +25,16 @@ import org.mule.tck.junit4.AbstractMuleContextTestCase;
 
 import groovyjarjarasm.asm.ClassWriter;
 import groovyjarjarasm.asm.Opcodes;
-import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import org.junit.Test;
 
 public class ExpressionTransformerTestCase extends AbstractMuleContextTestCase
 {
 
     /**
-     * See: MULE-4797 GroovyExpressionEvaluator script is unable to load user classes
-     * when used with hot deployment.
-     * 
+     * See: MULE-4797 GroovyExpressionEvaluator script is unable to load user classes when used with hot
+     * deployment.
+     *
      * @throws TransformerException
      */
     @Test
@@ -42,7 +43,33 @@ public class ExpressionTransformerTestCase extends AbstractMuleContextTestCase
         ExpressionTransformer transformer = new ExpressionTransformer();
         transformer.setMuleContext(muleContext);
         transformer.addArgument(new ExpressionArgument("test", new ExpressionConfig(
-            "payload instanceof MyClass", "groovy", null), false));
+            "payload instanceof org.MyClass", "groovy", null), false));
+
+        ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
+        try
+        {
+            Thread.currentThread().setContextClassLoader(new MyClassClassLoader());
+            transformer.initialise();
+        }
+        catch (Exception e)
+        {
+            fail(e.getMessage());
+        }
+        finally
+        {
+            Thread.currentThread().setContextClassLoader(originalClassLoader);
+        }
+
+        assertFalse((Boolean) transformer.transform("test"));
+    }
+
+    @Test
+    public void testExpressionEvaluationClassLoaderEL() throws ClassNotFoundException, TransformerException
+    {
+        ExpressionTransformer transformer = new ExpressionTransformer();
+        transformer.setMuleContext(muleContext);
+        transformer.addArgument(new ExpressionArgument("test", new ExpressionConfig("payload is org.MyClass",
+            null, null), false));
 
         ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
         try
@@ -79,23 +106,44 @@ public class ExpressionTransformerTestCase extends AbstractMuleContextTestCase
         MuleMessage transformedMessage = (MuleMessage) result;
 
         assertEquals("Test", transformedMessage.getPayload());
+    }
+
+    @Test
+    public void testNullPayloadIsConsideredAsNullResultEL() throws Exception
+    {
+        ExpressionTransformer transformer = new ExpressionTransformer();
+        transformer.setMuleContext(muleContext);
+        transformer.setReturnSourceIfNull(true);
+        ExpressionConfig config = new ExpressionConfig("null", null, null);
+
+        // MVL doesn't return NullPayload but rather null.  So 'optional' needs to be true.
+        ExpressionArgument argument = new ExpressionArgument("test", config, true);
+        argument.setMuleContext(muleContext);
+        transformer.addArgument(argument);
+
+        MuleMessage message = new DefaultMuleMessage("Test", muleContext);
+        Object result = transformer.transformMessage(message, null);
+        assertTrue(result instanceof MuleMessage);
+        MuleMessage transformedMessage = (MuleMessage) result;
+
+        assertEquals("Test", transformedMessage.getPayload());
 
     }
 
     class MyClassClassLoader extends ClassLoader
     {
         @Override
-        protected Class<?> findClass(String name) throws ClassNotFoundException
+        protected Class<?> findClass(String className) throws ClassNotFoundException
         {
-            if (name.equals("MyClass"))
+            if (className.equals("org.MyClass"))
             {
-                ClassWriter cw = new ClassWriter(true);
-                cw.visit(Opcodes.V1_5, Opcodes.ACC_PUBLIC, "MyClass", null, "java/lang/Object", null);
-                return defineClass(name, cw.toByteArray(), 0, cw.toByteArray().length);
+                ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+                cw.visit(Opcodes.V1_5, Opcodes.ACC_PUBLIC, "org/MyClass", null, "java/lang/Object", null);
+                return defineClass(className, cw.toByteArray(), 0, cw.toByteArray().length);
             }
             else
             {
-                return super.findClass(name);
+                return super.findClass(className);
             }
         }
     }

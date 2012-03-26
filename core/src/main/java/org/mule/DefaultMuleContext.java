@@ -7,6 +7,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
+
 package org.mule;
 
 import org.mule.api.MessagingException;
@@ -14,8 +15,8 @@ import org.mule.api.MuleContext;
 import org.mule.api.MuleEvent;
 import org.mule.api.MuleException;
 import org.mule.api.MuleRuntimeException;
+import org.mule.api.SingleResourceTransactionFactoryManager;
 import org.mule.api.client.LocalMuleClient;
-import org.mule.api.config.ConfigurationException;
 import org.mule.api.config.MuleConfiguration;
 import org.mule.api.config.MuleProperties;
 import org.mule.api.config.ThreadingProfile;
@@ -23,6 +24,7 @@ import org.mule.api.context.MuleContextAware;
 import org.mule.api.context.WorkManager;
 import org.mule.api.context.notification.ServerNotification;
 import org.mule.api.context.notification.ServerNotificationListener;
+import org.mule.api.el.ExpressionLanguage;
 import org.mule.api.endpoint.EndpointFactory;
 import org.mule.api.exception.MessagingExceptionHandler;
 import org.mule.api.exception.RollbackSourceCallback;
@@ -134,6 +136,8 @@ public class DefaultMuleContext implements MuleContext
 
     private Map<QName, Set<Object>> configurationAnnotations;
 
+    private SingleResourceTransactionFactoryManager singleResourceTransactionFactoryManager = new SingleResourceTransactionFactoryManager();
+
     public DefaultMuleContext(MuleConfiguration config,
                               WorkManager workManager,
                               WorkListener workListener,
@@ -198,6 +202,11 @@ public class DefaultMuleContext implements MuleContext
             getNotificationManager().start(workManager, workListener);
             fireNotification(new MuleContextNotification(this, MuleContextNotification.CONTEXT_INITIALISING));
             getLifecycleManager().fireLifecycle(Initialisable.PHASE_NAME);
+
+            if (expressionManager instanceof Initialisable)
+            {
+                ((Initialisable) expressionManager).initialise();
+            }
 
             fireNotification(new MuleContextNotification(this, MuleContextNotification.CONTEXT_INITIALISED));
         }
@@ -283,6 +292,11 @@ public class DefaultMuleContext implements MuleContext
 
         notificationManager.dispose();
         workManager.dispose();
+        
+        if (expressionManager != null && expressionManager instanceof Disposable)
+        {
+            ((Disposable) expressionManager).dispose();
+        }
 
         if ((getStartDate() > 0) && logger.isInfoEnabled())
         {
@@ -503,7 +517,6 @@ public class DefaultMuleContext implements MuleContext
     {
 
         return config;
-        //return (MuleConfiguration) getRegistry().lookupObject(MuleProperties.OBJECT_MULE_CONFIGURATION);
     }
 
     public ServerNotificationManager getNotificationManager()
@@ -761,5 +774,39 @@ public class DefaultMuleContext implements MuleContext
             defaultExceptionStrategy = new DefaultMessagingExceptionStrategy(this);
         }
         return defaultExceptionStrategy;
+    }
+
+    @Override
+    public SingleResourceTransactionFactoryManager getTransactionFactoryManager()
+    {
+        return this.singleResourceTransactionFactoryManager;
+    }
+
+    @Override
+    public DataTypeConversionResolver getDataTypeConverterResolver()
+    {
+        DataTypeConversionResolver dataTypeConversionResolver = getRegistry().lookupObject(MuleProperties.OBJECT_CONVERTER_RESOLVER);
+        if (dataTypeConversionResolver == null)
+        {
+            dataTypeConversionResolver = new DynamicDataTypeConversionResolver(this);
+
+            try
+            {
+                getRegistry().registerObject(MuleProperties.OBJECT_CONVERTER_RESOLVER, dataTypeConversionResolver);
+            }
+            catch (RegistrationException e)
+            {
+                // Should not occur
+                throw new IllegalStateException(e);
+            }
+        }
+
+        return dataTypeConversionResolver;
+    }
+
+    @Override
+    public ExpressionLanguage getExpressionLanguage()
+    {
+        return registryBroker.lookupObject(MuleProperties.OBJECT_EXPRESSION_LANGUAGE);
     }
 }

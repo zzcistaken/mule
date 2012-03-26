@@ -10,9 +10,16 @@
 
 package org.mule.transport.email.transformers;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import org.mule.api.endpoint.ImmutableEndpoint;
 import org.mule.api.transformer.Transformer;
 import org.mule.api.transformer.TransformerException;
+import org.mule.config.DefaultMuleConfiguration;
 import org.mule.transformer.AbstractTransformer;
 import org.mule.transformer.AbstractTransformerTestCase;
 import org.mule.transformer.types.DataTypeFactory;
@@ -25,12 +32,6 @@ import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
 
 import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 public class MailMessageTransformersTestCase extends AbstractTransformerTestCase
 {
@@ -141,6 +142,7 @@ public class MailMessageTransformersTestCase extends AbstractTransformerTestCase
     {
         AbstractTransformer trans = (AbstractTransformer) getTransformer();
         trans.setIgnoreBadInput(true);
+        ((DefaultMuleConfiguration) muleContext.getConfiguration()).setUseExtendedTransformations(false);
         Object result = trans.transform(getResultData());
         trans.setIgnoreBadInput(false);
         assertEquals(result, getResultData());

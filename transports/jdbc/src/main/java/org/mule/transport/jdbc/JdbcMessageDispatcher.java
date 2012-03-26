@@ -10,14 +10,18 @@
 
 package org.mule.transport.jdbc;
 
+import java.sql.Connection;
+
 import org.mule.api.MuleEvent;
 import org.mule.api.MuleMessage;
 import org.mule.api.endpoint.OutboundEndpoint;
+import org.mule.transaction.TransactionCoordination;
 import org.mule.transport.AbstractMessageDispatcher;
 import org.mule.transport.jdbc.sqlstrategy.SqlStatementStrategy;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mule.transport.jdbc.sqlstrategy.SqlStatementStrategyExecutor;
 
 /**
  * The Jdbc Message dispatcher is responsible for executing SQL queries against a
@@ -29,6 +33,7 @@ public class JdbcMessageDispatcher extends AbstractMessageDispatcher
     protected static Log staticLogger = LogFactory.getLog(AbstractMessageDispatcher.class);
 
     protected JdbcConnector connector;
+    private SqlStatementStrategyExecutor sqlStatementExecutor = new SqlStatementStrategyExecutor();
 
     public JdbcMessageDispatcher(OutboundEndpoint endpoint)
     {
@@ -63,7 +68,8 @@ public class JdbcMessageDispatcher extends AbstractMessageDispatcher
         
         SqlStatementStrategy strategy = 
             jdbcConnector.getSqlStatementStrategyFactory().create(statement, payload);
-        return strategy.executeStatement(jdbcConnector, endpoint, event, event.getTimeout());
+        Connection connection = (Connection) connector.getTransactionalResource(endpoint);
+        return sqlStatementExecutor.execute(strategy,jdbcConnector, endpoint, event, event.getTimeout(), connection);
     }
 
     @Override

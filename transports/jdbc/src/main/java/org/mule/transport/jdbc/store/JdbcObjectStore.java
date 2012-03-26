@@ -15,15 +15,14 @@ import java.sql.SQLException;
 
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.dbutils.handlers.ArrayHandler;
-import org.mule.api.MuleEvent;
+import org.mule.api.execution.ExecutionCallback;
+import org.mule.api.execution.ExecutionTemplate;
 import org.mule.api.store.ObjectAlreadyExistsException;
 import org.mule.api.store.ObjectDoesNotExistException;
 import org.mule.api.store.ObjectStoreException;
 import org.mule.api.transaction.TransactionConfig;
 import org.mule.config.i18n.CoreMessages;
-import org.mule.process.ProcessingCallback;
-import org.mule.process.ProcessingTemplate;
-import org.mule.process.TransactionalProcessingTemplate;
+import org.mule.execution.TransactionalExecutionTemplate;
 import org.mule.transport.jdbc.JdbcConnector;
 import org.mule.util.store.AbstractMonitoredObjectStore;
 
@@ -156,7 +155,7 @@ public class JdbcObjectStore<T extends Serializable> extends AbstractMonitoredOb
     {
         try
         {
-            ProcessingCallback<Object> processingCallback = new ProcessingCallback<Object>()
+            ExecutionCallback<Object> processingCallback = new ExecutionCallback<Object>()
             {
                 public Object process() throws Exception
                 {
@@ -187,7 +186,7 @@ public class JdbcObjectStore<T extends Serializable> extends AbstractMonitoredOb
     {
         try
         {
-            ProcessingCallback<Object> processingCallback = new ProcessingCallback<Object>()
+            ExecutionCallback<Object> processingCallback = new ExecutionCallback<Object>()
             {
                 public Object process() throws Exception
                 {
@@ -206,10 +205,10 @@ public class JdbcObjectStore<T extends Serializable> extends AbstractMonitoredOb
         }
     }
 
-    private Object executeInTransactionTemplate(ProcessingCallback<Object> processingCallback) throws Exception
+    private Object executeInTransactionTemplate(ExecutionCallback<Object> processingCallback) throws Exception
     {
-        ProcessingTemplate<Object> processingTemplate = new TransactionalProcessingTemplate<Object>(this.jdbcConnector.getMuleContext(), this.transactionConfig);
-        return processingTemplate.execute(processingCallback);
+        ExecutionTemplate<Object> executionTemplate = TransactionalExecutionTemplate.createTransactionalExecutionTemplate(this.jdbcConnector.getMuleContext(), this.transactionConfig);
+        return executionTemplate.execute(processingCallback);
     }
 
     public JdbcConnector getJdbcConnector()

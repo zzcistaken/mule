@@ -1354,4 +1354,34 @@ public class CoreMessages extends MessageFactory
         return factory.createMessage(BUNDLE_PATH, 334, key);
     }
 
+    public static Message expressionEvaluationFailed(String key)
+    {
+        return factory.createMessage(BUNDLE_PATH, 335, key);
+    }
+
+    public static Message expressionFinalVariableCannotBeAssignedValue(String key)
+    {
+        return factory.createMessage(BUNDLE_PATH, 336, key);
+    }
+
+    public static Message inboundMessagePropertiesImmutable(Object key)
+    {
+        return factory.createMessage(BUNDLE_PATH, 337, key);
+    }
+
+    public static Message inboundMessagePropertiesImmutable()
+    {
+        return factory.createMessage(BUNDLE_PATH, 338);
+    }
+
+    public static Message inboundMessageAttachmentsImmutable(Object key)
+    {
+        return factory.createMessage(BUNDLE_PATH, 339, key);
+    }
+
+    public static Message inboundMessageAttachmentsImmutable()
+    {
+        return factory.createMessage(BUNDLE_PATH, 340);
+    }
+
 }

@@ -34,6 +34,9 @@ import org.mule.util.IOUtils;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.junit.After;
+import org.junit.Before;
+
 /**
  * A base test case for tests that initialize Mule using a configuration file. The
  * default configuration builder used is SpringXmlConfigurationBuilder. To use this
@@ -182,4 +185,11 @@ public abstract class FunctionalTestCase extends AbstractMuleContextTestCase
         flow.process(event);
         FlowAssert.verify(flowName);
     }
+    
+    @After
+    public final void clearFlowAssertions() throws Exception
+    {
+        FlowAssert.reset();
+    }
+
 }

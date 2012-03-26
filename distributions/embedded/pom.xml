@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.mule.distributions</groupId>
         <artifactId>mule-distributions</artifactId>
-        <version>3.3-M3-SNAPSHOT</version>
+        <version>3.3-RC1-SNAPSHOT</version>
     </parent>
     <artifactId>mule</artifactId>
     <!-- Packaging 'pom' ensures that maven does not try to bind a plugin to the
@@ -27,7 +27,7 @@
                             <goal>unpack</goal>
                         </goals>
                         <configuration>
-                            <excludes>**/spring.handlers,**/spring.schemas,**/registry-bootstrap.properties</excludes>
+                            <excludes>**/spring.handlers,**/spring.schemas,**/registry-bootstrap.properties,**/mule.custom-property-editors</excludes>
                             <artifactItems>
                                 <artifactItem>
                                     <groupId>org.mule</groupId>

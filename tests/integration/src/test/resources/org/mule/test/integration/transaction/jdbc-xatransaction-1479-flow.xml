@@ -7,12 +7,12 @@
       xmlns:jbossts="http://www.mulesoft.org/schema/mule/jbossts"
       xmlns:vm="http://www.mulesoft.org/schema/mule/vm"
       xsi:schemaLocation="
-       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
-       http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/3.2/mule.xsd
-       http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/3.2/mule-jms.xsd
-       http://www.mulesoft.org/schema/mule/jdbc http://www.mulesoft.org/schema/mule/jdbc/3.2/mule-jdbc.xsd
-       http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/3.2/mule-vm.xsd
-       http://www.mulesoft.org/schema/mule/jbossts http://www.mulesoft.org/schema/mule/jbossts/3.2/mule-jbossts.xsd">
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+       http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+       http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd
+       http://www.mulesoft.org/schema/mule/jdbc http://www.mulesoft.org/schema/mule/jdbc/current/mule-jdbc.xsd
+       http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd
+       http://www.mulesoft.org/schema/mule/jbossts http://www.mulesoft.org/schema/mule/jbossts/current/mule-jbossts.xsd">
 
     <!--
         <mule-environment-properties synchronous="true" synchronousEventTimeout="5000">
@@ -30,7 +30,7 @@
 
     <vm:connector name="vmConnector"/>
 
-    <jdbc:connector name="jdbcConnectorXA" dataSource-ref="jdbcDataSourceXA">
+    <jdbc:connector name="jdbcConnectorXA" dataSource-ref="jdbcDataSource">
         <jdbc:query key="insertRecord" value="INSERT into Test (data) VALUES (#[payload])"/>
         <jdbc:query key="causeException" value="INSERT into Test (bad_column_name) VALUES (#[payload])"/>
     </jdbc:connector>
@@ -40,15 +40,17 @@
     <flow name="TestJdbc">
 
         <vm:inbound-endpoint path="in" exchange-pattern="one-way"/>
-        <all>
-            <jdbc:outbound-endpoint queryKey="insertRecord" exchange-pattern="one-way">
-                <xa-transaction action="ALWAYS_JOIN"/>
-            </jdbc:outbound-endpoint>
-            <jdbc:outbound-endpoint queryKey="causeException" exchange-pattern="one-way">
-                <xa-transaction action="ALWAYS_JOIN"/>
-            </jdbc:outbound-endpoint>
-            <!-- <xa-transaction action="ALWAYS_BEGIN"/>   -->
-        </all>
+        <transactional>
+            <all>
+                <jdbc:outbound-endpoint queryKey="insertRecord" exchange-pattern="one-way">
+                    <xa-transaction action="ALWAYS_JOIN"/>
+                </jdbc:outbound-endpoint>
+                <jdbc:outbound-endpoint queryKey="causeException" exchange-pattern="one-way">
+                    <xa-transaction action="ALWAYS_JOIN"/>
+                </jdbc:outbound-endpoint>
+                <!-- <xa-transaction action="ALWAYS_BEGIN"/>   -->
+            </all>
+        </transactional>
         <default-exception-strategy>
             <rollback-transaction exception-pattern="*" />
         </default-exception-strategy>
@@ -56,15 +58,17 @@
 
     <flow name="TestJms">
         <vm:inbound-endpoint path="in1" exchange-pattern="one-way"/>
-        <all>
-            <jdbc:outbound-endpoint queryKey="insertRecord" exchange-pattern="one-way">
-                <xa-transaction action="ALWAYS_JOIN"/>
-            </jdbc:outbound-endpoint>
-            <jms:outbound-endpoint queue="queue.out" exchange-pattern="request-response">
-                <xa-transaction action="ALWAYS_JOIN"/>
-            </jms:outbound-endpoint>
-            <!-- <xa-transaction action="ALWAYS_BEGIN"/> -->
-        </all>
+        <transactional>
+            <all>
+                <jdbc:outbound-endpoint queryKey="insertRecord" exchange-pattern="one-way">
+                    <xa-transaction action="ALWAYS_JOIN"/>
+                </jdbc:outbound-endpoint>
+                <jms:outbound-endpoint queue="queue.out" exchange-pattern="request-response">
+                    <xa-transaction action="ALWAYS_JOIN"/>
+                </jms:outbound-endpoint>
+                <!-- <xa-transaction action="ALWAYS_BEGIN"/> -->
+            </all>
+        </transactional>
         <default-exception-strategy>
             <rollback-transaction exception-pattern="*" />
         </default-exception-strategy>

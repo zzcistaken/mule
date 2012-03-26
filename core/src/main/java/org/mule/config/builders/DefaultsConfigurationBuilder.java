@@ -10,6 +10,7 @@
 
 package org.mule.config.builders;
 
+import org.mule.DynamicDataTypeConversionResolver;
 import org.mule.api.MuleContext;
 import org.mule.api.MuleException;
 import org.mule.api.config.MuleProperties;
@@ -20,6 +21,7 @@ import org.mule.api.registry.RegistrationException;
 import org.mule.api.store.ObjectStore;
 import org.mule.config.ChainedThreadingProfile;
 import org.mule.config.bootstrap.SimpleRegistryBootstrap;
+import org.mule.el.mvel.MVELExpressionLanguage;
 import org.mule.endpoint.DefaultEndpointFactory;
 import org.mule.model.seda.SedaModel;
 import org.mule.retry.policies.NoRetryPolicyTemplate;
@@ -75,8 +77,11 @@ public class DefaultsConfigurationBuilder extends AbstractConfigurationBuilder
         configureThreadingProfiles(registry);
 
         registry.registerObject(MuleProperties.OBJECT_DEFAULT_RETRY_POLICY_TEMPLATE, new NoRetryPolicyTemplate());
+        registry.registerObject(MuleProperties.OBJECT_CONVERTER_RESOLVER, new DynamicDataTypeConversionResolver(muleContext));
 
         configureSystemModel(registry);
+        
+        registry.registerObject(MuleProperties.OBJECT_EXPRESSION_LANGUAGE, new MVELExpressionLanguage(muleContext));
     }
 
     protected void configureQueueManager(MuleContext muleContext) throws RegistrationException

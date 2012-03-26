@@ -129,7 +129,7 @@ public class ValidatorTestCase extends FunctionalTestCase
 
     private Object doTestValidMessageError(String serviceName) throws MuleException
     {
-        final Integer payload = RandomUtils.nextInt();
+        final Integer payload = 777;//RandomUtils.nextInt();
         assertEquals("ERROR:" + payload + "@" + serviceName, muleClient.send("vm://" + serviceName + ".in",
             payload, null).getPayload());
         return payload;

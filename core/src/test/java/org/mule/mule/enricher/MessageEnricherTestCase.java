@@ -42,6 +42,7 @@ public class MessageEnricherTestCase extends AbstractMuleContextTestCase
                 return event;
             }
         });
+        enricher.initialise();
         
         MuleMessage result = enricher.process(getTestEvent("")).getMessage();
         assertEquals("test", result.getOutboundProperty("myHeader"));
