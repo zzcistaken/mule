@@ -11,30 +11,26 @@
 package org.mule.config.spring.parsers.specific;
 
 import org.mule.config.spring.parsers.assembly.BeanAssembler;
-import org.mule.config.spring.parsers.generic.TextDefinitionParser;
+import org.mule.config.spring.parsers.generic.ChildDefinitionParser;
 
 import org.springframework.beans.factory.xml.ParserContext;
 import org.w3c.dom.Element;
 
-public class GlobalFunctionsDefintionParser extends TextDefinitionParser
+public class ExpressionComponentDefintionParser extends ChildDefinitionParser
 {
-
-    private static String FUNCTION_FILE_ATTRIBUTE_NAME = "file";
-
-    public GlobalFunctionsDefintionParser(String setterMethod)
+    public ExpressionComponentDefintionParser(String setterMethod, Class<?> clazz)
     {
-        super(setterMethod);
+        super(setterMethod, clazz);
+        addAlias("file", "expressionFile");
     }
 
     @Override
     protected void postProcess(ParserContext context, BeanAssembler assembler, Element element)
     {
         super.postProcess(context, assembler, element);
-        if (element.hasAttribute(FUNCTION_FILE_ATTRIBUTE_NAME))
+        if (element.getTextContent() != null && !element.getTextContent().isEmpty())
         {
-            assembler.getTarget()
-                .getPropertyValues()
-                .add("globalFunctionsFile", element.getAttribute(FUNCTION_FILE_ATTRIBUTE_NAME));
+            assembler.getBean().addPropertyValue("expression", element.getTextContent());
         }
     }
 }

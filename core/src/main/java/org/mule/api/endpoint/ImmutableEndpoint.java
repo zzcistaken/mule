@@ -227,4 +227,5 @@ public interface ImmutableEndpoint extends Serializable, NamedObject
     AbstractRedeliveryPolicy getRedeliveryPolicy();
 
     boolean isDisableTransportTransformer();
+
 }
