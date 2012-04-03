@@ -101,7 +101,7 @@ public class AsyncDelegateMessageProcessor extends AbstractMessageProcessorOwner
     {
         if (event.isTransacted())
         {
-            throw new MessagingException(CoreMessages.asyncDoesNotSupportTransactions(), event);
+            throw new MessagingException(CoreMessages.asyncDoesNotSupportTransactions(), event, this);
         }
 
         if (target != null)

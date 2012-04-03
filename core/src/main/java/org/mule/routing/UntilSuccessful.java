@@ -201,7 +201,7 @@ public class UntilSuccessful extends AbstractOutboundRouter
         catch (final Exception e)
         {
             throw new MessagingException(
-                MessageFactory.createStaticMessage("Failed to prepare message for processing"), event, e);
+                MessageFactory.createStaticMessage("Failed to prepare message for processing"), event, e, this);
         }
 
         try
@@ -223,7 +223,7 @@ public class UntilSuccessful extends AbstractOutboundRouter
         catch (final Exception e)
         {
             throw new MessagingException(
-                MessageFactory.createStaticMessage("Failed to schedule the event for processing"), event, e);
+                MessageFactory.createStaticMessage("Failed to schedule the event for processing"), event, e, this);
         }
     }
 
