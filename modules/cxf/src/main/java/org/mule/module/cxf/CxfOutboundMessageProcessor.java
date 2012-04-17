@@ -12,6 +12,7 @@ package org.mule.module.cxf;
 
 import org.mule.DefaultMuleEvent;
 import org.mule.OptimizedRequestContext;
+import org.mule.VoidMuleEvent;
 import org.mule.api.MessagingException;
 import org.mule.api.MuleEvent;
 import org.mule.api.MuleException;
@@ -382,6 +383,10 @@ public class CxfOutboundMessageProcessor extends AbstractInterceptingMessageProc
         if (transportResponse == null)
         {
             return null;
+        }
+        if (VoidMuleEvent.getInstance().equals(transportResponse))
+        {
+            return transportResponse;
         }
 
         // Otherwise we may have a response!

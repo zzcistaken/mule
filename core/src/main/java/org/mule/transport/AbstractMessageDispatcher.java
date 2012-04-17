@@ -10,6 +10,7 @@
 
 package org.mule.transport;
 
+import org.mule.VoidMuleEvent;
 import org.mule.api.MuleEvent;
 import org.mule.api.MuleException;
 import org.mule.api.MuleMessage;
@@ -24,6 +25,7 @@ import org.mule.api.transport.MessageDispatcher;
 import org.mule.service.ServiceAsyncReplyCompositeMessageSource;
 
 import java.util.List;
+
 
 /**
  * Abstract implementation of an outbound channel adaptors. Outbound channel adaptors send messages over over
@@ -93,7 +95,7 @@ public abstract class AbstractMessageDispatcher extends AbstractTransportMessage
             else
             {
                 doDispatch(event);
-                return null;
+                return VoidMuleEvent.getInstance();
             }
         }
         catch (MuleException muleException)

@@ -18,6 +18,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.mule.MessageExchangePattern;
+import org.mule.VoidMuleEvent;
 import org.mule.api.MuleEvent;
 import org.mule.api.MuleException;
 import org.mule.api.MuleMessage;
@@ -49,7 +50,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
 import org.junit.Test;
-
 /**
  * Tests flow of messages from
  * {@link org.mule.endpoint.DynamicOutboundEndpoint#process(org.mule.api.MuleEvent)} down to
@@ -98,7 +98,7 @@ public class DynamicOutboundEndpointTestCase extends AbstractMessageProcessorTes
         MuleEvent result = endpoint.process(testOutboundEvent);
 
         assertEventDispatched();
-        assertNull(result);
+        assertSame(VoidMuleEvent.getInstance(), result);
         assertMessageSent(MyMessageDispatcherFactory.dispatcher.sensedDispatchEvent, false);
     }
 

@@ -55,7 +55,7 @@ public class OutboundResponsePropertiesMessageProcessor extends AbstractIntercep
 
         MuleEvent responseEvent = processNext(event);
 
-        if (responseEvent != null)
+        if (isEventValid(responseEvent))
         {
             for (Entry<String, Object> property : responsePropertyValues.entrySet())
             {

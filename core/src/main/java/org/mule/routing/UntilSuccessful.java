@@ -12,7 +12,11 @@ package org.mule.routing;
 
 import org.mule.DefaultMuleEvent;
 import org.mule.DefaultMuleMessage;
+<<<<<<< .working
 import org.mule.OptimizedRequestContext;
+=======
+import org.mule.VoidMuleEvent;
+>>>>>>> .merge-right.r24267
 import org.mule.api.MessagingException;
 import org.mule.api.MuleEvent;
 import org.mule.api.MuleException;
@@ -211,7 +215,7 @@ public class UntilSuccessful extends AbstractOutboundRouter
 
             if (ackExpression == null)
             {
-                return null;
+                return VoidMuleEvent.getInstance();
             }
 
             final Object ackResponsePayload = muleContext.getExpressionManager().evaluate(ackExpression,
@@ -387,7 +391,7 @@ public class UntilSuccessful extends AbstractOutboundRouter
             throw new MuleRuntimeException(me);
         }
 
-        if (returnEvent == null)
+        if (returnEvent == null || VoidMuleEvent.getInstance().equals(returnEvent))
         {
             return;
         }
