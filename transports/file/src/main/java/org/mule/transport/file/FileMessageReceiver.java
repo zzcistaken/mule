@@ -313,7 +313,13 @@ public class FileMessageReceiver extends AbstractPollingMessageReceiver
             }
 
             // finally deliver the file message
-            this.routeMessage(new DefaultMuleMessage(msgAdapter), endpoint.isSynchronous());
+            DefaultMuleMessage message = new DefaultMuleMessage(msgAdapter);
+            this.routeMessage(message, endpoint.isSynchronous());
+            if (message.getExceptionPayload() != null)
+            {
+                Throwable t = message.getExceptionPayload().getException();
+                throw (t instanceof Exception) ? (Exception) t : new Exception(t);
+            }
 
             // at this point msgAdapter either points to the old sourceFile
             // or the new destinationFile.
