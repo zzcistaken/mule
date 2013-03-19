@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:spring="http://www.springframework.org/schema/beans"
+      xmlns:context="http://www.springframework.org/schema/context"
+      xmlns:mule-ss="http://www.mulesoft.org/schema/mule/spring-security"
+      xmlns:ss="http://www.springframework.org/schema/security"
+      xmlns:json="http://www.mulesoft.org/schema/mule/json"
+      xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+      xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting"
+      xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+        http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
+        http://www.mulesoft.org/schema/mule/spring-security http://www.mulesoft.org/schema/mule/spring-security/current/mule-spring-security.xsd
+        http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd
+        http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <spring:beans>
+        <ss:authentication-manager alias="authenticationManager">
+            <ss:authentication-provider>
+                <ss:user-service id="userService">
+                    <ss:user name="marie" password="marie"
+                             authorities="ROLE_ADMIN" />
+                    <ss:user name="john" password="john"
+                             authorities="ROLE_USER" />
+                </ss:user-service>
+            </ss:authentication-provider>
+        </ss:authentication-manager>
+    </spring:beans>
+
+    <mule-ss:security-manager>
+        <mule-ss:delegate-security-provider name="memory-dao" delegate-ref="authenticationManager" />
+    </mule-ss:security-manager>
+
+    <flow-template name="baseHttpService">
+        <template-property key="http.path"  doc="context path to access the service"/>
+        <template-property key="required.role" defaultValue="ROLE_ADMIN" doc="role required to access the service"/>
+        <template-property key="service.name" defaultValue="generic service" doc="service name that we will sent out as part of the response headers"/>
+        <template-property key="http.error.status.code" defaultValue="500" doc="http status code to send in case of an error"/>
+        <http:inbound-endpoint host="localhost" port="8090" path="#{http.path}" />
+        <json:json-to-object-transformer returnClass="java.lang.Object"/>
+        <set-variable variableName="originalRequest" value="#[payload]"/>
+        <http:basic-security-filter realm="mule-realm"/>
+        <mule-ss:authorization-filter requiredAuthorities="#{required.role}"/>
+        <logger level="ERROR" message="#[payload]"/>
+        <scripting:component>
+            <scripting:script engine="groovy">
+                message.setProperty('username',((org.springframework.security.core.userdetails.User)eventContext.getSession().getSecurityContext().getAuthentication().getPrincipal()).getUsername(),org.mule.api.transport.PropertyScope.INVOCATION);
+                message
+            </scripting:script>
+        </scripting:component>
+        <set-variable variableName="currentUser" value="#[new org.mule.test.User(username)]"/>
+        <choice>
+            <when expression="#[currentUser.isActive()]">
+                <logger level="DEBUG" message="user is active"/>
+            </when>
+            <otherwise>
+                <expression-component>throw new org.mule.test.UserNotActiveException()</expression-component>
+            </otherwise>
+        </choice>
+        <template-stage name="serviceImplementation">
+            <documentation description="Place holder for service implementation.">
+                <provided-content>
+                    <flow-variable name="username" type="String" description="username for the authenticated user"/>
+                </provided-content>
+            </documentation>
+        </template-stage>
+        <set-payload value="#[['status':'ok', 'content': payload]]"/>
+        <response>
+            <set-property propertyName="X-SERVICE" value="#['service name: ' + templateProperties['service.name']]" />
+            <json:object-to-json-transformer/>
+        </response>
+        <choice-exception-strategy>
+            <catch-exception-strategy when="#[exception.causedBy(org.mule.test.usecases.UserNotActiveException)]">
+                <set-payload value="#[['status' : 'error', 'message' : 'Your user must be active in order to access the service', 'originalRequest': originalRequest]]"/>
+                <json:object-to-json-transformer/>
+                <logger level="ERROR" message="#[payload]"/>
+                <http:response-builder status="#{http.error.status.code}"/>
+            </catch-exception-strategy>
+            <catch-exception-strategy when="#[exception.causedBy(org.mule.api.security.NotPermittedException)]">
+                <set-payload value="#[['status' : 'error', 'message' : 'You are not authorized to access this resource', 'originalRequest': originalRequest]]"/>
+                <json:object-to-json-transformer/>
+                <logger level="ERROR" message="#[payload]"/>
+                <http:response-builder status="#{http.error.status.code}"/>
+            </catch-exception-strategy>
+            <catch-exception-strategy when="#[exception.causedBy(org.mule.api.security.UnauthorisedException)]">
+                <set-payload value="#[['status' : 'error', 'message' : 'You must enter a valid username and password', 'originalRequest': originalRequest]]"/>
+                <json:object-to-json-transformer/>
+                <logger level="ERROR" message="#[payload]"/>
+                <http:response-builder status="#{http.error.status.code}"/>
+            </catch-exception-strategy>
+        </choice-exception-strategy>
+    </flow-template>
+
+</mule>

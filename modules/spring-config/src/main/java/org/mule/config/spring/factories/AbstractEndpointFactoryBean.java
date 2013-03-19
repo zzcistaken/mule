@@ -45,7 +45,7 @@ public abstract class AbstractEndpointFactoryBean extends EndpointURIEndpointBui
 
     public boolean isSingleton()
     {
-        return true;
+        return false;
     }
 
     public void initialise() throws InitialisationException

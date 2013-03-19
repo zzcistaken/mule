@@ -34,6 +34,11 @@ import org.mule.management.stats.FlowConstructStatistics;
 import org.mule.processor.strategy.AsynchronousProcessingStrategy;
 import org.mule.routing.requestreply.AsyncReplyToPropertyRequestReplyReplier;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * This implementation of {@link AbstractPipeline} adds the following functionality:
  * <ul>
@@ -50,6 +55,30 @@ public class Flow extends AbstractPipeline implements MessageProcessor
 {
     private int stageCount = 0;
     private int asyncCount = 0;
+    private Map<Object, Object> templateProperties = new HashMap<Object, Object>();
+    protected List<MessageProcessor> templateStages = new ArrayList<MessageProcessor>();
+
+    public Map<Object, Object> getTemplateProperties()
+    {
+        return templateProperties;
+    }
+
+    public void setTemplateStages(List<MessageProcessor> messageProcessors)
+    {
+        this.templateStages.addAll(messageProcessors);
+    }
+
+    public List<MessageProcessor> getTemplateStages()
+    {
+        return templateStages;
+    }
+
+    public void setTemplateProperties(Map<Object, Object> templateProperties)
+    {
+        this.templateProperties = templateProperties;
+    }
+
+
 
     public Flow(String name, MuleContext muleContext)
     {

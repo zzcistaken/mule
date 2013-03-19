@@ -278,10 +278,15 @@ public class DefaultBeanAssembler implements BeanAssembler
                 List list = retrieveList(oldValue);
                 if (ChildMapEntryDefinitionParser.KeyValuePair.class.getName().equals(beanClass))
                 {
-                    list.add(new ManagedMap());
-                    retrieveMap(list.get(list.size() - 1)).put(
-                            sourceProperties.getPropertyValue(ChildMapEntryDefinitionParser.KEY).getValue(),
-                            sourceProperties.getPropertyValue(ChildMapEntryDefinitionParser.VALUE).getValue());
+                    PropertyValue propertyValue = sourceProperties.getPropertyValue(ChildMapEntryDefinitionParser.KEY);
+                    PropertyValue propertyValue1 = sourceProperties.getPropertyValue(ChildMapEntryDefinitionParser.VALUE);
+                    if (propertyValue != null && propertyValue1 != null)
+                    {
+                        list.add(new ManagedMap());
+                        retrieveMap(list.get(list.size() - 1)).put(
+                                propertyValue.getValue(),
+                                propertyValue1.getValue());
+                    }
                 }
                 else if (beanClass.equals(ChildListEntryDefinitionParser.ListEntry.class.getName()))
                 {

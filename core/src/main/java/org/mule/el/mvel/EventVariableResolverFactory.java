@@ -13,8 +13,13 @@ package org.mule.el.mvel;
 import org.mule.api.MuleContext;
 import org.mule.api.MuleEvent;
 import org.mule.api.construct.FlowConstruct;
+import org.mule.construct.Flow;
+import org.mule.el.context.AbstractMapContext;
+
+import java.util.Set;
 
 import org.mvel2.ParserContext;
+import org.mvel2.integration.VariableResolver;
 
 class EventVariableResolverFactory extends MessageVariableResolverFactory
 {
@@ -25,6 +30,7 @@ class EventVariableResolverFactory extends MessageVariableResolverFactory
     {
         super(parserContext, muleContext, event.getMessage());
         addFinalVariable("flow", new FlowContext(event.getFlowConstruct()));
+        addFinalVariable("templateProperties", new TemplatePropertiesContext((Flow) event.getFlowConstruct()));
     }
 
     public static class FlowContext
@@ -39,6 +45,41 @@ class EventVariableResolverFactory extends MessageVariableResolverFactory
         public String getName()
         {
             return flowConstruct.getName();
+        }
+    }
+
+    public static class TemplatePropertiesContext extends AbstractMapContext<String, String>
+    {
+        private Flow flow;
+
+        public TemplatePropertiesContext(Flow flow)
+        {
+            this.flow = flow;
+        }
+
+
+        @Override
+        public String get(Object o)
+        {
+            return (String) flow.getTemplateProperties().get(o);
+        }
+
+        @Override
+        public String put(String s, String s2)
+        {
+            throw new UnsupportedOperationException("template properties cannot be modified");
+        }
+
+        @Override
+        public String remove(Object o)
+        {
+            throw new UnsupportedOperationException("template properties cannot be modified");
+        }
+
+        @Override
+        public Set<String> keySet()
+        {
+            throw new UnsupportedOperationException("template properties cannot be listed");
         }
     }
 }

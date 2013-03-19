@@ -350,7 +350,7 @@
                 </xsd:documentation>
             </xsd:annotation>
         </xsd:attribute>
-        <xsd:attribute name="port" type="mule:substitutablePortNumber">
+        <xsd:attribute name="port" type="xsd:string">
             <xsd:annotation>
                 <xsd:documentation>The port number to use when a connection is made.</xsd:documentation>
             </xsd:annotation>
@@ -481,7 +481,7 @@
                         </xsd:element>
                         <xsd:element ref="mule:abstract-transformer" minOccurs="0" maxOccurs="1"/>
                     </xsd:sequence>
-                    <xsd:attribute name="status" type="statusType">
+                    <xsd:attribute name="status" type="xsd:string">
                         <xsd:annotation>
                             <xsd:documentation>
                                 HTTP status code of the response

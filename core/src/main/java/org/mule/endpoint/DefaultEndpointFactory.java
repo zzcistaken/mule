@@ -19,6 +19,8 @@ import org.mule.api.endpoint.EndpointURI;
 import org.mule.api.endpoint.ImmutableEndpoint;
 import org.mule.api.endpoint.InboundEndpoint;
 import org.mule.api.endpoint.OutboundEndpoint;
+import org.mule.api.lifecycle.Initialisable;
+import org.mule.api.lifecycle.InitialisationException;
 import org.mule.api.registry.RegistrationException;
 import org.mule.api.registry.ServiceType;
 import org.mule.config.i18n.CoreMessages;
@@ -60,7 +62,6 @@ public class DefaultEndpointFactory implements EndpointFactory
         {
             logger.debug("Named EndpointBuilder not found, creating endpoint from uri");
             endpointBuilder = new EndpointURIEndpointBuilder(uri, muleContext);
-
         }
         return getOutboundEndpoint(endpointBuilder);
     }

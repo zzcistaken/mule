@@ -132,6 +132,7 @@
             <xsd:element ref="abstract-exception-strategy"/>
             <xsd:element ref="abstract-flow-construct" />
             <xsd:element ref="flow" />
+            <xsd:element ref="flow-template" />
             <xsd:element ref="sub-flow" />
             <xsd:element ref="abstract-model"/>
             <xsd:element ref="abstract-interceptor-stack"/>
@@ -2289,6 +2290,8 @@
         </xsd:complexContent>
     </xsd:complexType>
 
+    <xsd:element name="flow-template" type="flowType"/>
+
     <xsd:element name="flow" type="flowType">
         <xsd:annotation>
             <xsd:documentation>
@@ -2308,8 +2311,9 @@
                             </xsd:documentation>
                         </xsd:annotation>
                     </xsd:element>
+                    <xsd:group ref="templatePropertiesGroup"/>
                     <xsd:group ref="messageSourceOrInboundEndpoint" minOccurs="0"/>
-                    <xsd:choice minOccurs="1" maxOccurs="unbounded">
+                    <xsd:choice minOccurs="0" maxOccurs="unbounded">
                         <xsd:group ref="messageProcessorOrOutboundEndpoint"/>
                         <xsd:element name="response">
                             <xsd:annotation>
@@ -2332,6 +2336,13 @@
                     </xsd:element>
                 </xsd:sequence>
                 <xsd:attribute name="name" type="nonBlankString" use="required">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            The name used to identify this flow construct.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="extends" type="nonBlankString" use="optional">
                     <xsd:annotation>
                         <xsd:documentation>
                             The name used to identify this flow construct.
@@ -2407,18 +2418,12 @@
                         </xsd:union>
                     </xsd:simpleType>
                 </xsd:attribute>
-                <xsd:attribute name="initialState" default="started">
+                <xsd:attribute name="initialState" default="started" type="xsd:string">
                     <xsd:annotation>
                         <xsd:documentation>
                             The initial state of the flow. Usually a flow is started automatically ("started"), but this attribute can be used to disable initial startup ("stopped").
                         </xsd:documentation>
                     </xsd:annotation>
-                    <xsd:simpleType>
-                        <xsd:restriction base="xsd:NMTOKEN">
-                            <xsd:enumeration value="started"/>
-                            <xsd:enumeration value="stopped"/>
-                        </xsd:restriction>
-                    </xsd:simpleType>
                 </xsd:attribute>                
            </xsd:extension>
         </xsd:complexContent>
@@ -4559,6 +4564,58 @@
                 </xsd:attribute>
             </xsd:extension>
         </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:element name="template-stage" type="templateStageType" substitutionGroup="abstract-message-processor">
+        <xsd:annotation>
+            <xsd:documentation>
+                A transformer that sets the paylaod with the provided value
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+
+    <xsd:complexType name="templateStageType">
+        <xsd:complexContent>
+            <xsd:extension base="abstractMessageProcessorType">
+                <xsd:sequence>
+                    <xsd:element name="documentation" type="templateStageDocumentationType" minOccurs="0"/>
+                    <xsd:group ref="messageProcessorOrOutboundEndpoint" minOccurs="0" maxOccurs="unbounded"/>
+                </xsd:sequence>
+                <xsd:attribute name="name" type="xsd:string"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="templateStageDocumentationType">
+        <xsd:sequence>
+            <xsd:element name="expected-content" minOccurs="0">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="flow-variable" minOccurs="0" maxOccurs="unbounded">
+                            <xsd:complexType>
+                                <xsd:attribute name="name" type="xsd:string"/>
+                                <xsd:attribute name="type" type="xsd:string"/>
+                                <xsd:attribute name="description" type="xsd:string"/>
+                            </xsd:complexType>
+                        </xsd:element>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="provided-content" minOccurs="0">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="flow-variable" minOccurs="0" maxOccurs="unbounded">
+                            <xsd:complexType>
+                                <xsd:attribute name="name" type="xsd:string"/>
+                                <xsd:attribute name="type" type="xsd:string"/>
+                                <xsd:attribute name="description" type="xsd:string"/>
+                            </xsd:complexType>
+                        </xsd:element>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+        </xsd:sequence>
+        <xsd:attribute name="description" type="xsd:string"/>
     </xsd:complexType>
 
     <xsd:element name="set-payload" type="setPayloadTransformerType" substitutionGroup="abstract-transformer">
@@ -7829,6 +7886,18 @@
         </xsd:sequence>
     </xsd:group>
 
+    <xsd:group name="templatePropertiesGroup">
+        <xsd:sequence>
+            <xsd:element name="template-property" type="keyValueDodType" minOccurs="0" maxOccurs="unbounded">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        Sets a Mule property. This is a name/value pair that can be set on components, services, etc., and which provide a generic way of configuring the system. Typically, you shouldn't need to use a generic property like this, since almost all functionality is exposed via dedicated elements. However, it can be useful in configuring obscure or overlooked options and in configuring transports from the generic endpoint elements.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:group>
+
     <xsd:complexType name="listOrSetType">
         <xsd:complexContent>
             <xsd:extension base="spring:listOrSetType"/>
@@ -7852,11 +7921,23 @@
         <xsd:attribute name="value-ref" type="xsd:string"/>
     </xsd:complexType>
 
+    <xsd:complexType name="keyValueDodType">
+        <xsd:complexContent>
+            <xsd:extension base="keyType">
+                <xsd:attribute name="value" type="xsd:string"/>
+                <xsd:attribute name="defaultValue" type="xsd:string"/>
+                <xsd:attribute name="value-ref" type="xsd:string"/>
+                <xsd:attribute name="doc" type="xsd:string"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
     <xsd:complexType name="keyValueType">
         <xsd:complexContent>
             <xsd:extension base="keyType">
                 <xsd:attribute name="value" type="xsd:string"/>
                 <xsd:attribute name="value-ref" type="xsd:string"/>
+                <xsd:attribute name="defaultValue" type="xsd:string"/>
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>

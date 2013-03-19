@@ -11,10 +11,17 @@
 package org.mule.config.spring.parsers.specific;
 
 import org.mule.api.config.MuleProperties;
+import org.mule.config.spring.parsers.PostProcessor;
+import org.mule.config.spring.parsers.assembly.BeanAssembler;
 import org.mule.config.spring.parsers.generic.OrphanDefinitionParser;
 import org.mule.config.spring.util.ProcessingStrategyUtils;
 import org.mule.construct.Flow;
 
+import java.util.List;
+
+import org.springframework.beans.MutablePropertyValues;
+import org.springframework.beans.PropertyValue;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.w3c.dom.Element;
@@ -24,6 +31,7 @@ public class FlowDefinitionParser extends OrphanDefinitionParser
     public FlowDefinitionParser()
     {
         super(Flow.class, true);
+        addIgnored("extends");
         addIgnored("abstract");
         addIgnored("name");
         addIgnored("processingStrategy");
@@ -38,4 +46,24 @@ public class FlowDefinitionParser extends OrphanDefinitionParser
             ProcessingStrategyUtils.QUEUED_ASYNC_PROCESSING_STRATEGY);
         super.doParse(element, parserContext, builder);
     }
+
+    @Override
+    protected String getParentName(Element element)
+    {
+        return element.getAttribute("extends");
+    }
+
+    @Override
+    protected BeanDefinitionBuilder createBeanDefinitionBuilder(Element element, Class<?> beanClass)
+    {
+        String parentTemplate = element.getAttribute("extends");
+        if (parentTemplate != null)
+        {
+            BeanDefinitionBuilder beanDefinitionBuilder = BeanDefinitionBuilder.childBeanDefinition(parentTemplate);
+            beanDefinitionBuilder.getBeanDefinition().setBeanClass(Flow.class);
+            return beanDefinitionBuilder;
+        }
+        return super.createBeanDefinitionBuilder(element, beanClass);
+    }
+
 }

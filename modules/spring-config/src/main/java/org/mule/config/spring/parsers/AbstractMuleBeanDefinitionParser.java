@@ -39,6 +39,8 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.MutablePropertyValues;
+import org.springframework.beans.PropertyValue;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
@@ -130,6 +132,24 @@ public abstract class AbstractMuleBeanDefinitionParser extends AbstractBeanDefin
     {
         addIgnored(ATTRIBUTE_ID);
         addBeanFlag(MuleHierarchicalBeanDefinitionParserDelegate.MULE_FORCE_RECURSE);
+        registerPostProcessor(new PostProcessor()
+        {
+            @Override
+            public void postProcess(ParserContext context, BeanAssembler assembler, Element element)
+            {
+                MutablePropertyValues propertyValues = assembler.getBean().getBeanDefinition().getPropertyValues();
+                List<PropertyValue> propertyValueList = propertyValues.getPropertyValueList();
+                System.out.println(propertyValues);
+                for (PropertyValue propertyValue : propertyValueList)
+                {
+                    if (propertyValue.getValue().toString().startsWith("123{"))
+                    {
+                        BeanDefinition containingBeanDefinition = context.getContainingBeanDefinition();
+                        //propertyValue.setConvertedValue("4444");
+                    }
+                }
+            }
+        });
     }
 
     public MuleDefinitionParserConfiguration addReference(String propertyName)
@@ -263,7 +283,13 @@ public abstract class AbstractMuleBeanDefinitionParser extends AbstractBeanDefin
         setRegistry(context.getRegistry());
         checkElementNameUnique(element);
         Class<?> beanClass = getClassInternal(element);
+        String parentName = getParentName(element);
         BeanDefinitionBuilder builder = createBeanDefinitionBuilder(element, beanClass);
+        if (parentName != null) {
+            builder.setParentName(parentName);
+            //builder.getRawBeanDefinition().setParentName(parentName);
+        }
+
         builder.getRawBeanDefinition().setSource(context.extractSource(element));
         builder.setScope(isSingleton() ? BeanDefinition.SCOPE_SINGLETON : BeanDefinition.SCOPE_PROTOTYPE);
 
@@ -295,7 +321,13 @@ public abstract class AbstractMuleBeanDefinitionParser extends AbstractBeanDefin
         }
 
         doParse(element, context, builder);
-        return builder.getBeanDefinition();
+        AbstractBeanDefinition beanDefinition = builder.getBeanDefinition();
+        return beanDefinition;
+    }
+
+    protected String getParentName(Element element)
+    {
+        return null;
     }
 
     protected void setRegistry(BeanDefinitionRegistry registry)

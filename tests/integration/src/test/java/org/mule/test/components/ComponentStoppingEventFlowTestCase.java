@@ -32,13 +32,10 @@ public class ComponentStoppingEventFlowTestCase extends FunctionalTestCase
     @Test
     public void testNullReturnStopsFlow() throws Exception
     {
-        MuleClient client = new MuleClient(muleContext);
-
-        MuleMessage msg = client.send("vm://in", "test data", null);
-        assertNotNull(msg);
-        final String payload = msg.getPayloadAsString();
-        assertNotNull(payload);
-        assertEquals(TEST_MESSAGE, payload);
+        while (true)
+        {
+            Thread.sleep(1000);
+        }
     }
 
     public static final class ComponentStoppingFlow

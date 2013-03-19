@@ -10,10 +10,13 @@
 
 package org.mule.util;
 
+import org.mule.RequestContext;
 import org.mule.api.MuleMessage;
 import org.mule.api.expression.ExpressionManager;
 
 import java.util.regex.Pattern;
+
+import org.omg.CORBA.Request;
 
 /**
  * This class acts as a wrapper for configuration attributes that support simple text, expression or regular
@@ -74,11 +77,11 @@ public class AttributeEvaluator
     {
         if (isExpression())
         {
-            return expressionManager.evaluate(attributeValue, message);
+            return expressionManager.evaluate(attributeValue, RequestContext.getEvent());
         }
         else
         {
-            return expressionManager.parse(attributeValue, message);
+            return expressionManager.parse(attributeValue, RequestContext.getEvent());
         }
     }
 

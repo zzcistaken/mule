@@ -29,6 +29,8 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.codehaus.jackson.type.TypeReference;
+
 /**
  * A transformer that will convert a JSON encoded object graph to a java object. The
  * object type is determined by the 'returnType' attribute. Note that this
@@ -37,8 +39,8 @@ import java.util.Map;
  */
 public class JsonToObject extends AbstractJsonTransformer
 {
+    private static TypeReference<HashMap<String,Object>> mapTypeRef = new TypeReference<HashMap<String,Object>>() {};
     private static final DataType<JsonData> JSON_TYPE = DataTypeFactory.create(JsonData.class);
-
     private Map<Class<?>, Class<?>> deserializationMixins = new HashMap<Class<?>, Class<?>>();
 
     public JsonToObject()

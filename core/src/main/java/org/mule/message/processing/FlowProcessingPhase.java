@@ -59,9 +59,9 @@ public class FlowProcessingPhase implements MessageProcessPhase<FlowProcessingPh
                     try
                     {
                         TransactionalErrorHandlingExecutionTemplate transactionTemplate = TransactionalErrorHandlingExecutionTemplate.
-                                createMainExecutionTemplate(messageProcessContext.getFlowConstruct().getMuleContext(),
-                                                            (messageProcessContext.getTransactionConfig() == null ? new MuleTransactionConfig() : messageProcessContext.getTransactionConfig()),
-                                                            messageProcessContext.getFlowConstruct().getExceptionListener());
+                            createMainExecutionTemplate(messageProcessContext.getFlowConstruct().getMuleContext(),
+                                                        (messageProcessContext.getTransactionConfig() == null ? new MuleTransactionConfig() : messageProcessContext.getTransactionConfig()),
+                                                        messageProcessContext.getFlowConstruct().getExceptionListener());
                         MuleEvent response = transactionTemplate.execute(new ExecutionCallback<MuleEvent>()
                         {
                             @Override

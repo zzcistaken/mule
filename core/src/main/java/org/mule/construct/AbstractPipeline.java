@@ -62,7 +62,7 @@ public abstract class AbstractPipeline extends AbstractFlowConstruct implements 
     protected MessageSource messageSource;
     protected MessageProcessor pipeline;
 
-    protected List<MessageProcessor> messageProcessors = Collections.emptyList();
+    protected List<MessageProcessor> messageProcessors = new ArrayList<MessageProcessor>();
     private Map<MessageProcessor, String> flowMap = new LinkedHashMap<MessageProcessor, String>();
 
     protected ProcessingStrategy processingStrategy;
@@ -145,7 +145,7 @@ public abstract class AbstractPipeline extends AbstractFlowConstruct implements 
     @Override
     public void setMessageProcessors(List<MessageProcessor> messageProcessors)
     {
-        this.messageProcessors = messageProcessors;
+        this.messageProcessors.addAll(messageProcessors);
     }
 
     @Override

@@ -163,6 +163,17 @@
             <artifactId>xapool</artifactId>
             <version>1.5.0-osgi</version>
         </dependency>
+<!--        <dependency>
+            <groupId>org.mule.modules</groupId>
+            <artifactId>mule-module-apikit</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <exclusions >
+                <exclusion>
+                    <groupId>org.mule.modules</groupId>
+                    <artifactId>mule-module-spring-config</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>-->
 
 
         <dependency>
