@@ -107,7 +107,13 @@ public class MuleApplicationContext extends AbstractXmlApplicationContext
                         ManagedList stages = (ManagedList) templateStages.getValue();
                         for (int i = 0; i < stages.size(); i++)
                         {
-                            templateStagesMap.put((String)((BeanDefinition)((ManagedList) templateStages.getValue()).get(i)).getPropertyValues().getPropertyValue("name").getValue(),(BeanDefinition)stages.get(i));
+                            BeanDefinition templateStageBeanDefinition = (BeanDefinition) ((ManagedList) templateStages.getValue()).get(i);
+                            PropertyValue documentation = templateStageBeanDefinition.getPropertyValues().getPropertyValue("documentation");
+                            if (documentation != null)
+                            {
+                                templateStageBeanDefinition.getPropertyValues().removePropertyValue(documentation);
+                            }
+                            templateStagesMap.put((String) templateStageBeanDefinition.getPropertyValues().getPropertyValue("name").getValue(),(BeanDefinition)stages.get(i));
                         }
                     }
                     replaceTemplatePropertiesWithRealValues(beanDefinition, templateValues, templateStagesMap);

@@ -21,6 +21,7 @@
         <template-property key="http.error.status.code" value="502"/>
         <template-property key="required.role" value="ROLE_ADMIN"/>
         <template-property key="service.name" value="World Service"/>
+        <template-property key="http.port" value="8090"/>
         <template-stage name="serviceImplementation">
             <set-payload value="Hello World #[username] user!"/>
         </template-stage>
@@ -28,6 +29,7 @@
 
     <flow name="helloTemplatesService" extends="baseHttpService">
         <template-property key="http.path" value="/helloTemplate"/>
+        <template-property key="http.port" value="8091"/>
         <template-property key="http.error.status.code" value="502"/>
         <template-property key="required.role" value="ROLE_ADMIN"/>
         <template-property key="service.name" value="Template Service"/>
@@ -38,6 +40,7 @@
 
     <flow name="helloMuleService" extends="baseHttpService">
         <template-property key="http.path" value="/helloMule"/>
+        <template-property key="http.port" value="8092"/>
         <template-property key="http.error.status.code" value="502"/>
         <template-property key="required.role" value="ROLE_USER"/>
         <template-property key="service.name" value="Mule Service"/>

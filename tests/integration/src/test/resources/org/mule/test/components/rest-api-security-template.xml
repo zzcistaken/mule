@@ -35,12 +35,13 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
         <mule-ss:delegate-security-provider name="memory-dao" delegate-ref="authenticationManager" />
     </mule-ss:security-manager>
 
-    <flow-template name="baseHttpService">
+    <flow name="baseHttpService" abstract="true">
         <template-property key="http.path"  doc="context path to access the service"/>
         <template-property key="required.role" defaultValue="ROLE_ADMIN" doc="role required to access the service"/>
         <template-property key="service.name" defaultValue="generic service" doc="service name that we will sent out as part of the response headers"/>
         <template-property key="http.error.status.code" defaultValue="500" doc="http status code to send in case of an error"/>
-        <http:inbound-endpoint host="localhost" port="8090" path="#{http.path}" />
+        <template-property key="http.port" defaultValue="8080" doc="http status code to send in case of an error"/>
+        <http:inbound-endpoint host="localhost" port="#{http.port}" path="#{http.path}" />
         <json:json-to-object-transformer returnClass="java.lang.Object"/>
         <set-variable variableName="originalRequest" value="#[payload]"/>
         <http:basic-security-filter realm="mule-realm"/>
@@ -93,6 +94,6 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
                 <http:response-builder status="#{http.error.status.code}"/>
             </catch-exception-strategy>
         </choice-exception-strategy>
-    </flow-template>
+    </flow>
 
 </mule>

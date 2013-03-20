@@ -11,6 +11,7 @@
 package org.mule.config.spring.parsers.specific;
 
 import org.mule.api.config.MuleProperties;
+import org.mule.config.spring.parsers.MuleDefinitionParserConfiguration;
 import org.mule.config.spring.parsers.PostProcessor;
 import org.mule.config.spring.parsers.assembly.BeanAssembler;
 import org.mule.config.spring.parsers.generic.OrphanDefinitionParser;
@@ -22,6 +23,7 @@ import java.util.List;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.PropertyValue;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.w3c.dom.Element;
@@ -35,6 +37,7 @@ public class FlowDefinitionParser extends OrphanDefinitionParser
         addIgnored("abstract");
         addIgnored("name");
         addIgnored("processingStrategy");
+        addBeanFlag("abstract");
     }
 
     @java.lang.Override
@@ -50,14 +53,19 @@ public class FlowDefinitionParser extends OrphanDefinitionParser
     @Override
     protected String getParentName(Element element)
     {
-        return element.getAttribute("extends");
+        String anExtends = element.getAttribute("extends");
+        if (anExtends != null && !anExtends.trim().equals(""))
+        {
+            return anExtends;
+        }
+        return super.getParentName(element);
     }
 
     @Override
     protected BeanDefinitionBuilder createBeanDefinitionBuilder(Element element, Class<?> beanClass)
     {
         String parentTemplate = element.getAttribute("extends");
-        if (parentTemplate != null)
+        if (parentTemplate != null && !parentTemplate.trim().equals(""))
         {
             BeanDefinitionBuilder beanDefinitionBuilder = BeanDefinitionBuilder.childBeanDefinition(parentTemplate);
             beanDefinitionBuilder.getBeanDefinition().setBeanClass(Flow.class);
@@ -65,5 +73,36 @@ public class FlowDefinitionParser extends OrphanDefinitionParser
         }
         return super.createBeanDefinitionBuilder(element, beanClass);
     }
+
+    @Override
+    public MuleDefinitionParserConfiguration addIgnored(String propertyName)
+    {
+        //if (propertyName.equals("abstract"))
+        //{
+        //    return this;
+        //}
+        return super.addIgnored(propertyName);
+    }
+
+    @Override
+    protected AbstractBeanDefinition parseInternal(Element element, ParserContext context)
+    {
+        if (element.hasAttribute("abstract"))
+        {
+            addBeanFlag("abstract");
+        }
+        AbstractBeanDefinition abstractBeanDefinition = super.parseInternal(element, context);
+        if (element.hasAttribute("abstract"))
+        {
+            abstractBeanDefinition.setAbstract(true);
+        }
+        String anExtends = element.getAttribute("extends");
+        if (anExtends != null && !anExtends.trim().equals(""))
+        {
+            abstractBeanDefinition.setParentName(anExtends);
+        }
+        return abstractBeanDefinition;
+    }
+
 
 }

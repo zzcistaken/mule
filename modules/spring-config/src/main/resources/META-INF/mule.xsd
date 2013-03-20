@@ -2342,6 +2342,7 @@
                         </xsd:documentation>
                     </xsd:annotation>
                 </xsd:attribute>
+                <xsd:attribute name="abstract" type="xsd:boolean"/>
                 <xsd:attribute name="extends" type="nonBlankString" use="optional">
                     <xsd:annotation>
                         <xsd:documentation>
