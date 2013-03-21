@@ -26,6 +26,7 @@ import org.mule.config.spring.parsers.assembly.DefaultBeanAssemblerFactory;
 import org.mule.config.spring.parsers.assembly.configuration.ReusablePropertyConfiguration;
 import org.mule.config.spring.parsers.assembly.configuration.ValueMap;
 import org.mule.config.spring.parsers.generic.AutoIdUtils;
+import org.mule.construct.Flow;
 import org.mule.processor.AbstractMessageProcessorOwner;
 import org.mule.util.ClassUtils;
 import org.mule.util.StringUtils;
@@ -131,25 +132,9 @@ public abstract class AbstractMuleBeanDefinitionParser extends AbstractBeanDefin
     public AbstractMuleBeanDefinitionParser()
     {
         addIgnored(ATTRIBUTE_ID);
+        addIgnored("extends");
+        addIgnored("abstract");
         addBeanFlag(MuleHierarchicalBeanDefinitionParserDelegate.MULE_FORCE_RECURSE);
-        registerPostProcessor(new PostProcessor()
-        {
-            @Override
-            public void postProcess(ParserContext context, BeanAssembler assembler, Element element)
-            {
-                MutablePropertyValues propertyValues = assembler.getBean().getBeanDefinition().getPropertyValues();
-                List<PropertyValue> propertyValueList = propertyValues.getPropertyValueList();
-                System.out.println(propertyValues);
-                for (PropertyValue propertyValue : propertyValueList)
-                {
-                    if (propertyValue.getValue().toString().startsWith("123{"))
-                    {
-                        BeanDefinition containingBeanDefinition = context.getContainingBeanDefinition();
-                        //propertyValue.setConvertedValue("4444");
-                    }
-                }
-            }
-        });
     }
 
     public MuleDefinitionParserConfiguration addReference(String propertyName)
@@ -278,6 +263,10 @@ public abstract class AbstractMuleBeanDefinitionParser extends AbstractBeanDefin
     @Override
     protected AbstractBeanDefinition parseInternal(Element element, ParserContext context)
     {
+        if (element.hasAttribute("abstract"))
+        {
+            addBeanFlag("abstract");
+        }
         preProcess(element);
         setParserContext(context);
         setRegistry(context.getRegistry());
@@ -322,11 +311,25 @@ public abstract class AbstractMuleBeanDefinitionParser extends AbstractBeanDefin
 
         doParse(element, context, builder);
         AbstractBeanDefinition beanDefinition = builder.getBeanDefinition();
+        if (element.hasAttribute("abstract"))
+        {
+            beanDefinition.setAbstract(true);
+        }
+        String anExtends = element.getAttribute("extends");
+        if (anExtends != null && !anExtends.trim().equals(""))
+        {
+            beanDefinition.setParentName(anExtends);
+        }
         return beanDefinition;
     }
 
     protected String getParentName(Element element)
     {
+        String anExtends = element.getAttribute("extends");
+        if (anExtends != null && !anExtends.trim().equals(""))
+        {
+            return anExtends;
+        }
         return null;
     }
 
@@ -358,7 +361,17 @@ public abstract class AbstractMuleBeanDefinitionParser extends AbstractBeanDefin
 
     protected BeanDefinitionBuilder createBeanDefinitionBuilder(Element element, Class<?> beanClass)
     {
-        BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(beanClass);
+        String parentTemplate = element.getAttribute("extends");
+        BeanDefinitionBuilder builder;
+        if (parentTemplate != null && !parentTemplate.trim().equals(""))
+        {
+            builder = BeanDefinitionBuilder.childBeanDefinition(parentTemplate);
+            builder.getBeanDefinition().setBeanClass(beanClass);
+        }
+        else
+        {
+            builder = BeanDefinitionBuilder.rootBeanDefinition(beanClass);
+        }
         // If a constructor with a single MuleContext argument is available then use it.
         if (ClassUtils.getConstructor(beanClass, new Class[]{MuleContext.class}, true) != null)
         {

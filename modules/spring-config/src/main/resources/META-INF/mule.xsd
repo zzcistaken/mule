@@ -4592,6 +4592,12 @@
             <xsd:element name="expected-content" minOccurs="0">
                 <xsd:complexType>
                     <xsd:sequence>
+                        <xsd:element name="payload" minOccurs="0" maxOccurs="1">
+                            <xsd:complexType>
+                                <xsd:attribute name="type" type="xsd:string"/>
+                                <xsd:attribute name="description" type="xsd:string"/>
+                            </xsd:complexType>
+                        </xsd:element>
                         <xsd:element name="flow-variable" minOccurs="0" maxOccurs="unbounded">
                             <xsd:complexType>
                                 <xsd:attribute name="name" type="xsd:string"/>
@@ -4605,6 +4611,12 @@
             <xsd:element name="provided-content" minOccurs="0">
                 <xsd:complexType>
                     <xsd:sequence>
+                        <xsd:element name="payload" minOccurs="0" maxOccurs="1">
+                            <xsd:complexType>
+                                <xsd:attribute name="type" type="xsd:string"/>
+                                <xsd:attribute name="description" type="xsd:string"/>
+                            </xsd:complexType>
+                        </xsd:element>
                         <xsd:element name="flow-variable" minOccurs="0" maxOccurs="unbounded">
                             <xsd:complexType>
                                 <xsd:attribute name="name" type="xsd:string"/>
@@ -8015,6 +8027,14 @@
                     <xsd:annotation>
                         <xsd:documentation>
                             Allows Spring beans to be defined as a dispatcher pool factory
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="abstract" type="xsd:boolean"/>
+                <xsd:attribute name="extends" type="nonBlankString" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            The name used to identify this flow construct.
                         </xsd:documentation>
                     </xsd:annotation>
                 </xsd:attribute>

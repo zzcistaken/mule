@@ -14,7 +14,11 @@
 
     <spring:beans>
         <spring:import resource="rest-api-security-template.xml" />
+
+        <spring:bean name="userService" class="org.mule.test.TestUserService"/>
     </spring:beans>
+
+    <http:connector name="httpConnector" extends="baseHttpConnector"/>
 
     <flow name="helloWorldService" extends="baseHttpService">
         <template-property key="http.path" value="/helloWorld"/>
@@ -22,9 +26,17 @@
         <template-property key="required.role" value="ROLE_ADMIN"/>
         <template-property key="service.name" value="World Service"/>
         <template-property key="http.port" value="8090"/>
-        <template-stage name="serviceImplementation">
-            <set-payload value="Hello World #[username] user!"/>
+        <template-stage name="processMessage">
+            <logger level="ERROR" message="#[payload]"/>
         </template-stage>
+        <!--<template-stage name="serviceImplementation">
+            <processor-chain>
+                <set-property propertyName="X-USER" value="#[username]"/>
+                <set-property propertyName="X-SYSTEM" value="Mule"/>
+                <set-property propertyName="X-LANG" value="Java"/>
+            </processor-chain>
+            <set-payload value="Hello World #[username] user!"/>
+        </template-stage>-->
     </flow>
 
     <flow name="helloTemplatesService" extends="baseHttpService">
@@ -33,9 +45,12 @@
         <template-property key="http.error.status.code" value="502"/>
         <template-property key="required.role" value="ROLE_ADMIN"/>
         <template-property key="service.name" value="Template Service"/>
-        <template-stage name="serviceImplementation">
-            <set-payload value="Hello Template #[username] user!"/>
+        <template-stage name="processMessage">
+            <set-payload value="'Hi #[payload]! How are you doing?"/>
         </template-stage>
+        <!--<template-stage name="serviceImplementation">
+            <set-payload value="Hello Template #[username] user!"/>
+        </template-stage>-->
     </flow>
 
     <flow name="helloMuleService" extends="baseHttpService">
@@ -44,9 +59,12 @@
         <template-property key="http.error.status.code" value="502"/>
         <template-property key="required.role" value="ROLE_USER"/>
         <template-property key="service.name" value="Mule Service"/>
-        <template-stage name="serviceImplementation">
-            <set-payload value="Hello Mule #[username] user!"/>
+        <template-stage name="processMessage">
+            <logger level="ERROR" message="#[payload]"/>
         </template-stage>
+        <!--<template-stage name="serviceImplementation">
+            <set-payload value="Hello Mule #[username] user!"/>
+        </template-stage>-->
     </flow>
 
 </mule>

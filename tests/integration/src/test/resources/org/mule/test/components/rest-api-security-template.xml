@@ -20,13 +20,13 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 
     <spring:beans>
         <ss:authentication-manager alias="authenticationManager">
-            <ss:authentication-provider>
-                <ss:user-service id="userService">
+            <ss:authentication-provider user-service-ref="userService">
+<!--                <ss:user-service id="userService">
                     <ss:user name="marie" password="marie"
                              authorities="ROLE_ADMIN" />
                     <ss:user name="john" password="john"
                              authorities="ROLE_USER" />
-                </ss:user-service>
+                </ss:user-service>-->
             </ss:authentication-provider>
         </ss:authentication-manager>
     </spring:beans>
@@ -34,6 +34,8 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
     <mule-ss:security-manager>
         <mule-ss:delegate-security-provider name="memory-dao" delegate-ref="authenticationManager" />
     </mule-ss:security-manager>
+
+    <http:connector name="baseHttpConnector" clientSoTimeout="300000" serverSoTimeout="300000" abstract="true"/>
 
     <flow name="baseHttpService" abstract="true">
         <template-property key="http.path"  doc="context path to access the service"/>
@@ -62,14 +64,25 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
                 <expression-component>throw new org.mule.test.UserNotActiveException()</expression-component>
             </otherwise>
         </choice>
-        <template-stage name="serviceImplementation">
+        <set-variable variableName="messages" value="#[[]]"/>
+        <foreach collection="#[payload['people']]">
+            <template-stage name="processMessage">
+                <documentation description="Place holder for processing each message received by the user">
+                    <provided-content>
+                        <payload type="String" description="A message provided by the user"/>
+                    </provided-content>
+                </documentation>
+            </template-stage>
+            <expression-component>#[messages.add(payload)]</expression-component>
+        </foreach>
+        <!--<template-stage name="serviceImplementation">
             <documentation description="Place holder for service implementation.">
                 <provided-content>
                     <flow-variable name="username" type="String" description="username for the authenticated user"/>
                 </provided-content>
             </documentation>
-        </template-stage>
-        <set-payload value="#[['status':'ok', 'content': payload]]"/>
+        </template-stage>-->
+        <set-payload value="#[['status':'ok', 'content': messages]]"/>
         <response>
             <set-property propertyName="X-SERVICE" value="#['service name: ' + templateProperties['service.name']]" />
             <json:object-to-json-transformer/>

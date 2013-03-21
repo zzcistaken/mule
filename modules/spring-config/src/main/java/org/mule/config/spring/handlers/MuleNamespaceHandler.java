@@ -22,7 +22,7 @@ import org.mule.component.simple.EchoComponent;
 import org.mule.component.simple.LogComponent;
 import org.mule.component.simple.NullComponent;
 import org.mule.component.simple.PassThroughComponent;
-import org.mule.config.spring.TemplateStageNoUniqueName;
+import org.mule.config.spring.TemplateStageDefinitionParser;
 import org.mule.config.spring.factories.ChoiceRouterFactoryBean;
 import org.mule.config.spring.factories.CompositeMessageSourceFactoryBean;
 import org.mule.config.spring.factories.DefaultMemoryQueueStoreFactoryBean;
@@ -396,10 +396,11 @@ public class MuleNamespaceHandler extends AbstractMuleNamespaceHandler
         // Flow Constructs
         registerBeanDefinitionParser("flow", new FlowDefinitionParser());
         registerBeanDefinitionParser("flow-template", new TemplateDefinitionParser());
-        registerBeanDefinitionParser("template-stage", new TemplateStageNoUniqueName());
+        registerBeanDefinitionParser("template-stage", new TemplateStageDefinitionParser());
 
         registerBeanDefinitionParser("documentation", new ChildDefinitionParser("documentation",String.class));
         registerBeanDefinitionParser("flow-variable", new ChildDefinitionParser("documentation",String.class));
+        registerBeanDefinitionParser("payload", new ChildDefinitionParser("documentation",String.class));
         registerBeanDefinitionParser("expected-content", new ChildDefinitionParser("documentation",String.class));
         registerBeanDefinitionParser("provided-content", new ChildDefinitionParser("documentation",String.class));
         registerBeanDefinitionParser("simple-service", new SimpleServiceDefinitionParser());
