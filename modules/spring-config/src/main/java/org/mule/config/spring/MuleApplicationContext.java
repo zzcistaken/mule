@@ -17,7 +17,6 @@ import org.mule.construct.Flow;
 import org.mule.util.IOUtils;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -81,13 +80,16 @@ public class MuleApplicationContext extends AbstractXmlApplicationContext
         beanFactory.addBeanPostProcessor(new MuleContextPostProcessor(muleContext));
         beanFactory.addBeanPostProcessor(new ExpressionEvaluatorPostProcessor(muleContext));
         beanFactory.addBeanPostProcessor(new GlobalNamePostProcessor());
+        final HashMap<String, BeanDefinition> originalTemplateStagesMap = new HashMap<String, BeanDefinition>();  //original stage gets lose once we replace it for a bean
         beanFactory.addBeanPostProcessor(new MergedBeanDefinitionPostProcessor()
         {
             @Override
             public void postProcessMergedBeanDefinition(RootBeanDefinition beanDefinition, Class<?> beanType, String beanName)
             {
-                if (beanDefinition.getBeanClass().equals(Flow.class))
+                //TODO add isAbstract check before processing it if only one level hierarchy is desired.
+                if (beanDefinition.getBeanClass().equals(Flow.class) && !beanDefinition.isAbstract())
                 {
+
                     HashMap<String, String> templateValues = new HashMap<String, String>();
                     PropertyValue templateProperties = beanDefinition.getPropertyValues().getPropertyValue("templateProperties");
                     ManagedList managedList = (ManagedList) ((BeanDefinition) templateProperties.getValue()).getPropertyValues().getPropertyValueList().get(0).getValue();
@@ -116,12 +118,12 @@ public class MuleApplicationContext extends AbstractXmlApplicationContext
                             templateStagesMap.put((String) templateStageBeanDefinition.getPropertyValues().getPropertyValue("name").getValue(),(BeanDefinition)stages.get(i));
                         }
                     }
-                    replaceTemplatePropertiesWithRealValues(beanDefinition, templateValues, templateStagesMap);
+                    replaceTemplatePropertiesWithRealValues(beanDefinition, templateValues, templateStagesMap, originalTemplateStagesMap);
                     beanDefinition.getPropertyValues().removePropertyValue("templateStages");
                 }
             }
 
-            private void replaceTemplatePropertiesWithRealValues(BeanDefinition beanDefinition, Map<String, String> templateValues, HashMap<String, BeanDefinition> templateStagesMap)
+            private void replaceTemplatePropertiesWithRealValues(BeanDefinition beanDefinition, Map<String, String> templateValues, HashMap<String, BeanDefinition> templateStagesMap, final HashMap<String, BeanDefinition> originalTemplateStagesMap)
             {
                 String prefix = "#{";
                 List<ExtendedPropertyValue> propertyValuesToReplace = new ArrayList<ExtendedPropertyValue>();
@@ -146,7 +148,7 @@ public class MuleApplicationContext extends AbstractXmlApplicationContext
                     }
                     else if (value instanceof BeanDefinition)
                     {
-                        replaceTemplatePropertiesWithRealValues((RootBeanDefinition) value,templateValues, templateStagesMap);
+                        replaceTemplatePropertiesWithRealValues((RootBeanDefinition) value,templateValues, templateStagesMap, originalTemplateStagesMap);
                     }
                     else if (value instanceof ManagedList)
                     {
@@ -155,12 +157,28 @@ public class MuleApplicationContext extends AbstractXmlApplicationContext
                         {
                             if (managedList.get(i) instanceof BeanDefinition && ((BeanDefinition)managedList.get(i)).getBeanClassName().contains("TemplateStage"))
                             {
-                                BeanDefinition templateStageDefinition = (BeanDefinition) managedList.remove(i);
-                                managedList.add(i,templateStagesMap.get(templateStageDefinition.getPropertyValues().getPropertyValue("name").getValue()));
+                                BeanDefinition templateStageDefinition = (BeanDefinition) managedList.get(i);
+                                //If it's doesn't contains the definition then templateStageDefinition is the original one
+                                if (!originalTemplateStagesMap.containsKey(templateStageDefinition.getPropertyValues().getPropertyValue("name").getValue()))
+                                {
+                                    templateStageDefinition.getPropertyValues().removePropertyValue("documentation");
+                                    originalTemplateStagesMap.put((String) templateStageDefinition.getPropertyValues().getPropertyValue("name").getValue(),templateStageDefinition);
+                                }
+                                BeanDefinition templateStageRedefinition = templateStagesMap.get(templateStageDefinition.getPropertyValues().getPropertyValue("name").getValue());
+                                if (templateStageRedefinition != null) //If it was not redefined use the default one which will be empty
+                                {
+                                    managedList.remove(i);
+                                    managedList.add(i, templateStageRedefinition);
+                                }
+                                else
+                                {
+                                    managedList.remove(i);
+                                    managedList.add(i, originalTemplateStagesMap.get(templateStageDefinition.getPropertyValues().getPropertyValue("name").getValue()));
+                                }
                             }
                             else if (managedList.get(i) instanceof BeanDefinition)
                             {
-                                replaceTemplatePropertiesWithRealValues((BeanDefinition) managedList.get(i),templateValues, templateStagesMap);
+                                replaceTemplatePropertiesWithRealValues((BeanDefinition) managedList.get(i),templateValues, templateStagesMap, originalTemplateStagesMap);
                             }
                             else if (managedList.get(i) instanceof RuntimeBeanReference)
                             {

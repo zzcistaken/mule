@@ -92,19 +92,28 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
                 <set-payload value="#[['status' : 'error', 'message' : 'Your user must be active in order to access the service', 'originalRequest': originalRequest]]"/>
                 <json:object-to-json-transformer/>
                 <logger level="ERROR" message="#[payload]"/>
-                <http:response-builder status="#{http.error.status.code}"/>
             </catch-exception-strategy>
             <catch-exception-strategy when="#[exception.causedBy(org.mule.api.security.NotPermittedException)]">
                 <set-payload value="#[['status' : 'error', 'message' : 'You are not authorized to access this resource', 'originalRequest': originalRequest]]"/>
                 <json:object-to-json-transformer/>
                 <logger level="ERROR" message="#[payload]"/>
-                <http:response-builder status="#{http.error.status.code}"/>
             </catch-exception-strategy>
             <catch-exception-strategy when="#[exception.causedBy(org.mule.api.security.UnauthorisedException)]">
                 <set-payload value="#[['status' : 'error', 'message' : 'You must enter a valid username and password', 'originalRequest': originalRequest]]"/>
                 <json:object-to-json-transformer/>
                 <logger level="ERROR" message="#[payload]"/>
-                <http:response-builder status="#{http.error.status.code}"/>
+            </catch-exception-strategy>
+            <catch-exception-strategy>
+                <template-stage name="handleExceptionStage">
+                    <documentation description="Place holder for exception handling">
+                        <provided-content>
+                            <flow-variable name="username" type="String" description="username for the authenticated user"/>
+                        </provided-content>
+                    </documentation>
+                    <http:response-builder status="400"/>
+                    <set-payload value="#[['status' : 'error', 'message' : exception.message]]"/>
+                    <json:object-to-json-transformer/>
+                </template-stage>
             </catch-exception-strategy>
         </choice-exception-strategy>
     </flow>
