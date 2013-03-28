@@ -1,5 +1,6 @@
 package org.mule.config.spring;
 
+import org.mule.api.MessagingException;
 import org.mule.api.MuleEvent;
 import org.mule.api.MuleException;
 import org.mule.api.lifecycle.Initialisable;
@@ -21,6 +22,8 @@ public class TemplateStage extends AbstractMessageProcessorOwner implements Mess
     private String name;
     protected List<MessageProcessor> messageProcessors = new ArrayList<MessageProcessor>();
     private MessageProcessorChain messageProcessorChain;
+    private MessageContentDefinition expectedContent;
+    private MessageContentDefinition providedContent;
 
     public String getName()
     {
@@ -35,11 +38,24 @@ public class TemplateStage extends AbstractMessageProcessorOwner implements Mess
     @Override
     public MuleEvent process(MuleEvent event) throws MuleException
     {
-        if (messageProcessorChain != null)
+        try
         {
-            return messageProcessorChain.process(event);
+            expectedContent.verify(event);
+            if (messageProcessorChain != null)
+            {
+                return messageProcessorChain.process(event);
+            }
+            providedContent.verify(event);
+            return event;
         }
-        return event;
+        catch (MessagingException e)
+        {
+            throw e;
+        }
+        catch (MuleException e)
+        {
+            throw new MessagingException(event,e);
+        }
     }
 
     public void setMessageProcessors(List<MessageProcessor> messageProcessors)
@@ -74,5 +90,15 @@ public class TemplateStage extends AbstractMessageProcessorOwner implements Mess
     protected List<MessageProcessor> getOwnedMessageProcessors()
     {
         return this.messageProcessors;
+    }
+
+    public void setExpectedContent(MessageContentDefinition expectedContent)
+    {
+        this.expectedContent = expectedContent;
+    }
+
+    public void setProvidedContent(MessageContentDefinition providedContent)
+    {
+        this.providedContent = providedContent;
     }
 }

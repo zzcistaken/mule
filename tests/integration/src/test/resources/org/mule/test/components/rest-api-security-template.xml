@@ -66,12 +66,14 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
         </choice>
         <set-variable variableName="messages" value="#[[]]"/>
         <foreach collection="#[payload['people']]">
-            <template-stage name="processMessage">
-                <documentation description="Place holder for processing each message received by the user">
-                    <provided-content>
-                        <payload type="String" description="A message provided by the user"/>
-                    </provided-content>
-                </documentation>
+            <template-stage name="processMessage" doc:description="Stage for processing each of the people names sent by the client">
+                <provided-content>
+                    <payload type="java.lang.String" doc:description="A message provided by the user"/>
+                    <flow-variable variableName="username" type="java.lang.String" doc:description="username of the current user"/>
+                </provided-content>
+                <expected-content>
+                    <payload type="java.lang.String" doc:description="A message provided by the user"/>
+                </expected-content>
             </template-stage>
             <expression-component>#[messages.add(payload)]</expression-component>
         </foreach>
@@ -105,11 +107,11 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
             </catch-exception-strategy>
             <catch-exception-strategy>
                 <template-stage name="handleExceptionStage">
-                    <documentation description="Place holder for exception handling">
-                        <provided-content>
-                            <flow-variable name="username" type="String" description="username for the authenticated user"/>
-                        </provided-content>
-                    </documentation>
+                    <provided-content>
+                        <flow-variable variableName="username" type="java.lang.String" doc:description="username for the authenticated user"/>
+                        <session-variable variableName="service" type="java.lang.String" doc:description="the name of the service that's being executed"/>
+                        <property propertyName="http.status" type="java.lang.String" doc:description="the status code to return to the client"/>
+                    </provided-content>
                     <http:response-builder status="400"/>
                     <set-payload value="#[['status' : 'error', 'message' : exception.message]]"/>
                     <json:object-to-json-transformer/>

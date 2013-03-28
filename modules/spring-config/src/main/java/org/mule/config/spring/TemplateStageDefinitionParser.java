@@ -16,7 +16,8 @@ public class TemplateStageDefinitionParser extends ChildDefinitionParser
     public TemplateStageDefinitionParser()
     {
         super("messageProcessor",TemplateStage.class);
-        addIgnored("documentation");
+        addIgnored("provided-content");
+        addIgnored("required-content");
     }
 
     @Override

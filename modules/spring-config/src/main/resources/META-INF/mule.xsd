@@ -4579,7 +4579,20 @@
         <xsd:complexContent>
             <xsd:extension base="abstractMessageProcessorType">
                 <xsd:sequence>
-                    <xsd:element name="documentation" type="templateStageDocumentationType" minOccurs="0"/>
+                    <xsd:element name="provided-content" minOccurs="0" maxOccurs="1" type="messageContent">
+                        <xsd:annotation>
+                            <xsd:documentation>
+                                The message content expected in the message before executing this stage
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="expected-content" minOccurs="0" maxOccurs="1" type="messageContent">
+                        <xsd:annotation>
+                            <xsd:documentation>
+                                The message content expected after executing this stage
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
                     <xsd:group ref="messageProcessorOrOutboundEndpoint" minOccurs="0" maxOccurs="unbounded"/>
                 </xsd:sequence>
                 <xsd:attribute name="name" type="xsd:string"/>
@@ -4587,48 +4600,52 @@
         </xsd:complexContent>
     </xsd:complexType>
 
-    <xsd:complexType name="templateStageDocumentationType">
+    <xsd:complexType name="messageContent">
         <xsd:sequence>
-            <xsd:element name="expected-content" minOccurs="0">
+            <xsd:element name="payload" minOccurs="0" maxOccurs="1">
                 <xsd:complexType>
-                    <xsd:sequence>
-                        <xsd:element name="payload" minOccurs="0" maxOccurs="1">
-                            <xsd:complexType>
-                                <xsd:attribute name="type" type="xsd:string"/>
-                                <xsd:attribute name="description" type="xsd:string"/>
-                            </xsd:complexType>
-                        </xsd:element>
-                        <xsd:element name="flow-variable" minOccurs="0" maxOccurs="unbounded">
-                            <xsd:complexType>
-                                <xsd:attribute name="name" type="xsd:string"/>
-                                <xsd:attribute name="type" type="xsd:string"/>
-                                <xsd:attribute name="description" type="xsd:string"/>
-                            </xsd:complexType>
-                        </xsd:element>
-                    </xsd:sequence>
+                    <xsd:complexContent>
+                        <xsd:extension base="annotatedType">
+                            <xsd:attribute name="type" type="xsd:string"/>
+                            <xsd:attribute name="description" type="xsd:string"/>
+                        </xsd:extension>
+                    </xsd:complexContent>
                 </xsd:complexType>
             </xsd:element>
-            <xsd:element name="provided-content" minOccurs="0">
+            <xsd:element name="flow-variable" minOccurs="0" maxOccurs="unbounded">
                 <xsd:complexType>
-                    <xsd:sequence>
-                        <xsd:element name="payload" minOccurs="0" maxOccurs="1">
-                            <xsd:complexType>
-                                <xsd:attribute name="type" type="xsd:string"/>
-                                <xsd:attribute name="description" type="xsd:string"/>
-                            </xsd:complexType>
-                        </xsd:element>
-                        <xsd:element name="flow-variable" minOccurs="0" maxOccurs="unbounded">
-                            <xsd:complexType>
-                                <xsd:attribute name="name" type="xsd:string"/>
-                                <xsd:attribute name="type" type="xsd:string"/>
-                                <xsd:attribute name="description" type="xsd:string"/>
-                            </xsd:complexType>
-                        </xsd:element>
-                    </xsd:sequence>
+                    <xsd:complexContent>
+                    <xsd:extension base="annotatedType">
+                        <xsd:attribute name="variableName" type="xsd:string"/>
+                        <xsd:attribute name="type" type="xsd:string"/>
+                        <xsd:attribute name="description" type="xsd:string"/>
+                    </xsd:extension>
+                    </xsd:complexContent>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="session-variable" minOccurs="0" maxOccurs="unbounded">
+                <xsd:complexType>
+                    <xsd:complexContent>
+                    <xsd:extension base="annotatedType">
+                        <xsd:attribute name="variableName" type="xsd:string"/>
+                        <xsd:attribute name="type" type="xsd:string"/>
+                        <xsd:attribute name="description" type="xsd:string"/>
+                    </xsd:extension>
+                    </xsd:complexContent>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="property" minOccurs="0" maxOccurs="unbounded">
+                <xsd:complexType>
+                    <xsd:complexContent>
+                        <xsd:extension base="annotatedType">
+                        <xsd:attribute name="propertyName" type="xsd:string"/>
+                        <xsd:attribute name="type" type="xsd:string"/>
+                        <xsd:attribute name="description" type="xsd:string"/>
+                    </xsd:extension>
+                </xsd:complexContent>
                 </xsd:complexType>
             </xsd:element>
         </xsd:sequence>
-        <xsd:attribute name="description" type="xsd:string"/>
     </xsd:complexType>
 
     <xsd:element name="set-payload" type="setPayloadTransformerType" substitutionGroup="abstract-transformer">
