@@ -43,11 +43,11 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
         <template-property key="service.name" defaultValue="generic service" doc="service name that we will sent out as part of the response headers"/>
         <template-property key="http.error.status.code" defaultValue="500" doc="http status code to send in case of an error"/>
         <template-property key="http.port" defaultValue="8080" doc="http status code to send in case of an error"/>
-        <http:inbound-endpoint host="localhost" port="#{http.port}" path="#{http.path}" />
+        <http:inbound-endpoint host="localhost" port="$[http.port]" path="$[http.path]" />
         <json:json-to-object-transformer returnClass="java.lang.Object"/>
         <set-variable variableName="originalRequest" value="#[payload]"/>
         <http:basic-security-filter realm="mule-realm"/>
-        <mule-ss:authorization-filter requiredAuthorities="#{required.role}"/>
+        <mule-ss:authorization-filter requiredAuthorities="$[required.role]"/>
         <logger level="ERROR" message="#[payload]"/>
         <scripting:component>
             <scripting:script engine="groovy">
