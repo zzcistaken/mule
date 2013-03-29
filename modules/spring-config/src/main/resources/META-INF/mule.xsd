@@ -7961,11 +7961,11 @@
 
     <xsd:complexType name="keyValueDodType">
         <xsd:complexContent>
-            <xsd:extension base="keyType">
+            <xsd:extension base="annotatedType">
+                <xsd:attribute name="key" type="xsd:string"/>
                 <xsd:attribute name="value" type="xsd:string"/>
                 <xsd:attribute name="defaultValue" type="xsd:string"/>
                 <xsd:attribute name="value-ref" type="xsd:string"/>
-                <xsd:attribute name="doc" type="xsd:string"/>
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>
