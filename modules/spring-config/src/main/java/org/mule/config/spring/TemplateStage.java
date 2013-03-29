@@ -40,12 +40,12 @@ public class TemplateStage extends AbstractMessageProcessorOwner implements Mess
     {
         try
         {
-            expectedContent.verify(event);
+            providedContent.verify(event);
             if (messageProcessorChain != null)
             {
                 return messageProcessorChain.process(event);
             }
-            providedContent.verify(event);
+            expectedContent.verify(event);
             return event;
         }
         catch (MessagingException e)

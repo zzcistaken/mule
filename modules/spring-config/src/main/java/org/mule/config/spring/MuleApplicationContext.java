@@ -127,7 +127,7 @@ public class MuleApplicationContext extends AbstractXmlApplicationContext
 
             private void replaceTemplatePropertiesWithRealValues(BeanDefinition beanDefinition, Map<String, String> templateValues, HashMap<String, BeanDefinition> templateStagesMap, final HashMap<String, BeanDefinition> originalTemplateStagesMap)
             {
-                String prefix = "#{";
+                String prefix = "$[";
                 List<ExtendedPropertyValue> propertyValuesToReplace = new ArrayList<ExtendedPropertyValue>();
                 for (PropertyValue propertyValue : beanDefinition.getPropertyValues().getPropertyValueList())
                 {
