@@ -112,6 +112,7 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
                         <session-variable variableName="service" type="java.lang.String" doc:description="the name of the service that's being executed"/>
                         <property propertyName="http.status" type="java.lang.String" doc:description="the status code to return to the client"/>
                     </provided-content>
+                    <no-expected-content/>
                     <http:response-builder status="400"/>
                     <set-payload value="#[['status' : 'error', 'message' : exception.message]]"/>
                     <json:object-to-json-transformer/>

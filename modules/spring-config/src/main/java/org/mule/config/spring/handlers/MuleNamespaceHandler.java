@@ -410,7 +410,9 @@ public class MuleNamespaceHandler extends AbstractMuleNamespaceHandler
         registerBeanDefinitionParser("property", new ContentDefinitionDefinitionParser(PropertyDefinition.class));
         registerBeanDefinitionParser("payload", new ContentDefinitionDefinitionParser(PayloadContentDefinition.class));
         registerBeanDefinitionParser("expected-content", new MessageContentDefinitionDefinitionParser("expectedContent"));
+        registerBeanDefinitionParser("no-expected-content", new MessageContentDefinitionDefinitionParser("expectedContent"));
         registerBeanDefinitionParser("provided-content", new MessageContentDefinitionDefinitionParser("providedContent"));
+        registerBeanDefinitionParser("no-provided-content", new MessageContentDefinitionDefinitionParser("providedContent"));
         registerBeanDefinitionParser("simple-service", new SimpleServiceDefinitionParser());
         registerBeanDefinitionParser("bridge", new BridgeDefinitionParser());
         registerBeanDefinitionParser("validator", new ValidatorDefinitionParser());

@@ -4579,26 +4579,34 @@
         <xsd:complexContent>
             <xsd:extension base="abstractMessageProcessorType">
                 <xsd:sequence>
-                    <xsd:element name="provided-content" minOccurs="0" maxOccurs="1" type="messageContent">
-                        <xsd:annotation>
-                            <xsd:documentation>
-                                The message content expected in the message before executing this stage
-                            </xsd:documentation>
-                        </xsd:annotation>
-                    </xsd:element>
-                    <xsd:element name="expected-content" minOccurs="0" maxOccurs="1" type="messageContent">
-                        <xsd:annotation>
-                            <xsd:documentation>
-                                The message content expected after executing this stage
-                            </xsd:documentation>
-                        </xsd:annotation>
-                    </xsd:element>
+                    <xsd:choice minOccurs="0">
+                        <xsd:element name="no-provided-content" type="emptyElementType"/>
+                        <xsd:element name="provided-content" minOccurs="1" maxOccurs="1" type="messageContent">
+                            <xsd:annotation>
+                                <xsd:documentation>
+                                    The message content expected in the message before executing this stage
+                                </xsd:documentation>
+                            </xsd:annotation>
+                        </xsd:element>
+                    </xsd:choice>
+                    <xsd:choice minOccurs="0">
+                        <xsd:element name="no-expected-content" type="emptyElementType"/>
+                        <xsd:element name="expected-content" minOccurs="1" maxOccurs="1" type="messageContent">
+                            <xsd:annotation>
+                                <xsd:documentation>
+                                    The message content expected after executing this stage
+                                </xsd:documentation>
+                            </xsd:annotation>
+                        </xsd:element>
+                    </xsd:choice>
                     <xsd:group ref="messageProcessorOrOutboundEndpoint" minOccurs="0" maxOccurs="unbounded"/>
                 </xsd:sequence>
                 <xsd:attribute name="name" type="xsd:string"/>
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>
+
+    <xsd:complexType name="emptyElementType"/>
 
     <xsd:complexType name="messageContent">
         <xsd:sequence>

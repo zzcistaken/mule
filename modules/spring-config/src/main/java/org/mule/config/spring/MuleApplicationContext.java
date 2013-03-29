@@ -11,8 +11,10 @@
 package org.mule.config.spring;
 
 import org.mule.api.MuleContext;
+import org.mule.api.MuleRuntimeException;
 import org.mule.api.config.MuleProperties;
 import org.mule.config.ConfigResource;
+import org.mule.config.i18n.CoreMessages;
 import org.mule.construct.Flow;
 import org.mule.util.IOUtils;
 
@@ -162,12 +164,22 @@ public class MuleApplicationContext extends AbstractXmlApplicationContext
                                 if (!originalTemplateStagesMap.containsKey(templateStageDefinition.getPropertyValues().getPropertyValue("name").getValue()))
                                 {
                                     templateStageDefinition.getPropertyValues().removePropertyValue("documentation");
+                                    if (templateStageDefinition.getPropertyValues().getPropertyValue("expectedContent") == null)
+                                    {
+                                        throw new MuleRuntimeException(CoreMessages.createStaticMessage("You must configure the expected-content element in your template stage " + templateStageDefinition.getPropertyValues().getPropertyValue("name").getValue()));
+                                    }
+                                    if (templateStageDefinition.getPropertyValues().getPropertyValue("providedContent") == null)
+                                    {
+                                        throw new MuleRuntimeException(CoreMessages.createStaticMessage("You must configure the provided-content element in your template stage " + templateStageDefinition.getPropertyValues().getPropertyValue("name").getValue()));
+                                    }
                                     originalTemplateStagesMap.put((String) templateStageDefinition.getPropertyValues().getPropertyValue("name").getValue(),templateStageDefinition);
                                 }
                                 BeanDefinition templateStageRedefinition = templateStagesMap.get(templateStageDefinition.getPropertyValues().getPropertyValue("name").getValue());
                                 if (templateStageRedefinition != null) //If it was not redefined use the default one which will be empty
                                 {
                                     managedList.remove(i);
+                                    templateStageRedefinition.getPropertyValues().add("expectedContent",templateStageDefinition.getPropertyValues().getPropertyValue("expectedContent").getValue());
+                                    templateStageRedefinition.getPropertyValues().add("providedContent",templateStageDefinition.getPropertyValues().getPropertyValue("providedContent").getValue());
                                     managedList.add(i, templateStageRedefinition);
                                 }
                                 else

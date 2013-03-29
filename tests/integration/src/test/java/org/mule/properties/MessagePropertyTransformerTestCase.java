@@ -9,13 +9,14 @@
  */
 package org.mule.properties;
 
-import org.junit.Test;
-import org.mule.DefaultMuleEvent;
-import org.mule.DefaultMuleMessage;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+
 import org.mule.api.MuleMessage;
-import org.mule.construct.Flow;
-import org.mule.tck.functional.FlowAssert;
 import org.mule.tck.junit4.FunctionalTestCase;
+
+import org.hamcrest.core.Is;
+import org.junit.Test;
 
 public class MessagePropertyTransformerTestCase extends FunctionalTestCase
 {
@@ -23,70 +24,15 @@ public class MessagePropertyTransformerTestCase extends FunctionalTestCase
     @Override
     protected String getConfigResources()
     {
-        return "org/mule/properties/message-properties-transformer-test-case.xml";
+        return null;
     }
 
     @Test
-    public void testAddProperty() throws Exception
+    public void testTemplate() throws Exception
     {
-        runScenario("addProperty");
+        MuleMessage response = muleContext.getClient().send("vm://in", "message from client", null, 5000);
+        assertThat(response.getPayloadAsString(),
+                   is("Hello john malakalis. You executed service exampleTemplateUsage"));
+        assertThat(response.<Integer>getOutboundProperty("response.status"), Is.is(0));
     }
-    
-    @Test
-    public void testAddPropertyWithExpressionKey() throws Exception
-    {
-        runScenario("addPropertyUsingExpressionKey");
-    }
-
-    @Test
-    public void testRemoveProperty() throws Exception
-    {
-        runScenario("removeProperty");
-    }
-
-    @Test
-    public void testRemovePropertyUsingExpression() throws Exception
-    {
-        runScenario("removePropertyUsingExpression");
-    }
-
-    @Test
-    public void testRemovePropertyUsingRegex() throws Exception
-    {
-        runScenario("removePropertyUsingRegex");
-    }
-
-    @Test
-    public void testRemoveAllProperties() throws Exception
-    {
-        runScenario("removeAllProperties");
-    }
-
-    @Test
-    public void testCopyProperties() throws Exception
-    {
-        runScenario("copyProperties");
-    }
-
-    @Test
-    public void testCopyPropertiesUsingExpression() throws Exception
-    {
-        runScenario("copyPropertiesUsingExpression");
-    }
-
-    @Test
-    public void testCopyAllProperties() throws Exception
-    {
-        runScenario("copyAllProperties");
-    }
-
-    public void runScenario(String flowName) throws Exception
-    {
-        MuleMessage message = new DefaultMuleMessage("data", muleContext);
-        DefaultMuleEvent event = new DefaultMuleEvent(message, getTestInboundEndpoint(""), getTestService());
-        Flow flow = (Flow) getFlowConstruct(flowName);
-        flow.process(event);
-        FlowAssert.verify(flowName);
-    }
-
 }
