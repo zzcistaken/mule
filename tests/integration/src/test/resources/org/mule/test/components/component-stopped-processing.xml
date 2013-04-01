@@ -21,10 +21,12 @@
     <http:connector name="httpConnector" extends="baseHttpConnector"/>
 
     <flow name="helloWorldService" extends="baseHttpService">
-        <template-property key="http.path" value="/helloWorld"/>
-        <template-property key="required.role" value="ROLE_ADMIN"/>
-        <template-property key="service.name" value="World Service"/>
-        <template-property key="http.port" value="8090"/>
+        <template-configuration>
+            <redefinable-attribute key="http.path" value="/helloWorld"/>
+            <redefinable-attribute key="required.role" value="ROLE_ADMIN"/>
+            <redefinable-attribute key="service.name" value="World Service"/>
+            <redefinable-attribute key="http.port" value="8090"/>
+        </template-configuration>
         <template-stage name="processMessage">
             <logger level="ERROR" message="#[payload]"/>
         </template-stage>
@@ -42,10 +44,12 @@
     </flow>
 
     <flow name="helloTemplatesService" extends="baseHttpService">
-        <template-property key="http.path" value="/helloTemplate"/>
-        <template-property key="http.port" value="8091"/>
-        <template-property key="required.role" value="ROLE_ADMIN"/>
-        <template-property key="service.name" value="Template Service"/>
+        <template-configuration>
+            <redefinable-attribute key="http.path" value="/helloTemplate"/>
+            <redefinable-attribute key="required.role" value="ROLE_ADMIN"/>
+            <redefinable-attribute key="service.name" value="Template Service"/>
+            <redefinable-attribute key="http.port" value="8091"/>
+        </template-configuration>
         <template-stage name="processMessage">
             <set-variable variableName="userName" value="#[payload]"/>
             <set-payload value="#[['Hi ' + payload + '! How are you doing?', 'This is an example application']]"/>
@@ -59,10 +63,12 @@
     </flow>
 
     <flow name="helloMuleService" extends="baseHttpService">
-        <template-property key="http.path" value="/helloMule"/>
-        <template-property key="http.port" value="8092"/>
-        <template-property key="required.role" value="ROLE_USER"/>
-        <template-property key="service.name" value="Mule Service"/>
+        <template-configuration>
+            <redefinable-attribute key="http.path" value="/helloMule"/>
+            <redefinable-attribute key="required.role" value="ROLE_USER"/>
+            <redefinable-attribute key="service.name" value="Mule Service"/>
+            <redefinable-attribute key="http.port" value="8092"/>
+        </template-configuration>
         <template-stage name="processMessage">
             <logger level="ERROR" message="#[payload]"/>
         </template-stage>

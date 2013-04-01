@@ -64,6 +64,8 @@ import org.mule.config.spring.parsers.specific.endpoint.EndpointRefParser;
 import org.mule.config.spring.parsers.specific.endpoint.support.ChildEndpointDefinitionParser;
 import org.mule.config.spring.parsers.specific.endpoint.support.OrphanEndpointDefinitionParser;
 import org.mule.config.spring.util.SpringBeanLookup;
+import org.mule.construct.TemplateConfiguration;
+import org.mule.construct.TemplateRedefinableAttribute;
 import org.mule.context.notification.ListenerSubscriptionPair;
 import org.mule.el.ExpressionLanguageComponent;
 import org.mule.endpoint.EndpointURIEndpointBuilder;
@@ -571,7 +573,8 @@ public class MuleNamespaceHandler extends AbstractMuleNamespaceHandler
         //Utils / Standard Types
         registerMuleBeanDefinitionParser("properties", new ChildMapDefinitionParser("properties")).addCollection("properties");
         registerMuleBeanDefinitionParser("property", new ChildMapEntryDefinitionParser("properties")).addCollection("properties");
-        registerMuleBeanDefinitionParser("template-property", new ChildMapEntryDefinitionParser("templateProperties")).addCollection("templateProperties").addAlias("defaultValue","value");
+        registerMuleBeanDefinitionParser("template-configuration", new ChildDefinitionParser("templateConfiguration", TemplateConfiguration.class));
+        registerMuleBeanDefinitionParser("redefinable-attribute", new ChildDefinitionParser("templateRedefinableAttribute", TemplateRedefinableAttribute.class));
         registerMuleBeanDefinitionParser("add-message-properties", new ChildMapDefinitionParser("addProperties")).addCollection("addProperties");
         registerMuleBeanDefinitionParser("add-message-property", new ChildMapEntryDefinitionParser("addProperties")).addCollection("addProperties");
         registerMuleBeanDefinitionParser("rename-message-property", new ChildMapEntryDefinitionParser("renameProperties")).addCollection("renameProperties");

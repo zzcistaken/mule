@@ -93,16 +93,16 @@ public class MuleApplicationContext extends AbstractXmlApplicationContext
                 {
 
                     HashMap<String, String> templateValues = new HashMap<String, String>();
-                    PropertyValue templateProperties = beanDefinition.getPropertyValues().getPropertyValue("templateProperties");
-                    ManagedList managedList = (ManagedList) ((BeanDefinition) templateProperties.getValue()).getPropertyValues().getPropertyValueList().get(0).getValue();
+                    PropertyValue templateConfiguration = beanDefinition.getPropertyValues().getPropertyValue("templateConfiguration");
+                    BeanDefinition templateConfigurationBeanDefinition = (BeanDefinition) templateConfiguration.getValue();
+                    PropertyValue templateRedefinableAttributes = templateConfigurationBeanDefinition.getPropertyValues().getPropertyValue("templateRedefinableAttributes");
+                    ManagedList managedList = (ManagedList) templateRedefinableAttributes.getValue();
                     for (int i = 0; i < managedList.size(); i++)
                     {
-                        ManagedMap map = (ManagedMap) managedList.get(i);
-                        Set set = map.keySet();
-                        for (Object key : set)
-                        {
-                            templateValues.put((String)key,(String)map.get(key));
-                        }
+                        BeanDefinition templateAttribute = (BeanDefinition) managedList.get(i);
+                        String key = (String) templateAttribute.getPropertyValues().getPropertyValue("key").getValue();
+                        String value = (String) templateAttribute.getPropertyValues().getPropertyValue("value").getValue();
+                        templateValues.put(key,value);
                     }
                     HashMap<String, BeanDefinition> templateStagesMap = new HashMap<String, BeanDefinition>();
                     PropertyValue templateStages = beanDefinition.getPropertyValues().getPropertyValue("templateStages");

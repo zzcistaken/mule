@@ -132,7 +132,6 @@
             <xsd:element ref="abstract-exception-strategy"/>
             <xsd:element ref="abstract-flow-construct" />
             <xsd:element ref="flow" />
-            <xsd:element ref="flow-template" />
             <xsd:element ref="sub-flow" />
             <xsd:element ref="abstract-model"/>
             <xsd:element ref="abstract-interceptor-stack"/>
@@ -2311,7 +2310,7 @@
                             </xsd:documentation>
                         </xsd:annotation>
                     </xsd:element>
-                    <xsd:group ref="templatePropertiesGroup"/>
+                    <xsd:element name="template-configuration" type="templateConfigurationType" minOccurs="0" maxOccurs="1"/>
                     <xsd:group ref="messageSourceOrInboundEndpoint" minOccurs="0"/>
                     <xsd:choice minOccurs="0" maxOccurs="unbounded">
                         <xsd:group ref="messageProcessorOrOutboundEndpoint"/>
@@ -7924,17 +7923,21 @@
         </xsd:sequence>
     </xsd:group>
 
-    <xsd:group name="templatePropertiesGroup">
-        <xsd:sequence>
-            <xsd:element name="template-property" type="keyValueDodType" minOccurs="0" maxOccurs="unbounded">
-                <xsd:annotation>
-                    <xsd:documentation>
-                        Sets a Mule property. This is a name/value pair that can be set on components, services, etc., and which provide a generic way of configuring the system. Typically, you shouldn't need to use a generic property like this, since almost all functionality is exposed via dedicated elements. However, it can be useful in configuring obscure or overlooked options and in configuring transports from the generic endpoint elements.
-                    </xsd:documentation>
-                </xsd:annotation>
-            </xsd:element>
-        </xsd:sequence>
-    </xsd:group>
+    <xsd:complexType name="templateConfigurationType">
+        <xsd:complexContent>
+            <xsd:extension base="annotatedType">
+                <xsd:sequence>
+                    <xsd:element name="redefinable-attribute" type="keyValueDodType" minOccurs="1" maxOccurs="unbounded">
+                        <xsd:annotation>
+                            <xsd:documentation>
+                                Sets a Mule property. This is a name/value pair that can be set on components, services, etc., and which provide a generic way of configuring the system. Typically, you shouldn't need to use a generic property like this, since almost all functionality is exposed via dedicated elements. However, it can be useful in configuring obscure or overlooked options and in configuring transports from the generic endpoint elements.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
 
     <xsd:complexType name="listOrSetType">
         <xsd:complexContent>

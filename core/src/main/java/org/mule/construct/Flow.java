@@ -55,13 +55,8 @@ public class Flow extends AbstractPipeline implements MessageProcessor
 {
     private int stageCount = 0;
     private int asyncCount = 0;
-    private Map<Object, Object> templateProperties = new HashMap<Object, Object>();
+    private TemplateConfiguration templateConfiguration;
     protected List<MessageProcessor> templateStages = new ArrayList<MessageProcessor>();
-
-    public Map<Object, Object> getTemplateProperties()
-    {
-        return templateProperties;
-    }
 
     public void setTemplateStages(List<MessageProcessor> messageProcessors)
     {
@@ -73,12 +68,15 @@ public class Flow extends AbstractPipeline implements MessageProcessor
         return templateStages;
     }
 
-    public void setTemplateProperties(Map<Object, Object> templateProperties)
+    public TemplateConfiguration getTemplateConfiguration()
     {
-        this.templateProperties = templateProperties;
+        return templateConfiguration;
     }
 
-
+    public void setTemplateConfiguration(TemplateConfiguration templateConfiguration)
+    {
+        this.templateConfiguration = templateConfiguration;
+    }
 
     public Flow(String name, MuleContext muleContext)
     {
