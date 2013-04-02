@@ -18,7 +18,7 @@
         <spring:bean name="userService" class="org.mule.test.TestUserService"/>
     </spring:beans>
 
-    <http:connector name="httpConnector" extends="baseHttpConnector"/>
+    <!--<http:connector name="httpConnector" extends="baseHttpConnector"/>-->
 
     <flow name="helloWorldService" extends="baseHttpService">
         <template-configuration>
@@ -46,7 +46,7 @@
     <flow name="helloTemplatesService" extends="baseHttpService">
         <template-configuration>
             <redefinable-attribute key="http.path" value="/helloTemplate"/>
-            <redefinable-attribute key="required.role" value="ROLE_ADMIN"/>
+            <!--<redefinable-attribute key="required.role" value="ROLE_ADMIN"/>-->
             <redefinable-attribute key="service.name" value="Template Service"/>
             <redefinable-attribute key="http.port" value="8091"/>
         </template-configuration>

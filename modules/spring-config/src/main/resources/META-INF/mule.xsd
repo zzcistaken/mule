@@ -7409,7 +7409,7 @@
         </xsd:annotation>
         <xsd:complexContent>
             <xsd:extension base="abstractObjectFactoryType">
-                <xsd:attribute name="bean" type="substitutableName">
+                <xsd:attribute name="bean" type="xsd:string">
                     <xsd:annotation>
                         <xsd:documentation>Name of Spring bean to look up.</xsd:documentation>
                     </xsd:annotation>

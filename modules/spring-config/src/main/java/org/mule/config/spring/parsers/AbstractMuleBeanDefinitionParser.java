@@ -132,7 +132,7 @@ public abstract class AbstractMuleBeanDefinitionParser extends AbstractBeanDefin
     public AbstractMuleBeanDefinitionParser()
     {
         addIgnored(ATTRIBUTE_ID);
-        addIgnored("extends");
+        addAlias("extends","extendsFlow");
         addIgnored("abstract");
         addBeanFlag(MuleHierarchicalBeanDefinitionParserDelegate.MULE_FORCE_RECURSE);
     }

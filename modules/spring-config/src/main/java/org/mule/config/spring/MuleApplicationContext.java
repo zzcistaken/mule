@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -35,7 +34,6 @@ import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.AbstractBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.ManagedList;
-import org.springframework.beans.factory.support.ManagedMap;
 import org.springframework.beans.factory.support.MergedBeanDefinitionPostProcessor;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
@@ -76,7 +74,7 @@ public class MuleApplicationContext extends AbstractXmlApplicationContext
         this.springResources = springResources;
     }
 
-    protected void prepareBeanFactory(ConfigurableListableBeanFactory beanFactory) 
+    protected void prepareBeanFactory(final ConfigurableListableBeanFactory beanFactory)
     {
         super.prepareBeanFactory(beanFactory);
         beanFactory.addBeanPostProcessor(new MuleContextPostProcessor(muleContext));
@@ -91,7 +89,12 @@ public class MuleApplicationContext extends AbstractXmlApplicationContext
                 //TODO add isAbstract check before processing it if only one level hierarchy is desired.
                 if (beanDefinition.getBeanClass().equals(Flow.class) && !beanDefinition.isAbstract())
                 {
-
+                    if (beanDefinition.getPropertyValues().getPropertyValue("extendsFlow") == null)
+                    {
+                        return;
+                    }
+                    BeanDefinition parentBeanDefinition = beanFactory.getBeanDefinition((String) beanDefinition.getPropertyValues().getPropertyValue("extendsFlow").getValue());
+                    HashMap<String, String> defaultTemplateValues = getTemplateConfigurationDefaultValues(parentBeanDefinition);
                     HashMap<String, String> templateValues = new HashMap<String, String>();
                     PropertyValue templateConfiguration = beanDefinition.getPropertyValues().getPropertyValue("templateConfiguration");
                     BeanDefinition templateConfigurationBeanDefinition = (BeanDefinition) templateConfiguration.getValue();
@@ -102,6 +105,14 @@ public class MuleApplicationContext extends AbstractXmlApplicationContext
                         BeanDefinition templateAttribute = (BeanDefinition) managedList.get(i);
                         String key = (String) templateAttribute.getPropertyValues().getPropertyValue("key").getValue();
                         String value = (String) templateAttribute.getPropertyValues().getPropertyValue("value").getValue();
+                        if (templateAttribute.getPropertyValues().getPropertyValue("defaultValue") != null)
+                        {
+                            String defaultValue = (String) templateAttribute.getPropertyValues().getPropertyValue("defaultValue").getValue();
+                            if (defaultValue != null)
+                            {
+                                defaultTemplateValues.put(key, defaultValue);
+                            }
+                        }
                         templateValues.put(key,value);
                     }
                     HashMap<String, BeanDefinition> templateStagesMap = new HashMap<String, BeanDefinition>();
@@ -120,12 +131,35 @@ public class MuleApplicationContext extends AbstractXmlApplicationContext
                             templateStagesMap.put((String) templateStageBeanDefinition.getPropertyValues().getPropertyValue("name").getValue(),(BeanDefinition)stages.get(i));
                         }
                     }
-                    replaceTemplatePropertiesWithRealValues(beanDefinition, templateValues, templateStagesMap, originalTemplateStagesMap);
+                    replaceTemplatePropertiesWithRealValues(beanDefinition, templateValues, defaultTemplateValues,templateStagesMap, originalTemplateStagesMap);
                     beanDefinition.getPropertyValues().removePropertyValue("templateStages");
                 }
             }
 
-            private void replaceTemplatePropertiesWithRealValues(BeanDefinition beanDefinition, Map<String, String> templateValues, HashMap<String, BeanDefinition> templateStagesMap, final HashMap<String, BeanDefinition> originalTemplateStagesMap)
+            private HashMap<String, String> getTemplateConfigurationDefaultValues(BeanDefinition parentBeanDefinition)
+            {
+                HashMap<String, String> defaultValues = new HashMap<String, String>();
+                PropertyValue templateConfiguration = parentBeanDefinition.getPropertyValues().getPropertyValue("templateConfiguration");
+                BeanDefinition templateConfigurationBeanDefinition = (BeanDefinition) templateConfiguration.getValue();
+                PropertyValue templateRedefinableAttributes = templateConfigurationBeanDefinition.getPropertyValues().getPropertyValue("templateRedefinableAttributes");
+                ManagedList managedList = (ManagedList) templateRedefinableAttributes.getValue();
+                for (int i = 0; i < managedList.size(); i++)
+                {
+                    BeanDefinition templateAttribute = (BeanDefinition) managedList.get(i);
+                    String key = (String) templateAttribute.getPropertyValues().getPropertyValue("key").getValue();
+                    if (templateAttribute.getPropertyValues().getPropertyValue("defaultValue") != null)
+                    {
+                        String defaultValue = (String) templateAttribute.getPropertyValues().getPropertyValue("defaultValue").getValue();
+                        if (defaultValue != null)
+                        {
+                            defaultValues.put(key, defaultValue);
+                        }
+                    }
+                }
+                return defaultValues;
+            }
+
+            private void replaceTemplatePropertiesWithRealValues(BeanDefinition beanDefinition, Map<String, String> templateValues, HashMap<String, String> defaultTemplateValues, HashMap<String, BeanDefinition> templateStagesMap, final HashMap<String, BeanDefinition> originalTemplateStagesMap)
             {
                 String prefix = "$[";
                 List<ExtendedPropertyValue> propertyValuesToReplace = new ArrayList<ExtendedPropertyValue>();
@@ -136,7 +170,12 @@ public class MuleApplicationContext extends AbstractXmlApplicationContext
                     {
                         ExtendedPropertyValue extendedPropertyValue = (ExtendedPropertyValue) propertyValue;
                         String propertyKey = extendedPropertyValue.getPropertyExpression().substring(prefix.length(), extendedPropertyValue.getPropertyExpression().length() - 1);
-                        propertyValuesToReplace.add(new ExtendedPropertyValue(propertyValue.getName(),templateValues.get(propertyKey),extendedPropertyValue.getPropertyExpression()));
+                        String realValue = templateValues.get(propertyKey);
+                        if (realValue == null)
+                        {
+                            realValue = defaultTemplateValues.get(propertyKey);
+                        }
+                        propertyValuesToReplace.add(new ExtendedPropertyValue(propertyValue.getName(), realValue,extendedPropertyValue.getPropertyExpression()));
                     }
                     else if (value instanceof String)
                     {
@@ -145,12 +184,17 @@ public class MuleApplicationContext extends AbstractXmlApplicationContext
                         {
                             String propertyKey = valueAsString.substring(prefix.length(), valueAsString.length() - 1);
                             //propertyValue.setConvertedValue(templateValues.get(propertyKey));
-                            propertyValuesToReplace.add(new ExtendedPropertyValue(propertyValue.getName(),templateValues.get(propertyKey), (String) propertyValue.getValue()));
+                            String realValue = templateValues.get(propertyKey);
+                            if (realValue == null)
+                            {
+                                realValue = defaultTemplateValues.get(propertyKey);
+                            }
+                            propertyValuesToReplace.add(new ExtendedPropertyValue(propertyValue.getName(), realValue, (String) propertyValue.getValue()));
                         }
                     }
                     else if (value instanceof BeanDefinition)
                     {
-                        replaceTemplatePropertiesWithRealValues((RootBeanDefinition) value,templateValues, templateStagesMap, originalTemplateStagesMap);
+                        replaceTemplatePropertiesWithRealValues((RootBeanDefinition) value,templateValues, defaultTemplateValues, templateStagesMap, originalTemplateStagesMap);
                     }
                     else if (value instanceof ManagedList)
                     {
@@ -190,7 +234,7 @@ public class MuleApplicationContext extends AbstractXmlApplicationContext
                             }
                             else if (managedList.get(i) instanceof BeanDefinition)
                             {
-                                replaceTemplatePropertiesWithRealValues((BeanDefinition) managedList.get(i),templateValues, templateStagesMap, originalTemplateStagesMap);
+                                replaceTemplatePropertiesWithRealValues((BeanDefinition) managedList.get(i),templateValues, defaultTemplateValues, templateStagesMap, originalTemplateStagesMap);
                             }
                             else if (managedList.get(i) instanceof RuntimeBeanReference)
                             {

@@ -55,8 +55,19 @@ public class Flow extends AbstractPipeline implements MessageProcessor
 {
     private int stageCount = 0;
     private int asyncCount = 0;
+    private String extendsFlow;
     private TemplateConfiguration templateConfiguration;
     protected List<MessageProcessor> templateStages = new ArrayList<MessageProcessor>();
+
+    public String getExtendsFlow()
+    {
+        return extendsFlow;
+    }
+
+    public void setExtendsFlow(String extendsFlow)
+    {
+        this.extendsFlow = extendsFlow;
+    }
 
     public void setTemplateStages(List<MessageProcessor> messageProcessors)
     {
