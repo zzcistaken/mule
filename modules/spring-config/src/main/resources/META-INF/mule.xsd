@@ -42,6 +42,21 @@
         </xsd:anyAttribute>
     </xsd:complexType>
 
+    <xsd:complexType name="abstractTemplateType" abstract="true">
+        <xsd:complexContent>
+            <xsd:extension base="annotatedType">
+                <xsd:attribute name="abstract" type="xsd:boolean"/>
+                <xsd:attribute name="extends" type="nonBlankString" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            The name used to identify this flow construct.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
     <xsd:complexType name="annotatedMixedContentType" abstract="true" mixed="true">
         <xsd:sequence>
             <xsd:element name="annotations" type="annotationsType" minOccurs="0"/>
@@ -221,19 +236,11 @@
     </xsd:element>
     <xsd:complexType name="abstractConnectorType">
         <xsd:complexContent>
-            <xsd:extension base="annotatedType">
+            <xsd:extension base="abstractTemplateType">
                 <xsd:attribute name="name" type="substitutableName" use="required">
                     <xsd:annotation>
                         <xsd:documentation>
                             Identifies the connector so that other elements can reference it.
-                        </xsd:documentation>
-                    </xsd:annotation>
-                </xsd:attribute>
-                <xsd:attribute name="abstract" type="xsd:boolean"/>
-                <xsd:attribute name="extends" type="nonBlankString" use="optional">
-                    <xsd:annotation>
-                        <xsd:documentation>
-                            The name used to identify this flow construct.
                         </xsd:documentation>
                     </xsd:annotation>
                 </xsd:attribute>
