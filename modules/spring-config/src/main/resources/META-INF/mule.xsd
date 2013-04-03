@@ -229,6 +229,14 @@
                         </xsd:documentation>
                     </xsd:annotation>
                 </xsd:attribute>
+                <xsd:attribute name="abstract" type="xsd:boolean"/>
+                <xsd:attribute name="extends" type="nonBlankString" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            The name used to identify this flow construct.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>
@@ -8055,14 +8063,6 @@
                     <xsd:annotation>
                         <xsd:documentation>
                             Allows Spring beans to be defined as a dispatcher pool factory
-                        </xsd:documentation>
-                    </xsd:annotation>
-                </xsd:attribute>
-                <xsd:attribute name="abstract" type="xsd:boolean"/>
-                <xsd:attribute name="extends" type="nonBlankString" use="optional">
-                    <xsd:annotation>
-                        <xsd:documentation>
-                            The name used to identify this flow construct.
                         </xsd:documentation>
                     </xsd:annotation>
                 </xsd:attribute>

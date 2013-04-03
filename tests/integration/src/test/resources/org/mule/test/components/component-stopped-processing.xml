@@ -18,7 +18,7 @@
         <spring:bean name="userService" class="org.mule.test.TestUserService"/>
     </spring:beans>
 
-    <!--<http:connector name="httpConnector" extends="baseHttpConnector"/>-->
+    <http:connector name="httpConnector" extends="baseHttpConnector"/>
 
     <flow name="helloWorldService" extends="baseHttpService">
         <template-configuration>

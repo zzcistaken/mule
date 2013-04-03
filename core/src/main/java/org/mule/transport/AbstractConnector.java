@@ -144,6 +144,8 @@ public abstract class AbstractConnector implements Connector, WorkListener
 
     public static final String PROPERTY_POLLING_FREQUENCY = "pollingFrequency";
 
+    private String extendsFlow;
+
     /**
      * logger used by this class
      */
@@ -348,6 +350,16 @@ public abstract class AbstractConnector implements Connector, WorkListener
     public LifecycleState getLifecycleState()
     {
         return lifecycleManager.getState();
+    }
+
+    public String getExtendsFlow()
+    {
+        return extendsFlow;
+    }
+
+    public void setExtendsFlow(String extendsFlow)
+    {
+        this.extendsFlow = extendsFlow;
     }
 
     @Override

@@ -87,8 +87,8 @@ public class MuleApplicationContext extends AbstractXmlApplicationContext
             public void postProcessMergedBeanDefinition(RootBeanDefinition beanDefinition, Class<?> beanType, String beanName)
             {
                 //TODO add isAbstract check before processing it if only one level hierarchy is desired.
-                if (beanDefinition.getBeanClass().equals(Flow.class) && !beanDefinition.isAbstract())
-                {
+                /*if (beanDefinition.getBeanClass().equals(Flow.class) && !beanDefinition.isAbstract())
+                {*/
                     if (beanDefinition.getPropertyValues().getPropertyValue("extendsFlow") == null)
                     {
                         return;
@@ -97,23 +97,26 @@ public class MuleApplicationContext extends AbstractXmlApplicationContext
                     HashMap<String, String> defaultTemplateValues = getTemplateConfigurationDefaultValues(parentBeanDefinition);
                     HashMap<String, String> templateValues = new HashMap<String, String>();
                     PropertyValue templateConfiguration = beanDefinition.getPropertyValues().getPropertyValue("templateConfiguration");
-                    BeanDefinition templateConfigurationBeanDefinition = (BeanDefinition) templateConfiguration.getValue();
-                    PropertyValue templateRedefinableAttributes = templateConfigurationBeanDefinition.getPropertyValues().getPropertyValue("templateRedefinableAttributes");
-                    ManagedList managedList = (ManagedList) templateRedefinableAttributes.getValue();
-                    for (int i = 0; i < managedList.size(); i++)
+                    if (templateConfiguration != null)
                     {
-                        BeanDefinition templateAttribute = (BeanDefinition) managedList.get(i);
-                        String key = (String) templateAttribute.getPropertyValues().getPropertyValue("key").getValue();
-                        String value = (String) templateAttribute.getPropertyValues().getPropertyValue("value").getValue();
-                        if (templateAttribute.getPropertyValues().getPropertyValue("defaultValue") != null)
+                        BeanDefinition templateConfigurationBeanDefinition = (BeanDefinition) templateConfiguration.getValue();
+                        PropertyValue templateRedefinableAttributes = templateConfigurationBeanDefinition.getPropertyValues().getPropertyValue("templateRedefinableAttributes");
+                        ManagedList managedList = (ManagedList) templateRedefinableAttributes.getValue();
+                        for (int i = 0; i < managedList.size(); i++)
                         {
-                            String defaultValue = (String) templateAttribute.getPropertyValues().getPropertyValue("defaultValue").getValue();
-                            if (defaultValue != null)
+                            BeanDefinition templateAttribute = (BeanDefinition) managedList.get(i);
+                            String key = (String) templateAttribute.getPropertyValues().getPropertyValue("key").getValue();
+                            String value = (String) templateAttribute.getPropertyValues().getPropertyValue("value").getValue();
+                            if (templateAttribute.getPropertyValues().getPropertyValue("defaultValue") != null)
                             {
-                                defaultTemplateValues.put(key, defaultValue);
+                                String defaultValue = (String) templateAttribute.getPropertyValues().getPropertyValue("defaultValue").getValue();
+                                if (defaultValue != null)
+                                {
+                                    defaultTemplateValues.put(key, defaultValue);
+                                }
                             }
+                            templateValues.put(key,value);
                         }
-                        templateValues.put(key,value);
                     }
                     HashMap<String, BeanDefinition> templateStagesMap = new HashMap<String, BeanDefinition>();
                     PropertyValue templateStages = beanDefinition.getPropertyValues().getPropertyValue("templateStages");
@@ -133,26 +136,29 @@ public class MuleApplicationContext extends AbstractXmlApplicationContext
                     }
                     replaceTemplatePropertiesWithRealValues(beanDefinition, templateValues, defaultTemplateValues,templateStagesMap, originalTemplateStagesMap);
                     beanDefinition.getPropertyValues().removePropertyValue("templateStages");
-                }
+                //}
             }
 
             private HashMap<String, String> getTemplateConfigurationDefaultValues(BeanDefinition parentBeanDefinition)
             {
                 HashMap<String, String> defaultValues = new HashMap<String, String>();
                 PropertyValue templateConfiguration = parentBeanDefinition.getPropertyValues().getPropertyValue("templateConfiguration");
-                BeanDefinition templateConfigurationBeanDefinition = (BeanDefinition) templateConfiguration.getValue();
-                PropertyValue templateRedefinableAttributes = templateConfigurationBeanDefinition.getPropertyValues().getPropertyValue("templateRedefinableAttributes");
-                ManagedList managedList = (ManagedList) templateRedefinableAttributes.getValue();
-                for (int i = 0; i < managedList.size(); i++)
+                if (templateConfiguration != null)
                 {
-                    BeanDefinition templateAttribute = (BeanDefinition) managedList.get(i);
-                    String key = (String) templateAttribute.getPropertyValues().getPropertyValue("key").getValue();
-                    if (templateAttribute.getPropertyValues().getPropertyValue("defaultValue") != null)
+                    BeanDefinition templateConfigurationBeanDefinition = (BeanDefinition) templateConfiguration.getValue();
+                    PropertyValue templateRedefinableAttributes = templateConfigurationBeanDefinition.getPropertyValues().getPropertyValue("templateRedefinableAttributes");
+                    ManagedList managedList = (ManagedList) templateRedefinableAttributes.getValue();
+                    for (int i = 0; i < managedList.size(); i++)
                     {
-                        String defaultValue = (String) templateAttribute.getPropertyValues().getPropertyValue("defaultValue").getValue();
-                        if (defaultValue != null)
+                        BeanDefinition templateAttribute = (BeanDefinition) managedList.get(i);
+                        String key = (String) templateAttribute.getPropertyValues().getPropertyValue("key").getValue();
+                        if (templateAttribute.getPropertyValues().getPropertyValue("defaultValue") != null)
                         {
-                            defaultValues.put(key, defaultValue);
+                            String defaultValue = (String) templateAttribute.getPropertyValues().getPropertyValue("defaultValue").getValue();
+                            if (defaultValue != null)
+                            {
+                                defaultValues.put(key, defaultValue);
+                            }
                         }
                     }
                 }
