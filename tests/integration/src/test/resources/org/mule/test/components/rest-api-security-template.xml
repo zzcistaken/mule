@@ -18,18 +18,18 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
         http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <!--<spring:beans>
+    <spring:beans>
         <ss:authentication-manager alias="authenticationManager">
             <ss:authentication-provider user-service-ref="userService">
-&lt;!&ndash;                <ss:user-service id="userService">
+<!--                <ss:user-service id="userService">
                     <ss:user name="marie" password="marie"
                              authorities="ROLE_ADMIN" />
                     <ss:user name="john" password="john"
                              authorities="ROLE_USER" />
-                </ss:user-service>&ndash;&gt;
+                </ss:user-service>-->
             </ss:authentication-provider>
         </ss:authentication-manager>
-    </spring:beans>-->
+    </spring:beans>
 
     <catch-exception-strategy name="baseExceptionStrategy" abstract="true">
         <template-configuration>
@@ -46,7 +46,6 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
             <no-expected-content/>
         </template-stage>
     </catch-exception-strategy>
-    <!--
 
     <mule-ss:security-manager>
         <mule-ss:delegate-security-provider name="memory-dao" delegate-ref="authenticationManager" />
@@ -96,13 +95,13 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
             </template-stage>
             <expression-component>#[messages.add(payload)]</expression-component>
         </foreach>
-        &lt;!&ndash;<template-stage name="serviceImplementation">
+        <!--<template-stage name="serviceImplementation">
             <documentation description="Place holder for service implementation.">
                 <provided-content>
                     <flow-variable name="username" type="String" description="username for the authenticated user"/>
                 </provided-content>
             </documentation>
-        </template-stage>&ndash;&gt;
+        </template-stage>-->
         <set-payload value="#[['status':'ok', 'content': messages]]"/>
         <response>
             <set-property propertyName="X-SERVICE" value="#['service name: ' + templateProperties['service.name']]" />
@@ -139,6 +138,5 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
             </catch-exception-strategy>
         </choice-exception-strategy>
     </flow>
-    -->
 
 </mule>

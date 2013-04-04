@@ -13,6 +13,7 @@ package org.mule.config.spring;
 import org.mule.api.MuleContext;
 import org.mule.api.MuleRuntimeException;
 import org.mule.api.config.MuleProperties;
+import org.mule.api.registry.RegistrationException;
 import org.mule.config.ConfigResource;
 import org.mule.config.i18n.CoreMessages;
 import org.mule.construct.Flow;
@@ -81,6 +82,14 @@ public class MuleApplicationContext extends AbstractXmlApplicationContext
         beanFactory.addBeanPostProcessor(new ExpressionEvaluatorPostProcessor(muleContext));
         beanFactory.addBeanPostProcessor(new GlobalNamePostProcessor());
         final HashMap<String, BeanDefinition> originalTemplateStagesMap = new HashMap<String, BeanDefinition>();  //original stage gets lose once we replace it for a bean
+        try
+        {
+            muleContext.getRegistry().registerObject("flowRedefinableAttributes",new HashMap<String,Map<String,String>>());
+        }
+        catch (RegistrationException e)
+        {
+            throw new MuleRuntimeException(e);
+        }
         beanFactory.addBeanPostProcessor(new MergedBeanDefinitionPostProcessor()
         {
             @Override
@@ -99,6 +108,13 @@ public class MuleApplicationContext extends AbstractXmlApplicationContext
                     PropertyValue templateConfiguration = beanDefinition.getPropertyValues().getPropertyValue("templateConfiguration");
                     if (templateConfiguration != null)
                     {
+                        HashMap<String, String> flowRedefinableAttributes = null;
+                        if (beanDefinition.getBeanClass().equals(Flow.class))
+                        {
+                            Map<String,Map<String,String>> flows = muleContext.getRegistry().get("flowRedefinableAttributes");
+                            flowRedefinableAttributes = new HashMap<String, String>();
+                            flows.put((String) beanDefinition.getConstructorArgumentValues().getArgumentValue(0, String.class).getValue(), flowRedefinableAttributes);
+                        }
                         BeanDefinition templateConfigurationBeanDefinition = (BeanDefinition) templateConfiguration.getValue();
                         PropertyValue templateRedefinableAttributes = templateConfigurationBeanDefinition.getPropertyValues().getPropertyValue("templateRedefinableAttributes");
                         ManagedList managedList = (ManagedList) templateRedefinableAttributes.getValue();
@@ -116,6 +132,17 @@ public class MuleApplicationContext extends AbstractXmlApplicationContext
                                 }
                             }
                             templateValues.put(key,value);
+                            if (beanDefinition.getBeanClass().equals(Flow.class))
+                            {
+                                if (value == null)
+                                {
+                                    flowRedefinableAttributes.put(key,value);
+                                }
+                                else if (defaultTemplateValues.containsKey(key))
+                                {
+                                    flowRedefinableAttributes.put(key, defaultTemplateValues.get(key));
+                                }
+                            }
                         }
                     }
                     HashMap<String, BeanDefinition> templateStagesMap = new HashMap<String, BeanDefinition>();
@@ -145,11 +172,7 @@ public class MuleApplicationContext extends AbstractXmlApplicationContext
                     replaceTemplatePropertiesWithRealValues(beanDefinition, templateValues, defaultTemplateValues,templateStagesMap, originalTemplateStagesMap);
                     beanDefinition.getPropertyValues().removePropertyValue("templateStages");
                     beanDefinition.getPropertyValues().removePropertyValue("templateStage");
-                    if (!beanDefinition.getBeanClass().equals(Flow.class))
-                    {
-                        //Only templateConfiguration from Flows are accessible through MEL
-                        beanDefinition.getPropertyValues().removePropertyValue("templateConfiguration");
-                    }
+                    beanDefinition.getPropertyValues().removePropertyValue("templateConfiguration");
                     beanDefinition.getPropertyValues().removePropertyValue("extendsFlow");
                 //}
             }
@@ -228,7 +251,7 @@ public class MuleApplicationContext extends AbstractXmlApplicationContext
                                 //If it's doesn't contains the definition then templateStageDefinition is the original one
                                 if (!originalTemplateStagesMap.containsKey(templateStageDefinition.getPropertyValues().getPropertyValue("name").getValue()))
                                 {
-                                    templateStageDefinition.getPropertyValues().removePropertyValue("documentation");
+                                    //TODO for now xsd in template and child flow are the same.
                                     if (templateStageDefinition.getPropertyValues().getPropertyValue("expectedContent") == null)
                                     {
                                         throw new MuleRuntimeException(CoreMessages.createStaticMessage("You must configure the expected-content element in your template stage " + templateStageDefinition.getPropertyValues().getPropertyValue("name").getValue()));

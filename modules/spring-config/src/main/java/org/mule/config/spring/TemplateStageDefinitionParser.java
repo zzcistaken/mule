@@ -44,10 +44,10 @@ public class TemplateStageDefinitionParser extends ChildDefinitionParser
                         if (parentBeanDefinition.isAbstract())
                         {
                             isAbstractFlow = true;
+                            break;
                         }
-                        break;
                     }
-                    catch (IllegalStateException ex)
+                    catch (Exception ex)
                     {
                         if (parentNode.getLocalName().equals("flow"))
                         {

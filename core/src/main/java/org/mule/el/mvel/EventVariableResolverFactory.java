@@ -18,6 +18,7 @@ import org.mule.construct.TemplateRedefinableAttribute;
 import org.mule.el.context.AbstractMapContext;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.mvel2.ParserContext;
@@ -63,15 +64,9 @@ class EventVariableResolverFactory extends MessageVariableResolverFactory
         @Override
         public String get(Object o)
         {
-            List<TemplateRedefinableAttribute> templateRedefinableAttributes = flow.getTemplateConfiguration().getTemplateRedefinableAttributes();
-            for (TemplateRedefinableAttribute templateRedefinableAttribute : templateRedefinableAttributes)
-            {
-                if (templateRedefinableAttribute.getKey().equals(o))
-                {
-                    return templateRedefinableAttribute.getValue() != null ? templateRedefinableAttribute.getValue() : templateRedefinableAttribute.getDefaultValue();
-                }
-            }
-            return null;
+            Map<String,Map<String,String>> flowsConfigurationAttributes = flow.getMuleContext().getRegistry().get("flowRedefinableAttributes");
+            Map<String,String> flowRedefinableAttributes = flowsConfigurationAttributes.get(flow.getName());
+            return flowRedefinableAttributes.get(o);
         }
 
         @Override
