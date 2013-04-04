@@ -126,16 +126,31 @@ public class MuleApplicationContext extends AbstractXmlApplicationContext
                         for (int i = 0; i < stages.size(); i++)
                         {
                             BeanDefinition templateStageBeanDefinition = (BeanDefinition) ((ManagedList) templateStages.getValue()).get(i);
-                            PropertyValue documentation = templateStageBeanDefinition.getPropertyValues().getPropertyValue("documentation");
-                            if (documentation != null)
-                            {
-                                templateStageBeanDefinition.getPropertyValues().removePropertyValue(documentation);
-                            }
                             templateStagesMap.put((String) templateStageBeanDefinition.getPropertyValues().getPropertyValue("name").getValue(),(BeanDefinition)stages.get(i));
+                        }
+                    }
+                    else
+                    {
+                        templateStages = beanDefinition.getPropertyValues().getPropertyValue("templateStage");
+                        if ((templateStages != null) && templateStages.getValue() instanceof ManagedList)
+                        {
+                            ManagedList stages = (ManagedList) templateStages.getValue();
+                            for (int i = 0; i < stages.size(); i++)
+                            {
+                                BeanDefinition templateStageBeanDefinition = (BeanDefinition) ((ManagedList) templateStages.getValue()).get(i);
+                                templateStagesMap.put((String) templateStageBeanDefinition.getPropertyValues().getPropertyValue("name").getValue(),(BeanDefinition)stages.get(i));
+                            }
                         }
                     }
                     replaceTemplatePropertiesWithRealValues(beanDefinition, templateValues, defaultTemplateValues,templateStagesMap, originalTemplateStagesMap);
                     beanDefinition.getPropertyValues().removePropertyValue("templateStages");
+                    beanDefinition.getPropertyValues().removePropertyValue("templateStage");
+                    if (!beanDefinition.getBeanClass().equals(Flow.class))
+                    {
+                        //Only templateConfiguration from Flows are accessible through MEL
+                        beanDefinition.getPropertyValues().removePropertyValue("templateConfiguration");
+                    }
+                    beanDefinition.getPropertyValues().removePropertyValue("extendsFlow");
                 //}
             }
 

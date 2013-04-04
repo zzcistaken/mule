@@ -404,7 +404,6 @@ public class MuleNamespaceHandler extends AbstractMuleNamespaceHandler
 
         // Flow Constructs
         registerBeanDefinitionParser("flow", new FlowDefinitionParser());
-        registerBeanDefinitionParser("flow-template", new TemplateDefinitionParser());
         registerBeanDefinitionParser("template-stage", new TemplateStageDefinitionParser());
 
         registerBeanDefinitionParser("flow-variable", new ContentDefinitionDefinitionParser(FlowVariableDefinition.class));

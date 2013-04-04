@@ -40,6 +40,11 @@ public abstract class AbstractHierarchicalDefinitionParser extends AbstractMuleB
                     new TempWrapperPropertyConfiguration(beanPropertyConfiguration, false));
     private BeanDefinition forcedParent = null;
 
+    public AbstractHierarchicalDefinitionParser()
+    {
+        addCollection("templateStage");
+    }
+
     public PropertyConfiguration getTargetPropertyConfiguration()
     {
         return targetPropertyConfiguration;

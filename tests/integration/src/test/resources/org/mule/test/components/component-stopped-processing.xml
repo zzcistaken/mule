@@ -18,7 +18,7 @@
         <spring:bean name="userService" class="org.mule.test.TestUserService"/>
     </spring:beans>
 
-    <http:connector name="httpConnector" extends="baseHttpConnector"/>
+    <!--<http:connector name="httpConnector" extends="baseHttpConnector"/>
 
     <flow name="helloWorldService" extends="baseHttpService">
         <template-configuration>
@@ -30,14 +30,14 @@
         <template-stage name="processMessage">
             <logger level="ERROR" message="#[payload]"/>
         </template-stage>
-        <!--<template-stage name="serviceImplementation">
+        &lt;!&ndash;<template-stage name="serviceImplementation">
             <processor-chain>
                 <set-property propertyName="X-USER" value="#[username]"/>
                 <set-property propertyName="X-SYSTEM" value="Mule"/>
                 <set-property propertyName="X-LANG" value="Java"/>
             </processor-chain>
             <set-payload value="Hello World #[username] user!"/>
-        </template-stage>-->
+        </template-stage>&ndash;&gt;
         <template-stage name="handleExceptionStage">
             <set-payload value="custom exception message world"/>
         </template-stage>
@@ -46,7 +46,7 @@
     <flow name="helloTemplatesService" extends="baseHttpService">
         <template-configuration>
             <redefinable-attribute key="http.path" value="/helloTemplate"/>
-            <!--<redefinable-attribute key="required.role" value="ROLE_ADMIN"/>-->
+            &lt;!&ndash;<redefinable-attribute key="required.role" value="ROLE_ADMIN"/>&ndash;&gt;
             <redefinable-attribute key="service.name" value="Template Service"/>
             <redefinable-attribute key="http.port" value="8091"/>
         </template-configuration>
@@ -57,9 +57,9 @@
         <template-stage name="handleExceptionStage">
             <set-payload value="custom exception message template"/>
         </template-stage>
-        <!--<template-stage name="serviceImplementation">
+        &lt;!&ndash;<template-stage name="serviceImplementation">
             <set-payload value="Hello Template #[username] user!"/>
-        </template-stage>-->
+        </template-stage>&ndash;&gt;
     </flow>
 
     <flow name="helloMuleService" extends="baseHttpService">
@@ -72,12 +72,30 @@
         <template-stage name="processMessage">
             <logger level="ERROR" message="#[payload]"/>
         </template-stage>
-        <!--<template-stage name="serviceImplementation">
+        &lt;!&ndash;<template-stage name="serviceImplementation">
             <set-payload value="Hello Mule #[username] user!"/>
-        </template-stage>-->
-       <!-- <template-stage name="handleExceptionStage">
+        </template-stage>&ndash;&gt;
+       &lt;!&ndash; <template-stage name="handleExceptionStage">
             <set-payload value="custom exception message service"/>
-        </template-stage>-->
+        </template-stage>&ndash;&gt;
+    </flow>-->
+
+    <!--Exception strategy test-->
+
+    <flow name="testCatchEs">
+        <http:inbound-endpoint host="localhost" port="10000"/>
+        <expression-component>throw new RuntimeException()</expression-component>
+        <catch-exception-strategy extends="baseExceptionStrategy">
+            <template-configuration>
+                <redefinable-attribute key="log.exception.message" value="redefined message from testCatchES"/>
+            </template-configuration>
+            <template-stage name="customizePayload">
+                <set-payload value="#[payload + ' I have customized the payload message']"/>
+            </template-stage>
+            <template-stage name="anotherCustomizePayload">
+                <set-payload value="#[payload + ' more customization!']"/>
+            </template-stage>
+        </catch-exception-strategy>
     </flow>
 
 </mule>

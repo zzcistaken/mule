@@ -40,16 +40,12 @@ public class TemplateStageDefinitionParser extends ChildDefinitionParser
                     Element parentElement = (Element)parentNode;
                     try
                     {
-                        BeanDefinition parentBeanDefinition = getParentBeanDefinition(parentElement);
-                        //TODO change to exact class name
-                        if (parentBeanDefinition.getBeanClassName().contains("Flow"))
+                        BeanDefinition parentBeanDefinition = getRegistry().getBeanDefinition(parentElement.getAttribute(ATTRIBUTE_NAME));
+                        if (parentBeanDefinition.isAbstract())
                         {
-                            if (parentBeanDefinition.isAbstract())
-                            {
-                                isAbstractFlow = true;
-                            }
-                            break;
+                            isAbstractFlow = true;
                         }
+                        break;
                     }
                     catch (IllegalStateException ex)
                     {
