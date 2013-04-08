@@ -62,7 +62,7 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
             <redefinable-attribute key="http.port" defaultValue="8080" doc:descripton="http status code to send in case of an error"/>
         </template-configuration>
         <http:inbound-endpoint host="localhost" port="$[http.port]" path="$[http.path]" />
-        <json:json-to-object-transformer returnClass="java.lang.Object"/>
+        <json:json-to-object-transformer returnClass="java.util.Map"/>
         <set-variable variableName="originalRequest" value="#[payload]"/>
         <http:basic-security-filter realm="mule-realm"/>
         <mule-ss:authorization-filter requiredAuthorities="$[required.role]"/>
