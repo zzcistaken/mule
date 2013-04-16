@@ -264,6 +264,16 @@ public class HttpConnector extends TcpConnector
         if (!disableCleanupThread)
         {
             connectionCleaner.shutdown();
+
+            if (!muleContext.getConfiguration().isStandalone())
+            {
+                MultiThreadedHttpConnectionManager.shutdownAll();
+            }
+        }
+        if (this.connectionManager != null)
+        {
+            connectionManager.dispose();
+            connectionManager = null;
         }
         super.doDispose();
     }

@@ -51,6 +51,12 @@ public class AuthorizationFilterTestCase extends FunctionalTestCase
         doRequest(null, "localhost", "ross", "ross", getUrl(), false, 200);
     }
 
+    @Test
+    public void testAuthorizedInAnotherFlow() throws Exception
+    {
+        doRequest(null, "localhost", "ross", "ross", getUrl(), false, 200);
+    }
+
     protected String getUrl()
     {
         return "http://localhost:4567/authorize";

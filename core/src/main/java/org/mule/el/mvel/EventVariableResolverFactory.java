@@ -24,7 +24,7 @@ import java.util.Set;
 import org.mvel2.ParserContext;
 import org.mvel2.integration.VariableResolver;
 
-class EventVariableResolverFactory extends MessageVariableResolverFactory
+public class EventVariableResolverFactory extends MessageVariableResolverFactory
 {
 
     private static final long serialVersionUID = -6819292692339684915L;

@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.mule.modules</groupId>
         <artifactId>mule-modules</artifactId>
-        <version>3.4.0-RC3-SNAPSHOT</version>
+        <version>3.4.0</version>
     </parent>
     <artifactId>mule-module-builders</artifactId>
     <name>Configuration Builders</name>
@@ -48,6 +48,11 @@
             <version>${project.version}</version>
             <scope>test</scope>
             <type>test-jar</type>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

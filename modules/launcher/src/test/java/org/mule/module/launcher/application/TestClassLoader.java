@@ -60,6 +60,12 @@ public class TestClassLoader extends ClassLoader
     }
 
     @Override
+    protected URL findResource(String s)
+    {
+        return resources.get(s);
+    }
+
+    @Override
     protected String findLibrary(String s)
     {
         return libraries.get(s);
@@ -83,5 +89,11 @@ public class TestClassLoader extends ClassLoader
     public void addLibrary(String libraryName, String libraryPath)
     {
         libraries.put(libraryName, libraryPath);
+    }
+
+    @Override
+    protected synchronized Class<?> loadClass(String s, boolean b) throws ClassNotFoundException
+    {
+        return loadClass(s);
     }
 }

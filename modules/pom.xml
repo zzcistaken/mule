@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.mule</groupId>
         <artifactId>mule</artifactId>
-        <version>3.4.0-RC3-SNAPSHOT</version>
+        <version>3.4.0</version>
     </parent>
     <groupId>org.mule.modules</groupId>
     <artifactId>mule-modules</artifactId>
@@ -21,6 +21,7 @@
         <module>boot</module>
         <module>bpm</module>
         <module>cxf</module>
+        <module>devkit-support</module>
         <module>drools</module>
         <module>launcher</module>
         <module>client</module>
@@ -44,4 +45,18 @@
         <module>tomcat</module>
         <module>xml</module>
     </modules>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                    <skipDeploy>true</skipDeploy>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>

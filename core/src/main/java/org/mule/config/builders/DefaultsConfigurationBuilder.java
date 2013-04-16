@@ -23,7 +23,8 @@ import org.mule.config.ChainedThreadingProfile;
 import org.mule.config.bootstrap.SimpleRegistryBootstrap;
 import org.mule.el.mvel.MVELExpressionLanguage;
 import org.mule.endpoint.DefaultEndpointFactory;
-import org.mule.message.processing.MuleMessageProcessingManager;
+import org.mule.execution.MuleMessageProcessingManager;
+import org.mule.management.stats.DefaultProcessingTimeWatcher;
 import org.mule.model.seda.SedaModel;
 import org.mule.retry.policies.NoRetryPolicyTemplate;
 import org.mule.security.MuleSecurityManager;
@@ -75,7 +76,7 @@ public class DefaultsConfigurationBuilder extends AbstractConfigurationBuilder
         registry.registerObject(MuleProperties.QUEUE_STORE_DEFAULT_IN_MEMORY_NAME, DefaultObjectStoreFactoryBean.createDefaultInMemoryQueueStore());
         registry.registerObject(MuleProperties.QUEUE_STORE_DEFAULT_PERSISTENT_NAME, DefaultObjectStoreFactoryBean.createDefaultPersistentQueueStore());
         registry.registerObject(MuleProperties.DEFAULT_USER_OBJECT_STORE_NAME, DefaultObjectStoreFactoryBean.createDefaultUserObjectStore());
-        registry.registerObject(MuleProperties.DEFAULT_USER_PERSISTENT_OBJECT_STORE_NAME, DefaultObjectStoreFactoryBean.createDefaultUserPersistentObjectStore());
+        registry.registerObject(MuleProperties.DEFAULT_USER_TRANSIENT_OBJECT_STORE_NAME, DefaultObjectStoreFactoryBean.createDefaultUserTransientObjectStore());
         registry.registerObject(MuleProperties.OBJECT_STORE_MANAGER, new MuleObjectStoreManager());
         registry.registerObject(MuleProperties.OBJECT_DEFAULT_MESSAGE_PROCESSING_MANAGER, new MuleMessageProcessingManager());
 
@@ -85,6 +86,8 @@ public class DefaultsConfigurationBuilder extends AbstractConfigurationBuilder
         registry.registerObject(MuleProperties.OBJECT_LOCK_FACTORY, new MuleLockFactory());
         registry.registerObject(MuleProperties.OBJECT_LOCK_PROVIDER, new SingleServerLockProvider());
 
+        registry.registerObject(MuleProperties.OBJECT_PROCESSING_TIME_WATCHER, new DefaultProcessingTimeWatcher());
+        
         configureThreadingProfiles(registry);
 
         registry.registerObject(MuleProperties.OBJECT_DEFAULT_RETRY_POLICY_TEMPLATE, new NoRetryPolicyTemplate());

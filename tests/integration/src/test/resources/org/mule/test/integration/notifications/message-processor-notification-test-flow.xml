@@ -5,18 +5,20 @@
       xmlns:vm="http://www.mulesoft.org/schema/mule/vm"
       xmlns:http="http://www.mulesoft.org/schema/mule/http"
       xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xmlns:cxf="http://www.mulesoft.org/schema/mule/cxf"
       xsi:schemaLocation="
                http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
                http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
                http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
                http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd
-               http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+               http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+               http://www.mulesoft.org/schema/mule/cxf http://www.mulesoft.org/schema/mule/cxf/current/mule-cxf.xsd">
 
     <notifications>
         <notification event="MESSAGE-PROCESSOR"/>
     </notifications>
 
-    <spring:bean name="notificationLogger" class="org.mule.context.notification.MessageProcessorNotificationLogger"/>
+    <spring:bean name="notificationLogger" class="org.mule.context.notification.processors.MessageProcessorNotificationLogger"/>
 
     <notifications>
         <notification-listener ref="notificationLogger"/>
@@ -27,6 +29,14 @@
     <flow name="singleMP">
         <vm:inbound-endpoint path="in-single" exchange-pattern="request-response"/>
         <logger message="check"/>
+    </flow>
+
+    <flow name="cxfMP">
+        <vm:inbound-endpoint path="in-cxf" exchange-pattern="request-response"/>
+        <cxf:jaxws-service port="80" serviceClass="org.mule.context.notification.CxfSimpleService"
+                           enableMuleSoapHeaders="false"/>
+        <logger message="check1"/>
+        <logger message="check2"/>
     </flow>
 
     <flow name="singleMP2">
@@ -58,6 +68,15 @@
             <collection-splitter/>
             <logger message="check1"/>
         </processor-chain>
+    </flow>
+
+    <flow name="processorChain4">
+        <vm:inbound-endpoint path="in-processorChain4" exchange-pattern="request-response"/>
+        <processor-chain>
+            <logger message="check1"/>
+            <logger message="check2"/>
+        </processor-chain>
+        <logger message="check3"/>
     </flow>
 
     <flow name="processorChain">
@@ -134,6 +153,15 @@
         <logger message="Log after a scope"/>
     </flow>
 
+    <flow name="all3">
+        <vm:inbound-endpoint path="in-all3" exchange-pattern="request-response"/>
+        <all>
+            <logger message="check"/>
+            <logger message="check"/>
+        </all>
+        <logger message="Log after a scope"/>
+    </flow>
+
     <flow name="foreach">
         <vm:inbound-endpoint path="in-foreach" exchange-pattern="request-response"/>
         <foreach collection="#[{'one','two'}]">
@@ -204,6 +232,13 @@
         <vm:inbound-endpoint path="in-subflow" exchange-pattern="request-response"/>
         <echo-component/>
         <flow-ref name="subflow-call"/>
+    </flow>
+
+    <flow name="subflow2">
+        <vm:inbound-endpoint path="in-subflow2" exchange-pattern="request-response"/>
+        <echo-component/>
+        <flow-ref name="subflow-call"/>
+        <logger/>
     </flow>
 
     <sub-flow name="subflow-call">

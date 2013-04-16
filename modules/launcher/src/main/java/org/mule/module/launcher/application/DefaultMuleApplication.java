@@ -32,7 +32,6 @@ import org.mule.module.launcher.DeploymentInitException;
 import org.mule.module.launcher.DeploymentListener;
 import org.mule.module.launcher.DeploymentStartException;
 import org.mule.module.launcher.DeploymentStopException;
-import org.mule.module.launcher.GoodCitizenClassLoader;
 import org.mule.module.launcher.InstallException;
 import org.mule.module.launcher.MuleDeploymentService;
 import org.mule.module.launcher.descriptor.ApplicationDescriptor;
@@ -42,6 +41,7 @@ import org.mule.util.ExceptionUtils;
 import org.mule.util.FileUtils;
 import org.mule.util.StringUtils;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -67,16 +67,17 @@ public class DefaultMuleApplication implements Application
     protected MuleContext muleContext;
     protected ClassLoader deploymentClassLoader;
     protected ApplicationDescriptor descriptor;
+    protected final ApplicationClassLoaderFactory applicationClassLoaderFactory;
 
     protected String[] absoluteResourcePaths;
 
     protected DeploymentListener deploymentListener;
 
-    protected DefaultMuleApplication(ApplicationDescriptor appDesc, ClassLoader classLoader)
+    protected DefaultMuleApplication(ApplicationDescriptor appDesc, ApplicationClassLoaderFactory applicationClassLoaderFactory)
     {
         this.descriptor = appDesc;
+        this.applicationClassLoaderFactory = applicationClassLoaderFactory;
         this.deploymentListener = new NullDeploymentListener();
-        this.deploymentClassLoader = classLoader;
     }
 
     public void setDeploymentListener(DeploymentListener deploymentListener)
@@ -113,6 +114,7 @@ public class DefaultMuleApplication implements Application
             absoluteResourcePaths[i] = file.getAbsolutePath();
         }
 
+        deploymentClassLoader = applicationClassLoaderFactory.create(descriptor);
     }
 
     @Override
@@ -300,10 +302,17 @@ public class DefaultMuleApplication implements Application
             if (appCl != null)
             {
                 // close classloader to release jar connections in lieu of Java 7's ClassLoader.close()
-                if (appCl instanceof GoodCitizenClassLoader)
+                if (appCl instanceof Closeable)
                 {
-                    GoodCitizenClassLoader classLoader = (GoodCitizenClassLoader) appCl;
-                    classLoader.close();
+                    Closeable classLoader = (Closeable) appCl;
+                    try
+                    {
+                        classLoader.close();
+                    }
+                    catch (IOException e)
+                    {
+                        // Ignore
+                    }
                 }
             }
         }
@@ -354,6 +363,7 @@ public class DefaultMuleApplication implements Application
         }
         catch(Throwable cause)
         {
+            logger.error("Application deployment error", cause);
             deploymentListener.onDeploymentFailure(appName, cause);
         }
 

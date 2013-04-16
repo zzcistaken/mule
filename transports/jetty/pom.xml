@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.mule.transports</groupId>
         <artifactId>mule-transports</artifactId>
-        <version>3.4.0-RC3-SNAPSHOT</version>
+        <version>3.4.0</version>
     </parent>
     <artifactId>mule-transport-jetty</artifactId>
     <name>Jetty Transport</name>
@@ -28,6 +28,11 @@
         <dependency>
             <groupId>org.mule.modules</groupId>
             <artifactId>mule-module-logging</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.transports</groupId>
+            <artifactId>mule-transport-tcp</artifactId>
             <version>${project.version}</version>
         </dependency>
 

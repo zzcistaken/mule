@@ -10,6 +10,7 @@
 
 package org.mule.processor.chain;
 
+import org.mule.api.MuleContext;
 import org.mule.api.MuleEvent;
 import org.mule.api.MuleException;
 import org.mule.api.construct.FlowConstruct;
@@ -27,7 +28,6 @@ import org.mule.api.processor.MessageProcessorChain;
 import org.mule.api.processor.MessageProcessorContainer;
 import org.mule.api.processor.MessageProcessorPathElement;
 import org.mule.endpoint.EndpointAware;
-import org.mule.processor.AbstractInterceptingMessageProcessor;
 import org.mule.util.NotificationUtils;
 import org.mule.util.StringUtils;
 
@@ -42,7 +42,7 @@ import org.apache.commons.logging.LogFactory;
  * this chain is nested in another chain the next MessageProcessor in the parent chain is not injected into
  * the first in the nested chain.
  */
-public abstract class AbstractMessageProcessorChain extends AbstractInterceptingMessageProcessor
+public abstract class AbstractMessageProcessorChain
         implements MessageProcessorChain, Lifecycle, FlowConstructAware, MuleContextAware, EndpointAware, MessageProcessorContainer
 {
 
@@ -67,8 +67,8 @@ public abstract class AbstractMessageProcessorChain extends AbstractIntercepting
             return null;
         }
 
-        MuleEvent result = doProcess(event);
-        return processNext(result);
+        return  doProcess(event);
+
     }
 
     protected abstract MuleEvent doProcess(MuleEvent event) throws MuleException;
@@ -189,5 +189,19 @@ public abstract class AbstractMessageProcessorChain extends AbstractIntercepting
     public void addMessageProcessorPathElements(MessageProcessorPathElement pathElement)
     {
         NotificationUtils.addMessageProcessorPathElements(getMessageProcessors(), pathElement);
+
+    }
+    
+    @Override
+    public void setMuleContext(MuleContext context)
+    {
+
+        for (MessageProcessor processor : processors)
+        {
+            if (processor instanceof MuleContextAware)
+            {
+                ((MuleContextAware) processor).setMuleContext(context);
+            }
+        }
     }
 }
