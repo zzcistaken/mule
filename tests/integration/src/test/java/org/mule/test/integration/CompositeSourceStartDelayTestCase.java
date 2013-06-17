@@ -11,11 +11,13 @@
 package org.mule.test.integration;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import org.mule.api.MuleEvent;
 import org.mule.api.MuleException;
 import org.mule.api.MuleMessage;
 import org.mule.api.client.LocalMuleClient;
+import org.mule.api.lifecycle.LifecycleException;
 import org.mule.api.lifecycle.Startable;
 import org.mule.api.processor.MessageProcessor;
 import org.mule.api.transformer.TransformerException;
@@ -45,7 +47,7 @@ public class CompositeSourceStartDelayTestCase extends FunctionalTestCase
     }
 
     @Test
-    public void testProcessMessageWhenAnSourceIsNotStartedYet() throws Exception
+    public void testProcessMessageWhenSourceIsStarted() throws Exception
     {
         Thread thread = new Thread(new Runnable()
         {
@@ -71,6 +73,45 @@ public class CompositeSourceStartDelayTestCase extends FunctionalTestCase
         LocalMuleClient client = muleContext.getClient();
         MuleMessage response = client.send("vm://testIn", "TEST", null);
         assertEquals("TEST received", response.getPayloadAsString());
+    }
+
+    @Test
+    public void testProcessMessageWhenAnSourceIsNotStartedYet() throws MuleException
+    {
+        LocalMuleClient client = muleContext.getClient();
+        try {
+            client.send("vm://testIn", "TEST", null);
+            fail( "Message was sent/received when mule was not started yet" );
+        } catch (LifecycleException e) {/** do nothing **/}
+
+        Thread thread = new Thread(new Runnable()
+        {
+
+            public void run()
+            {
+                try
+                {
+                    muleContext.start();
+                }
+                catch (MuleException e)
+                {
+                    // Nothing to do
+                }
+            }
+        });
+
+        thread.start();
+
+        DefaultInboundEndpoint endpoint = (DefaultInboundEndpoint) muleContext.getRegistry().lookupObject("testInEndpoint");
+
+        while(!endpoint.getConnector().isStarted())
+        {
+            try
+            {
+                client.send("vm://testIn", "TEST", null);
+                fail("Message was sent/received when mule was not started yet");
+            } catch (LifecycleException e)  {/** do nothing **/}
+        }
     }
 
     private void waitUntilEndpointIsStarted(final String endpointName)
