@@ -22,24 +22,22 @@ import org.mule.util.IOUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamReader;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.xquery.XQConnection;
+import javax.xml.xquery.XQDataSource;
+import javax.xml.xquery.XQException;
+import javax.xml.xquery.XQItem;
+import javax.xml.xquery.XQItemType;
+import javax.xml.xquery.XQPreparedExpression;
+import javax.xml.xquery.XQResultSequence;
 
 import net.sf.saxon.Configuration;
-import net.sf.saxon.javax.xml.xquery.XQCommonHandler;
-import net.sf.saxon.javax.xml.xquery.XQConnection;
-import net.sf.saxon.javax.xml.xquery.XQDataSource;
-import net.sf.saxon.javax.xml.xquery.XQException;
-import net.sf.saxon.javax.xml.xquery.XQItem;
-import net.sf.saxon.javax.xml.xquery.XQItemType;
-import net.sf.saxon.javax.xml.xquery.XQPreparedExpression;
-import net.sf.saxon.javax.xml.xquery.XQResultSequence;
 import net.sf.saxon.xqj.SaxonXQDataSource;
 import org.apache.commons.pool.BasePoolableObjectFactory;
 import org.apache.commons.pool.impl.GenericObjectPool;
@@ -48,7 +46,6 @@ import org.dom4j.io.DocumentSource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.xml.sax.InputSource;
 
 /**
  * The XQuery Module gives users the ability to perform XQuery transformations on XML messages in Mule
@@ -68,8 +65,7 @@ public class XQueryTransformer extends AbstractXmlTransformer implements Disposa
 
     private volatile String xqueryFile;
     private volatile String xquery;
-    private volatile Map contextProperties;
-    private volatile XQCommonHandler commonHandler;
+    private volatile Map<String, Object> contextProperties;
     private volatile XQConnection connection;
     protected Configuration configuration;
 
@@ -97,13 +93,9 @@ public class XQueryTransformer extends AbstractXmlTransformer implements Disposa
         this.xqueryFile = xqueryFile;
     }
 
-    /**
-     *
-     */
     @Override
     public void initialise() throws InitialisationException
     {
-
         if (xquery != null && xqueryFile != null)
         {
             throw new InitialisationException(XmlMessages.canOnlySetFileOrXQuery(), this);
@@ -121,10 +113,6 @@ public class XQueryTransformer extends AbstractXmlTransformer implements Disposa
             }
 
             XQDataSource ds = new SaxonXQDataSource(configuration);
-            if (commonHandler != null)
-            {
-                ds.setCommonHandler(commonHandler);
-            }
             connection = ds.getConnection();
 
             transformerPool.addObject();
@@ -165,19 +153,19 @@ public class XQueryTransformer extends AbstractXmlTransformer implements Disposa
 
                 XQResultSequence result = transformer.executeQuery();
                 //No support for return Arrays yet
-                List results = new ArrayList();
+                List<Object> results = new ArrayList<Object>();
                 while (result.next())
                 {
                     XQItem item = result.getItem();
 
-                    Class type = returnType.getType();
+                    Class<?> type = returnType.getType();
                     if (Node.class.isAssignableFrom(type) || Node[].class.isAssignableFrom(type))
                     {
                         results.add(item.getNode());
                     }
                     else if (String.class.isAssignableFrom(type) || String[].class.isAssignableFrom(type))
                     {
-                        results.add(item.getItemAsString());
+                        results.add(item.getItemAsString(null));
                     }
                     else if (XMLStreamReader.class.isAssignableFrom(type) || XMLStreamReader[].class.isAssignableFrom(type))
                     {
@@ -230,10 +218,6 @@ public class XQueryTransformer extends AbstractXmlTransformer implements Disposa
             {
                 if (transformer != null)
                 {
-                    if (transformer.getWarnings() != null)
-                    {
-                        logger.warn(transformer.getWarnings().getMessage(), transformer.getWarnings().fillInStackTrace());
-                    }
                     // clear transformation parameters before returning transformer to the
                     // pool
                     //TODO find out what the scope is for bound variables, there doesn't seem to be a way to unbind them
@@ -254,43 +238,42 @@ public class XQueryTransformer extends AbstractXmlTransformer implements Disposa
         // set transformation parameters
         if (contextProperties != null)
         {
-            for (Iterator i = contextProperties.entrySet().iterator(); i.hasNext();)
+            for (Map.Entry<String, Object> parameter : contextProperties.entrySet())
             {
-                Map.Entry parameter = (Map.Entry) i.next();
-                String key = (String) parameter.getKey();
+                String key = parameter.getKey();
                 Object o = evaluateTransformParameter(key, parameter.getValue(), message);
 
                 if (o instanceof String)
                 {
-                    transformer.bindAtomicValue(new QName(key), o.toString(), connection.createAtomicItemType(XQItemType.XQBASETYPE_STRING));
+                    transformer.bindAtomicValue(new QName(key), o.toString(), connection.createAtomicType(XQItemType.XQBASETYPE_STRING));
                 }
                 else if (o instanceof Boolean)
                 {
-                    transformer.bindBoolean(new QName(key), ((Boolean) o).booleanValue(), connection.createAtomicItemType(XQItemType.XQBASETYPE_BOOLEAN));
+                    transformer.bindBoolean(new QName(key), ((Boolean) o).booleanValue(), connection.createAtomicType(XQItemType.XQBASETYPE_BOOLEAN));
                 }
                 else if (o instanceof Byte)
                 {
-                    transformer.bindByte(new QName(key), ((Byte) o).byteValue(), connection.createAtomicItemType(XQItemType.XQBASETYPE_BYTE));
+                    transformer.bindByte(new QName(key), ((Byte) o).byteValue(), connection.createAtomicType(XQItemType.XQBASETYPE_BYTE));
                 }
                 else if (o instanceof Short)
                 {
-                    transformer.bindShort(new QName(key), ((Short) o).shortValue(), connection.createAtomicItemType(XQItemType.XQBASETYPE_SHORT));
+                    transformer.bindShort(new QName(key), ((Short) o).shortValue(), connection.createAtomicType(XQItemType.XQBASETYPE_SHORT));
                 }
                 else if (o instanceof Integer)
                 {
-                    transformer.bindInt(new QName(key), ((Integer) o).intValue(), connection.createAtomicItemType(XQItemType.XQBASETYPE_INT));
+                    transformer.bindInt(new QName(key), ((Integer) o).intValue(), connection.createAtomicType(XQItemType.XQBASETYPE_INT));
                 }
                 else if (o instanceof Long)
                 {
-                    transformer.bindLong(new QName(key), ((Long) o).longValue(), connection.createAtomicItemType(XQItemType.XQBASETYPE_LONG));
+                    transformer.bindLong(new QName(key), ((Long) o).longValue(), connection.createAtomicType(XQItemType.XQBASETYPE_LONG));
                 }
                 else if (o instanceof Float)
                 {
-                    transformer.bindFloat(new QName(key), ((Float) o).floatValue(), connection.createAtomicItemType(XQItemType.XQBASETYPE_FLOAT));
+                    transformer.bindFloat(new QName(key), ((Float) o).floatValue(), connection.createAtomicType(XQItemType.XQBASETYPE_FLOAT));
                 }
                 else if (o instanceof Double)
                 {
-                    transformer.bindDouble(new QName(key), ((Double) o).doubleValue(), connection.createAtomicItemType(XQItemType.XQBASETYPE_DOUBLE));
+                    transformer.bindDouble(new QName(key), ((Double) o).doubleValue(), connection.createAtomicType(XQItemType.XQBASETYPE_DOUBLE));
                 }
                 else
                 {
@@ -310,12 +293,10 @@ public class XQueryTransformer extends AbstractXmlTransformer implements Disposa
         // Replace transformation parameters with null values
         if (contextProperties != null)
         {
-            for (Iterator i = contextProperties.entrySet().iterator(); i.hasNext(); )
+            for (Map.Entry<String, Object> parameter: contextProperties.entrySet())
             {
-                Map.Entry parameter = (Map.Entry) i.next();
-                String key = (String) parameter.getKey();
-
-                transformer.bindAtomicValue(new QName(key), "", connection.createAtomicItemType(XQItemType.XQBASETYPE_STRING));
+                String key = parameter.getKey();
+                transformer.bindAtomicValue(new QName(key), "", connection.createAtomicType(XQItemType.XQBASETYPE_STRING));
             }
         }
     }
@@ -325,7 +306,7 @@ public class XQueryTransformer extends AbstractXmlTransformer implements Disposa
      *
      * @param src
      * @param transformer
-     * @throws net.sf.saxon.javax.xml.xquery.XQException
+     * @throws XQException
      *
      * @throws Exception
      *
@@ -334,40 +315,33 @@ public class XQueryTransformer extends AbstractXmlTransformer implements Disposa
     {
         if (src instanceof byte[])
         {
-            transformer.bindDocument(new QName(SOURCE_DOCUMENT_NAMESPACE), new InputSource(new ByteArrayInputStream((byte[]) src)));
-
+            transformer.bindDocument(new QName(SOURCE_DOCUMENT_NAMESPACE), new StreamSource(new ByteArrayInputStream((byte[]) src)), connection.createDocumentType());
         }
         else if (src instanceof InputStream)
         {
-            transformer.bindDocument(new QName(SOURCE_DOCUMENT_NAMESPACE), new InputSource((InputStream) src));
-
+            transformer.bindDocument(new QName(SOURCE_DOCUMENT_NAMESPACE), new StreamSource((InputStream) src), connection.createDocumentType());
         }
         else if (src instanceof String)
         {
-            transformer.bindDocument(new QName(SOURCE_DOCUMENT_NAMESPACE), new InputSource(new StringReader((String) src)));
-
+            transformer.bindDocument(new QName(SOURCE_DOCUMENT_NAMESPACE), new StreamSource(new ByteArrayInputStream(((String) src).getBytes())),connection.createDocumentType());
         }
         else if (src instanceof Document)
         {
-            transformer.bindNode(new QName(SOURCE_DOCUMENT_NAMESPACE), (Document) src, null);
-
+            transformer.bindNode(new QName(SOURCE_DOCUMENT_NAMESPACE), (Document) src, connection.createDocumentType());
         }
         else if (src instanceof Element)
         {
-            transformer.bindNode(new QName(SOURCE_DOCUMENT_NAMESPACE), (Element) src, null);
-
+            transformer.bindNode(new QName(SOURCE_DOCUMENT_NAMESPACE), (Element) src, connection.createDocumentType());
         }
         else if (src instanceof org.dom4j.Document)
         {
             DOMWriter domWriter = new DOMWriter();
             Document dom = domWriter.write((org.dom4j.Document) src);
-            transformer.bindNode(new QName(SOURCE_DOCUMENT_NAMESPACE), dom, null);
-
+            transformer.bindNode(new QName(SOURCE_DOCUMENT_NAMESPACE), dom, connection.createDocumentType());
         }
         else if (src instanceof DocumentSource)
         {
-            transformer.bindDocument(new QName(SOURCE_DOCUMENT_NAMESPACE), ((DocumentSource) src).getInputSource());
-
+            transformer.bindDocument(new QName(SOURCE_DOCUMENT_NAMESPACE), ((DocumentSource) src), null);
         }
         else
         {
@@ -410,17 +384,6 @@ public class XQueryTransformer extends AbstractXmlTransformer implements Disposa
     {
         this.xquery = xquery;
     }
-
-    public XQCommonHandler getCommonHandler()
-    {
-        return commonHandler;
-    }
-
-    public void setCommonHandler(XQCommonHandler commonHandler)
-    {
-        this.commonHandler = commonHandler;
-    }
-
 
     protected class PooledXQueryTransformerFactory extends BasePoolableObjectFactory
     {
@@ -485,7 +448,7 @@ public class XQueryTransformer extends AbstractXmlTransformer implements Disposa
      * @see javax.xml.transform.Transformer#setParameter(java.lang.String,
      *      java.lang.Object)
      */
-    public Map getContextProperties()
+    public Map<String, Object> getContextProperties()
     {
         return contextProperties;
     }
@@ -497,7 +460,7 @@ public class XQueryTransformer extends AbstractXmlTransformer implements Disposa
      * @see javax.xml.transform.Transformer#setParameter(java.lang.String,
      *      java.lang.Object)
      */
-    public void setContextProperties(Map contextProperties)
+    public void setContextProperties(Map<String, Object> contextProperties)
     {
         this.contextProperties = contextProperties;
     }
