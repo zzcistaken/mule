@@ -436,7 +436,7 @@
 # /lib/mule
 #
 /mule-standalone-${productVersion}/lib/mule
-/mule-standalone-${productVersion}/lib/mule/mule-common-${productVersion}.jar
+/mule-standalone-${productVersion}/lib/mule/mule-common-3.5.0-M5-SNAPSHOT.jar
 /mule-standalone-${productVersion}/lib/mule/mule-core-${productVersion}-tests.jar
 /mule-standalone-${productVersion}/lib/mule/mule-core-${productVersion}.jar
 /mule-standalone-${productVersion}/lib/mule/mule-module-annotations-${productVersion}.jar
@@ -445,7 +445,7 @@
 /mule-standalone-${productVersion}/lib/mule/mule-module-builders-${productVersion}.jar
 /mule-standalone-${productVersion}/lib/mule/mule-module-client-${productVersion}.jar
 /mule-standalone-${productVersion}/lib/mule/mule-module-cxf-${productVersion}.jar
-/mule-standalone-${productVersion}/lib/mule/mule-module-db-${productVersion}.jar
+/mule-standalone-${productVersion}/lib/mule/mule-module-db-3.5.0-M5-SNAPSHOT.jar
 /mule-standalone-${productVersion}/lib/mule/mule-module-devkit-support-${productVersion}.jar
 /mule-standalone-${productVersion}/lib/mule/mule-module-drools-${productVersion}.jar
 /mule-standalone-${productVersion}/lib/mule/mule-module-jaas-${productVersion}.jar
