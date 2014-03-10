@@ -185,7 +185,7 @@
         <dependency>
             <groupId>org.mule.modules</groupId>
             <artifactId>mule-module-db</artifactId>
-            <version>${project.version}</version>
+            <version>3.5.0-M5-SNAPSHOT</version>
         </dependency>
 
         <!-- Modules for standalone container -->
