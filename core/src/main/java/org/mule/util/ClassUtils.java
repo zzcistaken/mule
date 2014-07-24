@@ -347,8 +347,10 @@ public class ClassUtils extends org.apache.commons.lang.ClassUtils
      */
     public static Class<?> initializeClass(Class<?> clazz)
     {
+        ClassLoader originalContextClassLoader = Thread.currentThread().getContextClassLoader();
         try
         {
+            Thread.currentThread().setContextClassLoader(ClassUtils.class.getClassLoader());
             return getClass(clazz.getName(), true);
         }
         catch (ClassNotFoundException e)
@@ -356,6 +358,10 @@ public class ClassUtils extends org.apache.commons.lang.ClassUtils
             IllegalStateException ise = new IllegalStateException();
             ise.initCause(e);
             throw ise;
+        }
+        finally
+        {
+            Thread.currentThread().setContextClassLoader(originalContextClassLoader);
         }
     }
 
