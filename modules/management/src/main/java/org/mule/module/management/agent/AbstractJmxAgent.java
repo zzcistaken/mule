@@ -16,7 +16,6 @@ import org.mule.api.service.Service;
 import org.mule.api.transport.Connector;
 import org.mule.api.transport.MessageReceiver;
 import org.mule.config.i18n.CoreMessages;
-import org.mule.config.spring.SpringRegistry;
 import org.mule.construct.AbstractFlowConstruct;
 import org.mule.context.notification.MuleContextNotification;
 import org.mule.context.notification.NotificationException;
@@ -72,7 +71,6 @@ import javax.management.remote.rmi.RMIConnectorServer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.context.ApplicationContext;
 
 /**
  * <code>AbstractJmxAgent</code> registers Mule Jmx management beans with an MBean server.

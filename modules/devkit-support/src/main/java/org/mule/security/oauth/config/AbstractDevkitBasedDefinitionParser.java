@@ -8,9 +8,9 @@ package org.mule.security.oauth.config;
 
 import org.mule.api.lifecycle.Disposable;
 import org.mule.api.lifecycle.Initialisable;
-import org.mule.config.spring.MuleHierarchicalBeanDefinitionParserDelegate;
-import org.mule.config.spring.parsers.generic.AutoIdUtils;
-import org.mule.config.spring.util.SpringXMLUtils;
+import org.mule.module.springconfig.MuleHierarchicalBeanDefinitionParserDelegate;
+import org.mule.module.springconfig.parsers.generic.AutoIdUtils;
+import org.mule.module.springconfig.util.SpringXMLUtils;
 import org.mule.util.TemplateParser;
 
 import java.util.List;
