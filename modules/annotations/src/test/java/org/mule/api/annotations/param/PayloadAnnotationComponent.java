@@ -6,6 +6,8 @@
  */
 package org.mule.api.annotations.param;
 
+import org.mule.module.annotations.api.annotations.param.Payload;
+
 import java.io.InputStream;
 
 /**

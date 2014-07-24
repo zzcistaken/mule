@@ -6,7 +6,7 @@
  */
 package org.mule.test.integration.tck;
 
-import org.mule.api.annotations.param.Payload;
+import org.mule.module.annotations.api.annotations.param.Payload;
 
 public class WeatherReportConsumer
 {

@@ -6,7 +6,7 @@
  */
 package org.mule.module.rss;
 
-import org.mule.api.annotations.param.Payload;
+import org.mule.module.annotations.api.annotations.param.Payload;
 
 import com.sun.syndication.feed.synd.SyndFeed;
 

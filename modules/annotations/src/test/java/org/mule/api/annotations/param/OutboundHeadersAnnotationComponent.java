@@ -6,6 +6,8 @@
  */
 package org.mule.api.annotations.param;
 
+import org.mule.module.annotations.api.annotations.param.OutboundHeaders;
+
 import java.util.List;
 import java.util.Map;
 

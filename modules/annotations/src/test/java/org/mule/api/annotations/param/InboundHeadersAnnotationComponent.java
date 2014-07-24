@@ -6,6 +6,7 @@
  */
 package org.mule.api.annotations.param;
 
+import org.mule.module.annotations.api.annotations.param.InboundHeaders;
 import org.mule.tck.testmodels.fruit.Apple;
 import org.mule.tck.testmodels.fruit.Fruit;
 

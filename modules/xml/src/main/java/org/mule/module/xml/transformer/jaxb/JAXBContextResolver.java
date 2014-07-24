@@ -7,7 +7,7 @@
 package org.mule.module.xml.transformer.jaxb;
 
 import org.mule.api.MuleContext;
-import org.mule.config.transformer.AbstractAnnotatedTransformerArgumentResolver;
+import org.mule.module.annotations.config.transformer.AbstractAnnotatedTransformerArgumentResolver;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;

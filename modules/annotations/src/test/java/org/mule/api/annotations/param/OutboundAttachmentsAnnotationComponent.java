@@ -6,6 +6,7 @@
  */
 package org.mule.api.annotations.param;
 
+import org.mule.module.annotations.api.annotations.param.OutboundAttachments;
 import org.mule.util.StringDataSource;
 
 import java.util.List;

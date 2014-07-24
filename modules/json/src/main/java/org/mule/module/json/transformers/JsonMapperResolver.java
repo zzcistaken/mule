@@ -7,7 +7,7 @@
 package org.mule.module.json.transformers;
 
 import org.mule.api.MuleContext;
-import org.mule.config.transformer.AbstractAnnotatedTransformerArgumentResolver;
+import org.mule.module.annotations.config.transformer.AbstractAnnotatedTransformerArgumentResolver;
 
 import org.codehaus.jackson.map.ObjectMapper;
 

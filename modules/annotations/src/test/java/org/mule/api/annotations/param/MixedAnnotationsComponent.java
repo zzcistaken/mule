@@ -6,6 +6,10 @@
  */
 package org.mule.api.annotations.param;
 
+import org.mule.module.annotations.api.annotations.param.InboundAttachments;
+import org.mule.module.annotations.api.annotations.param.InboundHeaders;
+import org.mule.module.annotations.api.annotations.param.Payload;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,8 +21,8 @@ import javax.activation.DataHandler;
  */
 public class MixedAnnotationsComponent
 {
-    public Map<?, ?> processAllAnnotated(@Payload String payload, 
-        @InboundHeaders("foo, bar") Map<?, ?> headers, 
+    public Map<?, ?> processAllAnnotated(@Payload String payload,
+        @InboundHeaders("foo, bar") Map<?, ?> headers,
         @InboundAttachments("*") Map<String, DataHandler> attachments)
     {
         Map<String, Object> m = new HashMap<String, Object>(3);

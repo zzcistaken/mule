@@ -9,7 +9,7 @@ package org.mule.config.spring.processors;
 import org.mule.api.MuleContext;
 import org.mule.api.context.MuleContextAware;
 import org.mule.api.service.Service;
-import org.mule.config.processors.DecoratingAnnotatedServiceProcessor;
+import org.mule.module.annotations.config.processors.DecoratingAnnotatedServiceProcessor;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
