@@ -38,8 +38,11 @@ public abstract class AbstractConfigurationBuilder implements ConfigurationBuild
     @Override
     public void configure(MuleContext muleContext) throws ConfigurationException
     {
+        ClassLoader originalContextClassLoader = Thread.currentThread().getContextClassLoader();
+
         try
         {
+            Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
             doConfigure(muleContext);
             applyLifecycle(muleContext.getLifecycleManager());
             configured = true;
@@ -47,6 +50,10 @@ public abstract class AbstractConfigurationBuilder implements ConfigurationBuild
         catch (Exception e)
         {
             throw new ConfigurationException(e);
+        }
+        finally
+        {
+            Thread.currentThread().setContextClassLoader(originalContextClassLoader);
         }
     }
 

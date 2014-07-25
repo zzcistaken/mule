@@ -7,20 +7,21 @@
 package org.mule.config.builders;
 
 import org.mule.api.MuleContext;
-import org.mule.api.MuleRuntimeException;
 import org.mule.api.config.ConfigurationBuilder;
 import org.mule.api.config.ConfigurationException;
 import org.mule.api.config.DomainMuleContextAwareConfigurationBuilder;
 import org.mule.config.ConfigResource;
-import org.mule.config.i18n.CoreMessages;
-import org.mule.util.ClassUtils;
+import org.mule.osgi.MuleCoreActivator;
 import org.mule.util.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
+
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceReference;
 
 /**
  * Configures Mule from a configuration resource or comma seperated list of configuration resources by
@@ -71,33 +72,15 @@ public class AutoConfigurationBuilder extends AbstractResourceConfigurationBuild
 
         try
         {
-            Properties props = new Properties();
-            props.load(ClassUtils.getResource("configuration-builders.properties", this.getClass()).openStream());
-
+            //TODO(pablo.kraan): OSGi - remove configuration-builders.properties once all the builders are migrated to the new service model
             for (Map.Entry<String, List<ConfigResource>> e : configsMap.entrySet())
             {
                 String extension = e.getKey();
                 List<ConfigResource> configs = e.getValue();
 
-                String className = (String) props.get(extension);
+                ConfigurationBuilderFactory configurationBuilderFactory = getConfigurationBuilderFactory(extension);
 
-                if (className == null || !ClassUtils.isClassOnPath(className, this.getClass()))
-                {
-                    throw new ConfigurationException(
-                        CoreMessages.configurationBuilderNoMatching(createConfigResourcesString()));
-                }
-
-                ConfigResource[] constructorArg = new ConfigResource[configs.size()];
-                System.arraycopy(configs.toArray(), 0, constructorArg, 0, configs.size());
-                ConfigurationBuilder cb = (ConfigurationBuilder) ClassUtils.instanciateClass(className, new Object[] {constructorArg});
-                if (domainContext != null && cb instanceof DomainMuleContextAwareConfigurationBuilder)
-                {
-                    ((DomainMuleContextAwareConfigurationBuilder) cb).setDomainContext(domainContext);
-                }
-                else if (domainContext != null)
-                {
-                    throw new MuleRuntimeException(CoreMessages.createStaticMessage(String.format("ConfigurationBuilder %s does not support domain context", cb.getClass().getCanonicalName())));
-                }
+                ConfigurationBuilder cb = configurationBuilderFactory.createConfigurationBuilder(domainContext, configs);
                 cb.configure(muleContext);
             }
         }
@@ -109,6 +92,29 @@ public class AutoConfigurationBuilder extends AbstractResourceConfigurationBuild
         {
             throw new ConfigurationException(e);
         }
+    }
+
+    private ConfigurationBuilderFactory getConfigurationBuilderFactory(String extension)
+    {
+        Collection<ServiceReference<ConfigurationBuilderFactory>> serviceReferences = null;
+        try
+        {
+            serviceReferences = MuleCoreActivator.bundleContext.getServiceReferences(ConfigurationBuilderFactory.class, "(extension="+ extension + ")");
+
+            if (serviceReferences.size() == 0)
+            {
+
+                throw new IllegalStateException("Unable to obtain a configuration builder factory");
+            }
+        }
+        catch (InvalidSyntaxException e)
+        {
+            logger.error("Unable to get ConfigurationBuilder service");
+        }
+
+        ServiceReference<ConfigurationBuilderFactory> configurationBuilderFactoryServiceReference = serviceReferences.iterator().next();
+
+        return MuleCoreActivator.bundleContext.getService(configurationBuilderFactoryServiceReference);
     }
 
     @Override

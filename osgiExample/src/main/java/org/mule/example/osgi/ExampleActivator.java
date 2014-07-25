@@ -18,30 +18,36 @@ import org.osgi.framework.BundleContext;
 public class ExampleActivator implements BundleActivator
 {
 
+    private MuleServer muleServer;
+
     @Override
     public void start(BundleContext bundleContext) throws Exception
     {
-        System.out.println("MONCHO starting!!!");
+        System.out.println("Starting Example bundle ");
 
         try
         {
             //TODO(pablo.kraan): using a file that is outside the bundle for now
-            MuleServer muleServer = new MuleServer("/Users/pablokraan/devel/osgiexample/mule-config.xml");
+            muleServer = new MuleServer("/Users/pablokraan/devel/osgiexample/mule-config.xml");
             muleServer.start(true, true);
         }
         catch (Throwable e)
         {
-            System.out.println("MONCHO Error: " + e.getMessage());
+            System.out.println("Error starting Example bundle: " + e.getMessage());
             e.printStackTrace();
         }
-        System.out.println("MONCHO STARTED");
-
+        System.out.println("Example bundle started");
 
     }
 
     @Override
     public void stop(BundleContext bundleContext) throws Exception
     {
-        System.out.println("MONCHO stop!!!");
+        System.out.println("Stopping Example bundle");
+        if (muleServer != null)
+        {
+            muleServer.shutdown();
+        }
+        System.out.println("Example bundle stopped");
     }
 }

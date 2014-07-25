@@ -30,6 +30,20 @@
                             <!--//TODO(pablo.kraan): OSGi - filter packages-->
                             org.mule.module.springconfig.*
                         </Export-Package>
+                        <Export-Service>
+                            org.mule.module.springconfig.SpringXmlConfigurationBuilderFactory
+                        </Export-Service>
+                        <Bundle-Activator>org.mule.module.springconfig.osgi.SpringConfigActivator</Bundle-Activator>
+                        <Import-Package>
+                            org.mule.config.factories,
+                            org.mule.module.annotations.config,
+                            org.mule.config.bootstrap,
+                            org.mule.util.queue,
+                            org.mule.execution,
+                            org.mule.util.lock,
+                            org.mule.management.stats,
+                            *
+                        </Import-Package>
                     </instructions>
                 </configuration>
             </plugin>

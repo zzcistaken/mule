@@ -476,7 +476,8 @@ public class MuleServer implements Runnable
 
         unregisterShutdownHook();
         doShutdown();
-        System.exit(0);
+        //TODO(pablo.kraan): OSGi - removed system.exit because it breaks karaf shutdown
+        //System.exit(0);
     }
 
     protected void doShutdown()

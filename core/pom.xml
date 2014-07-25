@@ -51,9 +51,7 @@
                                 sun.misc;resolution:="optional",
                                 *
                             </Import-Package>
-                            <!--<Include-Resource>-->
-                                <!--src/main/resources/META-INF-->
-                            <!--</Include-Resource>-->
+                            <Bundle-Activator>org.mule.osgi.MuleCoreActivator</Bundle-Activator>
                         </instructions>
                     </configuration>
                 </plugin>
