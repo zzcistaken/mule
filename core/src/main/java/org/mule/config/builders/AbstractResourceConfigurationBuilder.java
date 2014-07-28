@@ -78,7 +78,7 @@ public abstract class AbstractResourceConfigurationBuilder extends AbstractConfi
             configResources = new ConfigResource[configs.length];
             for (int i = 0; i < configs.length; i++)
             {
-                configResources[i] = new ConfigResource(configs[i]);
+                configResources[i] = new ConfigResource(configs[i], this.getClass());
             }
             return configResources;
         }

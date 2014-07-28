@@ -24,6 +24,8 @@ public class ExampleActivator implements BundleActivator
     public void start(BundleContext bundleContext) throws Exception
     {
         System.out.println("Starting Example bundle ");
+        //TODO(pablo.kraan): OSGi - setting property to see full exceptions
+        System.setProperty("mule.verbose.exceptions", "true");
 
         try
         {

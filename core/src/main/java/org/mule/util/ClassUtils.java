@@ -100,7 +100,15 @@ public class ClassUtils extends org.apache.commons.lang.ClassUtils
             public URL run()
             {
                 final ClassLoader cl = Thread.currentThread().getContextClassLoader();
-                return cl != null ? cl.getResource(resourceName) : null;
+                if (cl != null)
+                {
+                    System.out.println("OSGi loading resource: " + resourceName + " classloader:" + cl);
+                    return cl.getResource(resourceName);
+                }
+                else
+                {
+                    return null;
+                }
             }
         });
 
@@ -110,7 +118,9 @@ public class ClassUtils extends org.apache.commons.lang.ClassUtils
             {
                 public URL run()
                 {
-                    return ClassUtils.class.getClassLoader().getResource(resourceName);
+                    ClassLoader classLoader = ClassUtils.class.getClassLoader();
+                    System.out.println("OSGi loading resource: " + resourceName + " classloader:" + classLoader);
+                    return classLoader.getResource(resourceName);
                 }
             });
         }
@@ -121,7 +131,9 @@ public class ClassUtils extends org.apache.commons.lang.ClassUtils
             {
                 public URL run()
                 {
-                    return callingClass.getClassLoader().getResource(resourceName);
+                    ClassLoader classLoader = callingClass.getClassLoader();
+                    System.out.println("OSGi loading resource: " + resourceName + " classloader:" + classLoader + " callingClass: " + callingClass);
+                    return classLoader.getResource(resourceName);
                 }
             });
         }
@@ -138,7 +150,15 @@ public class ClassUtils extends org.apache.commons.lang.ClassUtils
                 try
                 {
                     final ClassLoader cl = Thread.currentThread().getContextClassLoader();
-                    return cl != null ? cl.getResources(resourceName) : null;
+                    if (cl != null)
+                    {
+                        System.out.println("OSGi loading resources: " + resourceName + " classloader:" + cl);
+                        return cl.getResources(resourceName);
+                    }
+                    else
+                    {
+                        return null;
+                    }
                 }
                 catch (IOException e)
                 {
@@ -155,7 +175,9 @@ public class ClassUtils extends org.apache.commons.lang.ClassUtils
                 {
                     try
                     {
-                        return ClassUtils.class.getClassLoader().getResources(resourceName);
+                        ClassLoader classLoader = ClassUtils.class.getClassLoader();
+                        System.out.println("OSGi loading resources: " + resourceName + " classloader:" + classLoader);
+                        return classLoader.getResources(resourceName);
                     }
                     catch (IOException e)
                     {
@@ -173,7 +195,9 @@ public class ClassUtils extends org.apache.commons.lang.ClassUtils
                 {
                     try
                     {
-                        return callingClass.getClassLoader().getResources(resourceName);
+                        ClassLoader classLoader = callingClass.getClassLoader();
+                        System.out.println("OSGi loading resources: " + resourceName + " classloader:" + classLoader + " callingClass: " + callingClass);
+                        return classLoader.getResources(resourceName);
                     }
                     catch (IOException e)
                     {
@@ -243,7 +267,15 @@ public class ClassUtils extends org.apache.commons.lang.ClassUtils
                 try
                 {
                     final ClassLoader cl = Thread.currentThread().getContextClassLoader();
-                    return cl != null ? cl.loadClass(className) : null;
+                    if (cl != null)
+                    {
+                        System.out.println("OSGi loading class: " + className+ " classloader:" + cl);
+                        return cl.loadClass(className);
+                    }
+                    else
+                    {
+                        return null;
+                    }
 
                 }
                 catch (ClassNotFoundException e)
@@ -261,6 +293,7 @@ public class ClassUtils extends org.apache.commons.lang.ClassUtils
                 {
                     try
                     {
+                        System.out.println("OSGi loading class: " + className+ " classloader:" + Class.class.getClassLoader());
                         return Class.forName(className);
                     }
                     catch (ClassNotFoundException e)
@@ -279,7 +312,9 @@ public class ClassUtils extends org.apache.commons.lang.ClassUtils
                 {
                     try
                     {
-                        return ClassUtils.class.getClassLoader().loadClass(className);
+                        ClassLoader classLoader = ClassUtils.class.getClassLoader();
+                        System.out.println("OSGi loading class: " + className+ " classloader:" + classLoader);
+                        return classLoader.loadClass(className);
                     }
                     catch (ClassNotFoundException e)
                     {
@@ -297,7 +332,9 @@ public class ClassUtils extends org.apache.commons.lang.ClassUtils
                 {
                     try
                     {
-                        return callingClass.getClassLoader().loadClass(className);
+                        ClassLoader classLoader = callingClass.getClassLoader();
+                        System.out.println("OSGi loading class: " + className+ " classloader:" + classLoader + " callingClass: " + callingClass);
+                        return classLoader.loadClass(className);
                     }
                     catch (ClassNotFoundException e)
                     {
@@ -333,6 +370,7 @@ public class ClassUtils extends org.apache.commons.lang.ClassUtils
     public static Class loadClass(final String className, final ClassLoader classLoader)
             throws ClassNotFoundException
     {
+        System.out.println("OSGi loading class: " + className+ " classloader:" + classLoader);
         return classLoader.loadClass(className);
     }
 
@@ -347,21 +385,18 @@ public class ClassUtils extends org.apache.commons.lang.ClassUtils
      */
     public static Class<?> initializeClass(Class<?> clazz)
     {
-        ClassLoader originalContextClassLoader = Thread.currentThread().getContextClassLoader();
         try
         {
-            Thread.currentThread().setContextClassLoader(ClassUtils.class.getClassLoader());
-            return getClass(clazz.getName(), true);
+            ClassLoader classLoader = clazz.getClassLoader();
+            System.out.println("OSGi instantiating class: " + clazz.getName() + " classloader:" + classLoader);
+
+            return getClass(classLoader, clazz.getName(), true);
         }
         catch (ClassNotFoundException e)
         {
             IllegalStateException ise = new IllegalStateException();
             ise.initCause(e);
             throw ise;
-        }
-        finally
-        {
-            Thread.currentThread().setContextClassLoader(originalContextClassLoader);
         }
     }
 
@@ -425,6 +460,7 @@ public class ClassUtils extends org.apache.commons.lang.ClassUtils
             throws ClassNotFoundException, SecurityException, NoSuchMethodException, IllegalArgumentException,
             InstantiationException, IllegalAccessException, InvocationTargetException
     {
+        //TODO(pablo.kraan): OSGi -  maybe this method should be removed
         Class<?> clazz = loadClass(name, callingClass);
         return instanciateClass(clazz, constructorArgs);
     }

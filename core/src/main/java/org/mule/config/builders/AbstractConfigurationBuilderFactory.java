@@ -27,40 +27,29 @@ public abstract class AbstractConfigurationBuilderFactory implements Configurati
     @Override
     public ConfigurationBuilder createConfigurationBuilder(MuleContext domainContext, List<ConfigResource> configs) throws ConfigurationException
     {
-        //TODO(pablo.kraan): OSGi - find a better way to do this
-        ClassLoader originalContextClassLoader = Thread.currentThread().getContextClassLoader();
-        try
+        String className = getClassName();
+        if (className == null || !ClassUtils.isClassOnPath(className, this.getClass()))
         {
-
-            String className = getClassName();
-            Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
-            if (className == null || !ClassUtils.isClassOnPath(className, this.getClass()))
-            {
-                //TODO(pablo.kraan): OSGi - use createConfigResourcesString() as in AutoConfigurationBuilder
-                throw new ConfigurationException(
-                        CoreMessages.configurationBuilderNoMatching(configs.toString()));
-            }
-
-            ConfigResource[] constructorArg = new ConfigResource[configs.size()];
-            System.arraycopy(configs.toArray(), 0, constructorArg, 0, configs.size());
-
-            ConfigurationBuilder cb = instantiateConfigurationBuilder(className, constructorArg);
-
-            if (domainContext != null && cb instanceof DomainMuleContextAwareConfigurationBuilder)
-            {
-                ((DomainMuleContextAwareConfigurationBuilder) cb).setDomainContext(domainContext);
-            }
-            else if (domainContext != null)
-            {
-                throw new MuleRuntimeException(CoreMessages.createStaticMessage(String.format("ConfigurationBuilder %s does not support domain context", cb.getClass().getCanonicalName())));
-            }
-
-            return cb;
+            //TODO(pablo.kraan): OSGi - use createConfigResourcesString() as in AutoConfigurationBuilder
+            throw new ConfigurationException(
+                    CoreMessages.configurationBuilderNoMatching(configs.toString()));
         }
-        finally
+
+        ConfigResource[] constructorArg = new ConfigResource[configs.size()];
+        System.arraycopy(configs.toArray(), 0, constructorArg, 0, configs.size());
+
+        ConfigurationBuilder cb = instantiateConfigurationBuilder(className, constructorArg);
+
+        if (domainContext != null && cb instanceof DomainMuleContextAwareConfigurationBuilder)
         {
-            Thread.currentThread().setContextClassLoader(originalContextClassLoader);
+            ((DomainMuleContextAwareConfigurationBuilder) cb).setDomainContext(domainContext);
         }
+        else if (domainContext != null)
+        {
+            throw new MuleRuntimeException(CoreMessages.createStaticMessage(String.format("ConfigurationBuilder %s does not support domain context", cb.getClass().getCanonicalName())));
+        }
+
+        return cb;
     }
 
     protected abstract String getClassName();
@@ -69,7 +58,7 @@ public abstract class AbstractConfigurationBuilderFactory implements Configurati
     {
         try
         {
-            return (ConfigurationBuilder) ClassUtils.instanciateClass(className, new Object[] {constructorArg});
+            return (ConfigurationBuilder) ClassUtils.instanciateClass(className, new Object[] {constructorArg}, this.getClass().getClassLoader());
         }
         catch (Exception e)
         {

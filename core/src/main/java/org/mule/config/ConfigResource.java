@@ -33,6 +33,16 @@ public class ConfigResource
         }
     }
 
+    public ConfigResource(String resourceName, Class aClass) throws IOException
+    {
+        this.resourceName = resourceName;
+        url = IOUtils.getResourceAsUrl(resourceName, aClass, true, true);
+        if(url == null)
+        {
+            throw new FileNotFoundException(resourceName);
+        }
+    }
+
     public ConfigResource(URL url)
     {
         this.url = url;

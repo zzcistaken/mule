@@ -27,7 +27,6 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <!--<Export-Package>org.mule.example.osgi.*</Export-Package>-->
                         <Bundle-Activator>org.mule.example.osgi.ExampleActivator</Bundle-Activator>
                     </instructions>
                 </configuration>

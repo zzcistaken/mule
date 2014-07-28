@@ -66,24 +66,24 @@ public class SpringXmlConfigurationBuilder extends AbstractResourceConfiguration
         if (useMinimalConfigResource)
         {
             allResources = new ConfigResource[configResources.length + 3];
-            allResources[0] = new ConfigResource(MULE_DOMAIN_REGISTRY_BOOTSTRAP_SPRING_CONFIG);
-            allResources[1] = new ConfigResource(MULE_MINIMAL_SPRING_CONFIG);
-            allResources[2] = new ConfigResource(MULE_SPRING_CONFIG);
+            allResources[0] = new ConfigResource(MULE_DOMAIN_REGISTRY_BOOTSTRAP_SPRING_CONFIG, this.getClass());
+            allResources[1] = new ConfigResource(MULE_MINIMAL_SPRING_CONFIG, this.getClass());
+            allResources[2] = new ConfigResource(MULE_SPRING_CONFIG, this.getClass());
             System.arraycopy(configResources, 0, allResources, 3, configResources.length);
         }
         else if (useDefaultConfigResource)
         {
             allResources = new ConfigResource[configResources.length + 4];
-            allResources[0] = new ConfigResource(MULE_REGISTRY_BOOTSTRAP_SPRING_CONFIG);
-            allResources[1] = new ConfigResource(MULE_MINIMAL_SPRING_CONFIG);
-            allResources[2] = new ConfigResource(MULE_SPRING_CONFIG);
-            allResources[3] = new ConfigResource(MULE_DEFAULTS_CONFIG);
+            allResources[0] = new ConfigResource(MULE_REGISTRY_BOOTSTRAP_SPRING_CONFIG, this.getClass());
+            allResources[1] = new ConfigResource(MULE_MINIMAL_SPRING_CONFIG, this.getClass());
+            allResources[2] = new ConfigResource(MULE_SPRING_CONFIG, this.getClass());
+            allResources[3] = new ConfigResource(MULE_DEFAULTS_CONFIG, this.getClass());
             System.arraycopy(configResources, 0, allResources, 4, configResources.length);
         }
         else
         {
             allResources = new ConfigResource[configResources.length + 1];
-            allResources[0] = new ConfigResource(MULE_SPRING_CONFIG);
+            allResources[0] = new ConfigResource(MULE_SPRING_CONFIG, this.getClass());
             System.arraycopy(configResources, 0, allResources, 1, configResources.length);
         }
         applicationContext = createApplicationContext(muleContext, allResources);

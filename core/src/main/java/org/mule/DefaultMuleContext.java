@@ -139,7 +139,7 @@ public class DefaultMuleContext implements MuleContext
 
     private StreamCloserService streamCloserService;
 
-    private ClassLoader executionClassLoader;
+    private ClassLoader executionClassLoader = DefaultMuleContext.class.getClassLoader();
 
     protected LocalMuleClient localMuleClient;
 
@@ -745,7 +745,8 @@ public class DefaultMuleContext implements MuleContext
 
     public void setExecutionClassLoader(ClassLoader cl)
     {
-        this.executionClassLoader = cl;
+        //TODO(pablo.kraan): OSGi - remove this methods?
+        //this.executionClassLoader = cl;
     }
 
     public ClassLoader getExecutionClassLoader()
