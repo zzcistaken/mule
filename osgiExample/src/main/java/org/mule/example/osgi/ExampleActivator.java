@@ -7,8 +7,19 @@
 
 package org.mule.example.osgi;
 
-import org.mule.MuleServer;
+import org.mule.api.MuleContext;
+import org.mule.api.config.ConfigurationBuilder;
+import org.mule.api.config.MuleConfiguration;
+import org.mule.api.context.MuleContextBuilder;
+import org.mule.config.PropertiesMuleConfigurationFactory;
+import org.mule.context.DefaultMuleContextBuilder;
+import org.mule.context.DefaultMuleContextFactory;
+import org.mule.module.springconfig.SpringXmlConfigurationBuilder;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.eclipse.gemini.blueprint.context.DelegatedExecutionOsgiBundleApplicationContext;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
@@ -17,8 +28,7 @@ import org.osgi.framework.BundleContext;
  */
 public class ExampleActivator implements BundleActivator
 {
-
-    private MuleServer muleServer;
+    private MuleContext muleContext;
 
     @Override
     public void start(BundleContext bundleContext) throws Exception
@@ -29,9 +39,29 @@ public class ExampleActivator implements BundleActivator
 
         try
         {
-            //TODO(pablo.kraan): using a file that is outside the bundle for now
-            muleServer = new MuleServer("/Users/pablokraan/devel/osgiexample/mule-config.xml");
-            muleServer.start(true, true);
+            String configResource = "mule-config.xml";
+
+            SpringXmlConfigurationBuilder cfgBuilder = new SpringXmlConfigurationBuilder(configResource);
+
+            //TODO(pablo.kraan): add the rest of the original configuration builders
+            List<ConfigurationBuilder> configBuilders = new ArrayList<ConfigurationBuilder>(1);
+
+            // need to add the annotations config builder before Spring so we can use Mule
+            // annotations in Spring
+            //addAnnotationsConfigBuilder(configBuilders);
+            //addStartupPropertiesConfigBuilder(configBuilders);
+            configBuilders.add(cfgBuilder);
+
+            MuleConfiguration configuration = createMuleConfiguration(configResource);
+
+            MuleContextBuilder contextBuilder = new DefaultMuleContextBuilder();
+            contextBuilder.setMuleConfiguration(configuration);
+
+            DefaultMuleContextFactory contextFactory = new DefaultMuleContextFactory();
+            contextFactory.setBundleContext(bundleContext);
+            contextFactory.setClassLoader(this.getClass().getClassLoader());
+            muleContext = contextFactory.createMuleContext(configBuilders, contextBuilder);
+            muleContext.start();
         }
         catch (Throwable e)
         {
@@ -42,13 +72,29 @@ public class ExampleActivator implements BundleActivator
 
     }
 
+    protected MuleConfiguration createMuleConfiguration(String appConfigurationResource)
+    {
+        String appPropertiesFile;
+
+        if (appConfigurationResource == null)
+        {
+            appPropertiesFile = PropertiesMuleConfigurationFactory.getMuleAppConfiguration(appConfigurationResource);
+        }
+        else
+        {
+            appPropertiesFile = appConfigurationResource;
+        }
+
+        return new PropertiesMuleConfigurationFactory(appPropertiesFile).createConfiguration();
+    }
+
     @Override
     public void stop(BundleContext bundleContext) throws Exception
     {
         System.out.println("Stopping Example bundle");
-        if (muleServer != null)
+        if (muleContext != null)
         {
-            muleServer.shutdown();
+            muleContext.stop();
         }
         System.out.println("Example bundle stopped");
     }

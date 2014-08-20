@@ -8,6 +8,8 @@ package org.mule.api.config;
 
 import org.mule.api.MuleContext;
 
+import org.osgi.framework.BundleContext;
+
 /**
  * A <code>ConfigurationBuilder</code> is used to configure a Mule instance,
  * represented by a MuleContext instance. Multiple ConfigurationBuilder's can be used
@@ -31,10 +33,11 @@ public interface ConfigurationBuilder
      * has been called.
      *
      * @param muleContext The current {@link org.mule.api.MuleContext}
+     * @param bundleContext
      * @throws ConfigurationException if the configuration fails i.e. an object cannot be created or
      * initialised properly
      */
-    void configure(MuleContext muleContext) throws ConfigurationException;
+    void configure(MuleContext muleContext, BundleContext bundleContext) throws ConfigurationException;
 
     /**
      * Indicate whether this ConfigurationBulder has been configured yet

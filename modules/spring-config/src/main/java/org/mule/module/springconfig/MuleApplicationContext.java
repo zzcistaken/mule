@@ -20,14 +20,14 @@ import org.springframework.core.io.Resource;
 @Deprecated
 public class MuleApplicationContext extends MuleArtifactContext
 {
-
+    //TODO(pablo.kraan): OSGi - remove this class
     public MuleApplicationContext(MuleContext muleContext, ConfigResource[] configResources) throws BeansException
     {
-        super(muleContext, configResources);
+        super(muleContext, configResources, null);
     }
 
     public MuleApplicationContext(MuleContext muleContext, Resource[] springResources) throws BeansException
     {
-        super(muleContext, springResources);
+        super(muleContext, springResources, null);
     }
 }

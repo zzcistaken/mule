@@ -111,7 +111,7 @@ public class DefaultMuleContextBuilder implements MuleContextBuilder
         muleContext.setLocalMuleClient(new DefaultLocalMuleClient(muleContext));
         muleContext.setExceptionListener(new DefaultSystemExceptionStrategy(muleContext));
         //TODO(pablo.kraan): OSGi - this is wrong - context classLoader is the root app classlodear conating System + OSGi classes only
-        muleContext.setExecutionClassLoader(Thread.currentThread().getContextClassLoader());
+        //muleContext.setExecutionClassLoader(Thread.currentThread().getContextClassLoader());
         return muleContext;
     }
 

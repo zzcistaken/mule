@@ -26,6 +26,7 @@ public interface Pipeline extends FlowConstruct, MessageProcessorContainer, Proc
     public MessageSource getMessageSource();
 
     public void setMessageProcessors(List<MessageProcessor> messageProcessors);
+    public void setMessageProcessor(List<MessageProcessor> messageProcessors);
 
     public List<MessageProcessor> getMessageProcessors();
 

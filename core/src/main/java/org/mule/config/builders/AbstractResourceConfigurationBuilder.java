@@ -15,6 +15,8 @@ import org.mule.util.StringUtils;
 
 import java.io.IOException;
 
+import org.osgi.framework.BundleContext;
+
 /**
  * Abstract {@link ConfigurationBuilder} implementation used for
  * ConfigurationBuider's that use one of more configuration resources of the same
@@ -59,14 +61,14 @@ public abstract class AbstractResourceConfigurationBuilder extends AbstractConfi
      * resources n configuration afterwards.
      */
     @Override
-    public void configure(MuleContext muleContext) throws ConfigurationException
+    public void configure(MuleContext muleContext, BundleContext bundleContext) throws ConfigurationException
     {
         if (configResources == null)
         {
             throw new ConfigurationException(CoreMessages.objectIsNull("Configuration Resources"));
         }
 
-        super.configure(muleContext);
+        super.configure(muleContext, bundleContext);
 
         logger.info(CoreMessages.configurationBuilderSuccess(this, createConfigResourcesString()));
     }

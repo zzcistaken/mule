@@ -13,6 +13,7 @@ import org.mule.api.lifecycle.LifecycleManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.osgi.framework.BundleContext;
 
 /**
  * A support class for {@link org.mule.api.config.ConfigurationBuilder} implementations
@@ -32,28 +33,22 @@ public abstract class AbstractConfigurationBuilder implements ConfigurationBuild
      * This method will delegate the actual processing to {@link #doConfigure(org.mule.api.MuleContext)}
      *
      * @param muleContext The current {@link org.mule.api.MuleContext}
+     * @param bundleContext
      * @throws ConfigurationException if the configuration fails i.e. an object cannot be created or
      * initialised properly
      */
     @Override
-    public void configure(MuleContext muleContext) throws ConfigurationException
+    public void configure(MuleContext muleContext, BundleContext bundleContext) throws ConfigurationException
     {
-        ClassLoader originalContextClassLoader = Thread.currentThread().getContextClassLoader();
-
         try
         {
-            Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
-            doConfigure(muleContext);
+            doConfigure(muleContext, bundleContext);
             applyLifecycle(muleContext.getLifecycleManager());
             configured = true;
         }
         catch (Exception e)
         {
             throw new ConfigurationException(e);
-        }
-        finally
-        {
-            Thread.currentThread().setContextClassLoader(originalContextClassLoader);
         }
     }
 
@@ -63,10 +58,11 @@ public abstract class AbstractConfigurationBuilder implements ConfigurationBuild
      * has been called.
      *
      * @param muleContext The current {@link org.mule.api.MuleContext}
+     * @param bundleContext
      * @throws ConfigurationException if the configuration fails i.e. an object cannot be created or
      * initialised properly
      */
-    protected abstract void doConfigure(MuleContext muleContext) throws Exception;
+    protected abstract void doConfigure(MuleContext muleContext, BundleContext bundleContext) throws Exception;
 
     /**
      * Allows a configuration builder to check and customise the lifecycle of objects in the registry

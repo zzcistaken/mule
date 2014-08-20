@@ -29,7 +29,7 @@ public class ScatterGatherOneRouteTest extends AbstractMuleTestCase
     {
         MuleContext context = new DefaultMuleContextFactory().createMuleContext();
         SpringXmlConfigurationBuilder builder = new SpringXmlConfigurationBuilder("scatter-gather-one-route-test.xml");
-        builder.configure(context);
+        builder.configure(context, null);
     }
 
     @Test(expected = InitialisationException.class)

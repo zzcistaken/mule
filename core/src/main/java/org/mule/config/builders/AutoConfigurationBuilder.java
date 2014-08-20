@@ -20,6 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 
@@ -48,7 +49,7 @@ public class AutoConfigurationBuilder extends AbstractResourceConfigurationBuild
     }
 
     @Override
-    protected void doConfigure(MuleContext muleContext) throws ConfigurationException
+    protected void doConfigure(MuleContext muleContext, BundleContext bundleContext) throws ConfigurationException
     {
         autoConfigure(muleContext, configResources);
     }
@@ -81,7 +82,8 @@ public class AutoConfigurationBuilder extends AbstractResourceConfigurationBuild
                 ConfigurationBuilderFactory configurationBuilderFactory = getConfigurationBuilderFactory(extension);
 
                 ConfigurationBuilder cb = configurationBuilderFactory.createConfigurationBuilder(domainContext, configs);
-                cb.configure(muleContext);
+                //TODO(pablo.kraan): OSGi - set the bundleContext
+                cb.configure(muleContext, null);
             }
         }
         catch (ConfigurationException e)

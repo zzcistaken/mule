@@ -13,13 +13,14 @@ import org.mule.util.IOUtils;
 
 import java.io.IOException;
 
+import org.eclipse.gemini.blueprint.context.support.OsgiBundleXmlApplicationContext;
+import org.osgi.framework.BundleContext;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.AbstractBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionReader;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
-import org.springframework.context.support.AbstractXmlApplicationContext;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -30,7 +31,7 @@ import org.springframework.core.io.UrlResource;
  * MuleBeanDefinitionReader.
  *
  */
-public class MuleArtifactContext extends AbstractXmlApplicationContext
+public class MuleArtifactContext extends OsgiBundleXmlApplicationContext
 {
     private MuleContext muleContext;
     private Resource[] springResources;
@@ -41,20 +42,45 @@ public class MuleArtifactContext extends AbstractXmlApplicationContext
      * the spring ApplicationContext
      *
      * @param configResources
+     * @param bundleContext
      * @see SpringRegistry
      */
-    public MuleArtifactContext(MuleContext muleContext, ConfigResource[] configResources)
+    public MuleArtifactContext(MuleContext muleContext, ConfigResource[] configResources, BundleContext bundleContext)
             throws BeansException
     {
-        this(muleContext, convert(configResources));
+        this(muleContext, convert(configResources), bundleContext);
     }
 
-    public MuleArtifactContext(MuleContext muleContext, Resource[] springResources) throws BeansException
+    public MuleArtifactContext(MuleContext muleContext, Resource[] springResources, BundleContext bundleContext) throws BeansException
     {
+        super(resourceToStrings(springResources), null);
         this.muleContext = muleContext;
         this.springResources = springResources;
+        setBundleContext(bundleContext);
     }
 
+    private static String[] resourceToStrings(Resource[] springResources)
+    {
+        //TODO(pablo.kraan): OSGi - makes no sense to convert to two different formats
+        String[] resources = new String[springResources.length];
+        int i = 0;
+        for (Resource springResource : springResources)
+        {
+            try
+            {
+                resources[i++] = springResource.getURI().toString();
+            }
+            catch (IOException e)
+            {
+                throw new IllegalStateException("Unable to convert resource to string", e);
+            }
+        }
+
+        return resources;
+    }
+
+
+    @Override
     protected void prepareBeanFactory(ConfigurableListableBeanFactory beanFactory)
     {
         super.prepareBeanFactory(beanFactory);
@@ -90,20 +116,15 @@ public class MuleArtifactContext extends AbstractXmlApplicationContext
     }
 
     @Override
-    protected Resource[] getConfigResources()
-    {
-        return springResources;
-    }
-
     protected void loadBeanDefinitions(DefaultListableBeanFactory beanFactory) throws IOException
     {
-        BeanDefinitionReader beanDefinitionReader = createBeanDefinitionReader(beanFactory);
+        //BeanDefinitionReader beanDefinitionReader = createBeanDefinitionReader(beanFactory);
 
         // Communicate mule context to parsers
         try
         {
             currentMuleContext.set(muleContext);
-            beanDefinitionReader.loadBeanDefinitions(springResources);
+            super.loadBeanDefinitions(beanFactory);
         }
         finally
         {
@@ -111,15 +132,12 @@ public class MuleArtifactContext extends AbstractXmlApplicationContext
         }
     }
 
-    protected BeanDefinitionReader createBeanDefinitionReader(DefaultListableBeanFactory beanFactory)
-    {
-        XmlBeanDefinitionReader beanDefinitionReader = new XmlBeanDefinitionReader(beanFactory);
-        //hook in our custom hierarchical reader
+    @Override
+    protected void initBeanDefinitionReader(XmlBeanDefinitionReader beanDefinitionReader) {
+
         beanDefinitionReader.setDocumentReaderClass(MuleBeanDefinitionDocumentReader.class);
         //add error reporting
         beanDefinitionReader.setProblemReporter(new MissingParserProblemReporter());
-
-        return beanDefinitionReader;
     }
 
     @Override

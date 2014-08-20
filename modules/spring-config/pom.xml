@@ -22,12 +22,18 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>2.4.0</version>
+                <version>2.5.0</version>
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
                         <Export-Package>
                             <!--//TODO(pablo.kraan): OSGi - filter packages-->
+                            org.mule.module.springconfig.handlers,
+                            org.mule.module.springconfig.factories,
+                            org.mule.module.springconfig.parsers,
+                            org.mule.module.springconfig.parsers.specific,
+                            org.mule.module.springconfig.parsers.specific.endpoint,
+                            org.mule.module.springconfig.parsers.specific.endpoint.support,
                             org.mule.module.springconfig.*
                         </Export-Package>
                         <Export-Service>
@@ -42,6 +48,7 @@
                             org.mule.execution,
                             org.mule.util.lock,
                             org.mule.management.stats,
+                            org.springframework.*,
                             *
                         </Import-Package>
                     </instructions>
@@ -60,6 +67,11 @@
             <groupId>org.mule.modules</groupId>
             <artifactId>mule-module-annotations</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.gemini.blueprint</groupId>
+            <artifactId>gemini-blueprint-core</artifactId>
+            <version>1.0.2.RELEASE</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>

@@ -20,6 +20,7 @@ import javax.servlet.ServletContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.osgi.framework.BundleContext;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.access.BeanFactoryLocator;
 import org.springframework.context.ApplicationContext;
@@ -68,14 +69,14 @@ public class WebappMuleXmlConfigurationBuilder extends SpringXmlConfigurationBui
     }
 
     @Override
-    protected void doConfigure(MuleContext muleContext) throws Exception
+    protected void doConfigure(MuleContext muleContext, BundleContext bundleContext) throws Exception
     {
         if (getParentContext() == null)
         {
             setParentContext(loadParentContext(context));
         }
 
-        super.doConfigure(muleContext);
+        super.doConfigure(muleContext, bundleContext);
     }
 
     protected ConfigResource[] loadConfigResources(String[] configs) throws ConfigurationException
@@ -95,7 +96,7 @@ public class WebappMuleXmlConfigurationBuilder extends SpringXmlConfigurationBui
         }
     }
 
-    protected ApplicationContext createApplicationContext(MuleContext muleContext, ConfigResource[] configResources)
+    protected ApplicationContext createApplicationContext(MuleContext muleContext, ConfigResource[] configResources, BundleContext bundleContext)
     {
         Resource[] servletContextResources = new Resource[configResources.length];
         for (int i = 0; i < configResources.length; i++)
@@ -103,7 +104,8 @@ public class WebappMuleXmlConfigurationBuilder extends SpringXmlConfigurationBui
             servletContextResources[i] = new ServletContextOrClassPathResource(context, configResources[i].getResourceName());
         }
 
-        return new MuleArtifactContext(muleContext, servletContextResources);
+        //TODO(pablo.kraan): OSGi - set the bundleContext
+        return new MuleArtifactContext(muleContext, servletContextResources, null);
     }
 
     /**
@@ -140,7 +142,7 @@ public class WebappMuleXmlConfigurationBuilder extends SpringXmlConfigurationBui
     {
         public ServletContextOrClassPathConfigResource(String resourceName) throws IOException
         {
-            super(resourceName, null);
+            super(resourceName);
         }
 
     }

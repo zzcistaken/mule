@@ -53,7 +53,6 @@ import org.mule.module.springconfig.parsers.processors.CheckRequiredAttributesWh
 import org.mule.module.springconfig.parsers.specific.AggregatorDefinitionParser;
 import org.mule.module.springconfig.parsers.specific.AsyncMessageProcessorsDefinitionParser;
 import org.mule.module.springconfig.parsers.specific.BindingDefinitionParser;
-import org.mule.module.springconfig.parsers.specific.BridgeDefinitionParser;
 import org.mule.module.springconfig.parsers.specific.ComponentDefinitionParser;
 import org.mule.module.springconfig.parsers.specific.ComponentDelegatingDefinitionParser;
 import org.mule.module.springconfig.parsers.specific.ConfigurationDefinitionParser;
@@ -96,13 +95,11 @@ import org.mule.module.springconfig.parsers.specific.SecurityFilterDefinitionPar
 import org.mule.module.springconfig.parsers.specific.ServiceDefinitionParser;
 import org.mule.module.springconfig.parsers.specific.ServiceOverridesDefinitionParser;
 import org.mule.module.springconfig.parsers.specific.SimpleComponentDefinitionParser;
-import org.mule.module.springconfig.parsers.specific.SimpleServiceDefinitionParser;
 import org.mule.module.springconfig.parsers.specific.SplitterDefinitionParser;
 import org.mule.module.springconfig.parsers.specific.StaticComponentDefinitionParser;
 import org.mule.module.springconfig.parsers.specific.ThreadingProfileDefinitionParser;
 import org.mule.module.springconfig.parsers.specific.TransactionDefinitionParser;
 import org.mule.module.springconfig.parsers.specific.TransactionManagerDefinitionParser;
-import org.mule.module.springconfig.parsers.specific.ValidatorDefinitionParser;
 import org.mule.module.springconfig.parsers.specific.endpoint.EndpointRefParser;
 import org.mule.module.springconfig.parsers.specific.endpoint.support.ChildEndpointDefinitionParser;
 import org.mule.module.springconfig.parsers.specific.endpoint.support.OrphanEndpointDefinitionParser;

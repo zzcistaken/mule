@@ -15,6 +15,8 @@ import org.mule.module.scripting.component.Scriptable;
 
 import javax.script.Bindings;
 
+import org.osgi.framework.BundleContext;
+
 /** Configures Mule from one or more script files. */
 public class ScriptConfigurationBuilder extends AbstractResourceConfigurationBuilder
 {
@@ -58,7 +60,7 @@ public class ScriptConfigurationBuilder extends AbstractResourceConfigurationBui
         this.scriptEngineName = scriptEngineName;
     }
 
-    protected void doConfigure(MuleContext muleContext) throws Exception
+    protected void doConfigure(MuleContext muleContext, BundleContext bundleContext) throws Exception
     {
         this.muleContext = muleContext;
 

@@ -20,7 +20,7 @@ public class DatasourceWithConnectionPropertiesBeanConfigTestCase extends Abstra
     public void expectFailure() throws Exception
     {
         ConfigurationBuilder configBuilder = new SpringXmlConfigurationBuilder("integration/config/bean-datasource-with-connection-properties-config.xml");
-        configBuilder.configure(muleContext);
+        configBuilder.configure(muleContext, null);
     }
 
 }

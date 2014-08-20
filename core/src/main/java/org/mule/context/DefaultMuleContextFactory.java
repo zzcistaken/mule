@@ -26,6 +26,7 @@ import java.util.Properties;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.osgi.framework.BundleContext;
 
 /**
  * Default implementation that uses {@link DefaultMuleContextBuilder} to build new
@@ -37,6 +38,8 @@ public class DefaultMuleContextFactory implements MuleContextFactory
     protected static final Log logger = LogFactory.getLog(DefaultMuleContextBuilder.class);
 
     private List<MuleContextListener> listeners = new LinkedList<MuleContextListener>();
+    private BundleContext bundleContext;
+    private ClassLoader classLoader;
 
     /**
      * Use default ConfigurationBuilder, default MuleContextBuilder
@@ -76,12 +79,12 @@ public class DefaultMuleContextFactory implements MuleContextFactory
         return doCreateMuleContext(muleContextBuilder, new ContextConfigurator()
         {
             @Override
-            public void configure(MuleContext muleContext) throws ConfigurationException
+            public void configure(MuleContext muleContext, BundleContext bundleContext) throws ConfigurationException
             {
                 // Configure
                 for (ConfigurationBuilder configBuilder : configurationBuilders)
                 {
-                    configBuilder.configure(muleContext);
+                    configBuilder.configure(muleContext, bundleContext);
                 }
                 notifyMuleContextConfiguration(muleContext);
             }
@@ -98,9 +101,9 @@ public class DefaultMuleContextFactory implements MuleContextFactory
         return doCreateMuleContext(muleContextBuilder, new ContextConfigurator()
         {
             @Override
-            public void configure(MuleContext muleContext) throws ConfigurationException
+            public void configure(MuleContext muleContext, BundleContext bundleContext) throws ConfigurationException
             {
-                configurationBuilder.configure(muleContext);
+                configurationBuilder.configure(muleContext, bundleContext);
 
                 notifyMuleContextConfiguration(muleContext);
             }
@@ -139,17 +142,17 @@ public class DefaultMuleContextFactory implements MuleContextFactory
         return doCreateMuleContext(new DefaultMuleContextBuilder(), new ContextConfigurator()
         {
             @Override
-            public void configure(MuleContext muleContext) throws ConfigurationException
+            public void configure(MuleContext muleContext, BundleContext bundleContext) throws ConfigurationException
             {
                 // Configure with startup properties
                 if (properties != null && !properties.isEmpty())
                 {
-                    new SimpleConfigurationBuilder(properties).configure(muleContext);
+                    new SimpleConfigurationBuilder(properties).configure(muleContext, bundleContext);
                 }
 
                 // Automatically resolve Configuration to be used and delegate configuration
                 // to it.
-                new AutoConfigurationBuilder(configResources).configure(muleContext);
+                new AutoConfigurationBuilder(configResources).configure(muleContext, bundleContext);
 
                 notifyMuleContextConfiguration(muleContext);
             }
@@ -183,16 +186,16 @@ public class DefaultMuleContextFactory implements MuleContextFactory
         return doCreateMuleContext(contextBuilder, new ContextConfigurator()
         {
             @Override
-            public void configure(MuleContext muleContext) throws ConfigurationException
+            public void configure(MuleContext muleContext, BundleContext bundleContext) throws ConfigurationException
             {
                 // Configure with startup properties
                 if (properties != null && !properties.isEmpty())
                 {
-                    new SimpleConfigurationBuilder(properties).configure(muleContext);
+                    new SimpleConfigurationBuilder(properties).configure(muleContext, bundleContext);
                 }
 
                 // Configure with configurationBuilder
-                configurationBuilder.configure(muleContext);
+                configurationBuilder.configure(muleContext, bundleContext);
 
                 notifyMuleContextConfiguration(muleContext);
             }
@@ -214,7 +217,7 @@ public class DefaultMuleContextFactory implements MuleContextFactory
 
         try
         {
-            configurator.configure(muleContext);
+            configurator.configure(muleContext, bundleContext);
         }
         catch (ConfigurationException e)
         {
@@ -240,7 +243,9 @@ public class DefaultMuleContextFactory implements MuleContextFactory
 
     protected MuleContext buildMuleContext(MuleContextBuilder muleContextBuilder)
     {
-        return muleContextBuilder.buildMuleContext();
+        MuleContext muleContext = muleContextBuilder.buildMuleContext();
+        //muleContext.setExecutionClassLoader(classLoader);
+        return muleContext;
     }
 
     @Override
@@ -279,9 +284,19 @@ public class DefaultMuleContextFactory implements MuleContextFactory
         }
     }
 
+    public void setBundleContext(BundleContext bundleContext)
+    {
+        this.bundleContext = bundleContext;
+    }
+
+    public void setClassLoader(ClassLoader classLoader)
+    {
+        this.classLoader = classLoader;
+    }
+
     private abstract class ContextConfigurator
     {
 
-        public abstract void configure(MuleContext muleContext) throws ConfigurationException;
+        public abstract void configure(MuleContext muleContext, BundleContext bundleContext) throws ConfigurationException;
     }
 }

@@ -139,7 +139,7 @@ public class DefaultMuleContext implements MuleContext
 
     private StreamCloserService streamCloserService;
 
-    private ClassLoader executionClassLoader = DefaultMuleContext.class.getClassLoader();
+    private ClassLoader executionClassLoader;
 
     protected LocalMuleClient localMuleClient;
 

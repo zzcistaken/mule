@@ -38,6 +38,7 @@ import java.util.Properties;
 import org.junit.After;
 import org.junit.Test;
 import org.mockito.InOrder;
+import org.osgi.framework.BundleContext;
 
 public class DefaultMuleContextFactoryTestCase extends AbstractMuleTestCase
 {
@@ -267,7 +268,7 @@ public class DefaultMuleContextFactoryTestCase extends AbstractMuleTestCase
     {
 
         @Override
-        protected void doConfigure(MuleContext context) throws Exception
+        protected void doConfigure(MuleContext context, BundleContext bundleContext) throws Exception
         {
             context.getRegistry().registerObject(TEST_STRING_KEY, TEST_STRING_VALUE);
             context.getRegistry().registerObject(TEST_OBJECT_NAME, new Banana());
@@ -278,7 +279,7 @@ public class DefaultMuleContextFactoryTestCase extends AbstractMuleTestCase
     {
 
         @Override
-        protected void doConfigure(MuleContext context) throws Exception
+        protected void doConfigure(MuleContext context, BundleContext bundleContext) throws Exception
         {
             context.getRegistry().registerObject(TEST_STRING_KEY2, TEST_STRING_VALUE2);
             Model testModel = new SedaModel();

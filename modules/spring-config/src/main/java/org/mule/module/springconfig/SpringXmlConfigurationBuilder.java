@@ -15,6 +15,8 @@ import org.mule.api.registry.Registry;
 import org.mule.config.ConfigResource;
 import org.mule.config.builders.AbstractResourceConfigurationBuilder;
 import org.mule.config.i18n.MessageFactory;
+
+import org.osgi.framework.BundleContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 
@@ -60,7 +62,7 @@ public class SpringXmlConfigurationBuilder extends AbstractResourceConfiguration
     }
 
     @Override
-    protected void doConfigure(MuleContext muleContext) throws Exception
+    protected void doConfigure(MuleContext muleContext, BundleContext bundleContext) throws Exception
     {
         ConfigResource[] allResources;
         if (useMinimalConfigResource)
@@ -86,7 +88,7 @@ public class SpringXmlConfigurationBuilder extends AbstractResourceConfiguration
             allResources[0] = new ConfigResource(MULE_SPRING_CONFIG, this.getClass());
             System.arraycopy(configResources, 0, allResources, 1, configResources.length);
         }
-        applicationContext = createApplicationContext(muleContext, allResources);
+        applicationContext = createApplicationContext(muleContext, allResources, bundleContext);
         createSpringRegistry(muleContext, applicationContext);
     }
 
@@ -102,9 +104,9 @@ public class SpringXmlConfigurationBuilder extends AbstractResourceConfiguration
     }
 
     protected ApplicationContext createApplicationContext(MuleContext muleContext,
-                                                          ConfigResource[] configResources) throws Exception
+                                                          ConfigResource[] configResources, BundleContext bundleContext) throws Exception
     {
-        return new MuleArtifactContext(muleContext, configResources);
+        return new MuleArtifactContext(muleContext, configResources, bundleContext);
     }
 
     protected void createSpringRegistry(MuleContext muleContext, ApplicationContext applicationContext)

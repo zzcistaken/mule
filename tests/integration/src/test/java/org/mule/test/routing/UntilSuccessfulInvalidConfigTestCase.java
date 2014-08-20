@@ -22,6 +22,6 @@ public class UntilSuccessfulInvalidConfigTestCase extends AbstractMuleTestCase
     {
         MuleContext context = new DefaultMuleContextFactory().createMuleContext();
         SpringXmlConfigurationBuilder builder = new SpringXmlConfigurationBuilder("until-successful-invalid-wait-test.xml");
-        builder.configure(context);
+        builder.configure(context, null);
     }
 }
