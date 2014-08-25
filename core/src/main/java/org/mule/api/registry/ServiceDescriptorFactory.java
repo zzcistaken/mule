@@ -8,6 +8,7 @@ package org.mule.api.registry;
 
 import org.mule.api.MuleContext;
 import org.mule.api.config.MuleProperties;
+import org.mule.api.context.MuleContextAware;
 import org.mule.config.i18n.CoreMessages;
 import org.mule.model.DefaultModelServiceDescriptor;
 import org.mule.transport.service.DefaultTransportServiceDescriptor;
@@ -92,6 +93,7 @@ public class ServiceDescriptorFactory
             {
                 throw new ServiceException(CoreMessages.failedToCreate("Transport: " + name));
             }
+
             Properties exceptionMappingProps = SpiUtils.findServiceDescriptor(ServiceType.EXCEPTION, name + "-exception-mappings");
             ((TransportServiceDescriptor) sd).setExceptionMappings(exceptionMappingProps);
         }
@@ -103,6 +105,11 @@ public class ServiceDescriptorFactory
         else
         {
             throw new ServiceException(CoreMessages.unrecognisedServiceType(type));
+        }
+
+        if (sd instanceof MuleContextAware)
+        {
+            ((MuleContextAware) sd).setMuleContext(muleContext);
         }
 
         // If there is a finder service, use it to find the "real" service.

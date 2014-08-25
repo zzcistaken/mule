@@ -18,16 +18,20 @@ public class MuleCoreActivator implements BundleActivator
     //TODO(pablo.kraan): OSGi - accesing bundleContext is not the right way to do this. Used just for the prototype
     public static BundleContext bundleContext;
 
+    private TransportActivator transportActivator = new TransportActivator();
     @Override
     public void start(BundleContext context) throws Exception
     {
         System.out.println("Starting Mule core bundle");
         bundleContext = context;
+
+        transportActivator.start(context);
     }
 
     @Override
     public void stop(BundleContext context) throws Exception
     {
+        transportActivator.stop(context);
         bundleContext = null;
     }
 }

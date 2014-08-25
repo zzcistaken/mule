@@ -745,8 +745,7 @@ public class DefaultMuleContext implements MuleContext
 
     public void setExecutionClassLoader(ClassLoader cl)
     {
-        //TODO(pablo.kraan): OSGi - remove this methods?
-        //this.executionClassLoader = cl;
+        this.executionClassLoader = cl;
     }
 
     public ClassLoader getExecutionClassLoader()

@@ -9,24 +9,29 @@
     <description>
         This configuration uses an HTTP endpoint to receive requests.
     </description>
-     <flow name="main">
-     <poll frequency="1000">
-     <set-payload value="MONCHO!!!"/>
-     </poll>
-     <!---->
-     <logger level="INFO" message="#[payload]"/>
-     </flow>
+     <!--<flow name="main">-->
+     <!--<poll frequency="1000">-->
+     <!--<set-payload value="OSGi!!!"/>-->
+     <!--</poll>-->
+     <!--&lt;!&ndash;&ndash;&gt;-->
+     <!--<logger level="INFO" message="#[payload]"/>-->
+     <!--</flow>-->
 
-    <!--<flow name="main">-->
-        <!--<poll frequency="1000">-->
-            <!--<set-payload value="POLL"/>-->
-        <!--</poll>-->
-        <!---->
-        <!--<vm:outbound-endpoint path="payloadGenerator"/>-->
-    <!--</flow>-->
-    <!---->
-    <!--<flow name="payloadGenerator">-->
-        <!--<vm:inbound-endpoint path="payloadGenerator"/>-->
-        <!--<set-payload value="MONCHO!!!"/>-->
-    <!--</flow>-->
+    <flow name="main">
+        <poll>
+            <set-payload value="POLL"/>
+        </poll>
+
+        <vm:outbound-endpoint path="payloadGenerator"/>
+    </flow>
+
+    <flow name="payloadGenerator">
+        <vm:inbound-endpoint path="payloadGenerator"/>
+
+        <logger level="INFO" message="Original payload: #[payload]"/>
+
+        <set-payload value="OSGi!!!"/>
+
+        <logger level="INFO" message="Updated payload: #[payload]"/>
+    </flow>
 </mule>

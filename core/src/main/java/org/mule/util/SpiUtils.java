@@ -28,6 +28,8 @@ public class SpiUtils
 
     public static final String SERVICE_ROOT = "META-INF/services/";
 
+    //TODO(pablo.kraan): OSGi - move this constant to somewhere else
+    public static final String PROVIDER_SERVICE_PATH = "org/mule/transport/";
 
     public static Properties findServiceDescriptor(ServiceType type, String name)
     {

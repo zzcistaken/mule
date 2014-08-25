@@ -38,6 +38,8 @@ import java.util.Properties;
  */
 public interface TransportServiceDescriptor extends ServiceDescriptor, MuleContextAware
 {
+
+    //TODO(pablo.kraan): OSGi - move this constant to somewhere else
     public static final String OSGI_HEADER_TRANSPORT = "Mule-Transport";
 
     MuleMessageFactory createMuleMessageFactory() throws TransportServiceException;

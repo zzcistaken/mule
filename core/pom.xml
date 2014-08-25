@@ -19,15 +19,6 @@
     </properties>
 
     <build>
-        <!--<resources>-->
-            <!--<resource>-->
-                <!--<directory>/home/jbonofre/workspace/karaf/karaf/manual/src/main/resources</directory>-->
-                <!--<filtering>true</filtering>-->
-                <!--<includes>-->
-                    <!--<include>**/*</include>-->
-                <!--</includes>-->
-            <!--</resource>-->
-        <!--</resources>-->
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -37,24 +28,23 @@
                     <skipDeploy>true</skipDeploy>
                 </configuration>
             </plugin>
-
-
-                <plugin>
-                    <groupId>org.apache.felix</groupId>
-                    <artifactId>maven-bundle-plugin</artifactId>
-                    <version>2.5.0</version>
-                    <extensions>true</extensions>
-                    <configuration>
-                        <instructions>
-                           <Export-Package>org.mule.*</Export-Package>
-                            <Import-Package>
-                                sun.misc;resolution:="optional",
-                                *
-                            </Import-Package>
-                            <Bundle-Activator>org.mule.osgi.MuleCoreActivator</Bundle-Activator>
-                        </instructions>
-                    </configuration>
-                </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>2.5.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Export-Package>org.mule.*</Export-Package>
+                        <Import-Package>
+                            sun.misc;resolution:="optional",
+                            *
+                        </Import-Package>
+                        <Bundle-Activator>org.mule.osgi.MuleCoreActivator</Bundle-Activator>
+                        <Mule-Transport>polling,dynamic</Mule-Transport>
+                    </instructions>
+                </configuration>
+            </plugin>
         </plugins>
         <pluginManagement>
         	<plugins>

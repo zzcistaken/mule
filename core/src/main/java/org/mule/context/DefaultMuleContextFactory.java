@@ -27,6 +27,7 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.wiring.BundleWiring;
 
 /**
  * Default implementation that uses {@link DefaultMuleContextBuilder} to build new
@@ -37,9 +38,8 @@ public class DefaultMuleContextFactory implements MuleContextFactory
 
     protected static final Log logger = LogFactory.getLog(DefaultMuleContextBuilder.class);
 
-    private List<MuleContextListener> listeners = new LinkedList<MuleContextListener>();
+    private List<MuleContextListener> listeners = new LinkedList<>();
     private BundleContext bundleContext;
-    private ClassLoader classLoader;
 
     /**
      * Use default ConfigurationBuilder, default MuleContextBuilder
@@ -244,7 +244,10 @@ public class DefaultMuleContextFactory implements MuleContextFactory
     protected MuleContext buildMuleContext(MuleContextBuilder muleContextBuilder)
     {
         MuleContext muleContext = muleContextBuilder.buildMuleContext();
-        //muleContext.setExecutionClassLoader(classLoader);
+        BundleWiring bundleWiring = bundleContext.getBundle().adapt(BundleWiring.class);
+        ClassLoader bundleClassLoader = bundleWiring.getClassLoader();
+        muleContext.setExecutionClassLoader(bundleClassLoader);
+
         return muleContext;
     }
 
@@ -287,11 +290,6 @@ public class DefaultMuleContextFactory implements MuleContextFactory
     public void setBundleContext(BundleContext bundleContext)
     {
         this.bundleContext = bundleContext;
-    }
-
-    public void setClassLoader(ClassLoader classLoader)
-    {
-        this.classLoader = classLoader;
     }
 
     private abstract class ContextConfigurator

@@ -146,13 +146,6 @@ public abstract class AbstractPipeline extends AbstractFlowConstruct implements 
     }
 
     @Override
-    public void setMessageProcessor(List<MessageProcessor> messageProcessors)
-    {
-        //TODO(pablo.kraan): OSGi - added to fix classloading issue attemping to load classes in DefaultBeanAssembler#bestGuessName
-        this.messageProcessors = messageProcessors;
-    }
-
-    @Override
     public List<MessageProcessor> getMessageProcessors()
     {
         return messageProcessors;

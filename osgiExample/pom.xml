@@ -28,24 +28,35 @@
                 <configuration>
                     <instructions>
                         <Export-Package>org.mule.example.osgi.*</Export-Package>
+                        <!--//TODO(pablo.kraan): OSGi - I don' like to have to import VM package here. Find a better way to do it-->
                         <Import-Package>
-                            org.mule.util.store,
-                            org.mule.util.queue,
-                            org.mule.retry.policies,
-                            org.mule.el.mvel,
-                            org.mule.security,
-                            org.mule.execution,
-                            org.mule.endpoint,
-                            org.mule.util,
-                            org.mule.util.lock,
-                            org.mule.management.stats,
+                            com.eaio.uuid,
                             org.mule,
-                            org.mule.module.springconfig.processors,
                             org.mule.config.bootstrap,
                             org.mule.config.factories,
+                            org.mule.el.mvel,
+                            org.mule.endpoint,
+                            org.mule.execution,
+                            org.mule.management.stats,
                             org.mule.module.springconfig.editors,
+                            org.mule.module.springconfig.processors,
+                            org.mule.module.springconfig.parsers.collection,
+                            org.mule.retry.policies,
+                            org.mule.security,
+                            org.mule.session,
+                            org.mule.util,
+                            org.mule.util.queue,
+                            org.mule.util.store,
+                            org.mule.util.lock,
+                            org.mule.transport,
+                            org.mule.transport.polling,
+                            org.mule.transport.vm,
+                            org.mule.transformer.simple,
                             org.springframework.beans.factory.config,
-                            com.eaio.uuid,
+                            org.mule.model.seda,
+                            org.mule.construct,
+                            org.mule.module.springconfig.factories,
+                            org.mule.api.processor,
                             *
                         </Import-Package>
                         <Bundle-Activator>org.mule.example.osgi.ExampleActivator</Bundle-Activator>

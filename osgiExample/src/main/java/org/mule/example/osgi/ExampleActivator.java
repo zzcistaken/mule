@@ -19,7 +19,6 @@ import org.mule.module.springconfig.SpringXmlConfigurationBuilder;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.gemini.blueprint.context.DelegatedExecutionOsgiBundleApplicationContext;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
@@ -59,7 +58,7 @@ public class ExampleActivator implements BundleActivator
 
             DefaultMuleContextFactory contextFactory = new DefaultMuleContextFactory();
             contextFactory.setBundleContext(bundleContext);
-            contextFactory.setClassLoader(this.getClass().getClassLoader());
+
             muleContext = contextFactory.createMuleContext(configBuilders, contextBuilder);
             muleContext.start();
         }
