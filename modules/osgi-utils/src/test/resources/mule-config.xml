@@ -6,17 +6,6 @@
     http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
     http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd">
 
-    <description>
-        This configuration uses an poll message source endpoint to generate requests.
-    </description>
-     <!--<flow name="main">-->
-     <!--<poll frequency="1000">-->
-     <!--<set-payload value="OSGi!!!"/>-->
-     <!--</poll>-->
-     <!--&lt;!&ndash;&ndash;&gt;-->
-     <!--<logger level="INFO" message="#[payload]"/>-->
-     <!--</flow>-->
-
     <flow name="main">
         <poll>
             <set-payload value="POLL"/>

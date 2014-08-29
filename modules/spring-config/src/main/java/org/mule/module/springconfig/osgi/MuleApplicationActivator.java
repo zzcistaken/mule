@@ -5,7 +5,7 @@
  * LICENSE.txt file.
  */
 
-package org.mule.example.osgi;
+package org.mule.module.springconfig.osgi;
 
 import org.mule.api.MuleContext;
 import org.mule.api.config.ConfigurationBuilder;
@@ -22,11 +22,10 @@ import java.util.List;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
-/**
- *
- */
-public class ExampleActivator implements BundleActivator
+public class MuleApplicationActivator implements BundleActivator
 {
+
+    //TODO(pablo.kraan): OSGi - move this class to another package/module
     private MuleContext muleContext;
 
     @Override

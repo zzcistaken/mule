@@ -27,7 +27,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Export-Package>org.mule.example.osgi.*</Export-Package>
+                        <!--<Export-Package>org.mule.example.osgi.*</Export-Package>-->
                         <!--//TODO(pablo.kraan): OSGi - I don' like to have to import VM package here. Find a better way to do it-->
                         <Import-Package>
                             com.eaio.uuid,
@@ -59,7 +59,8 @@
                             org.mule.api.processor,
                             *
                         </Import-Package>
-                        <Bundle-Activator>org.mule.example.osgi.ExampleActivator</Bundle-Activator>
+                        <!--<DynamicImport-Package>*</DynamicImport-Package>-->
+                        <Bundle-Activator>org.mule.module.springconfig.osgi.MuleApplicationActivator</Bundle-Activator>
                     </instructions>
                 </configuration>
             </plugin>

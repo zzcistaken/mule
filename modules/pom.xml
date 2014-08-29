@@ -37,6 +37,8 @@
         <module>json</module>
         <module>logging</module>
         <module>management</module>
+        <module>osgi-launcher</module>
+        <module>osgi-utils</module>
         <module>pgp</module>
         <module>reboot</module>
         <module>rss</module>

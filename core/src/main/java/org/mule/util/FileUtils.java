@@ -34,8 +34,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * <code>FileUtils</code> contains useful methods for dealing with files &
@@ -44,7 +42,9 @@ import org.apache.commons.logging.LogFactory;
 // @ThreadSafe
 public class FileUtils extends org.apache.commons.io.FileUtils
 {
-    private static final Log logger = LogFactory.getLog(FileUtils.class);
+
+    //TODO(pablo.kraan): OSGi - HACK: removed logger to avoid classloading issues when running the tests
+    //private static final Log logger = LogFactory.getLog(FileUtils.class);
     public static String DEFAULT_ENCODING = "UTF-8";
     
     public static synchronized void copyStreamToFile(InputStream input, File destination) throws IOException
@@ -610,14 +610,14 @@ public class FileUtils extends org.apache.commons.io.FileUtils
         boolean isRenamed = false;
         if (srcFile != null && destFile != null)
         {
-            logger.debug("Moving file " + srcFile.getAbsolutePath() + " to " + destFile.getAbsolutePath());
+            //logger.debug("Moving file " + srcFile.getAbsolutePath() + " to " + destFile.getAbsolutePath());
             if (!destFile.exists())
             {
                 try
                 {
                     if (srcFile.isFile())
                     {
-                        logger.debug("Trying to rename file");
+                        //logger.debug("Trying to rename file");
                         FileInputStream in = null;
                         FileOutputStream out = null;
                         try
@@ -629,7 +629,7 @@ public class FileUtils extends org.apache.commons.io.FileUtils
                         }
                         catch (Exception e)
                         {
-                            logger.debug(e);
+                            //logger.debug(e);
                         }
                         finally
                         {
@@ -641,7 +641,7 @@ public class FileUtils extends org.apache.commons.io.FileUtils
                                 }
                                 catch (Exception inNotClosed)
                                 {
-                                    logger.debug(inNotClosed);
+                                    //logger.debug(inNotClosed);
                                 }
                             }
                             if (out != null)
@@ -652,11 +652,11 @@ public class FileUtils extends org.apache.commons.io.FileUtils
                                 }
                                 catch (Exception outNotClosed)
                                 {
-                                    logger.debug(outNotClosed);
+                                    //logger.debug(outNotClosed);
                                 }
                             }
                         }
-                        logger.debug("File renamed: " + isRenamed);
+                        //logger.debug("File renamed: " + isRenamed);
                         if (isRenamed)
                         {
                             srcFile.delete();
@@ -668,17 +668,17 @@ public class FileUtils extends org.apache.commons.io.FileUtils
                     }
                     else
                     {
-                        logger.debug(srcFile.getAbsolutePath() + " is not a valid file.");
+                        //logger.debug(srcFile.getAbsolutePath() + " is not a valid file.");
                     }
                 }
                 catch (Exception e)
                 {
-                    logger.debug("Error renaming file from " + srcFile.getAbsolutePath() + " to " + destFile.getAbsolutePath());
+                    //logger.debug("Error renaming file from " + srcFile.getAbsolutePath() + " to " + destFile.getAbsolutePath());
                 }
             }
             else
             {
-                logger.debug("Error renaming file " + srcFile.getAbsolutePath() + ". Destination file " + destFile.getAbsolutePath() + " already exists.");
+                //logger.debug("Error renaming file " + srcFile.getAbsolutePath() + ". Destination file " + destFile.getAbsolutePath() + " already exists.");
             }
         }
         return isRenamed;
@@ -701,40 +701,40 @@ public class FileUtils extends org.apache.commons.io.FileUtils
         boolean isRenamed = false;
         if (srcFile != null && destFile != null)
         {
-            logger.debug("Moving file " + srcFile.getAbsolutePath() + " to " + destFile.getAbsolutePath());
+            //logger.debug("Moving file " + srcFile.getAbsolutePath() + " to " + destFile.getAbsolutePath());
             if (!destFile.exists())
             {
                 try
                 {
                     if (srcFile.isFile())
                     {
-                        logger.debug("Trying to rename file");
+                        //logger.debug("Trying to rename file");
                         isRenamed = srcFile.renameTo(destFile);
                         if (!isRenamed && srcFile.exists())
                         {
-                            logger.debug("Trying hard copy, assuming partition crossing ...");
+                            //logger.debug("Trying hard copy, assuming partition crossing ...");
                             isRenamed = renameFileHard(srcFile, destFile);
                         }
-                        logger.debug("File renamed: " + isRenamed);
+                        //logger.debug("File renamed: " + isRenamed);
                     }
                     else
                     {
-                        logger.debug(srcFile.getAbsolutePath() + " is not a valid file");
+                        //logger.debug(srcFile.getAbsolutePath() + " is not a valid file");
                     }
                 }
                 catch (Exception e)
                 {
-                    logger.debug("Error moving file from " + srcFile.getAbsolutePath() + " to " + destFile.getAbsolutePath(), e);
+                    //logger.debug("Error moving file from " + srcFile.getAbsolutePath() + " to " + destFile.getAbsolutePath(), e);
                 }
             }
             else
             {
-                logger.debug("Error renaming file " + srcFile.getAbsolutePath() + ". Destination file " + destFile.getAbsolutePath() + " already exists.");
+                //logger.debug("Error renaming file " + srcFile.getAbsolutePath() + ". Destination file " + destFile.getAbsolutePath() + " already exists.");
             }
         }
         else
         {
-            logger.debug("Error renaming file. Source or destination file is null.");
+            //logger.debug("Error renaming file. Source or destination file is null.");
         }
     
         return isRenamed;
