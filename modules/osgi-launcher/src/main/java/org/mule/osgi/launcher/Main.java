@@ -45,8 +45,8 @@ public class Main
 
         try
         {
-            // Create an instance of the framework.
             FrameworkFactory factory = getFrameworkFactory();
+
             Map<String, String> stringStringMap = new HashMap<>();
             //stringStringMap.put("felix.fileinstall.dir", "/Users/pablokraan/devel/osgiexample/autodeploy/");
             //stringStringMap.put("felix.fileinstall.bundles.updateWithListeners", "true");
@@ -59,26 +59,10 @@ public class Main
             BundleContext context = framework.getBundleContext();
             MuleOsgiListener listener = new MuleOsgiListener();
             context.addFrameworkListener(listener);
-            System.out.println("System start level: " + context.getBundle().adapt(BundleStartLevel.class).getStartLevel());
 
-            // Get list of already installed bundles as a map.
-            Map installedBundleMap = new HashMap();
-            Bundle[] bundles = context.getBundles();
-            for (int i = 0; i < bundles.length; i++)
-            {
-                System.out.println("Installed bundle: " + bundles[i].getLocation());
-                installedBundleMap.put(bundles[i].getLocation(), bundles[i]);
-            }
+            Map installedBundleMap = getInstalledBundles(context);
 
-            List<Bundle> bundlesToStart = new ArrayList<>();
-            bundlesToStart.addAll(installBundles(context, 1, installedBundleMap, listBundles("")));
-
-            bundlesToStart.addAll(installBundles(context, 1, installedBundleMap, listBundles2("")));
-
-            bundlesToStart.addAll(installBundles(context, 1, installedBundleMap, listBundlesDeployer("")));
-            //installBundles(context, 20, installedBundleMap, listBundles2(""));
-            //installBundlesFromDir(context, 1, installedBundleMap, "/Users/pablokraan/devel/osgiexample/core");
-            //installBundlesFromDir(context, 20, installedBundleMap, "/Users/pablokraan/devel/osgiexample/spring-config");
+            List<Bundle> bundlesToStart = getBundlesToStart(context, installedBundleMap);
 
             undeployBundles(installedBundleMap);
 
@@ -156,6 +140,29 @@ public class Main
         }
     }
 
+    private static List<Bundle> getBundlesToStart(BundleContext context, Map installedBundleMap)
+    {
+        List<Bundle> bundlesToStart = new ArrayList<>();
+        bundlesToStart.addAll(installBundles(context, 1, installedBundleMap, getCoreBundles()));
+
+        bundlesToStart.addAll(installBundles(context, 1, installedBundleMap, getSpringConfigBundles()));
+
+        bundlesToStart.addAll(installBundles(context, 1, installedBundleMap, getDeployerBundles()));
+        return bundlesToStart;
+    }
+
+    private static Map getInstalledBundles(BundleContext context)
+    {
+        Map installedBundleMap = new HashMap();
+        Bundle[] bundles = context.getBundles();
+        for (int i = 0; i < bundles.length; i++)
+        {
+            System.out.println("Installed bundle: " + bundles[i].getLocation());
+            installedBundleMap.put(bundles[i].getLocation(), bundles[i]);
+        }
+        return installedBundleMap;
+    }
+
     private static void startBundles(List<Bundle> bundlesToStart) throws BundleException
     {
         for (Bundle bundle : bundlesToStart)
@@ -165,20 +172,9 @@ public class Main
         }
     }
 
-    private static void installBundlesFromDir(BundleContext context, int startLevel, Map installedBundleMap, String folder)
-    {
-        // Look in the specified bundle directory to create a list
-        // of all JAR files to install.
-        List coreJarList = listBundles(folder);
-
-        // Install bundle JAR files and remember the bundle objects.
-        installBundles(context, startLevel, installedBundleMap, coreJarList);
-    }
-
     private static void undeployBundles(Map installedBundleMap)
     {
-        // Uninstall all bundles not in the auto-deploy directory if
-        // the 'uninstall' action is present.
+        // Undeploys deleted bundles and all the application bundles
         for (Iterator it = installedBundleMap.entrySet().iterator(); it.hasNext(); )
         {
             Map.Entry entry = (Map.Entry) it.next();
@@ -246,22 +242,8 @@ public class Main
         return bundles;
     }
 
-    private static List listBundles(String autoDir)
+    private static List getCoreBundles()
     {
-        //File[] files = new File(autoDir).listFiles();
-        //List jarList = new ArrayList();
-        //if (files != null)
-        //{
-        //    Arrays.sort(files);
-        //    for (int i = 0; i < files.length; i++)
-        //    {
-        //        if (files[i].getName().endsWith(".jar"))
-        //        {
-        //            System.out.println("Auto deploy bundle: " + files[i].getAbsolutePath());
-        //            jarList.add(files[i]);
-        //        }
-        //    }
-        //}
         List jarList = new ArrayList();
         jarList.add(new File("/Users/pablokraan/devel/osgiexample/core/log4j-1.2.17.jar"));
         jarList.add(new File("/Users/pablokraan/devel/osgiexample/core/jcl-over-slf4j-1.6.1.jar"));
@@ -289,7 +271,7 @@ public class Main
         return jarList;
     }
 
-    private static List listBundles2(String autoDir)
+    private static List getSpringConfigBundles()
     {
         List jarList = new ArrayList();
         jarList.add(new File("/Users/pablokraan/devel/osgiexample/core/antlr-runtime-osgi.jar"));
@@ -313,7 +295,7 @@ public class Main
         return jarList;
     }
 
-    private static List listBundlesDeployer(String autoDir)
+    private static List getDeployerBundles()
     {
         List jarList = new ArrayList();
         jarList.add(new File("/Users/pablokraan/devel/osgiexample/deployer/org.apache.felix.fileinstall-3.4.0.jar"));
@@ -363,20 +345,10 @@ public class Main
     private static void showBundleStatuses(BundleContext context)
     {
         System.out.println("\nBUNDLE STATUS:");
+
         for (Bundle bundle : context.getBundles())
         {
             System.out.println("Bundle " + bundle.getSymbolicName() + " is in state: " + getBundleState(bundle.getState()));
-            //if (bundle.getState() != Bundle.ACTIVE && !isFragment(bundle))
-            //{
-            //    try
-            //    {
-            //        bundle.start();
-            //    }
-            //    catch (BundleException e)
-            //    {
-            //        System.out.println("Error starting bundle: " + bundle.getSymbolicName() + "\n" + e.getMessage());
-            //    }
-            //}
         }
     }
 
