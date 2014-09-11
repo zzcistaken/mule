@@ -136,24 +136,6 @@ public class IOUtils extends org.apache.commons.io.IOUtils
         }
         URL url = null;
 
-
-        /////////////
-        ////TODO(pablo.kraan): OSGi - this should search in the application bundles ONLY
-        //if (MuleCoreActivator.bundleContext != null)
-        //{
-        //    for (Bundle bundle : MuleCoreActivator.bundleContext.getBundles())
-        //    {
-        //        System.out.println("Finding resource " + resourceName + " in  bundle: " + bundle.getSymbolicName());
-        //        url = bundle.getEntry(resourceName);
-        //        if (url != null)
-        //        {
-        //            System.out.println("Found resource " + resourceName + " in  bundle: " + bundle.getSymbolicName());
-        //            return url;
-        //        }
-        //    }
-        //}
-        /////////
-
         // Try to load the resource from the file system.
         if (tryAsFile)
         {
