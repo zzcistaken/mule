@@ -82,46 +82,6 @@ public class Main
                 System.out.println("Mule OSGi Container started");
                 System.out.println("***************************");
 
-                /*
-                //context.installBundle("reference:file:/Users/pablokraan/devel/osgiexample/apps/osgi-example-4.0-SNAPSHOT.jar");
-
-                //File appsFolder = new File("/Users/pablokraan/devel/osgiexample/apps");
-                //String[] appFiles = appsFolder.list(new SuffixFileFilter(".zip"));
-                //if (appFiles != null)
-                //{
-                //    for (String appFile : appFiles)
-                //    {
-                //        //ApplicationBundleBuilder bundleBuilder = new ApplicationBundleBuilder();
-                //        //File bundleTempFile = bundleBuilder.build(new File(appsFolder, appFile));
-                //        //File bundleFolder = new File(appsFolder, FilenameUtils.getBaseName(appFile));
-                //        //org.mule.util.FileUtils.unzip(bundleTempFile, bundleFolder);
-                //        //bundleTempFile.renameTo(bundleFile);
-                //
-                        Bundle bundle = null;
-                //        try
-                //        {
-                //            bundle = context.installBundle("reference:file:/Users/pablokraan/devel/osgiexample/apps/simpleApp/");
-                //context.installBundle("reference:file:/Users/pablokraan/devel/osgiexample/apps/simpleApp/");
-                //            //bundle = context.installBundle(bundleFolder.toURI().toString());
-                //            bundle = context.installBundle("reference:file:/Users/pablokraan/devel/osgiexample/simpleApp/simpleApp.mab");
-                //        }
-                //        catch (BundleException e)
-                //        {
-                //            System.err.println("Error installing application bundle: " + e.getMessage());
-                //        }
-                //
-                //        try
-                //        {
-                //            bundle.start();
-                //        }
-                //        catch (BundleException e)
-                //        {
-                //            System.err.println("Error starting application bundle: " + e.getMessage());
-                //        }
-                //    }
-                //}
-                 */
-
                 // Wait for framework to stop to exit the VM.
                 event = framework.waitForStop(0);
             }
