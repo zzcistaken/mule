@@ -27,6 +27,8 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
+import org.osgi.framework.FrameworkEvent;
+import org.osgi.framework.FrameworkListener;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.hooks.resolver.ResolverHookFactory;
 import org.osgi.framework.wiring.BundleCapability;
@@ -70,7 +72,7 @@ public class Activator implements BundleActivator
         //}, null);
 
         ThreadLocal<Region> threadLocal = new ThreadLocal<>();
-        StandardRegionDigraph digraph = createDigraph(context, threadLocal);
+        final StandardRegionDigraph digraph = createDigraph(context, threadLocal);
         register(context, ResolverHookFactory.class, digraph.getResolverHookFactory());
         //register(context, CollisionHook.class, digraph.getBundleCollisionHook());
         register(context, org.osgi.framework.hooks.bundle.FindHook.class, digraph.getBundleFindHook());
@@ -79,10 +81,18 @@ public class Activator implements BundleActivator
         register(context, org.osgi.framework.hooks.service.EventHook.class, digraph.getServiceEventHook());
         register(context, RegionDigraph.class, digraph);
 
-        deployerThread = new Thread(new Deployer(context, digraph));
-
-        deployerThread.start();
-
+        context.addFrameworkListener(new FrameworkListener()
+        {
+            @Override
+            public void frameworkEvent(FrameworkEvent event)
+            {
+                if (event.getType() == FrameworkEvent.STARTED)
+                {
+                    deployerThread = new Thread(new Deployer(context, digraph));
+                    deployerThread.start();
+                }
+            }
+        });
     }
 
     private void register(BundleContext context, Class serviceClass, Object service)
@@ -128,14 +138,6 @@ public class Activator implements BundleActivator
         @Override
         public void run()
         {
-            try
-            {
-                Thread.sleep(10000);
-            }
-            catch (InterruptedException e)
-            {
-                e.printStackTrace();
-            }
             System.out.println("STARTING APPLICATION DEPLOYMENT....");
 
 
