@@ -8,7 +8,6 @@ package org.mule.util;
 
 import org.mule.api.config.MuleProperties;
 import org.mule.config.i18n.CoreMessages;
-import org.mule.osgi.MuleCoreActivator;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,7 +22,6 @@ import java.security.PrivilegedAction;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.osgi.framework.Bundle;
 
 // @ThreadSafe
 /**
@@ -92,7 +90,7 @@ public class IOUtils extends org.apache.commons.io.IOUtils
                                                   boolean tryAsUrl) throws IOException
     {
 
-        URL url = getResourceAsUrl(resourceName, callingClass, tryAsFile, tryAsUrl);
+        URL url = getResourceAsUrl(resourceName, callingClass.getClassLoader(), tryAsFile, tryAsUrl);
 
         if (url == null)
         {
@@ -112,9 +110,9 @@ public class IOUtils extends org.apache.commons.io.IOUtils
      * @param callingClass The Class object of the calling object
      * @return an URL to the resource or null if resource not found
      */
-    public static URL getResourceAsUrl(final String resourceName, final Class callingClass)
+    public static URL getResourceAsUrl(final String resourceName, final ClassLoader classLoader)
     {
-        return getResourceAsUrl(resourceName, callingClass, true, true);
+        return getResourceAsUrl(resourceName, classLoader, true, true);
     }
 
     /**
@@ -128,7 +126,7 @@ public class IOUtils extends org.apache.commons.io.IOUtils
      * @return an URL to the resource or null if resource not found
      */
     public static URL getResourceAsUrl(final String resourceName,
-                                       final Class callingClass,
+                                       final ClassLoader classLoader,
                                        boolean tryAsFile, boolean tryAsUrl)
     {
         if (resourceName == null)
@@ -139,22 +137,22 @@ public class IOUtils extends org.apache.commons.io.IOUtils
         URL url = null;
 
 
-        ///////////
-        //TODO(pablo.kraan): OSGi - this should search in the application bundles ONLY
-        if (MuleCoreActivator.bundleContext != null)
-        {
-            for (Bundle bundle : MuleCoreActivator.bundleContext.getBundles())
-            {
-                System.out.println("Finding resource " + resourceName + " in  bundle: " + bundle.getSymbolicName());
-                url = bundle.getEntry(resourceName);
-                if (url != null)
-                {
-                    System.out.println("Found resource " + resourceName + " in  bundle: " + bundle.getSymbolicName());
-                    return url;
-                }
-            }
-        }
-        ///////
+        /////////////
+        ////TODO(pablo.kraan): OSGi - this should search in the application bundles ONLY
+        //if (MuleCoreActivator.bundleContext != null)
+        //{
+        //    for (Bundle bundle : MuleCoreActivator.bundleContext.getBundles())
+        //    {
+        //        System.out.println("Finding resource " + resourceName + " in  bundle: " + bundle.getSymbolicName());
+        //        url = bundle.getEntry(resourceName);
+        //        if (url != null)
+        //        {
+        //            System.out.println("Found resource " + resourceName + " in  bundle: " + bundle.getSymbolicName());
+        //            return url;
+        //        }
+        //    }
+        //}
+        /////////
 
         // Try to load the resource from the file system.
         if (tryAsFile)
@@ -187,7 +185,7 @@ public class IOUtils extends org.apache.commons.io.IOUtils
                 {
                     public Object run()
                     {
-                        return ClassUtils.getResource(resourceName, callingClass);
+                        return ClassUtils.getResource(resourceName, classLoader);
                     }
                 });
                 if (url == null)

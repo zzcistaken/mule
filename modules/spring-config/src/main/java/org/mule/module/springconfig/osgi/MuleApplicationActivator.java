@@ -39,7 +39,7 @@ public class MuleApplicationActivator implements BundleActivator
         {
             String configResource = "mule-config.xml";
 
-            SpringXmlConfigurationBuilder cfgBuilder = new SpringXmlConfigurationBuilder(configResource);
+            SpringXmlConfigurationBuilder cfgBuilder = new SpringXmlConfigurationBuilder(configResource, bundleContext);
 
             //TODO(pablo.kraan): add the rest of the original configuration builders
             List<ConfigurationBuilder> configBuilders = new ArrayList<ConfigurationBuilder>(1);

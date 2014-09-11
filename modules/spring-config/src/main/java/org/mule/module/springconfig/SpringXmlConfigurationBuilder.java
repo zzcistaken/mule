@@ -17,6 +17,7 @@ import org.mule.config.builders.AbstractResourceConfigurationBuilder;
 import org.mule.config.i18n.MessageFactory;
 
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.wiring.BundleWiring;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 
@@ -46,14 +47,19 @@ public class SpringXmlConfigurationBuilder extends AbstractResourceConfiguration
     protected ApplicationContext parentContext;
     protected ApplicationContext applicationContext;
 
+    public SpringXmlConfigurationBuilder(String configResources) throws ConfigurationException
+    {
+        this(configResources, null);
+    }
+
     public SpringXmlConfigurationBuilder(String[] configResources) throws ConfigurationException
     {
         super(configResources);
     }
 
-    public SpringXmlConfigurationBuilder(String configResources) throws ConfigurationException
+    public SpringXmlConfigurationBuilder(String configResources, BundleContext bundleContext) throws ConfigurationException
     {
-        super(configResources);
+        super(configResources, bundleContext);
     }
 
     public SpringXmlConfigurationBuilder(ConfigResource[] configResources)
@@ -64,28 +70,32 @@ public class SpringXmlConfigurationBuilder extends AbstractResourceConfiguration
     @Override
     protected void doConfigure(MuleContext muleContext, BundleContext bundleContext) throws Exception
     {
+        BundleWiring bundleWiring = bundleContext.getBundle().adapt(BundleWiring.class);
+        ClassLoader bundleClassLoader = bundleWiring.getClassLoader();
+        ClassLoader springModuleClassLoader = this.getClass().getClassLoader();
+
         ConfigResource[] allResources;
         if (useMinimalConfigResource)
         {
             allResources = new ConfigResource[configResources.length + 3];
-            allResources[0] = new ConfigResource(MULE_DOMAIN_REGISTRY_BOOTSTRAP_SPRING_CONFIG, this.getClass());
-            allResources[1] = new ConfigResource(MULE_MINIMAL_SPRING_CONFIG, this.getClass());
-            allResources[2] = new ConfigResource(MULE_SPRING_CONFIG, this.getClass());
+            allResources[0] = new ConfigResource(MULE_DOMAIN_REGISTRY_BOOTSTRAP_SPRING_CONFIG, springModuleClassLoader);
+            allResources[1] = new ConfigResource(MULE_MINIMAL_SPRING_CONFIG, springModuleClassLoader);
+            allResources[2] = new ConfigResource(MULE_SPRING_CONFIG, springModuleClassLoader);
             System.arraycopy(configResources, 0, allResources, 3, configResources.length);
         }
         else if (useDefaultConfigResource)
         {
             allResources = new ConfigResource[configResources.length + 4];
-            allResources[0] = new ConfigResource(MULE_REGISTRY_BOOTSTRAP_SPRING_CONFIG, this.getClass());
-            allResources[1] = new ConfigResource(MULE_MINIMAL_SPRING_CONFIG, this.getClass());
-            allResources[2] = new ConfigResource(MULE_SPRING_CONFIG, this.getClass());
-            allResources[3] = new ConfigResource(MULE_DEFAULTS_CONFIG, this.getClass());
+            allResources[0] = new ConfigResource(MULE_REGISTRY_BOOTSTRAP_SPRING_CONFIG, springModuleClassLoader);
+            allResources[1] = new ConfigResource(MULE_MINIMAL_SPRING_CONFIG, springModuleClassLoader);
+            allResources[2] = new ConfigResource(MULE_SPRING_CONFIG, springModuleClassLoader);
+            allResources[3] = new ConfigResource(MULE_DEFAULTS_CONFIG, springModuleClassLoader);
             System.arraycopy(configResources, 0, allResources, 4, configResources.length);
         }
         else
         {
             allResources = new ConfigResource[configResources.length + 1];
-            allResources[0] = new ConfigResource(MULE_SPRING_CONFIG, this.getClass());
+            allResources[0] = new ConfigResource(MULE_SPRING_CONFIG, springModuleClassLoader);
             System.arraycopy(configResources, 0, allResources, 1, configResources.length);
         }
         applicationContext = createApplicationContext(muleContext, allResources, bundleContext);

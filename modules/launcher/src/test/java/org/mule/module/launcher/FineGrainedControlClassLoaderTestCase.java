@@ -168,12 +168,12 @@ public class FineGrainedControlClassLoaderTestCase extends AbstractMuleTestCase
 
     private URL hello()
     {
-        return ClassUtils.getResource("classloader-test-hello.jar", this.getClass());
+        return ClassUtils.getResource("classloader-test-hello.jar", this.getClass().getClassLoader());
     }
 
     private URL bye()
     {
-        return ClassUtils.getResource("classloader-test-bye.jar", this.getClass());
+        return ClassUtils.getResource("classloader-test-bye.jar", this.getClass().getClassLoader());
     }
 
     private String callHi(ClassLoader loader) throws Exception

@@ -187,7 +187,7 @@ public class FileUtils extends org.apache.commons.io.FileUtils
             return null;
         }
 
-        URL url = IOUtils.getResourceAsUrl(resourceName, callingClass);
+        URL url = IOUtils.getResourceAsUrl(resourceName, callingClass.getClassLoader());
         if (url == null)
         {
             // not found

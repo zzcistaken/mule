@@ -16,6 +16,7 @@ import org.mule.util.StringUtils;
 import java.io.IOException;
 
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.wiring.BundleWiring;
 
 /**
  * Abstract {@link ConfigurationBuilder} implementation used for
@@ -26,15 +27,19 @@ import org.osgi.framework.BundleContext;
  */
 public abstract class AbstractResourceConfigurationBuilder extends AbstractConfigurationBuilder
 {
+
+    private final BundleContext bundleContext;
     protected ConfigResource[] configResources;
 
     /**
      * @param configResources a comma separated list of configuration files to load,
      *            this should be accessible on the classpath or filesystem
+     * @param bundleContext
      * @throws org.mule.api.config.ConfigurationException usually if the config resources cannot be loaded
      */
-    public AbstractResourceConfigurationBuilder(String configResources) throws ConfigurationException
+    public AbstractResourceConfigurationBuilder(String configResources, BundleContext bundleContext) throws ConfigurationException
     {
+        this.bundleContext = bundleContext;
         this.configResources = loadConfigResources(StringUtils.splitAndTrim(configResources, ",; "));
     }
 
@@ -46,6 +51,7 @@ public abstract class AbstractResourceConfigurationBuilder extends AbstractConfi
     public AbstractResourceConfigurationBuilder(String[] configResources) throws ConfigurationException
     {
         this.configResources = loadConfigResources(configResources);
+        bundleContext = null;
     }
 
     /**
@@ -54,6 +60,7 @@ public abstract class AbstractResourceConfigurationBuilder extends AbstractConfi
     public AbstractResourceConfigurationBuilder(ConfigResource[] configResources)
     {
         this.configResources = configResources;
+        bundleContext = null;
     }
 
     /**
@@ -80,13 +87,29 @@ public abstract class AbstractResourceConfigurationBuilder extends AbstractConfi
             configResources = new ConfigResource[configs.length];
             for (int i = 0; i < configs.length; i++)
             {
-                configResources[i] = new ConfigResource(configs[i], this.getClass());
+                configResources[i] = new ConfigResource(configs[i], getResourceClassLoader());
             }
             return configResources;
         }
         catch (IOException e)
         {
             throw new ConfigurationException(e);
+        }
+    }
+
+    protected ClassLoader getResourceClassLoader()
+    {
+        //TODO(pablo.kraan): OSGi - kind of temporarily hack to maintain working other parts of mule
+        if (bundleContext == null)
+        {
+            return this.getClass().getClassLoader();
+        }
+        else
+        {
+            BundleWiring bundleWiring = bundleContext.getBundle().adapt(BundleWiring.class);
+            ClassLoader bundleClassLoader = bundleWiring.getClassLoader();
+
+            return bundleClassLoader;
         }
     }
 

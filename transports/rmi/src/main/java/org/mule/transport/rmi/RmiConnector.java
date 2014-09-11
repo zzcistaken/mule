@@ -148,7 +148,7 @@ public class RmiConnector extends AbstractJndiConnector
         // verify securityPolicy existence
         if (path != null)
         {
-            URL url = IOUtils.getResourceAsUrl(path, RmiConnector.class);
+            URL url = IOUtils.getResourceAsUrl(path, RmiConnector.class.getClassLoader());
             if (url == null)
             {
                 throw new IllegalArgumentException(

@@ -26,17 +26,17 @@ public class ConfigResource
     public ConfigResource(String resourceName) throws IOException
     {
         this.resourceName = resourceName;
-        url = IOUtils.getResourceAsUrl(resourceName, getClass(), true, true);
+        url = IOUtils.getResourceAsUrl(resourceName, getClass().getClassLoader(), true, true);
         if(url == null)
         {
             throw new FileNotFoundException(resourceName);
         }
     }
 
-    public ConfigResource(String resourceName, Class aClass) throws IOException
+    public ConfigResource(String resourceName, ClassLoader classLoader) throws IOException
     {
         this.resourceName = resourceName;
-        url = IOUtils.getResourceAsUrl(resourceName, aClass, true, true);
+        url = IOUtils.getResourceAsUrl(resourceName, classLoader, true, true);
         if(url == null)
         {
             throw new FileNotFoundException(resourceName);

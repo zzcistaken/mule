@@ -1,0 +1,133 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.mule.modules</groupId>
+        <artifactId>mule-modules</artifactId>
+        <version>4.0-SNAPSHOT</version>
+    </parent>
+    <artifactId>mule-module-osgi-deployer</artifactId>
+    <packaging>bundle</packaging>
+    <name>Mule OSGi Application Deployer</name>
+
+    <properties>
+        <skipExportTests>false</skipExportTests>
+        <licensePath>../../LICENSE_HEADER.txt</licensePath>
+        <exam.version>4.1.0</exam.version>
+        <runner.version>1.8.6</runner.version>
+
+        <equinox.region.version>1.1.0.v20120522-1841</equinox.region.version>
+    </properties>
+
+    <build><plugins>
+        <plugin>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>maven-bundle-plugin</artifactId>
+            <version>2.5.0</version>
+            <extensions>true</extensions>
+            <configuration>
+                <instructions>
+                    <!--<Export-Package>org.mule.*</Export-Package>-->
+                    <!--<Import-Package>-->
+                        <!--sun.misc;resolution:="optional",-->
+                        <!--*-->
+                    <!--</Import-Package>-->
+                    <Bundle-Activator>org.mule.osgi.deployer.Activator</Bundle-Activator>
+                    <!--<Mule-Transport>polling,dynamic</Mule-Transport>-->
+
+                    <Import-Package>
+                        !org.eclipse.osgi.service.resolver,
+                        *
+                    </Import-Package>
+                    <Export-Package>
+                        org.mule.osgi.deployer.*,
+                        org.osgi.service.resolver;-split-package:=merge-first,
+                        org.osgi.service.repository,
+                        org.eclipse.equinox.region.*
+                    </Export-Package>
+                    <Private-Package>
+                        org.eclipse.equinox.internal.region.*;-split-package:=merge-first,
+                    </Private-Package>
+                </instructions>
+            </configuration>
+        </plugin>
+    </plugins></build>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.mule</groupId>
+            <artifactId>mule-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mule.modules</groupId>
+            <artifactId>mule-module-osgi-utils</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.framework</artifactId>
+            <version>4.4.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.fileinstall</artifactId>
+            <version>3.4.0</version>
+        </dependency>
+
+        <!--<dependency>-->
+            <!--<groupId>org.apache.felix</groupId>-->
+            <!--<artifactId>org.apache.felix.resolver</artifactId>-->
+            <!--<scope>provided</scope>-->
+        <!--</dependency>-->
+        <dependency>
+            <groupId>org.eclipse.equinox</groupId>
+            <artifactId>org.eclipse.equinox.region</artifactId>
+            <version>${equinox.region.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.ops4j.pax.swissbox</groupId>
+            <artifactId>pax-swissbox-bnd</artifactId>
+            <version>1.7.1</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.ops4j.pax.exam</groupId>
+            <artifactId>pax-exam-container-native</artifactId>
+            <version>${exam.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.ops4j.pax.runner</groupId>
+            <artifactId>pax-runner-no-jcl</artifactId>
+            <version>${runner.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.ops4j.pax.exam</groupId>
+            <artifactId>pax-exam-junit4</artifactId>
+            <version>${exam.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.ops4j.pax.exam</groupId>
+            <artifactId>pax-exam-link-mvn</artifactId>
+            <version>${exam.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>
+

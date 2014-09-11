@@ -140,7 +140,7 @@ public class MuleClient implements Disposable
      */
     public MuleClient(String configResources) throws MuleException
     {
-        this(configResources, new SpringXmlConfigurationBuilder(configResources));
+        this(configResources, new SpringXmlConfigurationBuilder(configResources, null));
     }
 
     /**
@@ -175,7 +175,7 @@ public class MuleClient implements Disposable
         {
             logger.info("Builder passed in was null, using default builder: "
                         + SpringXmlConfigurationBuilder.class.getName());
-            builder = new SpringXmlConfigurationBuilder(configResources);
+            builder = new SpringXmlConfigurationBuilder(configResources, null);
         }
         logger.info("Initializing Mule...");
         muleContext = muleContextFactory.createMuleContext(builder);

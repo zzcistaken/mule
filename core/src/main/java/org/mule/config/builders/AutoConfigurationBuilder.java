@@ -35,7 +35,7 @@ public class AutoConfigurationBuilder extends AbstractResourceConfigurationBuild
 
     public AutoConfigurationBuilder(String resource) throws ConfigurationException
     {
-        super(resource);
+        super(resource, null);
     }
 
     public AutoConfigurationBuilder(String[] resources) throws ConfigurationException

@@ -161,10 +161,10 @@ public class ClassUtilsTestCase extends AbstractMuleTestCase
     @Test
     public void testLoadingResources() throws Exception
     {
-        URL resource = ClassUtils.getResource("log4j.properties", getClass());
+        URL resource = ClassUtils.getResource("log4j.properties", getClass().getClassLoader());
         assertNotNull(resource);
 
-        resource = ClassUtils.getResource("does-not-exist.properties", getClass());
+        resource = ClassUtils.getResource("does-not-exist.properties", getClass().getClassLoader());
         assertNull(resource);
     }
 

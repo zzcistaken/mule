@@ -16,7 +16,7 @@ import java.io.IOException;
 /**
  *
  */
-public class BundleBuilder
+public class ApplicationBundleBuilder
 {
 
     public File build(File zipFile) throws IOException

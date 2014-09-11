@@ -7,8 +7,6 @@
 
 package org.mule.osgi.launcher;
 
-import org.mule.osgi.util.BundleBuilder;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
@@ -21,7 +19,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
@@ -50,7 +47,11 @@ public class Main
         {
             // Create an instance of the framework.
             FrameworkFactory factory = getFrameworkFactory();
-            framework = factory.newFramework(Collections.<String, String>emptyMap());
+            Map<String, String> stringStringMap = new HashMap<>();
+            //stringStringMap.put("felix.fileinstall.dir", "/Users/pablokraan/devel/osgiexample/autodeploy/");
+            //stringStringMap.put("felix.fileinstall.bundles.updateWithListeners", "true");
+            //stringStringMap.put("felix.fileinstall.debug", "2");
+            framework = factory.newFramework(stringStringMap);
 
             // Initialize the framework, but don't start it yet.
             framework.init();
@@ -73,6 +74,8 @@ public class Main
             bundlesToStart.addAll(installBundles(context, 1, installedBundleMap, listBundles("")));
 
             bundlesToStart.addAll(installBundles(context, 1, installedBundleMap, listBundles2("")));
+
+            bundlesToStart.addAll(installBundles(context, 1, installedBundleMap, listBundlesDeployer("")));
             //installBundles(context, 20, installedBundleMap, listBundles2(""));
             //installBundlesFromDir(context, 1, installedBundleMap, "/Users/pablokraan/devel/osgiexample/core");
             //installBundlesFromDir(context, 20, installedBundleMap, "/Users/pablokraan/devel/osgiexample/spring-config");
@@ -80,8 +83,6 @@ public class Main
             undeployBundles(installedBundleMap);
 
             startBundles(bundlesToStart);
-
-
 
 
             FrameworkEvent event;
@@ -97,37 +98,45 @@ public class Main
                 System.out.println("Mule OSGi Container started");
                 System.out.println("***************************");
 
-                File appsFolder = new File("/Users/pablokraan/devel/osgiexample/apps");
-                String[] appFiles = appsFolder.list(new SuffixFileFilter(".zip"));
-                if (appFiles != null)
-                {
-                    for (String appFile : appFiles)
-                    {
-                        BundleBuilder bundleBuilder = new BundleBuilder();
-                        File bundleTempFile = bundleBuilder.build(new File(appsFolder, appFile));
-                        File bundleFile = new File(appsFolder, bundleTempFile.getName());
-                        bundleTempFile.renameTo(bundleFile);
+                /*
+                //context.installBundle("reference:file:/Users/pablokraan/devel/osgiexample/apps/osgi-example-4.0-SNAPSHOT.jar");
 
+                //File appsFolder = new File("/Users/pablokraan/devel/osgiexample/apps");
+                //String[] appFiles = appsFolder.list(new SuffixFileFilter(".zip"));
+                //if (appFiles != null)
+                //{
+                //    for (String appFile : appFiles)
+                //    {
+                //        //ApplicationBundleBuilder bundleBuilder = new ApplicationBundleBuilder();
+                //        //File bundleTempFile = bundleBuilder.build(new File(appsFolder, appFile));
+                //        //File bundleFolder = new File(appsFolder, FilenameUtils.getBaseName(appFile));
+                //        //org.mule.util.FileUtils.unzip(bundleTempFile, bundleFolder);
+                //        //bundleTempFile.renameTo(bundleFile);
+                //
                         Bundle bundle = null;
-                        try
-                        {
-                            bundle = context.installBundle(bundleFile.toURI().toString());
-                        }
-                        catch (BundleException e)
-                        {
-                            System.err.println("Error installing application bundle: " + e.getMessage());
-                        }
-
-                        try
-                        {
-                            bundle.start();
-                        }
-                        catch (BundleException e)
-                        {
-                            System.err.println("Error starting application bundle: " + e.getMessage());
-                        }
-                    }
-                }
+                //        try
+                //        {
+                //            bundle = context.installBundle("reference:file:/Users/pablokraan/devel/osgiexample/apps/simpleApp/");
+                //context.installBundle("reference:file:/Users/pablokraan/devel/osgiexample/apps/simpleApp/");
+                //            //bundle = context.installBundle(bundleFolder.toURI().toString());
+                //            bundle = context.installBundle("reference:file:/Users/pablokraan/devel/osgiexample/simpleApp/simpleApp.mab");
+                //        }
+                //        catch (BundleException e)
+                //        {
+                //            System.err.println("Error installing application bundle: " + e.getMessage());
+                //        }
+                //
+                //        try
+                //        {
+                //            bundle.start();
+                //        }
+                //        catch (BundleException e)
+                //        {
+                //            System.err.println("Error starting application bundle: " + e.getMessage());
+                //        }
+                //    }
+                //}
+                 */
 
                 // Wait for framework to stop to exit the VM.
                 event = framework.waitForStop(0);
@@ -282,20 +291,6 @@ public class Main
 
     private static List listBundles2(String autoDir)
     {
-        //File[] files = new File(autoDir).listFiles();
-        //List jarList = new ArrayList();
-        //if (files != null)
-        //{
-        //    Arrays.sort(files);
-        //    for (int i = 0; i < files.length; i++)
-        //    {
-        //        if (files[i].getName().endsWith(".jar"))
-        //        {
-        //            System.out.println("Auto deploy bundle: " + files[i].getAbsolutePath());
-        //            jarList.add(files[i]);
-        //        }
-        //    }
-        //}
         List jarList = new ArrayList();
         jarList.add(new File("/Users/pablokraan/devel/osgiexample/core/antlr-runtime-osgi.jar"));
         jarList.add(new File("/Users/pablokraan/devel/osgiexample/spring-config/cglib-osgi.jar"));
@@ -315,12 +310,16 @@ public class Main
 
         jarList.add(new File("/Users/pablokraan/devel/osgiexample/spring-config/mule-transport-vm-4.0-SNAPSHOT.jar"));
 
-        //jarList.add(new File("/Users/pablokraan/devel/osgiexample/spring-config/osgi-example-4.0-SNAPSHOT.jar"));
+        return jarList;
+    }
 
-
-        //jarList.add(new File("/Users/pablokraan/.m2/repository/org/eclipse/equinox/org.eclipse.equinox.region/1.1.0.v20120522-1841/org.eclipse.equinox.region-1.1.0.v20120522-1841.jar"));
-        //jarList.add(new File("/Users/pablokraan/.m2/repository/org/apache/karaf/features/org.apache.karaf.features.core/3.0.1/org.apache.karaf.features.core-3.0.1.jar"));
-        //jarList.add(new File("/Users/pablokraan/.m2/repository/org/apache/karaf/region/org.apache.karaf.region.persist/3.0.1/org.apache.karaf.region.persist-3.0.1.jar"));
+    private static List listBundlesDeployer(String autoDir)
+    {
+        List jarList = new ArrayList();
+        jarList.add(new File("/Users/pablokraan/devel/osgiexample/deployer/org.apache.felix.fileinstall-3.4.0.jar"));
+        jarList.add(new File("/Users/pablokraan/devel/osgiexample/deployer/org.eclipse.equinox.region-1.1.0.v20120522-1841.jar"));
+        jarList.add(new File("/Users/pablokraan/devel/osgiexample/deployer/mule-module-osgi-utils-4.0-SNAPSHOT.jar"));
+        jarList.add(new File("/Users/pablokraan/devel/osgiexample/deployer/mule-module-osgi-deployer-4.0-SNAPSHOT.jar"));
 
         return jarList;
     }

@@ -59,7 +59,7 @@
                             org.mule.api.processor,
                             *
                         </Import-Package>
-                        <!--<DynamicImport-Package>*</DynamicImport-Package>-->
+                        <DynamicImport-Package>*</DynamicImport-Package>
                         <Bundle-Activator>org.mule.module.springconfig.osgi.MuleApplicationActivator</Bundle-Activator>
                     </instructions>
                 </configuration>

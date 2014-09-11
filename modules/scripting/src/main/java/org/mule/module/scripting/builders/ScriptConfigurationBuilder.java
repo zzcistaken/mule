@@ -40,7 +40,7 @@ public class ScriptConfigurationBuilder extends AbstractResourceConfigurationBui
 
     public ScriptConfigurationBuilder(String scriptEngineName, String configResource) throws MuleException
     {
-        super(configResource);
+        super(configResource, null);
         if (scriptEngineName == null)
         {
             // we can guess engine by file extension

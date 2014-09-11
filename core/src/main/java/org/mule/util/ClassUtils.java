@@ -93,7 +93,7 @@ public class ClassUtils extends org.apache.commons.lang.ClassUtils
      *
      * @return A URL pointing to the resource to load or null if the resource is not found
      */
-    public static URL getResource(final String resourceName, final Class<?> callingClass)
+    public static URL getResource(final String resourceName, final ClassLoader classLoader)
     {
         URL url = AccessController.doPrivileged(new PrivilegedAction<URL>()
         {
@@ -131,8 +131,8 @@ public class ClassUtils extends org.apache.commons.lang.ClassUtils
             {
                 public URL run()
                 {
-                    ClassLoader classLoader = callingClass.getClassLoader();
-                    System.out.println("OSGi loading resource: " + resourceName + " classloader:" + classLoader + " callingClass: " + callingClass);
+                    //ClassLoader classLoader = callingClass.getClassLoader();
+                    System.out.println("OSGi loading resource: " + resourceName + " classloader:" + classLoader);
                     return classLoader.getResource(resourceName);
                 }
             });

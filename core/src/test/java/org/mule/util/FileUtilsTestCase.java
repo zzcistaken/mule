@@ -364,7 +364,7 @@ public class FileUtilsTestCase extends AbstractMuleTestCase
     @Test
     public void testUnzipFileToSameFolderTwice() throws Exception
     {
-        URL resourceAsUrl = IOUtils.getResourceAsUrl("testFolder.zip", getClass());
+        URL resourceAsUrl = IOUtils.getResourceAsUrl("testFolder.zip", getClass().getClassLoader());
         File zipFile = new File(resourceAsUrl.getFile());
         File outputDir = FileUtils.newFile(TEST_DIRECTORY);
 

@@ -8,15 +8,17 @@ package org.mule.module.springconfig;
 
 import org.mule.api.config.ConfigurationException;
 
+import org.osgi.framework.BundleContext;
+
 /**
  * Spring configuration builder used to create domains.
  */
 public class SpringXmlDomainConfigurationBuilder extends SpringXmlConfigurationBuilder
 {
 
-    public SpringXmlDomainConfigurationBuilder(String configResources) throws ConfigurationException
+    public SpringXmlDomainConfigurationBuilder(String configResources, BundleContext bundleContext) throws ConfigurationException
     {
-        super(configResources);
+        super(configResources, bundleContext);
         setUseMinimalConfigResource(true);
     }
 }

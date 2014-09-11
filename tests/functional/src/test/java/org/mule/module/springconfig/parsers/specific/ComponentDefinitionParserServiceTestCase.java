@@ -54,7 +54,7 @@ public class ComponentDefinitionParserServiceTestCase extends AbstractMuleTestCa
     public void testDefaultJavaComponentShortcut() throws Exception
     {
         ConfigurationBuilder configBuilder = new SpringXmlConfigurationBuilder(
-            "org/mule/config/spring/parsers/specific/component-ok-test-service.xml");
+            "org/mule/config/spring/parsers/specific/component-ok-test-service.xml", null);
         muleContext = muleContextFactory.createMuleContext(configBuilder);
         Service service = muleContext.getRegistry().lookupService("service1");
         validateCorrectServiceCreation(service);
@@ -76,7 +76,7 @@ public class ComponentDefinitionParserServiceTestCase extends AbstractMuleTestCa
     public void testDefaultJavaComponentPrototype() throws Exception
     {
         ConfigurationBuilder configBuilder = new SpringXmlConfigurationBuilder(
-            "org/mule/config/spring/parsers/specific/component-ok-test-service.xml");
+            "org/mule/config/spring/parsers/specific/component-ok-test-service.xml", null);
         muleContext = muleContextFactory.createMuleContext(configBuilder);
         Service service = muleContext.getRegistry().lookupService("service2");
         validateCorrectServiceCreation(service);
@@ -96,7 +96,7 @@ public class ComponentDefinitionParserServiceTestCase extends AbstractMuleTestCa
     public void testDefaultJavaComponentSingleton() throws Exception
     {
         ConfigurationBuilder configBuilder = new SpringXmlConfigurationBuilder(
-            "org/mule/config/spring/parsers/specific/component-ok-test-service.xml");
+            "org/mule/config/spring/parsers/specific/component-ok-test-service.xml", null);
         muleContext = muleContextFactory.createMuleContext(configBuilder);
         Service service = muleContext.getRegistry().lookupService("service3");
         validateCorrectServiceCreation(service);
@@ -117,7 +117,7 @@ public class ComponentDefinitionParserServiceTestCase extends AbstractMuleTestCa
     public void testDefaultJavaComponentSpringBean() throws Exception
     {
         ConfigurationBuilder configBuilder = new SpringXmlConfigurationBuilder(
-            "org/mule/config/spring/parsers/specific/component-ok-test-service.xml");
+            "org/mule/config/spring/parsers/specific/component-ok-test-service.xml", null);
         muleContext = muleContextFactory.createMuleContext(configBuilder);
         Service service = muleContext.getRegistry().lookupService("service4");
         validateCorrectServiceCreation(service);
@@ -151,7 +151,7 @@ public class ComponentDefinitionParserServiceTestCase extends AbstractMuleTestCa
     public void testPooledJavaComponentShortcut() throws Exception
     {
         ConfigurationBuilder configBuilder = new SpringXmlConfigurationBuilder(
-            "org/mule/config/spring/parsers/specific/component-ok-test-service.xml");
+            "org/mule/config/spring/parsers/specific/component-ok-test-service.xml", null);
         muleContext = muleContextFactory.createMuleContext(configBuilder);
         Service service = muleContext.getRegistry().lookupService("service5");
         validateCorrectServiceCreation(service);
@@ -173,7 +173,7 @@ public class ComponentDefinitionParserServiceTestCase extends AbstractMuleTestCa
     public void testPooledJavaComponentPrototype() throws Exception
     {
         ConfigurationBuilder configBuilder = new SpringXmlConfigurationBuilder(
-            "org/mule/config/spring/parsers/specific/component-ok-test-service.xml");
+            "org/mule/config/spring/parsers/specific/component-ok-test-service.xml", null);
         muleContext = muleContextFactory.createMuleContext(configBuilder);
         Service service = muleContext.getRegistry().lookupService("service6");
         validateCorrectServiceCreation(service);
@@ -195,7 +195,7 @@ public class ComponentDefinitionParserServiceTestCase extends AbstractMuleTestCa
     public void testPooledJavaComponentSingleton() throws Exception
     {
         ConfigurationBuilder configBuilder = new SpringXmlConfigurationBuilder(
-            "org/mule/config/spring/parsers/specific/component-ok-test-service.xml");
+            "org/mule/config/spring/parsers/specific/component-ok-test-service.xml", null);
         muleContext = muleContextFactory.createMuleContext(configBuilder);
         Service service = muleContext.getRegistry().lookupService("service7");
         validateCorrectServiceCreation(service);
@@ -217,7 +217,7 @@ public class ComponentDefinitionParserServiceTestCase extends AbstractMuleTestCa
     public void testPooledJavaComponentSpringBean() throws Exception
     {
         ConfigurationBuilder configBuilder = new SpringXmlConfigurationBuilder(
-            "org/mule/config/spring/parsers/specific/component-ok-test-service.xml");
+            "org/mule/config/spring/parsers/specific/component-ok-test-service.xml", null);
         muleContext = muleContextFactory.createMuleContext(configBuilder);
         Service service = muleContext.getRegistry().lookupService("service8");
         validateCorrectServiceCreation(service);
@@ -235,7 +235,7 @@ public class ComponentDefinitionParserServiceTestCase extends AbstractMuleTestCa
         try
         {
             ConfigurationBuilder configBuilder = new SpringXmlConfigurationBuilder(
-                "org/mule/config/spring/parsers/specific/component-bad-test-service.xml");
+                "org/mule/config/spring/parsers/specific/component-bad-test-service.xml", null);
             muleContextFactory.createMuleContext(configBuilder);
             throw new IllegalStateException("Expected config to fail");
         }
