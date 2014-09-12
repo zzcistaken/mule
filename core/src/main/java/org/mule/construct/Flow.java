@@ -35,6 +35,7 @@ import org.mule.execution.ErrorHandlingExecutionTemplate;
 import org.mule.interceptor.ProcessingTimeInterceptor;
 import org.mule.management.stats.FlowConstructStatistics;
 import org.mule.processor.strategy.AsynchronousProcessingStrategy;
+import org.mule.processor.strategy.QueuedAsynchronousProcessingStrategy;
 import org.mule.routing.requestreply.AsyncReplyToPropertyRequestReplyReplier;
 
 /**
@@ -158,6 +159,10 @@ public class Flow extends AbstractPipeline implements MessageProcessor, StageNam
         {
             statistics = new FlowConstructStatistics(getConstructType(), name);
         }
+        if (processingStrategy instanceof QueuedAsynchronousProcessingStrategy)
+        {
+            ((QueuedAsynchronousProcessingStrategy) processingStrategy).setQueueStatistics(statistics);
+        }
         statistics.setEnabled(muleContext.getStatistics().isEnabled());
         muleContext.getStatistics().add(statistics);
     }
@@ -173,6 +178,12 @@ public class Flow extends AbstractPipeline implements MessageProcessor, StageNam
                     return String.format("%s.stage%s", Flow.this.getName(), ++stageCount);
                 }
             }, builder, muleContext);
+    }
+
+    @Override
+    protected void doStart() throws MuleException
+    {
+        super.doStart();
     }
 
     /**

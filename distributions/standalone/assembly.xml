@@ -104,8 +104,6 @@
                 <exclude>**/derby.log</exclude>
                 <!-- Exclude this example until someone gets it working -->
                 <exclude>geomail/**</exclude>
-                <!-- Legacy LoanBroker example, used for testing only -->
-                <exclude>loanbroker-legacy/**</exclude>
                 <!-- Exclude examples that are not Studio compliant -->
                 <exclude>cep/**</exclude>
                 <exclude>errorhandler/**</exclude>
@@ -180,11 +178,17 @@
             <useStrictFiltering>true</useStrictFiltering>
             <includes>
                 <include>org.mule.modules:mule-module-boot</include>
-                <include>org.mule.modules:mule-module-logging</include>
                 <include>org.mule.modules:mule-module-reboot</include>
                 <include>commons-cli:commons-cli</include>
                 <include>tanukisoft:wrapper</include>
-                <include>log4j:log4j</include>
+                <include>org.slf4j:slf4j-api</include>
+                <include>org.apache.logging.log4j:log4j-api</include>
+                <include>org.apache.logging.log4j:log4j-core</include>
+                <include>org.apache.logging.log4j:log4j-slf4j-impl</include>
+                <include>org.apache.logging.log4j:log4j-1.2-api</include>
+                <include>org.apache.logging.log4j:log4j-jcl</include>
+                <include>org.slf4j:jcl-over-slf4j</include>
+                <include>com.lmax:disruptor</include>
             </includes>
         </dependencySet>
 
@@ -305,7 +309,6 @@
                 <exclude>org.mule.modules:mule-module-jbpm</exclude>
                 <exclude>org.mule.modules:mule-module-json</exclude>
                 <exclude>org.mule.modules:mule-module-launcher</exclude>
-                <exclude>org.mule.modules:mule-module-logging</exclude>
                 <exclude>org.mule.modules:mule-module-management</exclude>
                 <exclude>org.mule.modules:mule-module-pgp</exclude>
                 <exclude>org.mule.modules:mule-module-reboot</exclude>
@@ -347,9 +350,14 @@
                 <exclude>commons-cli:commons-cli</exclude>
                 <exclude>tanukisoft:wrapper</exclude>
                 <exclude>org.slf4j:slf4j-api</exclude>
+                <exclude>org.apache.logging.log4j:log4j-api</exclude>
+                <exclude>org.apache.logging.log4j:log4j-core</exclude>
+                <exclude>org.apache.logging.log4j:log4j-slf4j-impl</exclude>
+                <exclude>org.apache.logging.log4j:log4j-1.2-api</exclude>
+                <exclude>org.apache.logging.log4j:log4j-jcl</exclude>
                 <exclude>org.slf4j:jcl-over-slf4j</exclude>
-                <exclude>org.slf4j:slf4j-log4j12</exclude>
-                <exclude>log4j:log4j</exclude>
+                <exclude>commons-logging:commons-logging</exclude>
+                <exclude>com.lmax:disruptor</exclude>
 
                 <!-- lib/endorsed -->
                 <exclude>xml-apis:xml-apis</exclude>

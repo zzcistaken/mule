@@ -13,7 +13,6 @@ import org.mule.api.exception.MessagingExceptionHandler;
 import org.mule.api.lifecycle.Disposable;
 import org.mule.api.lifecycle.Initialisable;
 import org.mule.api.routing.OutboundRouter;
-import org.mule.api.routing.OutboundRouterCollection;
 import org.mule.api.source.MessageSource;
 import org.mule.api.transformer.Transformer;
 import org.mule.module.springconfig.MuleHierarchicalBeanDefinitionParserDelegate;
@@ -122,8 +121,6 @@ public abstract class AbstractMuleBeanDefinitionParser extends AbstractBeanDefin
     /** Allow the bean class to be set explicitly via the "class" attribute. */
     private boolean allowClassAttribute = true;
     private Class<?> classConstraint = null;
-
-    private String deprecationWarning;
 
     public AbstractMuleBeanDefinitionParser()
     {
@@ -269,7 +266,6 @@ public abstract class AbstractMuleBeanDefinitionParser extends AbstractBeanDefin
         // Marker for MULE-4813
         // We don't want lifcycle for the following from spring
         if (!Component.class.isAssignableFrom(beanClass) && !MessageSource.class.isAssignableFrom(beanClass)
-            && !OutboundRouterCollection.class.isAssignableFrom(beanClass)
             && !OutboundRouter.class.isAssignableFrom(beanClass)
             && !AbstractMessageProcessorOwner.class.isAssignableFrom(beanClass)
             && !MessagingExceptionHandler.class.isAssignableFrom(beanClass)
@@ -411,11 +407,6 @@ public abstract class AbstractMuleBeanDefinitionParser extends AbstractBeanDefin
      */
     protected void doParse(Element element, ParserContext context, BeanDefinitionBuilder builder)
     {
-        if (deprecationWarning != null && logger.isWarnEnabled())
-        {
-            logger.warn("Schema warning: Use of element <" + element.getLocalName() + "> is deprecated.  " + deprecationWarning);
-        }
-
         BeanAssembler assembler = getBeanAssembler(element, builder);
         NamedNodeMap attributes = element.getAttributes();
         for (int x = 0; x < attributes.getLength(); x++)
@@ -526,10 +517,5 @@ public abstract class AbstractMuleBeanDefinitionParser extends AbstractBeanDefin
     {
         beanAttributes.add(flag);
         return this;
-    }
-
-    public void setDeprecationWarning(String deprecationWarning)
-    {
-        this.deprecationWarning = deprecationWarning;
     }
 }

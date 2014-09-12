@@ -19,7 +19,6 @@ import org.mule.api.lifecycle.Disposable;
 import org.mule.api.lifecycle.Initialisable;
 import org.mule.api.lifecycle.InitialisationException;
 import org.mule.api.lifecycle.LifecycleException;
-import org.mule.api.model.Model;
 import org.mule.api.registry.AbstractServiceDescriptor;
 import org.mule.api.registry.ServiceDescriptorFactory;
 import org.mule.api.registry.MuleRegistry;
@@ -31,7 +30,6 @@ import org.mule.api.registry.ServiceException;
 import org.mule.api.registry.ServiceType;
 import org.mule.api.registry.TransformerResolver;
 import org.mule.api.schedule.Scheduler;
-import org.mule.api.service.Service;
 import org.mule.api.transformer.Converter;
 import org.mule.api.transformer.DataType;
 import org.mule.api.transformer.Transformer;
@@ -50,7 +48,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -359,33 +356,6 @@ public class MuleRegistryHelper implements MuleRegistry
     /**
      * {@inheritDoc}
      */
-    @Deprecated
-    public Model lookupModel(String name)
-    {
-        return (Model) registry.lookupObject(name);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Deprecated
-    public Model lookupSystemModel()
-    {
-        return lookupModel(MuleProperties.OBJECT_SYSTEM_MODEL);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Deprecated
-    public Collection<Model> getModels()
-    {
-        return registry.lookupObjects(Model.class);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public Collection<Connector> getConnectors()
     {
         return registry.lookupObjects(Connector.class);
@@ -421,42 +391,6 @@ public class MuleRegistryHelper implements MuleRegistry
     public Agent lookupAgent(String name)
     {
         return (Agent) registry.lookupObject(name);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public Service lookupService(String name)
-    {
-        return (Service) registry.lookupObject(name);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public Collection<Service> lookupServices()
-    {
-        return lookupObjects(Service.class);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public Collection<Service> lookupServices(String model)
-    {
-        Collection<Service> services = lookupServices();
-        List<Service> modelServices = new ArrayList<Service>();
-        Iterator it = services.iterator();
-        Service service;
-        while (it.hasNext())
-        {
-            service = (Service) it.next();
-            if (model.equals(service.getModel().getName()))
-            {
-                modelServices.add(service);
-            }
-        }
-        return modelServices;
     }
 
     /**
@@ -647,31 +581,6 @@ public class MuleRegistryHelper implements MuleRegistry
     /**
      * {@inheritDoc}
      */
-    @Deprecated
-    public void registerModel(Model model) throws MuleException
-    {
-        registry.registerObject(getName(model), model, Model.class);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void registerService(Service service) throws MuleException
-    {
-        registry.registerObject(getName(service), service, Service.class);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void unregisterService(String serviceName) throws MuleException
-    {
-        registry.unregisterObject(serviceName, Service.class);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public void registerFlowConstruct(FlowConstruct flowConstruct) throws MuleException
     {
         registry.registerObject(getName(flowConstruct), flowConstruct, FlowConstruct.class);
@@ -735,15 +644,6 @@ public class MuleRegistryHelper implements MuleRegistry
     public void unregisterEndpoint(String endpointName) throws MuleException
     {
         registry.unregisterObject(endpointName, ImmutableEndpoint.class);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Deprecated
-    public void unregisterModel(String modelName) throws MuleException
-    {
-        registry.unregisterObject(modelName, Model.class);
     }
 
     /**

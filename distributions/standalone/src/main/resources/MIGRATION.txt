@@ -7,3 +7,17 @@ Please check http://www.mulesoft.org/documentation/display/current/Mule+Release+
 MULE-7757: The OGNL module has been removed. You can obtain the same functionality by using MEL expressions.
 MULE-7756: The Guice module has been removed.
 MULE-7755: The Patterns project has been removed.
+MULE-7473: The deprecated methods in the Transformer interface have been removed:
+           Use isSourceDataTypeSupported instead of isSourceTypeSupported
+           Use getSourceDataTypes instead of getSourceTypes
+           Use setReturnDataType instead of setReturnClass
+           Use getReturnDataType instead of getReturnClass
+           Use the DataTypeFactory class to create the DataTypes required for the above methods.
+MULE-7753: The maven archetypes and maven archetype builder projects have been removed.
+           The Mule ESB Maven Tools project contains archetypes superceeding these ones.
+           The project is hosted at https://github.com/mulesoft/mule-esb-maven-tools
+MULE-7857: The RemoteDispatcher and related classes in the client module have been removed.
+MULE-7858: Support for spring events and related classes in the spring-extras module have been removed.
+MULE-7470: Model/Service interfaces and implementations have been removed, as have the associated configuration elements.
+           Use Mule Flow's which provide the same functionality with more flexibility.
+MULE-7723: ScriptConfigurationBuilder and related resources have been removed

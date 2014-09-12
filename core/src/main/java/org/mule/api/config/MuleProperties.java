@@ -72,17 +72,21 @@ public class MuleProperties
 
     /**
      * *****************************************************************************
+     * Logging properties
+     * *****************************************************************************
+     */
+
+    public static final String LOG_CONTEXT_SELECTOR_PROPERTY = "Log4jContextSelector";
+    public static final String DEFAULT_LOG_CONTEXT_SELECTOR = "org.mule.module.launcher.log4j.ArtifactAwareContextSelector";
+    public static final String LOG_CONFIGURATION_FACTORY_PROPERTY = "log4j.configurationFactory";
+    public static final String DEFAULT_LOG_CONFIGURATION_FACTORY = "org.mule.module.launcher.log4j.MuleLoggerConfigurationFactory";
+
+    /**
+     * *****************************************************************************
      * Generic Service descriptor properties
      * *****************************************************************************
      */
     public static final String SERVICE_FINDER = "service.finder";
-
-    /**
-     * *****************************************************************************
-     * Model Service descriptor properties
-     * *****************************************************************************
-     */
-    public static final String MODEL_CLASS = "model";
 
     /**
      * *****************************************************************************
@@ -117,7 +121,6 @@ public class MuleProperties
 
     // Object Name Keys
     public static final String OBJECT_MULE_CONTEXT = "_muleContext";
-    public static final String OBJECT_SYSTEM_MODEL = "_muleSystemModel";
     public static final String OBJECT_MULE_CONTEXT_PROCESSOR = "_muleContextProcessor";
     public static final String OBJECT_PROPERTY_PLACEHOLDER_PROCESSOR = "_mulePropertyPlaceholderProcessor";
     public static final String OBJECT_OBJECT_NAME_PROCESSOR = "_muleObjectNameProcessor";
@@ -180,6 +183,7 @@ public class MuleProperties
     public static final String MULE_SECURITY_SYSTEM_PROPERTY = SYSTEM_PROPERTY_PREFIX + "security.model";
     public static final String MULE_SECURITY_PROVIDER_PROPERTY = SYSTEM_PROPERTY_PREFIX + "security.provider";
     public static final String MULE_STREAMING_BUFFER_SIZE = SYSTEM_PROPERTY_PREFIX + "streaming.bufferSize";
+    public static final String MULE_SIMPLE_LOG = SYSTEM_PROPERTY_PREFIX + "simpleLog";
 
     public static final String CONTENT_TYPE_PROPERTY = "Content-Type";
 }

@@ -6,17 +6,13 @@
  */
 package org.mule.transport.stdio;
 
+import static org.junit.Assert.assertTrue;
 import org.mule.api.endpoint.InboundEndpoint;
 import org.mule.api.lifecycle.CreateException;
-import org.mule.api.service.Service;
 import org.mule.api.transport.MessageReceiver;
-import org.mule.tck.testmodels.fruit.Orange;
 import org.mule.transport.AbstractMessageReceiverTestCase;
 
 import org.junit.Test;
-
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 public class StdioMessageReceiverTestCase extends AbstractMessageReceiverTestCase
 {
@@ -34,9 +30,6 @@ public class StdioMessageReceiverTestCase extends AbstractMessageReceiverTestCas
     {
         StdioMessageReceiver receiver = (StdioMessageReceiver) getMessageReceiver();
 
-        Service service = getTestService("orange", Orange.class);
-        assertNotNull(service);
-
         endpoint.getConnector().start();
 
         receiver.setFrequency(1001);
@@ -49,7 +42,7 @@ public class StdioMessageReceiverTestCase extends AbstractMessageReceiverTestCas
 
     public MessageReceiver getMessageReceiver() throws CreateException
     {
-        return new StdioMessageReceiver(endpoint.getConnector(), service, endpoint, 1000);
+        return new StdioMessageReceiver(endpoint.getConnector(), flow, endpoint, 1000);
     }
 
     public InboundEndpoint getEndpoint() throws Exception

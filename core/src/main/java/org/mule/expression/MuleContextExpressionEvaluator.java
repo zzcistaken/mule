@@ -13,7 +13,6 @@ import org.mule.api.MuleMessage;
 import org.mule.api.MuleRuntimeException;
 import org.mule.api.context.MuleContextAware;
 import org.mule.api.expression.ExpressionEvaluator;
-import org.mule.api.service.Service;
 import org.mule.config.i18n.CoreMessages;
 
 /**
@@ -53,17 +52,6 @@ public class MuleContextExpressionEvaluator implements ExpressionEvaluator, Mule
         if (expression.equals("serviceName"))
         {
             return getEventContext().getFlowConstruct().getName();
-        }
-        else if (expression.equals("modelName"))
-        {
-            if (getEventContext().getFlowConstruct() instanceof Service)
-            {
-                return ((Service) getEventContext().getFlowConstruct()).getModel().getName();
-            }
-            else
-            {
-                throw new UnsupportedOperationException("The 'modelName' function can only be used with Service");
-            }
         }
         else if (expression.equals("inboundEndpoint"))
         {

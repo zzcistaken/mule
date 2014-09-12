@@ -6,9 +6,6 @@
  */
 package org.mule.transport.file;
 
-import org.apache.commons.io.filefilter.TrueFileFilter;
-import org.junit.*;
-import org.junit.rules.TemporaryFolder;
 import org.mule.api.MuleException;
 import org.mule.tck.junit4.FunctionalTestCase;
 import org.mule.tck.probe.PollingProber;
@@ -16,11 +13,15 @@ import org.mule.tck.probe.Probe;
 import org.mule.util.FileUtils;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import org.apache.commons.io.filefilter.TrueFileFilter;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 public class FileMoveToFunctionalTestCase extends FunctionalTestCase {
 
@@ -84,7 +85,7 @@ public class FileMoveToFunctionalTestCase extends FunctionalTestCase {
     }
 
     private void copyFiles() throws InterruptedException, IOException {
-        for (int i=0; i < ITERATIONS; i++)
+        for (int i=1; i <= ITERATIONS; i++)
         {
             List<File> files = createFiles(inputTemporaryFolder, NUMBER_OF_FILES, FILE_SIZE);
             waitForFiles(moveToTemporaryFolder.getRoot(), i * NUMBER_OF_FILES);

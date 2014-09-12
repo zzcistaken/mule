@@ -46,8 +46,8 @@
                     <!-- We reconfigure CXF to use log4j. This affects the classes that run as part
                          of the plugin as well -->
                     <dependency>
-                        <groupId>log4j</groupId>
-                        <artifactId>log4j</artifactId>
+                        <groupId>org.apache.logging.log4j</groupId>
+                        <artifactId>log4j-api</artifactId>
                         <version>${log4jVersion}</version>
                     </dependency>
                 </dependencies>
@@ -650,8 +650,8 @@
             <version>${saxonVersion}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-annotation_1.1_spec</artifactId>
+            <groupId>javax.annotation</groupId>
+            <artifactId>javax.annotation-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
@@ -759,7 +759,7 @@
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
+            <artifactId>mockito-core</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

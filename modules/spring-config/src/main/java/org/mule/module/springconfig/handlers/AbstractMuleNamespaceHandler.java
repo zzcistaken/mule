@@ -6,6 +6,8 @@
  */
 package org.mule.module.springconfig.handlers;
 
+import org.mule.config.spring.parsers.DeprecatedBeanDefinitionParser;
+import org.mule.endpoint.EndpointURIEndpointBuilder;
 import org.mule.module.springconfig.MuleHierarchicalBeanDefinitionParserDelegate;
 import org.mule.module.springconfig.factories.InboundEndpointFactoryBean;
 import org.mule.module.springconfig.factories.OutboundEndpointFactoryBean;
@@ -21,7 +23,6 @@ import org.mule.module.springconfig.parsers.generic.MuleOrphanDefinitionParser;
 import org.mule.module.springconfig.parsers.specific.endpoint.TransportEndpointDefinitionParser;
 import org.mule.module.springconfig.parsers.specific.endpoint.TransportGlobalEndpointDefinitionParser;
 import org.mule.module.springconfig.parsers.specific.endpoint.support.AddressedEndpointDefinitionParser;
-import org.mule.endpoint.EndpointURIEndpointBuilder;
 import org.mule.util.IOUtils;
 
 import java.io.InputStream;
@@ -268,20 +269,6 @@ public abstract class AbstractMuleNamespaceHandler extends NamespaceHandlerSuppo
         }
     }
 
-    /**
-     * Subclasses can call this to register the supplied {@link BeanDefinitionParser} to
-     * handle the specified element. The element name is the local (non-namespace qualified)
-     * name.
-     */
-    protected void registerDeprecatedBeanDefinitionParser(String elementName, BeanDefinitionParser parser, String deprecationWarning)
-    {
-        if (parser instanceof MuleDefinitionParserConfiguration)
-        {
-            ((MuleDefinitionParser) parser).setDeprecationWarning(deprecationWarning);
-        }
-        registerBeanDefinitionParser(elementName, parser);
-    }
-
     static class AnnotationsBeanDefintionParser extends AbstractChildDefinitionParser
     {
         AnnotationsBeanDefintionParser()
@@ -373,5 +360,12 @@ public abstract class AbstractMuleNamespaceHandler extends NamespaceHandlerSuppo
             }
         }
         return basicConnector;
+    }
+
+    protected void registerDeprecatedBeanDefinitionParser(String elementName, BeanDefinitionParser parser, String message)
+    {
+        registerBeanDefinitionParser(elementName, new DeprecatedBeanDefinitionParser(
+                parser,
+                String.format("Schema warning: Use of element <%s> is deprecated.  %s.", elementName, message)));
     }
 }

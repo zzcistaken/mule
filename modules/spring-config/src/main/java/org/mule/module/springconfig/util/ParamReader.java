@@ -19,8 +19,6 @@
 
 package org.mule.module.springconfig.util;
 
-// import org.apache.axis.utils.Messages;
-
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Member;

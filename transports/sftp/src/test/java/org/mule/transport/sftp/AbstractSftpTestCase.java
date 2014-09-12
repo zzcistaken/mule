@@ -23,9 +23,8 @@ import org.mule.api.endpoint.ImmutableEndpoint;
 import org.mule.api.exception.MessagingExceptionHandler;
 import org.mule.api.exception.RollbackSourceCallback;
 import org.mule.api.exception.SystemExceptionHandler;
-import org.mule.api.model.Model;
-import org.mule.api.service.Service;
 import org.mule.api.transport.Connector;
+import org.mule.construct.Flow;
 import org.mule.context.notification.EndpointMessageNotification;
 import org.mule.tck.functional.EventCallback;
 import org.mule.tck.junit4.FunctionalTestCase;
@@ -406,18 +405,21 @@ public abstract class AbstractSftpTestCase extends FunctionalTestCase
 
             if (serviceName != null && !(serviceName.length() == 0))
             {
-                muleContext.getRegistry().lookupService(serviceName).setExceptionListener(
-                    new MessagingExceptionHandler()
-                    {
-                        @Override
-                        public MuleEvent handleException(Exception e, MuleEvent event)
+                ((Flow) muleContext.getRegistry().lookupFlowConstruct(serviceName)).setExceptionListener(
+                        new MessagingExceptionHandler()
                         {
-                            if (logger.isInfoEnabled()) logger.info("expected exception occurred: " + e, e);
-                            exceptionHolder.value = e;
-                            latch.countDown();
-                            return event;
-                        }
-                    });
+                            @Override
+                            public MuleEvent handleException(Exception e, MuleEvent event)
+                            {
+                                if (logger.isInfoEnabled())
+                                {
+                                    logger.info("expected exception occurred: " + e, e);
+                                }
+                                exceptionHolder.value = e;
+                                latch.countDown();
+                                return event;
+                            }
+                        });
             }
         }
 
@@ -549,14 +551,14 @@ public abstract class AbstractSftpTestCase extends FunctionalTestCase
     {
 
         // Stop all named services
-        List<Service> services = new ArrayList<Service>();
+        List<Flow> services = new ArrayList<Flow>();
         for (String serviceName : serviceNames)
         {
             try
             {
-                Service service = muleContext.getRegistry().lookupService(serviceName);
-                service.stop();
-                services.add(service);
+                Flow flow = (Flow) muleContext.getRegistry().lookupFlowConstruct(serviceName);
+                flow.stop();
+                services.add(flow);
             }
             catch (Exception e)
             {
@@ -573,9 +575,9 @@ public abstract class AbstractSftpTestCase extends FunctionalTestCase
         }
 
         // We are done, startup the services again so that the test can begin...
-        for (Service service : services)
+        for (Flow flow : services)
         {
-            service.start();
+            flow.start();
         }
     }
 
@@ -782,9 +784,9 @@ public abstract class AbstractSftpTestCase extends FunctionalTestCase
             };
 
             currentMessagingListener = muleContext.getRegistry()
-                .lookupService(serviceName)
+                .lookupFlowConstruct(serviceName)
                 .getExceptionListener();
-            muleContext.getRegistry().lookupService(serviceName).setExceptionListener(messagingListener);
+            ((Flow)muleContext.getRegistry().lookupFlowConstruct(serviceName)).setExceptionListener(messagingListener);
 
             // Now register an exception-listener on the connector that expects to
             // fail
@@ -836,8 +838,8 @@ public abstract class AbstractSftpTestCase extends FunctionalTestCase
         {
             // Always reset the current listener
             muleContext.setExceptionListener(currentExceptionListener);
-            muleContext.getRegistry().lookupService(serviceName).setExceptionListener(
-                currentMessagingListener);
+            ((Flow) muleContext.getRegistry().lookupFlowConstruct(serviceName)).setExceptionListener(
+                    currentMessagingListener);
         }
 
         return exceptionHolder.value;
@@ -1241,8 +1243,7 @@ public abstract class AbstractSftpTestCase extends FunctionalTestCase
     {
         assertTrue("context is not started", muleContext.getLifecycleManager().getState().isStarted());
         Map<String, Connector> connectorMap = muleContext.getRegistry().lookupByType(Connector.class);
-        Map<String, Service> serviceMap = muleContext.getRegistry().lookupByType(Service.class);
-        Map<String, Model> modelMap = muleContext.getRegistry().lookupByType(Model.class);
+        Map<String, Flow> flowConstructMap = muleContext.getRegistry().lookupByType(Flow.class);
 
         Iterator<Map.Entry<String, Connector>> connectorItr = connectorMap.entrySet().iterator();
         while (connectorItr.hasNext())
@@ -1252,18 +1253,11 @@ public abstract class AbstractSftpTestCase extends FunctionalTestCase
             assertTrue(pairs.getKey() + " is not started", pairs.getValue().isStarted());
         }
 
-        Iterator<Map.Entry<String, Service>> serviceItr = serviceMap.entrySet().iterator();
+        Iterator<Map.Entry<String, Flow>> serviceItr = flowConstructMap.entrySet().iterator();
         while (serviceItr.hasNext())
         {
-            Map.Entry<String, Service> pairs = serviceItr.next();
+            Map.Entry<String, Flow> pairs = serviceItr.next();
             assertTrue(pairs.getKey() + " is not started", pairs.getValue().isStarted());
-        }
-
-        Iterator<Map.Entry<String, Model>> modelItr = modelMap.entrySet().iterator();
-        while (modelItr.hasNext())
-        {
-            Map.Entry<String, Model> pairs = modelItr.next();
-            assertTrue(pairs.getKey() + " is not started", pairs.getValue().getLifecycleState().isStarted());
         }
     }
 
