@@ -47,11 +47,9 @@ public class Main
         {
             FrameworkFactory factory = getFrameworkFactory();
 
-            Map<String, String> stringStringMap = new HashMap<>();
-            //stringStringMap.put("felix.fileinstall.dir", "/Users/pablokraan/devel/osgiexample/autodeploy/");
-            //stringStringMap.put("felix.fileinstall.bundles.updateWithListeners", "true");
-            //stringStringMap.put("felix.fileinstall.debug", "2");
-            framework = factory.newFramework(stringStringMap);
+            Map<String, String> configProperties = new HashMap<>();
+            configProperties.put("org.osgi.framework.bsnversion", "multiple");
+            framework = factory.newFramework(configProperties);
 
             // Initialize the framework, but don't start it yet.
             framework.init();
