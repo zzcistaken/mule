@@ -12,8 +12,10 @@ import org.mule.util.FilenameUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.filefilter.SuffixFileFilter;
@@ -120,7 +122,6 @@ public class Activator implements BundleActivator
             deployerThread.interrupt();
             deployerThread.join(5000);
         }
-
     }
 
     private static class Deployer implements Runnable
@@ -142,21 +143,90 @@ public class Activator implements BundleActivator
 
 
             File appsFolder = new File("/Users/pablokraan/devel/osgiexample/apps");
-            String[] appFiles = appsFolder.list(new SuffixFileFilter(".zip"));
-            if (appFiles != null)
+            try
             {
-                for (String appFile : appFiles)
+                deployExploded(appsFolder, "simpleApp");
+                deployExploded(appsFolder, "externalLib");
+                deployExploded(appsFolder, "externalLib2");
+            }
+            catch (Exception e)
+            {
+                throw new IllegalStateException(e);
+            }
+            //String[] appFiles = appsFolder.list(new SuffixFileFilter(".mab"));
+            //if (appFiles != null)
+            //{
+            //    for (String appFile : appFiles)
+            //    {
+            //        try
+            //        {
+            //            deploy(appsFolder, appFile);
+            //        }
+            //        catch (Exception e)
+            //        {
+            //            throw new IllegalStateException(e);
+            //        }
+            //    }
+            //}
+        }
+
+        protected void deployExploded(File appsFolder, String appName) throws IOException, BundleException
+        {
+            //TODO(pablo.kraan): OSGi - throw better exception instead fo IOException and BundleException
+            Region parentRegion = digraph.getRegion("mule");
+
+            Region appRegion = digraph.createRegion(appName);
+            appRegion.connectRegion(parentRegion, new MuleRegionFilter());
+
+            digraph.setDefaultRegion(appRegion);
+            try
+            {
+                Bundle bundle = null;
+                File explodedAppFolder = new File(appsFolder, appName);
+                try
                 {
-                    try
+                    bundle = context.installBundle("reference:" + explodedAppFolder.toURI().toString());
+                }
+                catch (BundleException e)
+                {
+                    System.err.println("Error installing application bundle: " + e.getMessage());
+                    e.printStackTrace();
+                }
+
+                File appLibFolder = new File(explodedAppFolder, "lib");
+                List<Bundle> libBundles = new ArrayList<>();
+                if (appLibFolder.exists())
+                {
+                    String[] libs = appLibFolder.list(new SuffixFileFilter(".jar"));
+                    if (libs != null)
                     {
-                        deploy(appsFolder, appFile);
-                    }
-                    catch (Exception e)
-                    {
-                        throw new IllegalStateException(e);
+                        for (String lib : libs)
+                        {
+                            Bundle libBundle = context.installBundle(new File(appLibFolder, lib).toURI().toString());
+                            libBundles.add(libBundle);
+                        }
                     }
                 }
+
+                for (Bundle libBundle : libBundles)
+                {
+                    libBundle.start();
+                }
+
+                try
+                {
+                    bundle.start();
+                }
+                catch (BundleException e)
+                {
+                    System.err.println("Error starting application bundle: " + e.getMessage());
+                }
             }
+            finally
+            {
+                digraph.setDefaultRegion(null);
+            }
+
         }
 
         protected void deploy(File appsFolder, String appFile) throws IOException, BundleException
