@@ -27,7 +27,9 @@ public class LegacyEntryPointResolverSet extends DefaultEntryPointResolverSet
 
     public LegacyEntryPointResolverSet()
     {
-        addAnnotatedEntryPointResolver();
+        //TODO(pablo.kraan): OSGi - annotated entry point resolver lives in annotations module, which depends on core.
+        // There is not way we can load that class with current package/module definition
+        //addAnnotatedEntryPointResolver();
         addEntryPointResolver(new MethodHeaderPropertyEntryPointResolver());
         addEntryPointResolver(new CallableEntryPointResolver());
 
