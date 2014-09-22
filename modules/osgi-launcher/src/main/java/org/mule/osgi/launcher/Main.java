@@ -49,6 +49,7 @@ public class Main
 
             Map<String, String> configProperties = new HashMap<>();
             configProperties.put("org.osgi.framework.bsnversion", "multiple");
+            //configProperties.put("org.osgi.framework.system.packages.extra", "sun.misc");
             framework = factory.newFramework(configProperties);
 
             // Initialize the framework, but don't start it yet.
@@ -106,6 +107,7 @@ public class Main
         bundlesToStart.addAll(installBundles(context, 1, installedBundleMap, getSpringConfigBundles()));
 
         bundlesToStart.addAll(installBundles(context, 1, installedBundleMap, getDeployerBundles()));
+
         return bundlesToStart;
     }
 
@@ -203,11 +205,24 @@ public class Main
     private static List getCoreBundles()
     {
         List jarList = new ArrayList();
-        jarList.add(new File("/Users/pablokraan/devel/osgiexample/core/log4j-1.2.17.jar"));
-        jarList.add(new File("/Users/pablokraan/devel/osgiexample/core/jcl-over-slf4j-1.6.1.jar"));
+        jarList.add(new File("/Users/pablokraan/devel/osgiexample/core/geronimo-jta_1.1_spec-1.1.1.jar"));
+        jarList.add(new File("/Users/pablokraan/devel/osgiexample/core/geronimo-j2ee-connector_1.5_spec-2.0.0.jar"));
+        jarList.add(new File("/Users/pablokraan/devel/osgiexample/core/geronimo-jms_1.1_spec-1.1.1.jar"));
+
+        jarList.add(new File("/Users/pablokraan/devel/osgiexample/core/log4j-core-2.0.2.jar"));
+        jarList.add(new File("/Users/pablokraan/devel/osgiexample/core/log4j-api-2.0.2.jar"));
+
         jarList.add(new File("/Users/pablokraan/devel/osgiexample/core/antlr-runtime-osgi.jar"));
         jarList.add(new File("/Users/pablokraan/devel/osgiexample/core/asm-commons-osgi.jar"));
         jarList.add(new File("/Users/pablokraan/devel/osgiexample/core/asm-osgi.jar"));
+
+        jarList.add(new File("/Users/pablokraan/devel/osgiexample/core/slf4j-api-1.7.7.jar"));
+        jarList.add(new File("/Users/pablokraan/devel/osgiexample/core/log4j-slf4j-impl-2.0.2.jar"));
+        jarList.add(new File("/Users/pablokraan/devel/osgiexample/core/log4j-1.2-api-2.0.2.jar"));
+        jarList.add(new File("/Users/pablokraan/devel/osgiexample/core/log4j-jcl-2.0.2.jar"));
+        jarList.add(new File("/Users/pablokraan/devel/osgiexample/core/jcl-over-slf4j-1.7.7.jar"));
+
+        jarList.add(new File("/Users/pablokraan/devel/osgiexample/core/commons-logging-1.2.jar"));
         jarList.add(new File("/Users/pablokraan/devel/osgiexample/core/commons-beanutils-osgi.jar"));
         jarList.add(new File("/Users/pablokraan/devel/osgiexample/core/commons-cli-osgi.jar"));
         jarList.add(new File("/Users/pablokraan/devel/osgiexample/core/commons-collections-osgi.jar"));
@@ -217,14 +232,8 @@ public class Main
         jarList.add(new File("/Users/pablokraan/devel/osgiexample/core/eaio-uuid-osgi.jar"));
         jarList.add(new File("/Users/pablokraan/devel/osgiexample/core/guava-16.0.1.jar"));
         jarList.add(new File("/Users/pablokraan/devel/osgiexample/core/jgrapht-osgi.jar"));
-        jarList.add(new File("/Users/pablokraan/devel/osgiexample/core/mule-mvel2-osgi.jar"));
-        jarList.add(new File("/Users/pablokraan/devel/osgiexample/core/slf4j-api-1.6.1.jar"));
-        jarList.add(new File("/Users/pablokraan/devel/osgiexample/core/slf4j-log4j12-1.6.1.jar"));
         jarList.add(new File("/Users/pablokraan/devel/osgiexample/core/xmlbeans-osgi.jar"));
-        jarList.add(new File("/Users/pablokraan/devel/osgiexample/core/geronimo-jta_1.1_spec-1.1.1.jar"));
-        jarList.add(new File("/Users/pablokraan/devel/osgiexample/core/geronimo-j2ee-connector_1.5_spec-2.0.0.jar"));
         jarList.add(new File("/Users/pablokraan/devel/osgiexample/core/mule-core-4.0-SNAPSHOT.jar"));
-        jarList.add(new File("/Users/pablokraan/devel/osgiexample/core/mule-common-4.0-SNAPSHOT.jar"));
 
         return jarList;
     }
@@ -232,7 +241,6 @@ public class Main
     private static List getSpringConfigBundles()
     {
         List jarList = new ArrayList();
-        jarList.add(new File("/Users/pablokraan/devel/osgiexample/core/antlr-runtime-osgi.jar"));
         jarList.add(new File("/Users/pablokraan/devel/osgiexample/spring-config/cglib-osgi.jar"));
         jarList.add(new File("/Users/pablokraan/devel/osgiexample/spring-config/mule-module-annotations-4.0-SNAPSHOT.jar"));
         jarList.add(new File("/Users/pablokraan/devel/osgiexample/spring-config/org.apache.servicemix.bundles.aopalliance-1.0_6.jar"));
