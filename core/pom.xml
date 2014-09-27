@@ -101,7 +101,7 @@
         <dependency>
             <groupId>com.github.stephenc.eaio-uuid</groupId>
             <artifactId>uuid</artifactId>
-            <version>3.4.0</version>
+            <version>3.4.0-osgi</version>
         </dependency>
         <!--
             TODO MULE-1947 Remove this since command-line parsing is limited to
@@ -126,7 +126,7 @@
         <dependency>
             <groupId>commons-pool</groupId>
             <artifactId>commons-pool</artifactId>
-            <version>1.6</version>
+            <version>1.6-osgi</version>
         </dependency>
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
@@ -181,12 +181,12 @@
         <dependency>
             <groupId>asm</groupId>
             <artifactId>asm</artifactId>
-            <version>3.1</version>
+            <version>3.1-osgi</version>
         </dependency>
         <dependency>
             <groupId>asm</groupId>
             <artifactId>asm-commons</artifactId>
-            <version>3.1</version>
+            <version>3.1-osgi</version>
         </dependency>
         <dependency>
             <groupId>org.mule.mvel</groupId>
@@ -195,7 +195,7 @@
         <dependency>
             <groupId>org.jgrapht</groupId>
             <artifactId>jgrapht-jdk1.5</artifactId>
-            <version>0.7.3</version>
+            <version>0.7.3-osgi</version>
         </dependency>
         <dependency>
             <groupId>org.mule.common</groupId>

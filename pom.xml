@@ -160,16 +160,16 @@
         <bouncycastleVersion>1.46</bouncycastleVersion>
         <cglibVersion>2.2_2</cglibVersion>
         <cometdVersion>6.1.26</cometdVersion>
-        <commonsBeanUtilsVersion>1.8.0</commonsBeanUtilsVersion>
-        <commonsCliVersion>1.2</commonsCliVersion>
+        <commonsBeanUtilsVersion>1.8.0-osgi</commonsBeanUtilsVersion>
+        <commonsCliVersion>1.2-osgi</commonsCliVersion>
         <commonsCodecVersion>1.3</commonsCodecVersion>
-        <commonsCollectionsVersion>3.2.1</commonsCollectionsVersion>
+        <commonsCollectionsVersion>3.2.1-osgi</commonsCollectionsVersion>
         <commonsDbcpVersion>1.4</commonsDbcpVersion>
         <commonsDbUtilsVersion>1.2</commonsDbUtilsVersion>
         <commonsHttpClientVersion>3.1</commonsHttpClientVersion>
-        <commonsIoVersion>2.4</commonsIoVersion>
+        <commonsIoVersion>2.4-osgi</commonsIoVersion>
         <commonsJxpathVersion>1.3</commonsJxpathVersion>
-        <commonsLangVersion>2.4</commonsLangVersion>
+        <commonsLangVersion>2.4-osgi</commonsLangVersion>
         <commonsNetVersion>2.0</commonsNetVersion>
         <!-- TODO There is a more modern version of cryptix available:
         http://mirrors.ibiblio.org/pub/mirrors/maven2/cryptix/cryptix/3.2.0/cryptix-3.2.0.jar
@@ -212,7 +212,7 @@
         <multithreadedtcVersion>1.01</multithreadedtcVersion>
         <!-- TODO EE-1395 -->
         <mqSeriesVersion>6.0</mqSeriesVersion>
-        <muleMvelVersion>2.1.9-MULE-005</muleMvelVersion>
+        <muleMvelVersion>2.1.9-MULE-005-osgi</muleMvelVersion>
         <mx4jVersion>2.1.1</mx4jVersion>
         <oroVersion>2.0.8</oroVersion>
         <quartzVersion>1.8.5</quartzVersion>
