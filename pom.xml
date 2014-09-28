@@ -178,7 +178,7 @@
         <cryptixVersion>20050405</cryptixVersion>
         <cxfVersion>2.5.9</cxfVersion>
         <derbyVersion>10.9.1.0</derbyVersion>
-        <dom4jVersion>1.6.1</dom4jVersion>
+        <dom4jVersion>1.6.1-osgi</dom4jVersion>
         <flatpackVersion>3.1.1</flatpackVersion>
         <geronimoSpecsVersion>1.1</geronimoSpecsVersion>
         <newGeronimoSpecsVersion>2.0.0</newGeronimoSpecsVersion>

@@ -11,5 +11,8 @@ mvn install:install-file -Dfile=mule-mvel2-2.1.9-MULE-005-osgi.jar -DgroupId=org
 mvn install:install-file -Dfile=asm-commons-3.1-osgi.jar -DgroupId=asm -DartifactId=asm-commons -Dversion=3.1-osgi -Dpackaging=jar
 mvn install:install-file -Dfile=asm-3.1-osgi.jar -DgroupId=asm -DartifactId=asm -Dversion=3.1-osgi -Dpackaging=jar
 
+# mule-module-spring-config
+mvn install:install-file -Dfile=dom4j-1.6.1-osgi.jar -DgroupId=dom4j -DartifactId=dom4j -Dversion=1.6.1-osgi -Dpackaging=jar
+
 
 
