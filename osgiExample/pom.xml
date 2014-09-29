@@ -9,7 +9,7 @@
         <version>4.0-SNAPSHOT</version>
     </parent>
     <artifactId>osgi-example</artifactId>
-    <packaging>bundle</packaging>
+    <packaging>jar</packaging>
     <name>Mule OSGi Example</name>
     <description>Example bundle using mule in a OSGi container</description>
 
@@ -18,54 +18,54 @@
         <licensePath>../LICENSE_HEADER.txt</licensePath>
     </properties>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <version>2.5.0</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <instructions>
-                        <!--<Export-Package>org.mule.example.osgi.*</Export-Package>-->
-                        <!--//TODO(pablo.kraan): OSGi - I don' like to have to import VM package here. Find a better way to do it-->
-                        <Import-Package>
-                            com.eaio.uuid,
-                            org.mule,
-                            org.mule.config.bootstrap,
-                            org.mule.config.factories,
-                            org.mule.el.mvel,
-                            org.mule.endpoint,
-                            org.mule.execution,
-                            org.mule.management.stats,
-                            org.mule.module.springconfig.editors,
-                            org.mule.module.springconfig.processors,
-                            org.mule.module.springconfig.parsers.collection,
-                            org.mule.retry.policies,
-                            org.mule.security,
-                            org.mule.session,
-                            org.mule.util,
-                            org.mule.util.queue,
-                            org.mule.util.store,
-                            org.mule.util.lock,
-                            org.mule.transport,
-                            org.mule.transport.polling,
-                            org.mule.transport.vm,
-                            org.mule.transformer.simple,
-                            org.springframework.beans.factory.config,
-                            org.mule.model.seda,
-                            org.mule.construct,
-                            org.mule.module.springconfig.factories,
-                            org.mule.api.processor,
-                            *
-                        </Import-Package>
-                        <DynamicImport-Package>*</DynamicImport-Package>
-                        <Bundle-Activator>org.mule.module.springconfig.osgi.MuleApplicationActivator</Bundle-Activator>
-                    </instructions>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+    <!--<build>-->
+        <!--<plugins>-->
+            <!--<plugin>-->
+                <!--<groupId>org.apache.felix</groupId>-->
+                <!--<artifactId>maven-bundle-plugin</artifactId>-->
+                <!--<version>2.5.0</version>-->
+                <!--<extensions>true</extensions>-->
+                <!--<configuration>-->
+                    <!--<instructions>-->
+                        <!--&lt;!&ndash;<Export-Package>org.mule.example.osgi.*</Export-Package>&ndash;&gt;-->
+                        <!--&lt;!&ndash;//TODO(pablo.kraan): OSGi - I don' like to have to import VM package here. Find a better way to do it&ndash;&gt;-->
+                        <!--<Import-Package>-->
+                            <!--com.eaio.uuid,-->
+                            <!--org.mule,-->
+                            <!--org.mule.config.bootstrap,-->
+                            <!--org.mule.config.factories,-->
+                            <!--org.mule.el.mvel,-->
+                            <!--org.mule.endpoint,-->
+                            <!--org.mule.execution,-->
+                            <!--org.mule.management.stats,-->
+                            <!--org.mule.module.springconfig.editors,-->
+                            <!--org.mule.module.springconfig.processors,-->
+                            <!--org.mule.module.springconfig.parsers.collection,-->
+                            <!--org.mule.retry.policies,-->
+                            <!--org.mule.security,-->
+                            <!--org.mule.session,-->
+                            <!--org.mule.util,-->
+                            <!--org.mule.util.queue,-->
+                            <!--org.mule.util.store,-->
+                            <!--org.mule.util.lock,-->
+                            <!--org.mule.transport,-->
+                            <!--org.mule.transport.polling,-->
+                            <!--org.mule.transport.vm,-->
+                            <!--org.mule.transformer.simple,-->
+                            <!--org.springframework.beans.factory.config,-->
+                            <!--org.mule.model.seda,-->
+                            <!--org.mule.construct,-->
+                            <!--org.mule.module.springconfig.factories,-->
+                            <!--org.mule.api.processor,-->
+                            <!--*-->
+                        <!--</Import-Package>-->
+                        <!--<DynamicImport-Package>*</DynamicImport-Package>-->
+                        <!--<Bundle-Activator>org.mule.module.springconfig.osgi.MuleApplicationActivator</Bundle-Activator>-->
+                    <!--</instructions>-->
+                <!--</configuration>-->
+            <!--</plugin>-->
+        <!--</plugins>-->
+    <!--</build>-->
 
     <dependencies>
         <dependency>
