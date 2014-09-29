@@ -41,7 +41,6 @@
                 <configuration>
                     <instructions>
                         <Export-Package>org.mule.tck.*</Export-Package>
-                        <Bundle-Activator>org.mule.example.osgi.ExampleActivator</Bundle-Activator>
                     </instructions>
                 </configuration>
             </plugin>
