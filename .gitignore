@@ -37,3 +37,5 @@ examples/foreach/.classpath
 examples/foreach/.project
 
 examples/foreach/.settings/org.eclipse.jdt.core.prefs
+
+/.bundles
