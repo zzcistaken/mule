@@ -11,10 +11,10 @@ import org.mule.api.execution.ExecutionTemplate;
 import org.mule.api.transaction.TransactionConfig;
 import org.mule.api.transaction.TransactionException;
 import org.mule.execution.TransactionalExecutionTemplate;
-import org.mule.functional.junit4.FunctionalTestCase;
 import org.mule.transaction.MuleTransactionConfig;
 import org.mule.transaction.TransactionCoordination;
 import org.mule.transaction.XaTransactionFactory;
+import org.mule.transport.vm.AbstractVmOsgiTestCase;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -32,7 +32,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 
-public abstract class AbstractExternalTransactionTestCase extends FunctionalTestCase
+public abstract class AbstractExternalTransactionTestCase extends AbstractVmOsgiTestCase
 {
 
     protected static final Log logger = LogFactory.getLog(AbstractExternalTransactionTestCase.class);

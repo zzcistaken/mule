@@ -12,13 +12,14 @@ import static org.junit.Assert.fail;
 import org.mule.api.MuleMessage;
 import org.mule.api.client.MuleClient;
 import org.mule.functional.junit4.FunctionalTestCase;
+import org.mule.transport.vm.AbstractVmOsgiTestCase;
 
 import java.util.Collections;
 import java.util.Map;
 
 import org.junit.Test;
 
-public class SessionPropertiesTestCase extends FunctionalTestCase
+public class SessionPropertiesTestCase extends AbstractVmOsgiTestCase
 {
     @Override
     protected String getConfigFile()

@@ -14,12 +14,13 @@ import org.mule.api.client.MuleClient;
 import org.mule.functional.functional.EventCallback;
 import org.mule.functional.functional.FunctionalTestComponent;
 import org.mule.functional.junit4.FunctionalTestCase;
+import org.mule.transport.vm.AbstractVmOsgiTestCase;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Test;
 
-public class MulticastRouterMule2112TestCase  extends FunctionalTestCase
+public class MulticastRouterMule2112TestCase extends AbstractVmOsgiTestCase
 {
     @Override
     protected String getConfigFile()

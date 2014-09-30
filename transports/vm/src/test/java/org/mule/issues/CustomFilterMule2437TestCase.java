@@ -12,10 +12,11 @@ import org.mule.DefaultMuleMessage;
 import org.mule.api.MuleMessage;
 import org.mule.api.client.MuleClient;
 import org.mule.functional.junit4.FunctionalTestCase;
+import org.mule.transport.vm.AbstractVmOsgiTestCase;
 
 import org.junit.Test;
 
-public class CustomFilterMule2437TestCase extends FunctionalTestCase
+public class CustomFilterMule2437TestCase extends AbstractVmOsgiTestCase
 {
 
     private static final long TIMEOUT = 3000L;

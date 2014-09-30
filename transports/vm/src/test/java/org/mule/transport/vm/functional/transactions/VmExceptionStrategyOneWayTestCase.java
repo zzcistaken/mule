@@ -20,6 +20,7 @@ import org.mule.message.ExceptionMessage;
 import org.mule.functional.junit4.FunctionalTestCase;
 import org.mule.transformer.AbstractTransformer;
 import org.mule.transport.NullPayload;
+import org.mule.transport.vm.AbstractVmOsgiTestCase;
 import org.mule.util.concurrent.Latch;
 
 import java.util.concurrent.TimeUnit;
@@ -30,7 +31,7 @@ import org.hamcrest.core.IsNull;
 import org.junit.Before;
 import org.junit.Test;
 
-public class VmExceptionStrategyOneWayTestCase extends FunctionalTestCase
+public class VmExceptionStrategyOneWayTestCase extends AbstractVmOsgiTestCase
 {
     public static final int TIMEOUT = 3000;
     public static final String ORIGINAL_MESSAGE = "some message";

@@ -12,13 +12,14 @@ import static org.junit.Assert.assertTrue;
 import org.mule.api.MuleMessage;
 import org.mule.api.client.MuleClient;
 import org.mule.functional.junit4.FunctionalTestCase;
+import org.mule.transport.vm.AbstractVmOsgiTestCase;
 
 import java.util.HashSet;
 import java.util.Set;
 
 import org.junit.Test;
 
-public class PersistentBoundedQueueTestCase extends FunctionalTestCase
+public class PersistentBoundedQueueTestCase extends AbstractVmOsgiTestCase
 {
 
     // add some sizeable delay, as queue store ordering won't be guaranteed

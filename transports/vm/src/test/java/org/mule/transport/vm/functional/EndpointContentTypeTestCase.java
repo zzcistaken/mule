@@ -16,13 +16,14 @@ import org.mule.api.client.MuleClient;
 import org.mule.api.lifecycle.Callable;
 import org.mule.api.transport.PropertyScope;
 import org.mule.functional.junit4.FunctionalTestCase;
+import org.mule.transport.vm.AbstractVmOsgiTestCase;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
 
-public class EndpointContentTypeTestCase extends FunctionalTestCase
+public class EndpointContentTypeTestCase extends AbstractVmOsgiTestCase
 {
 
     @Override

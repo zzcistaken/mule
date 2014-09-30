@@ -25,7 +25,7 @@ import java.io.Serializable;
 import org.junit.Rule;
 import org.junit.Test;
 
-public class VMFunctionalTestCase extends FunctionalTestCase
+public class VMFunctionalTestCase extends AbstractVmOsgiTestCase
 {
     @Rule
     public SystemProperty useOldQueueMode = new SystemProperty(DelegateQueueManager.MULE_QUEUE_OLD_MODE_KEY, "true");

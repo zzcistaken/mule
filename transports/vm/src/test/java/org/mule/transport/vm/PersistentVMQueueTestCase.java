@@ -15,7 +15,7 @@ import org.mule.functional.junit4.FunctionalTestCase;
 
 import org.junit.Test;
 
-public class PersistentVMQueueTestCase extends FunctionalTestCase
+public class PersistentVMQueueTestCase extends AbstractVmOsgiTestCase
 {
 
     private static final int RECEIVE_TIMEOUT = 5000;

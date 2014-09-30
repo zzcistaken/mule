@@ -11,10 +11,11 @@ import static org.junit.Assert.assertNotNull;
 import org.mule.api.MuleMessage;
 import org.mule.api.client.MuleClient;
 import org.mule.functional.junit4.FunctionalTestCase;
+import org.mule.transport.vm.AbstractVmOsgiTestCase;
 
 import org.junit.Test;
 
-public class PersistentUnaddressedVmQueueTestCase extends FunctionalTestCase
+public class PersistentUnaddressedVmQueueTestCase extends AbstractVmOsgiTestCase
 {
 
     private static final int RECEIVE_TIMEOUT = 5000;

@@ -14,6 +14,7 @@ import org.mule.DefaultMuleMessage;
 import org.mule.api.MuleMessage;
 import org.mule.api.client.MuleClient;
 import org.mule.functional.junit4.FunctionalTestCase;
+import org.mule.transport.vm.AbstractVmOsgiTestCase;
 
 import java.io.File;
 
@@ -22,7 +23,7 @@ import javax.activation.FileDataSource;
 
 import org.junit.Test;
 
-public class VMAttachmentsTestCase extends FunctionalTestCase
+public class VMAttachmentsTestCase extends AbstractVmOsgiTestCase
 {
 
     @Override

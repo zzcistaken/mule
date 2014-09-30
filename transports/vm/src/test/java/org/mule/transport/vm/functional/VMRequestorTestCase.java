@@ -13,13 +13,14 @@ import org.mule.api.MuleException;
 import org.mule.api.MuleMessage;
 import org.mule.api.client.MuleClient;
 import org.mule.functional.junit4.FunctionalTestCase;
+import org.mule.transport.vm.AbstractVmOsgiTestCase;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
 
-public class VMRequestorTestCase extends FunctionalTestCase
+public class VMRequestorTestCase extends AbstractVmOsgiTestCase
 {
 
     @Override

@@ -12,12 +12,13 @@ import org.mule.api.MuleMessage;
 import org.mule.api.client.MuleClient;
 import org.mule.functional.junit4.FunctionalTestCase;
 import org.mule.transaction.TransactionCoordination;
+import org.mule.transport.vm.AbstractVmOsgiTestCase;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 
-public class VmTransactionTestCase extends FunctionalTestCase
+public class VmTransactionTestCase extends AbstractVmOsgiTestCase
 {
 
     protected static volatile boolean serviceComponentAck = false;

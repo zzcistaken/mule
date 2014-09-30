@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:vm="http://www.mulesoft.org/schema/mule/vm"
+      xsi:schemaLocation="
+    http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+    http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd">
+
+    <description>
+        This configuration uses an HTTP endpoint to receive requests.
+    </description>
+    <!--<flow name="main">-->
+    <!--<poll frequency="1000">-->
+    <!--<set-payload value="MONCHO!!!"/>-->
+    <!--</poll>-->
+    <!--&lt;!&ndash;&ndash;&gt;-->
+    <!--<logger level="INFO" message="#[payload]"/>-->
+    <!--</flow>-->
+
+    <!--<flow name="main">-->
+    <!--<poll frequency="1000">-->
+    <!--<set-payload value="POLL"/>-->
+    <!--</poll>-->
+    <!---->
+    <!--<vm:outbound-endpoint path="payloadGenerator"/>-->
+    <!--</flow>-->
+    <!---->
+    <flow name="payloadGenerator">
+        <vm:inbound-endpoint path="payloadGenerator" exchange-pattern="request-response"/>
+        <set-payload value="OSGi!!!"/>
+    </flow>
+</mule>

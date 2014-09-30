@@ -15,6 +15,7 @@ import org.mule.api.MuleMessage;
 import org.mule.api.client.MuleClient;
 import org.mule.api.transport.PropertyScope;
 import org.mule.functional.junit4.FunctionalTestCase;
+import org.mule.transport.vm.AbstractVmOsgiTestCase;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -23,7 +24,7 @@ import org.junit.Test;
  * Test the propagation of a property in different scopes and in synchronous vs.
  * asynchronous flows.
  */
-public class PropertyScopesTestCase extends FunctionalTestCase
+public class PropertyScopesTestCase extends AbstractVmOsgiTestCase
 {
     @Override
     protected String getConfigFile()

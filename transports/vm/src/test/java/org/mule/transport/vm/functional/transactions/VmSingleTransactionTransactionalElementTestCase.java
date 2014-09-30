@@ -18,13 +18,14 @@ import org.mule.api.transaction.TransactionException;
 import org.mule.api.transport.DispatchException;
 import org.mule.construct.Flow;
 import org.mule.functional.junit4.FunctionalTestCase;
+import org.mule.transport.vm.AbstractVmOsgiTestCase;
 
 import org.hamcrest.core.Is;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-public class VmSingleTransactionTransactionalElementTestCase extends FunctionalTestCase
+public class VmSingleTransactionTransactionalElementTestCase extends AbstractVmOsgiTestCase
 {
     @Override
     protected String getConfigFile()

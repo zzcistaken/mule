@@ -11,10 +11,11 @@ import static org.junit.Assert.assertEquals;
 import org.mule.api.MuleMessage;
 import org.mule.api.client.MuleClient;
 import org.mule.functional.junit4.FunctionalTestCase;
+import org.mule.transport.vm.AbstractVmOsgiTestCase;
 
 import org.junit.Test;
 
-public class TransactionWithRecipientListTestCase extends FunctionalTestCase
+public class TransactionWithRecipientListTestCase extends AbstractVmOsgiTestCase
 {
     @Override
     protected String getConfigFile()

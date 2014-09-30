@@ -8,6 +8,7 @@ package org.mule.transport.vm.functional.transactions;
 
 import org.mule.api.client.MuleClient;
 import org.mule.functional.junit4.FunctionalTestCase;
+import org.mule.transport.vm.AbstractVmOsgiTestCase;
 import org.mule.util.concurrent.Latch;
 
 import java.util.HashMap;
@@ -18,7 +19,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class RollbackTestCase extends FunctionalTestCase
+public class RollbackTestCase extends AbstractVmOsgiTestCase
 {
     static Latch latch;
     static AtomicInteger totalSeen;

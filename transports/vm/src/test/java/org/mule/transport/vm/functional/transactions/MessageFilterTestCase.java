@@ -15,6 +15,7 @@ import org.mule.api.MuleMessage;
 import org.mule.api.client.MuleClient;
 import org.mule.api.processor.MessageProcessor;
 import org.mule.functional.junit4.FunctionalTestCase;
+import org.mule.transport.vm.AbstractVmOsgiTestCase;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -25,7 +26,7 @@ import org.junit.Test;
  * transactions There is one test per legal transactional behavior (e.g.
  * ALWAYS_BEGIN).
  */
-public class MessageFilterTestCase extends FunctionalTestCase
+public class MessageFilterTestCase extends AbstractVmOsgiTestCase
 {
 
     protected static final Log logger = LogFactory.getLog(MessageFilterTestCase.class);

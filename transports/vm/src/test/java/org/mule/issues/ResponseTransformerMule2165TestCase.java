@@ -12,10 +12,11 @@ import org.mule.api.MuleException;
 import org.mule.api.MuleMessage;
 import org.mule.api.client.MuleClient;
 import org.mule.functional.junit4.FunctionalTestCase;
+import org.mule.transport.vm.AbstractVmOsgiTestCase;
 
 import org.junit.Test;
 
-public class ResponseTransformerMule2165TestCase extends FunctionalTestCase
+public class ResponseTransformerMule2165TestCase extends AbstractVmOsgiTestCase
 {
 
     public static final long TIMEOUT = 2000L;

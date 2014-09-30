@@ -13,12 +13,13 @@ import org.mule.api.MuleEvent;
 import org.mule.api.MuleMessage;
 import org.mule.api.client.MuleClient;
 import org.mule.functional.junit4.FunctionalTestCase;
+import org.mule.transport.vm.AbstractVmOsgiTestCase;
 import org.mule.util.queue.DefaultQueueConfiguration;
 import org.mule.util.queue.TransactionalQueueManager;
 
 import org.junit.Test;
 
-public class PersistentRecoverMessageTestCase extends FunctionalTestCase
+public class PersistentRecoverMessageTestCase extends AbstractVmOsgiTestCase
 {
 
     public static final String TEST_QUEUE_NAME = "flowOut";

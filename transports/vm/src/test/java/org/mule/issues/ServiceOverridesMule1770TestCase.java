@@ -17,10 +17,11 @@ import org.mule.tck.testmodels.mule.TestMessageDispatcherFactory;
 import org.mule.functional.transformer.NoActionTransformer;
 import org.mule.transformer.TransformerUtils;
 import org.mule.transport.AbstractConnector;
+import org.mule.transport.vm.AbstractVmOsgiTestCase;
 
 import org.junit.Test;
 
-public class ServiceOverridesMule1770TestCase extends FunctionalTestCase
+public class ServiceOverridesMule1770TestCase extends AbstractVmOsgiTestCase
 {
     @Override
     protected String getConfigFile()

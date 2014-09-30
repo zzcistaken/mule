@@ -15,7 +15,7 @@ import org.mule.functional.junit4.FunctionalTestCase;
 
 import org.junit.Test;
 
-public class TransformerAttributeTestCase extends FunctionalTestCase
+public class TransformerAttributeTestCase extends AbstractVmOsgiTestCase
 {
 
     public static final String OUTBOUND_MESSAGE = "Test message";

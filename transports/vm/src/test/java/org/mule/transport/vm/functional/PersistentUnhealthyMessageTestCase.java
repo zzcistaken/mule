@@ -12,6 +12,7 @@ import static org.junit.Assert.assertNotNull;
 import org.mule.api.MuleMessage;
 import org.mule.api.client.MuleClient;
 import org.mule.functional.junit4.FunctionalTestCase;
+import org.mule.transport.vm.AbstractVmOsgiTestCase;
 import org.mule.util.FileUtils;
 import org.mule.util.queue.DualRandomAccessFileQueueStoreDelegate;
 
@@ -19,7 +20,7 @@ import java.io.File;
 
 import org.junit.Test;
 
-public class PersistentUnhealthyMessageTestCase extends FunctionalTestCase
+public class PersistentUnhealthyMessageTestCase extends AbstractVmOsgiTestCase
 {
 
     public static final String OUTPUT_QUEUE_NAME = "flowOut";

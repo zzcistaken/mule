@@ -21,7 +21,7 @@ import java.util.StringTokenizer;
 
 import org.junit.Test;
 
-public class VMQueueTestCase extends FunctionalTestCase
+public class VMQueueTestCase extends AbstractVmOsgiTestCase
 {
 
     public static final long WAIT = 3000L;

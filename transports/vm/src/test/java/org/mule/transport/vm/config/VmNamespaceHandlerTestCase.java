@@ -17,6 +17,7 @@ import org.mule.config.QueueProfile;
 import org.mule.functional.junit4.FunctionalTestCase;
 import org.mule.tck.testmodels.mule.TestTransactionFactory;
 import org.mule.transaction.XaTransactionFactory;
+import org.mule.transport.vm.AbstractVmOsgiTestCase;
 import org.mule.transport.vm.VMConnector;
 
 import org.junit.Test;
@@ -25,7 +26,7 @@ import org.junit.Test;
 /**
  * Tests the Spring XML namespace for the VM transport.
  */
-public class VmNamespaceHandlerTestCase extends FunctionalTestCase
+public class VmNamespaceHandlerTestCase extends AbstractVmOsgiTestCase
 {
     @Override
     protected String getConfigFile()

@@ -10,14 +10,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import org.mule.api.MuleMessage;
 import org.mule.api.client.MuleClient;
-import org.mule.functional.junit4.FunctionalTestCase;
 
 import org.junit.Test;
 
 /**
  * Simple synch test used to study message flow.
  */
-public class VMSynchTestCase extends FunctionalTestCase
+public class VMSynchTestCase extends AbstractVmOsgiTestCase
 {
 
     @Override

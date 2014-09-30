@@ -11,10 +11,11 @@ import static org.junit.Assert.assertNotNull;
 import org.mule.api.MuleMessage;
 import org.mule.api.client.MuleClient;
 import org.mule.functional.junit4.FunctionalTestCase;
+import org.mule.transport.vm.AbstractVmOsgiTestCase;
 
 import org.junit.Test;
 
-public class TransformerChainMule2063TestCase extends FunctionalTestCase
+public class TransformerChainMule2063TestCase extends AbstractVmOsgiTestCase
 {
 
     public static final String IN = "in";
