@@ -7,7 +7,7 @@
 package org.mule.api.annotations.param;
 
 import org.mule.module.annotations.api.annotations.param.InboundAttachments;
-import org.mule.util.StringDataSource;
+import org.mule.tck.util.StringDataSource;
 
 import java.io.IOException;
 import java.util.ArrayList;

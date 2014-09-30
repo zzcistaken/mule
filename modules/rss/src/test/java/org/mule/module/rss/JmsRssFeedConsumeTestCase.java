@@ -9,7 +9,7 @@ package org.mule.module.rss;
 import static org.junit.Assert.assertEquals;
 
 import org.mule.api.client.LocalMuleClient;
-import org.mule.tck.junit4.FunctionalTestCase;
+import org.mule.functional.junit4.FunctionalTestCase;
 
 import org.junit.Test;
 

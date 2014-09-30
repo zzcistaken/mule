@@ -7,7 +7,7 @@
 package org.mule.transport.vm;
 
 import org.mule.api.transport.Connector;
-import org.mule.transport.AbstractConnectorTestCase;
+import org.mule.tck.transport.AbstractConnectorTestCase;
 
 public class VMConnectorTestCase extends AbstractConnectorTestCase
 {

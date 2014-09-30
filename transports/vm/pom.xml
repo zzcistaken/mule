@@ -15,6 +15,10 @@
 
     <properties>
         <licensePath>../../LICENSE_HEADER.txt</licensePath>
+        <osgi.core.version>5.0.0</osgi.core.version>
+        <exam.version>4.1.0</exam.version>
+        <runner.version>1.8.6</runner.version>
+        <url.version>1.4.0</url.version>
     </properties>
 
     <build>
@@ -34,6 +38,20 @@
                     </instructions>
                 </configuration>
             </plugin>
+
+                <!-- generate dependencies versions -->
+                <plugin>
+                    <groupId>org.apache.servicemix.tooling</groupId>
+                    <artifactId>depends-maven-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <id>generate-depends-file</id>
+                            <goals>
+                                <goal>generate-depends-file</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
         </plugins>
     </build>
 
@@ -44,7 +62,25 @@
             <version>${project.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <version>${osgi.core.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.compendium</artifactId>
+            <version>${osgi.core.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- Unit tests -->
+        <dependency>
+            <groupId>org.mule.tests</groupId>
+            <artifactId>mule-tests-unit</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.mule.tests</groupId>
             <artifactId>mule-tests-functional</artifactId>
@@ -67,5 +103,79 @@
             <artifactId>mockito-core</artifactId>
             <scope>test</scope>
         </dependency>
+
+
+        <!--&lt;!&ndash; Pax-exam &ndash;&gt;-->
+        <!--<dependency>-->
+            <!--<groupId>org.ops4j.pax.swissbox</groupId>-->
+            <!--<artifactId>pax-swissbox-bnd</artifactId>-->
+            <!--<version>1.8.0</version>-->
+            <!--<scope>test</scope>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.ops4j.pax.exam</groupId>-->
+            <!--<artifactId>pax-exam-container-native</artifactId>-->
+            <!--<version>${exam.version}</version>-->
+            <!--<scope>test</scope>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.ops4j.pax.runner</groupId>-->
+            <!--<artifactId>pax-runner-no-jcl</artifactId>-->
+            <!--<version>${runner.version}</version>-->
+            <!--<scope>test</scope>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.ops4j.pax.exam</groupId>-->
+            <!--<artifactId>pax-exam-junit4</artifactId>-->
+            <!--<version>${exam.version}</version>-->
+            <!--<scope>test</scope>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.ops4j.pax.exam</groupId>-->
+            <!--<artifactId>pax-exam-link-mvn</artifactId>-->
+            <!--<version>${exam.version}</version>-->
+            <!--<scope>test</scope>-->
+        <!--</dependency>-->
+
+        <dependency>
+            <groupId>org.ops4j.pax.exam</groupId>
+            <artifactId>pax-exam-container-native</artifactId>
+            <version>${exam.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.ops4j.pax.exam</groupId>
+            <artifactId>pax-exam-junit4</artifactId>
+            <version>${exam.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.ops4j.pax.exam</groupId>
+            <artifactId>pax-exam-link-mvn</artifactId>
+            <version>${exam.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.ops4j.pax.url</groupId>
+            <artifactId>pax-url-aether</artifactId>
+            <version>${url.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.framework</artifactId>
+            <version>4.4.1</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!--<dependency>-->
+            <!--<groupId>org.ops4j.pax.exam</groupId>-->
+            <!--<artifactId>pax-exam-spring</artifactId>-->
+            <!--<version>3.5.0</version>-->
+        <!--</dependency>-->
     </dependencies>
 </project>

@@ -20,7 +20,7 @@ import org.mule.api.MuleEvent;
 import org.mule.api.construct.FlowConstruct;
 import org.mule.api.expression.ExpressionManager;
 import org.mule.expression.DefaultExpressionManager;
-import org.mule.tck.functional.AssertionMessageProcessor;
+import org.mule.functional.functional.AssertionMessageProcessor;
 import org.mule.tck.junit4.AbstractMuleTestCase;
 
 public class AssertionMessageProcessorTestCase extends AbstractMuleTestCase

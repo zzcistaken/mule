@@ -6,7 +6,7 @@
  */
 package org.mule.transport.xmpp;
 
-import org.mule.tck.junit4.FunctionalTestCase;
+import org.mule.functional.junit4.FunctionalTestCase;
 
 /**
  * This should be the superclass for all unit tests in the XMPP transport that require an external

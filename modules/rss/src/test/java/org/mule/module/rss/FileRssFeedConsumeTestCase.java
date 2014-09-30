@@ -8,7 +8,7 @@ package org.mule.module.rss;
 
 import static org.mule.module.rss.SampleFeed.ENTRIES_IN_RSS_FEED;
 
-import org.mule.tck.junit4.FunctionalTestCase;
+import org.mule.functional.junit4.FunctionalTestCase;
 import org.mule.tck.probe.PollingProber;
 import org.mule.tck.probe.Probe;
 import org.mule.tck.probe.Prober;

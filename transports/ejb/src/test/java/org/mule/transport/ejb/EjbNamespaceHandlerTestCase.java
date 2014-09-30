@@ -10,8 +10,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import org.mule.tck.jndi.InMemoryContext;
-import org.mule.tck.junit4.FunctionalTestCase;
+import org.mule.functional.jndi.InMemoryContext;
+import org.mule.functional.junit4.FunctionalTestCase;
 import org.mule.transport.rmi.DummySecurityManager;
 import org.mule.transport.rmi.RmiConnector;
 

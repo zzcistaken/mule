@@ -12,7 +12,6 @@ import static org.junit.Assert.assertSame;
 import org.mule.DefaultMuleContext;
 import org.mule.api.config.ConfigurationBuilder;
 import org.mule.api.config.MuleProperties;
-import org.mule.module.springconfig.SpringXmlConfigurationBuilder;
 import org.mule.tck.junit4.AbstractMuleContextTestCase;
 
 import org.junit.Test;

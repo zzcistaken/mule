@@ -169,10 +169,9 @@
 
         <!-- Unit tests -->
         <dependency>
-            <groupId>org.mule</groupId>
-            <artifactId>mule-core</artifactId>
+            <groupId>org.mule.tests</groupId>
+            <artifactId>mule-tests-unit</artifactId>
             <version>${project.version}</version>
-            <type>test-jar</type>
         </dependency>
         <!-- required for ConfigurationBuilders at runtime -->
         <dependency>

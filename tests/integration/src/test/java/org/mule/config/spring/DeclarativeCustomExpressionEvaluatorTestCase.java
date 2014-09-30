@@ -8,8 +8,8 @@ package org.mule.config.spring;
 
 import static org.junit.Assert.assertTrue;
 
-import org.mule.expression.CustomExpressionEvaluatorTestCase;
-import org.mule.tck.junit4.FunctionalTestCase;
+import org.mule.tck.expression.CustomExpressionEvaluatorTestCase;
+import org.mule.functional.junit4.FunctionalTestCase;
 
 import org.junit.Test;
 

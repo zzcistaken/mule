@@ -11,7 +11,7 @@ import org.mule.jaxb.model.EmailAddress;
 import org.mule.jaxb.model.Person;
 import org.mule.module.xml.transformer.jaxb.JAXBMarshallerTransformer;
 import org.mule.module.xml.transformer.jaxb.JAXBUnmarshallerTransformer;
-import org.mule.transformer.AbstractTransformerTestCase;
+import org.mule.tck.transformer.AbstractTransformerTestCase;
 import org.mule.transformer.types.DataTypeFactory;
 
 import java.util.Arrays;

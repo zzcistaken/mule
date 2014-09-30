@@ -17,7 +17,7 @@ import org.mule.api.transformer.Transformer;
 import org.mule.api.transformer.TransformerException;
 import org.mule.config.DefaultMuleConfiguration;
 import org.mule.transformer.AbstractTransformer;
-import org.mule.transformer.AbstractTransformerTestCase;
+import org.mule.tck.transformer.AbstractTransformerTestCase;
 import org.mule.transformer.types.DataTypeFactory;
 
 import java.util.Properties;

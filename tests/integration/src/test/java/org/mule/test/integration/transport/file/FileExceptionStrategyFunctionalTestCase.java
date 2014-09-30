@@ -7,7 +7,7 @@
 package org.mule.test.integration.transport.file;
 
 import static org.junit.Assert.fail;
-import org.mule.tck.junit4.FunctionalTestCase;
+import org.mule.functional.junit4.FunctionalTestCase;
 import org.mule.util.FileUtils;
 
 import java.io.File;

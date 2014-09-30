@@ -11,7 +11,7 @@ import org.mule.api.endpoint.InboundEndpoint;
 import org.mule.api.lifecycle.InitialisationException;
 import org.mule.config.i18n.MessageFactory;
 import org.mule.endpoint.EndpointURIEndpointBuilder;
-import org.mule.transport.AbstractMessageReceiverTestCase;
+import org.mule.tck.transport.AbstractMessageReceiverTestCase;
 import org.mule.util.concurrent.Latch;
 
 import java.rmi.Naming;

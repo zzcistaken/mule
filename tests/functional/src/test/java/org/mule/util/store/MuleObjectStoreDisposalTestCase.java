@@ -13,7 +13,7 @@ import static org.mockito.Mockito.verify;
 import org.mule.api.config.MuleProperties;
 import org.mule.api.lifecycle.Disposable;
 import org.mule.api.store.ObjectStore;
-import org.mule.tck.junit4.FunctionalTestCase;
+import org.mule.functional.junit4.FunctionalTestCase;
 
 import org.junit.Test;
 

@@ -12,7 +12,7 @@ import org.mule.expression.transformers.BeanBuilderTransformer;
 import org.mule.expression.transformers.ExpressionArgument;
 import org.mule.object.PrototypeObjectFactory;
 import org.mule.tck.testmodels.fruit.Orange;
-import org.mule.transformer.AbstractTransformerTestCase;
+import org.mule.tck.transformer.AbstractTransformerTestCase;
 
 public class XPathBeanBuilderTestCase extends AbstractTransformerTestCase
 {

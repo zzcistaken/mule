@@ -13,11 +13,7 @@ import org.mule.tck.probe.Prober;
 import org.mule.transport.AbstractConnector;
 import org.mule.transport.email.GreenMailUtilities;
 
-import java.util.Arrays;
-import java.util.Collection;
-
 import org.junit.Test;
-import org.junit.runners.Parameterized.Parameters;
 
 public class NonInfiniteMoveToCopiesMule6069TestCase extends
         AbstractEmailFunctionalTestCase {

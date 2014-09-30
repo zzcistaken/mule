@@ -8,8 +8,8 @@ package org.mule.test.construct;
 
 import org.junit.After;
 import org.mule.api.client.MuleClient;
-import org.mule.tck.junit4.FunctionalTestCase;
-import org.mule.tck.listener.FlowExecutionListener;
+import org.mule.functional.junit4.FunctionalTestCase;
+import org.mule.functional.listener.FlowExecutionListener;
 import org.mule.tck.probe.PollingProber;
 import org.mule.tck.probe.Probe;
 import org.mule.tck.probe.Prober;

@@ -73,7 +73,7 @@
     <flow name="exceptionTransformer">
         <vm:inbound-endpoint path="exceptionTransformer" exchange-pattern="request-response">
             <!-- Throw an exception -->
-            <custom-transformer class="org.mule.tck.transformer.ValidateResponse"/>
+            <custom-transformer class="org.mule.functional.transformer.ValidateResponse"/>
         </vm:inbound-endpoint>
         <echo-component/>
     </flow>

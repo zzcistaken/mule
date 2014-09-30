@@ -10,7 +10,7 @@ import org.mule.api.construct.FlowConstruct;
 import org.mule.api.construct.Pipeline;
 import org.mule.api.processor.DefaultMessageProcessorPathElement;
 import org.mule.api.processor.MessageProcessor;
-import org.mule.tck.junit4.FunctionalTestCase;
+import org.mule.functional.junit4.FunctionalTestCase;
 import org.mule.util.NotificationUtils;
 
 import java.util.LinkedHashSet;

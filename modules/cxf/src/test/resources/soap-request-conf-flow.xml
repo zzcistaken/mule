@@ -13,9 +13,9 @@
     <flow name="TestComponent">
         <http:inbound-endpoint address="http://localhost:${port1}/services/TestComponent"
             exchange-pattern="request-response" name="httpInbound">
-            <cxf:simple-service serviceClass="org.mule.tck.testmodels.services.ITestComponent" />
+            <cxf:simple-service serviceClass="org.mule.functional.testmodels.services.ITestComponent" />
         </http:inbound-endpoint>
-        <component class="org.mule.tck.testmodels.services.TestComponent" />
+        <component class="org.mule.functional.testmodels.services.TestComponent" />
     </flow>
 
 </mule>

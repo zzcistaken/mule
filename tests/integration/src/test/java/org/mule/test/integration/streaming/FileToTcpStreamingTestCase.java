@@ -7,7 +7,7 @@
 package org.mule.test.integration.streaming;
 
 import static org.junit.Assert.assertEquals;
-import org.mule.tck.junit4.FunctionalTestCase;
+import org.mule.functional.junit4.FunctionalTestCase;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.probe.PollingProber;
 import org.mule.tck.probe.file.FileExists;

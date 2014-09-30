@@ -11,8 +11,7 @@ import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertThat;
 
 import org.mule.api.registry.Registry;
-import org.mule.module.springconfig.SpringRegistry;
-import org.mule.registry.AbstractRegistryTestCase;
+import org.mule.tck.registry.AbstractRegistryTestCase;
 
 import java.util.Collection;
 

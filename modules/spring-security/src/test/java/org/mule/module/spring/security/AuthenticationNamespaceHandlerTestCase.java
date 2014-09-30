@@ -12,7 +12,7 @@ import static org.junit.Assert.assertNotNull;
 import org.mule.api.config.MuleProperties;
 import org.mule.api.security.SecurityProvider;
 import org.mule.security.MuleSecurityManager;
-import org.mule.tck.junit4.FunctionalTestCase;
+import org.mule.functional.junit4.FunctionalTestCase;
 
 import java.util.Collection;
 import java.util.Iterator;

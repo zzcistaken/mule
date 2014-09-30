@@ -7,7 +7,7 @@
 package org.mule.example.errorhandler;
 
 import org.mule.api.config.MuleProperties;
-import org.mule.tck.junit4.FunctionalTestCase;
+import org.mule.functional.junit4.FunctionalTestCase;
 import org.mule.util.SystemUtils;
 
 import java.util.Properties;

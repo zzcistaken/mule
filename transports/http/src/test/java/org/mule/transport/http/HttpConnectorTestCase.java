@@ -23,7 +23,7 @@ import org.mule.api.transport.MessageReceiver;
 import org.mule.api.transport.NoReceiverForEndpointException;
 import org.mule.construct.Flow;
 import org.mule.tck.MuleTestUtils.TestCallback;
-import org.mule.transport.AbstractConnectorTestCase;
+import org.mule.tck.transport.AbstractConnectorTestCase;
 import org.mule.transport.tcp.TcpConnector;
 
 import java.net.InetSocketAddress;

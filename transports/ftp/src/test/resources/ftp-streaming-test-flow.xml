@@ -13,10 +13,10 @@
     <flow name="testComponent">
         <ftp:inbound-endpoint address="ftp://anonymous:password@localhost:${port1}"/>
         <component>
-            <singleton-object class="org.mule.tck.functional.FunctionalStreamingTestComponent"/>
+            <singleton-object class="org.mule.functional.functional.FunctionalStreamingTestComponent"/>
         </component>
         <!-- do not log any exceptions, the test makes sure error cases are handled appropriately -->
-        <custom-exception-strategy class="org.mule.tck.functional.QuietExceptionStrategy"/>
+        <custom-exception-strategy class="org.mule.functional.functional.QuietExceptionStrategy"/>
     </flow>
     
 </mule>

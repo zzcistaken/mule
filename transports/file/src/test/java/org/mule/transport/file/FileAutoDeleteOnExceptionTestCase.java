@@ -9,7 +9,7 @@ package org.mule.transport.file;
 import static org.junit.Assert.assertFalse;
 
 import org.mule.api.construct.FlowConstruct;
-import org.mule.tck.junit4.FunctionalTestCase;
+import org.mule.functional.junit4.FunctionalTestCase;
 import org.mule.tck.probe.PollingProber;
 import org.mule.tck.probe.Probe;
 import org.mule.tck.probe.Prober;

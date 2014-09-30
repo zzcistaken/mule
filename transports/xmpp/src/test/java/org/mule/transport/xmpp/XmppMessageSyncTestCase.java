@@ -11,7 +11,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import org.mule.api.MuleMessage;
 import org.mule.api.client.MuleClient;
-import org.mule.tck.functional.FunctionalTestComponent;
+import org.mule.functional.functional.FunctionalTestComponent;
 import org.mule.transport.NullPayload;
 import org.mule.util.concurrent.Latch;
 

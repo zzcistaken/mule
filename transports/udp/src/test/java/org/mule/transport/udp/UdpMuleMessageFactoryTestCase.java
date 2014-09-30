@@ -12,7 +12,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.mule.api.MuleMessage;
 import org.mule.api.transport.MuleMessageFactory;
-import org.mule.transport.AbstractMuleMessageFactoryTestCase;
+import org.mule.tck.transport.AbstractMuleMessageFactoryTestCase;
 
 import java.net.DatagramPacket;
 import java.net.InetAddress;

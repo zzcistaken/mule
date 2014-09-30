@@ -8,18 +8,14 @@ package org.mule.transport.ftp.reliability;
 
 import org.mule.exception.DefaultSystemExceptionStrategy;
 import org.mule.routing.filters.WildcardFilter;
-import org.mule.tck.listener.ExceptionListener;
-import org.mule.tck.listener.FlowExecutionListener;
+import org.mule.functional.listener.ExceptionListener;
+import org.mule.functional.listener.FlowExecutionListener;
 import org.mule.tck.probe.PollingProber;
 import org.mule.tck.probe.Probe;
 import org.mule.tck.probe.Prober;
 import org.mule.transport.ftp.AbstractFtpServerTestCase;
 
-import java.util.Arrays;
-import java.util.Collection;
-
 import org.junit.Test;
-import org.junit.runners.Parameterized.Parameters;
 
 /**
  * Verify that no inbound messages are lost when exceptions occur.

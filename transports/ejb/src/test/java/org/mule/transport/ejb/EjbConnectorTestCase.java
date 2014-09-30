@@ -7,7 +7,7 @@
 package org.mule.transport.ejb;
 
 import org.mule.api.transport.Connector;
-import org.mule.transport.AbstractConnectorTestCase;
+import org.mule.tck.transport.AbstractConnectorTestCase;
 
 import org.junit.Test;
 

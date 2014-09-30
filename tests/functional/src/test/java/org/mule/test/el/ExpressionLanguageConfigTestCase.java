@@ -14,7 +14,7 @@ import org.mule.api.MuleMessage;
 import org.mule.api.el.ExpressionLanguage;
 import org.mule.api.expression.ExpressionManager;
 import org.mule.el.mvel.MVELExpressionLanguageWrapper;
-import org.mule.tck.junit4.FunctionalTestCase;
+import org.mule.functional.junit4.FunctionalTestCase;
 
 import java.text.DateFormat;
 import java.util.Locale;

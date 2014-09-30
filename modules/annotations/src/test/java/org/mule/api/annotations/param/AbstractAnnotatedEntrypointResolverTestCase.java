@@ -23,7 +23,7 @@ import org.mule.api.model.InvocationResult;
 import org.mule.module.annotations.impl.model.resolvers.AnnotatedEntryPointResolver;
 import org.mule.tck.junit4.AbstractMuleContextTestCase;
 import org.mule.util.IOUtils;
-import org.mule.util.StringDataSource;
+import org.mule.tck.util.StringDataSource;
 
 import java.io.IOException;
 import java.io.InputStream;

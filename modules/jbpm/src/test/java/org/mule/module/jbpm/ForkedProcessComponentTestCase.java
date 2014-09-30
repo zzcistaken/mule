@@ -12,7 +12,7 @@ import static org.junit.Assert.assertTrue;
 import org.mule.api.MuleMessage;
 import org.mule.construct.Flow;
 import org.mule.module.bpm.BPMS;
-import org.mule.tck.junit4.FunctionalTestCase;
+import org.mule.functional.junit4.FunctionalTestCase;
 
 import org.jbpm.api.ProcessInstance;
 import org.junit.Test;

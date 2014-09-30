@@ -8,8 +8,8 @@ package org.mule.transport.email.functional;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import org.mule.tck.functional.CountdownCallback;
-import org.mule.tck.functional.FunctionalTestComponent;
+import org.mule.functional.functional.CountdownCallback;
+import org.mule.functional.functional.FunctionalTestComponent;
 import org.mule.transport.email.GreenMailUtilities;
 import org.mule.transport.email.ImapConnector;
 

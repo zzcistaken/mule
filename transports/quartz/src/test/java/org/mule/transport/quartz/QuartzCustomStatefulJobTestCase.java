@@ -7,7 +7,7 @@
 package org.mule.transport.quartz;
 
 import static org.junit.Assert.assertTrue;
-import org.mule.tck.junit4.FunctionalTestCase;
+import org.mule.functional.junit4.FunctionalTestCase;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;

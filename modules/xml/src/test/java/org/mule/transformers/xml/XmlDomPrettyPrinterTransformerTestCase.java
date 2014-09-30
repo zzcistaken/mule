@@ -8,7 +8,7 @@ package org.mule.transformers.xml;
 
 import org.mule.api.transformer.Transformer;
 import org.mule.module.xml.transformer.XmlPrettyPrinter;
-import org.mule.transformer.AbstractTransformerTestCase;
+import org.mule.tck.transformer.AbstractTransformerTestCase;
 
 import java.io.ByteArrayInputStream;
 

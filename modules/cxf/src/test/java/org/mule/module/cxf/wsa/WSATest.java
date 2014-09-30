@@ -8,7 +8,7 @@ package org.mule.module.cxf.wsa;
 
 import org.mule.example.employee.EmployeeDirectory;
 import org.mule.example.employee.EmployeeDirectory_Service;
-import org.mule.tck.junit4.FunctionalTestCase;
+import org.mule.functional.junit4.FunctionalTestCase;
 import org.mule.tck.junit4.rule.DynamicPort;
 
 import javax.xml.ws.BindingProvider;

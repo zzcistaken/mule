@@ -11,12 +11,12 @@
 
     <!-- needs testing since the :factory-class" is an alias for "class" making this a special case -->
     <endpoint name="testEndpoint1" address="test://test1" exchange-pattern="request-response">
-        <custom-transaction factory-class="org.mule.tck.testmodels.mule.TestTransactionFactory" 
+        <custom-transaction factory-class="org.mule.tck.testmodels.mule.TestTransactionFactory"
             action="ALWAYS_BEGIN" timeout="4004"/>
     </endpoint>
 
     <endpoint name="testEndpoint2" address="test://test2" exchange-pattern="request-response">
-        <custom-transaction factory-class="org.mule.tck.testmodels.mule.TestTransactionFactory" 
+        <custom-transaction factory-class="org.mule.tck.testmodels.mule.TestTransactionFactory"
             action="ALWAYS_BEGIN"/>
     </endpoint>
 </mule>

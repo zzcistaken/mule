@@ -6,9 +6,9 @@
  */
 package org.mule.transport.sftp;
 
-import org.mule.tck.junit4.FunctionalTestCase;
+import org.mule.functional.junit4.FunctionalTestCase;
 import org.mule.tck.junit4.rule.DynamicPort;
-import org.mule.tck.util.sftp.SftpServer;
+import org.mule.functional.util.sftp.SftpServer;
 
 import java.io.IOException;
 

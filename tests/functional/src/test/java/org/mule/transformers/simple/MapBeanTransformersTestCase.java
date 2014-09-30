@@ -8,7 +8,7 @@ package org.mule.transformers.simple;
 
 import org.mule.api.transformer.Transformer;
 import org.mule.tck.testmodels.fruit.GrapeFruit;
-import org.mule.transformer.AbstractTransformerTestCase;
+import org.mule.tck.transformer.AbstractTransformerTestCase;
 import org.mule.transformer.simple.BeanToMap;
 import org.mule.transformer.simple.MapToBean;
 import org.mule.transformer.types.DataTypeFactory;

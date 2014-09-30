@@ -12,7 +12,7 @@ import static org.junit.Assert.assertTrue;
 import org.mule.MessageExchangePattern;
 import org.mule.api.MuleMessage;
 import org.mule.api.transport.MuleMessageFactory;
-import org.mule.transport.AbstractMuleMessageFactoryTestCase;
+import org.mule.tck.transport.AbstractMuleMessageFactoryTestCase;
 import org.mule.transport.NullPayload;
 
 import java.io.ByteArrayInputStream;

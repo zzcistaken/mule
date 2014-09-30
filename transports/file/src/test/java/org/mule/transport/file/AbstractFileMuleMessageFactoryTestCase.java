@@ -6,7 +6,7 @@
  */
 package org.mule.transport.file;
 
-import org.mule.transport.AbstractMuleMessageFactoryTestCase;
+import org.mule.tck.transport.AbstractMuleMessageFactoryTestCase;
 
 import java.io.File;
 

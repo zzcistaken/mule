@@ -107,6 +107,7 @@
     <modules>
         <module>buildtools</module>
         <module>core</module>
+        <module>core-tests</module>
         <module>distributions</module>
         <module>examples</module>
         <module>modules</module>
@@ -221,6 +222,7 @@
         <slf4jVersion>1.7.7</slf4jVersion>
         <smackVersion>3.1.0</smackVersion>
         <!-- see http://www.springsource.com/security/cve-2010-1622 -->
+        <!--//TODO(pablo.kraan): OSGi - need to wrap spring jars-->
         <springVersion>3.2.10.RELEASE</springVersion>
         <springSecurityVersion>3.1.0.RELEASE</springSecurityVersion>
         <sshCoreVersion>0.6.0</sshCoreVersion>
@@ -670,7 +672,7 @@
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-core</artifactId>
-                <version>1.9.0</version>
+                <version>1.9.5</version>
                 <exclusions>
                     <exclusion>
                         <groupId>org.hamcrest</groupId>

@@ -11,6 +11,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.mule.api.MuleMessage;
 import org.mule.api.client.LocalMuleClient;
+import org.mule.functional.junit4.FunctionalTestCase;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.transport.http.HttpConnector;
 import org.mule.transport.http.HttpConstants;
@@ -21,7 +22,7 @@ import java.util.Map;
 import org.junit.Rule;
 import org.junit.Test;
 
-public class MultipleExceptionMapperTestCase extends org.mule.tck.junit4.FunctionalTestCase
+public class MultipleExceptionMapperTestCase extends FunctionalTestCase
 {
     @Rule
     public DynamicPort port = new DynamicPort("port");

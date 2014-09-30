@@ -20,9 +20,9 @@ import org.mule.component.DefaultJavaComponent;
 import org.mule.construct.Flow;
 import org.mule.endpoint.EndpointURIEndpointBuilder;
 import org.mule.object.SingletonObjectFactory;
-import org.mule.tck.functional.EventCallback;
-import org.mule.tck.functional.FunctionalTestComponent;
-import org.mule.tck.transformer.NoActionTransformer;
+import org.mule.functional.functional.EventCallback;
+import org.mule.functional.functional.FunctionalTestComponent;
+import org.mule.functional.transformer.NoActionTransformer;
 import org.mule.transformer.AbstractMessageTransformer;
 import org.mule.util.concurrent.Latch;
 

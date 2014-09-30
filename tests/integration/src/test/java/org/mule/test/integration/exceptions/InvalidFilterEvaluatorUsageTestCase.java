@@ -14,7 +14,7 @@ import org.mule.expression.ExceptionTypeExpressionEvaluator;
 import org.mule.expression.PayloadTypeExpressionEvaluator;
 import org.mule.expression.RegexExpressionEvaluator;
 import org.mule.expression.WilcardExpressionEvaluator;
-import org.mule.tck.junit4.FunctionalTestCase;
+import org.mule.functional.junit4.FunctionalTestCase;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
 

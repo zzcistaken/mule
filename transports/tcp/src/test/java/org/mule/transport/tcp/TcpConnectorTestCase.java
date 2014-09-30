@@ -12,7 +12,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mule.tck.MuleTestUtils.testWithSystemProperty;
 import org.mule.api.transport.Connector;
 import org.mule.tck.MuleTestUtils.TestCallback;
-import org.mule.transport.AbstractConnectorTestCase;
+import org.mule.tck.transport.AbstractConnectorTestCase;
 
 import org.junit.Test;
 

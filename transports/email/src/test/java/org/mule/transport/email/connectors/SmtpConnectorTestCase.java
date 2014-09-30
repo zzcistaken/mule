@@ -28,7 +28,7 @@ import org.mule.component.DefaultJavaComponent;
 import org.mule.construct.Flow;
 import org.mule.endpoint.EndpointURIEndpointBuilder;
 import org.mule.object.SingletonObjectFactory;
-import org.mule.tck.functional.FunctionalTestComponent;
+import org.mule.functional.functional.FunctionalTestComponent;
 import org.mule.tck.testmodels.fruit.Apple;
 import org.mule.transport.email.AbstractMailConnector;
 import org.mule.transport.email.MailProperties;

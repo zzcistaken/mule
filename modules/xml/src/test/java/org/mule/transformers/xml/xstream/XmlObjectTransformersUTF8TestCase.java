@@ -8,7 +8,7 @@ package org.mule.transformers.xml.xstream;
 
 import org.mule.api.transformer.Transformer;
 import org.mule.module.xml.transformer.XmlToObject;
-import org.mule.transformer.AbstractTransformerTestCase;
+import org.mule.tck.transformer.AbstractTransformerTestCase;
 import org.mule.util.ArrayUtils;
 
 import java.io.UnsupportedEncodingException;

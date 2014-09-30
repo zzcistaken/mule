@@ -8,7 +8,7 @@ package org.mule.transport.xmpp;
 
 import org.mule.api.MuleMessage;
 import org.mule.api.transport.MuleMessageFactory;
-import org.mule.transport.AbstractMuleMessageFactoryTestCase;
+import org.mule.tck.transport.AbstractMuleMessageFactoryTestCase;
 import org.mule.util.UUID;
 
 import org.jivesoftware.smack.packet.Message;

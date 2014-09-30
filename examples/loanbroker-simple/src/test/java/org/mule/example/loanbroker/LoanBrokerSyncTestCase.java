@@ -14,7 +14,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.mule.api.MuleMessage;
 import org.mule.api.client.MuleClient;
-import org.mule.tck.junit4.FunctionalTestCase;
+import org.mule.functional.junit4.FunctionalTestCase;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.transport.NullPayload;
 import org.mule.transport.http.HttpConstants;
@@ -22,7 +22,6 @@ import org.mule.transport.http.HttpConstants;
 import java.util.Map;
 
 import org.apache.commons.collections.map.SingletonMap;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 

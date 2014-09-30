@@ -14,7 +14,7 @@ import org.mule.api.MuleMessage;
 import org.mule.api.client.MuleClient;
 import org.mule.api.transport.DispatchException;
 import org.mule.config.i18n.Message;
-import org.mule.tck.junit4.FunctionalTestCase;
+import org.mule.functional.junit4.FunctionalTestCase;
 import org.mule.transport.rmi.i18n.RmiMessages;
 
 import java.util.HashMap;

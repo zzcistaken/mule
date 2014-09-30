@@ -9,7 +9,7 @@ package org.mule.test.integration.transport.cxf;
 import static org.junit.Assert.assertNotNull;
 import org.mule.api.MuleMessage;
 import org.mule.api.client.MuleClient;
-import org.mule.tck.junit4.FunctionalTestCase;
+import org.mule.functional.junit4.FunctionalTestCase;
 
 import org.custommonkey.xmlunit.XMLAssert;
 import org.junit.Test;

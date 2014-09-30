@@ -7,13 +7,11 @@
 package org.mule.test.integration.domain.http;
 
 import org.mule.api.MuleContext;
-import org.mule.api.MuleRuntimeException;
 import org.mule.api.lifecycle.LifecycleException;
 import org.mule.tck.junit4.AbstractMuleTestCase;
-import org.mule.tck.junit4.ApplicationContextBuilder;
-import org.mule.tck.junit4.DomainContextBuilder;
+import org.mule.functional.junit4.ApplicationContextBuilder;
+import org.mule.functional.junit4.DomainContextBuilder;
 import org.mule.tck.junit4.rule.DynamicPort;
-import org.mule.tck.junit4.rule.SystemProperty;
 
 import org.junit.Rule;
 import org.junit.Test;

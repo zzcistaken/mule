@@ -12,7 +12,7 @@ import static org.junit.Assert.assertTrue;
 import org.mule.api.MuleException;
 import org.mule.api.endpoint.ImmutableEndpoint;
 import org.mule.api.transformer.TransformerException;
-import org.mule.tck.junit4.FunctionalTestCase;
+import org.mule.functional.junit4.FunctionalTestCase;
 import org.mule.transport.email.SmtpConnector;
 
 import java.io.IOException;

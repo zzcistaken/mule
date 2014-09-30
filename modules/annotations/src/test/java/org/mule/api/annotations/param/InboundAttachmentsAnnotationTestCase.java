@@ -8,7 +8,7 @@ package org.mule.api.annotations.param;
 
 import org.mule.api.expression.RequiredValueException;
 import org.mule.api.model.InvocationResult;
-import org.mule.util.StringDataSource;
+import org.mule.tck.util.StringDataSource;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;

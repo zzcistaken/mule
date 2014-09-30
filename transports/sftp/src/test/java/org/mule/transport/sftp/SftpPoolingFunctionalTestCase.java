@@ -12,7 +12,7 @@ import static org.junit.Assert.fail;
 import org.mule.api.MuleEventContext;
 import org.mule.api.client.MuleClient;
 import org.mule.api.transport.PropertyScope;
-import org.mule.tck.functional.EventCallback;
+import org.mule.functional.functional.EventCallback;
 
 import java.io.IOException;
 import java.util.ArrayList;

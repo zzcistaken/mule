@@ -12,7 +12,7 @@
           class="org.mule.transport.rmi.DummySecurityManager"/>
 
     <spring:bean name="jndiContext"
-          class="org.mule.tck.jndi.InMemoryContext"/>
+          class="org.mule.functional.jndi.InMemoryContext"/>
 
     <ejb:connector name="ejbConnector"
                    pollingFrequency="1234"
@@ -20,7 +20,7 @@
                    securityPolicy="rmi.policy"
                    serverClassName="bcd"
                    serverCodebase="cde"
-                   jndiInitialFactory="org.mule.tck.jndi.InMemoryContextFactory"
+                   jndiInitialFactory="org.mule.functional.jndi.InMemoryContextFactory"
                    jndiProviderUrl="efg"
                    jndiUrlPkgPrefixes="fgh">
         <jndi-provider-property key="ghi" value="hij"/>

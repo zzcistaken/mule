@@ -7,7 +7,7 @@
 package org.mule.module.springconfig.parsers;
 
 import org.mule.module.springconfig.parsers.beans.AbstractBean;
-import org.mule.tck.junit4.FunctionalTestCase;
+import org.mule.functional.junit4.FunctionalTestCase;
 import org.mule.util.ClassUtils;
 
 import java.util.List;

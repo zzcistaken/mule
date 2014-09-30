@@ -9,7 +9,6 @@ package org.mule.module.springconfig;
 import static org.junit.Assert.*;
 
 import org.mule.common.Capability;
-import org.mule.module.springconfig.DefaultMuleArtifact;
 import org.mule.tck.junit4.AbstractMuleTestCase;
 import org.mule.tck.size.SmallTest;
 

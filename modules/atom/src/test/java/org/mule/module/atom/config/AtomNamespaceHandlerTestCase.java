@@ -20,7 +20,7 @@ import org.mule.module.atom.routing.FeedLastUpdatedFilter;
 import org.mule.module.atom.routing.FeedSplitter;
 import org.mule.module.atom.transformers.ObjectToFeed;
 import org.mule.routing.MessageFilter;
-import org.mule.tck.junit4.FunctionalTestCase;
+import org.mule.functional.junit4.FunctionalTestCase;
 
 import java.text.SimpleDateFormat;
 

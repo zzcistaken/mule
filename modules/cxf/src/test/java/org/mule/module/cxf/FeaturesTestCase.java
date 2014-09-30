@@ -13,7 +13,7 @@ import org.mule.api.endpoint.ImmutableEndpoint;
 import org.mule.api.processor.MessageProcessor;
 import org.mule.module.cxf.builder.WebServiceMessageProcessorBuilder;
 import org.mule.module.cxf.config.FlowConfiguringMessageProcessor;
-import org.mule.tck.junit4.FunctionalTestCase;
+import org.mule.functional.junit4.FunctionalTestCase;
 
 import java.util.List;
 

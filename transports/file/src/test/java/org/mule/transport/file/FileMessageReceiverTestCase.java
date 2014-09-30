@@ -12,7 +12,7 @@ import org.mule.api.endpoint.InboundEndpoint;
 import org.mule.api.transport.Connector;
 import org.mule.api.transport.MessageReceiver;
 import org.mule.construct.Flow;
-import org.mule.transport.AbstractMessageReceiverTestCase;
+import org.mule.tck.transport.AbstractMessageReceiverTestCase;
 import org.mule.util.FileUtils;
 
 import java.io.File;

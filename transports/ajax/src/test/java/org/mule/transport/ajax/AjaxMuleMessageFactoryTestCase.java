@@ -11,7 +11,7 @@ import org.mule.api.transport.MuleMessageFactory;
 import org.mule.tck.testmodels.fruit.Apple;
 import org.mule.tck.testmodels.fruit.Banana;
 import org.mule.tck.testmodels.fruit.FruitBowl;
-import org.mule.transport.AbstractMuleMessageFactoryTestCase;
+import org.mule.tck.transport.AbstractMuleMessageFactoryTestCase;
 import org.mule.transport.ajax.embedded.AjaxConnector;
 
 import java.util.HashMap;

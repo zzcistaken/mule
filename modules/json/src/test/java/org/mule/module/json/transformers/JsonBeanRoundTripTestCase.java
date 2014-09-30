@@ -9,7 +9,7 @@ package org.mule.module.json.transformers;
 import org.mule.api.transformer.Transformer;
 import org.mule.tck.testmodels.fruit.Apple;
 import org.mule.tck.testmodels.fruit.Orange;
-import org.mule.transformer.AbstractTransformerTestCase;
+import org.mule.tck.transformer.AbstractTransformerTestCase;
 import org.mule.transformer.types.DataTypeFactory;
 
 import static org.junit.Assert.fail;

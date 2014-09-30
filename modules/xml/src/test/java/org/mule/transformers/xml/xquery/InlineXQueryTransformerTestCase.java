@@ -8,7 +8,7 @@ package org.mule.transformers.xml.xquery;
 
 import org.mule.api.transformer.Transformer;
 import org.mule.module.xml.transformer.XQueryTransformer;
-import org.mule.transformer.AbstractTransformerTestCase;
+import org.mule.tck.transformer.AbstractTransformerTestCase;
 import org.mule.transformer.types.DataTypeFactory;
 import org.mule.util.IOUtils;
 

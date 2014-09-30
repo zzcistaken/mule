@@ -8,7 +8,7 @@ package org.mule.transport.file.transformers;
 
 import static org.junit.Assert.assertTrue;
 import org.mule.api.transformer.Transformer;
-import org.mule.transformer.AbstractTransformerTestCase;
+import org.mule.tck.transformer.AbstractTransformerTestCase;
 import org.mule.util.FileUtils;
 import org.mule.util.SystemUtils;
 

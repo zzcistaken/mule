@@ -7,8 +7,7 @@
 package org.mule.transport.jnp;
 
 import org.mule.api.transport.Connector;
-import org.mule.transport.AbstractConnectorTestCase;
-import org.mule.transport.jnp.JnpConnector;
+import org.mule.tck.transport.AbstractConnectorTestCase;
 
 public class JnpConnectorTestCase extends AbstractConnectorTestCase
 {

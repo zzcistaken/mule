@@ -21,8 +21,8 @@ import org.mule.api.routing.ResponseTimeoutException;
 import org.mule.api.transport.DispatchException;
 import org.mule.routing.AggregationStrategy;
 import org.mule.routing.CompositeRoutingException;
-import org.mule.tck.functional.FlowAssert;
-import org.mule.tck.junit4.FunctionalTestCase;
+import org.mule.functional.functional.FlowAssert;
+import org.mule.functional.junit4.FunctionalTestCase;
 
 import java.io.ByteArrayInputStream;
 import java.util.Arrays;

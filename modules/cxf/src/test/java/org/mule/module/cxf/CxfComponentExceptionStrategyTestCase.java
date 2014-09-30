@@ -15,7 +15,7 @@ import org.mule.api.endpoint.InboundEndpoint;
 import org.mule.api.transport.DispatchException;
 import org.mule.module.cxf.testmodels.CustomFault;
 import org.mule.module.cxf.testmodels.CxfEnabledFaultMessage;
-import org.mule.tck.junit4.FunctionalTestCase;
+import org.mule.functional.junit4.FunctionalTestCase;
 import org.mule.tck.junit4.rule.DynamicPort;
 
 import org.apache.cxf.interceptor.Fault;

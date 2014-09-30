@@ -7,7 +7,7 @@
 package org.mule.transport.ajax;
 
 import org.mule.api.transport.Connector;
-import org.mule.transport.AbstractConnectorTestCase;
+import org.mule.tck.transport.AbstractConnectorTestCase;
 import org.mule.transport.ajax.embedded.AjaxConnector;
 
 import java.net.URL;

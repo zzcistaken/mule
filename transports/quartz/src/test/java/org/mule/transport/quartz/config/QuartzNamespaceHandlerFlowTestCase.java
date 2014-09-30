@@ -16,7 +16,7 @@ import org.mule.api.endpoint.OutboundEndpoint;
 import org.mule.api.processor.MessageProcessor;
 import org.mule.construct.Flow;
 import org.mule.endpoint.DefaultInboundEndpoint;
-import org.mule.tck.junit4.FunctionalTestCase;
+import org.mule.functional.junit4.FunctionalTestCase;
 import org.mule.transport.quartz.QuartzConnector;
 import org.mule.transport.quartz.jobs.CustomJobConfig;
 import org.mule.transport.quartz.jobs.CustomJobFromMessageConfig;

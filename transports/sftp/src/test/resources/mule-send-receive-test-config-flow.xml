@@ -38,7 +38,7 @@
             address="sftp://${USER1_NAME}:${USER1_PASSWORD}@${SFTP_HOST}:${SFTP_PORT}/~/data" />
         <component>
             <singleton-object
-                class="org.mule.tck.functional.FunctionalTestComponent" />
+                class="org.mule.functional.functional.FunctionalTestComponent" />
         </component>
     </flow>
 

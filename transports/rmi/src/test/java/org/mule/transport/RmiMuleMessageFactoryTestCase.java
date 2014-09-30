@@ -7,6 +7,7 @@
 package org.mule.transport;
 
 import org.mule.api.transport.MuleMessageFactory;
+import org.mule.tck.transport.AbstractMuleMessageFactoryTestCase;
 import org.mule.transport.rmi.RmiMuleMessageFactory;
 
 public class RmiMuleMessageFactoryTestCase extends AbstractMuleMessageFactoryTestCase

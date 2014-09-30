@@ -20,7 +20,7 @@ import org.mule.api.transport.MessageReceiver;
 import org.mule.construct.Flow;
 import org.mule.endpoint.EndpointURIEndpointBuilder;
 import org.mule.endpoint.URIBuilder;
-import org.mule.transport.AbstractConnectorTestCase;
+import org.mule.tck.transport.AbstractConnectorTestCase;
 import org.mule.util.FileUtils;
 
 import java.io.File;

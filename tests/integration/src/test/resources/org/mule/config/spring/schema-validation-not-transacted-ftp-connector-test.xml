@@ -13,7 +13,7 @@
         <ftp:inbound-endpoint address="ftp://anonymous:password@localhost:${port1}"
                     binary="true" passive="true" connector-ref="ftpConnector"/>
         <component>
-            <singleton-object class="org.mule.tck.functional.FunctionalTestComponent"/>
+            <singleton-object class="org.mule.functional.functional.FunctionalTestComponent"/>
         </component>
     </flow>
 </mule>

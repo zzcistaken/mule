@@ -9,7 +9,7 @@ package org.mule.transport.xmpp;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import org.mule.api.client.MuleClient;
-import org.mule.tck.functional.FunctionalTestComponent;
+import org.mule.functional.functional.FunctionalTestComponent;
 import org.mule.util.concurrent.Latch;
 
 import java.util.List;

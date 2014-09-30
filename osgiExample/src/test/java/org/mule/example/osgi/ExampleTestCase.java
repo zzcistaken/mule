@@ -5,7 +5,7 @@ package org.mule.example.osgi;/*
  * LICENSE.txt file.
  */
 
-import org.mule.tck.junit4.FunctionalTestCase;
+import org.mule.functional.junit4.FunctionalTestCase;
 
 import org.junit.Ignore;
 import org.junit.Test;

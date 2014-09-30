@@ -6,7 +6,7 @@
  */
 package org.mule.module.atom;
 
-import org.mule.tck.junit4.FunctionalTestCase;
+import org.mule.functional.junit4.FunctionalTestCase;
 
 import java.io.IOException;
 import java.util.Date;

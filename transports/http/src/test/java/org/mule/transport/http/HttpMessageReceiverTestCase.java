@@ -17,7 +17,7 @@ import org.mule.api.transport.MessageReceiver;
 import org.mule.construct.Flow;
 import org.mule.endpoint.EndpointURIEndpointBuilder;
 import org.mule.execution.MessageProcessContext;
-import org.mule.transport.AbstractMessageReceiverTestCase;
+import org.mule.tck.transport.AbstractMessageReceiverTestCase;
 import org.mule.transport.http.transformers.MuleMessageToHttpResponse;
 import org.mule.util.CollectionUtils;
 

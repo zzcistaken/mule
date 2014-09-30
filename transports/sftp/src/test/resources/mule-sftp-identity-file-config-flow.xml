@@ -27,7 +27,7 @@
         <component>
             <!-- this is to verify the data coming in on the endpoint -->
             <singleton-object
-                class="org.mule.tck.functional.FunctionalTestComponent" />
+                class="org.mule.functional.functional.FunctionalTestComponent" />
         </component>
     </flow>
 

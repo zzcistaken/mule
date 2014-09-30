@@ -17,6 +17,7 @@ mvn install:install-file -Dfile=antlr-runtime-3.5-osgi.jar -DgroupId=org.antlr -
 # mule-module-spring-config
 mvn install:install-file -Dfile=dom4j-1.6.1-osgi.jar -DgroupId=dom4j -DartifactId=dom4j -Dversion=1.6.1-osgi -Dpackaging=jar
 
-
+# tests
+mvn install:install-file -Dfile=objenesis-1.0-osgi.jar -DgroupId=org.objenesis -DartifactId=objenesis -Dversion=1.0-osgi -Dpackaging=jar
 
 

@@ -12,8 +12,8 @@ import static org.junit.Assert.assertTrue;
 import org.mule.api.MuleMessage;
 import org.mule.api.client.MuleClient;
 import org.mule.api.transformer.TransformerException;
-import org.mule.tck.exceptions.FunctionalTestException;
-import org.mule.tck.junit4.FunctionalTestCase;
+import org.mule.functional.exceptions.FunctionalTestException;
+import org.mule.functional.junit4.FunctionalTestCase;
 import org.mule.util.ExceptionUtils;
 
 import org.junit.Test;

@@ -15,7 +15,7 @@ import org.mule.module.db.internal.domain.database.GenericDbConfig;
 import org.mule.module.db.integration.model.AbstractTestDatabase;
 import org.mule.module.db.integration.model.Field;
 import org.mule.module.db.integration.model.Record;
-import org.mule.tck.junit4.FunctionalTestCase;
+import org.mule.functional.junit4.FunctionalTestCase;
 
 import java.sql.SQLException;
 import java.util.ArrayList;

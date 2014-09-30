@@ -12,7 +12,7 @@ import org.apache.commons.dbutils.QueryRunner;
 import org.mule.api.config.ConfigurationBuilder;
 import org.mule.api.store.ObjectStore;
 import org.mule.module.springconfig.SpringXmlConfigurationBuilder;
-import org.mule.util.store.AbstractObjectStoreContractTestCase;
+import org.mule.tck.util.store.AbstractObjectStoreContractTestCase;
 
 public class JdbcObjectStoreTestCase extends AbstractObjectStoreContractTestCase
 {

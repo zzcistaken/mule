@@ -12,7 +12,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.mule.api.endpoint.EndpointException;
 import org.mule.endpoint.MuleEndpointURI;
-import org.mule.tck.junit4.FunctionalTestCase;
+import org.mule.functional.junit4.FunctionalTestCase;
 import org.mule.transport.file.DummyFilenameParser;
 import org.mule.transport.file.FilenameParser;
 

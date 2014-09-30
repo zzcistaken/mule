@@ -32,7 +32,7 @@
 
         <inbound-endpoint address="http://localhost:${port1}/services/TestUMO"
             exchange-pattern="request-response">
-            <cxf:simple-service serviceClass="org.mule.tck.functional.Receiveable" />
+            <cxf:simple-service serviceClass="org.mule.functional.functional.Receiveable" />
         </inbound-endpoint>
 
         <test:web-service-component />
