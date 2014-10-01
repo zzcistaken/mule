@@ -308,10 +308,14 @@ public final class MuleTestUtils
         props.put("connector", "testConnector");
         if (connector == null)
         {
+            //TODO(pablo.kraan): OSGi - changed this to avoid classloading issues executing the tests as the TCCL in the tests
+            // contains AbstractMuleTestCase which is found first than the class in the mule-test-unit bundle
+
             // need to build endpoint this way to avoid depenency to any endpoint
             // jars
-            connector = (Connector) ClassUtils.loadClass("org.mule.tck.testmodels.mule.TestConnector",
-                                                         AbstractMuleTestCase.class).getConstructor(MuleContext.class).newInstance(context);
+            //connector = (Connector) ClassUtils.loadClass("org.mule.tck.testmodels.mule.TestConnector",
+            //                                        MuleTestUtils.class).getConstructor(MuleContext.class).newInstance(context);
+            connector = new TestConnector(context);
         }
 
         connector.setName("testConnector");

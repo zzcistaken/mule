@@ -23,9 +23,10 @@
                 <version>2.5.0</version>
                 <extensions>true</extensions>
                 <configuration>
-                    <!--<instructions>-->
-                        <!--<Export-Package>org.mule.tck.*</Export-Package>-->
-                    <!--</instructions>-->
+                    <instructions>
+                        <Bundle-Activator>org.mule.osgi.TransportActivator</Bundle-Activator>
+                        <Mule-Transport>test,test2</Mule-Transport>
+                    </instructions>
                 </configuration>
             </plugin>
         </plugins>
