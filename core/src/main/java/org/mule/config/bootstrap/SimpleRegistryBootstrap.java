@@ -23,23 +23,25 @@ import org.mule.api.transformer.DiscoverableTransformer;
 import org.mule.api.transformer.Transformer;
 import org.mule.api.util.StreamCloser;
 import org.mule.config.i18n.CoreMessages;
+import org.mule.osgi.MuleCoreActivator;
 import org.mule.registry.MuleRegistryHelper;
 import org.mule.transformer.types.DataTypeFactory;
 import org.mule.util.ClassUtils;
 import org.mule.util.ExceptionUtils;
-import org.mule.util.OrderedProperties;
 import org.mule.util.PropertiesUtils;
 import org.mule.util.UUID;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.LinkedHashMap;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceReference;
 
 /**
  * This object will load objects defined in a file called <code>registry-bootstrap.properties</code> into the local registry.
@@ -154,58 +156,93 @@ public class SimpleRegistryBootstrap implements Initialisable, MuleContextAware
         this.context = context;
     }
 
+    private class BoostrapProperty
+    {
+
+        private final RegistryBootstrapService service;
+        private final Object key;
+        private final Object value;
+
+        private BoostrapProperty(RegistryBootstrapService service, Object key, Object value)
+        {
+            this.service = service;
+            this.key = key;
+            this.value = value;
+        }
+
+        public RegistryBootstrapService getService()
+        {
+            return service;
+        }
+
+        public Object getValue()
+        {
+            return value;
+        }
+
+        public Object getKey()
+        {
+            return key;
+        }
+    }
+
+
     /** {@inheritDoc} */
     public void initialise() throws InitialisationException
     {
-        List<Properties> bootstraps;
+        Collection<ServiceReference<RegistryBootstrapService>> serviceReferences = null;
         try
         {
-            bootstraps = discoverer.discover();
+            serviceReferences = MuleCoreActivator.bundleContext.getServiceReferences(RegistryBootstrapService.class, null);
         }
-        catch (BootstrapException e)
+        catch (InvalidSyntaxException e)
         {
-            throw new InitialisationException(e, this);
+            logger.error("Unable to get RegistryBootstrapDiscoverer services");
         }
 
         // Merge and process properties
         int objectCounter = 1;
         int transformerCounter = 1;
-        Properties transformers = new OrderedProperties();
-        Properties namedObjects = new OrderedProperties();
-        Properties unnamedObjects = new OrderedProperties();
-        Map<String,String> singleTransactionFactories = new LinkedHashMap<String,String>();
+        List<BoostrapProperty> transformers = new LinkedList<>();
+        List<BoostrapProperty> namedObjects = new LinkedList<>();
+        List<BoostrapProperty> unnamedObjects = new LinkedList<>();
+        List<BoostrapProperty> singleTransactionFactories = new LinkedList<>();
 
-        for (Properties bootstrap : bootstraps)
+        for (ServiceReference<RegistryBootstrapService> serviceReference : serviceReferences)
         {
-            for (Map.Entry entry : bootstrap.entrySet())
+            RegistryBootstrapService registryBootstrapService = MuleCoreActivator.bundleContext.getService(serviceReference);
+
+            Properties bootstrapProperties = registryBootstrapService.loadProperties();
+
+            for (Map.Entry entry : bootstrapProperties.entrySet())
             {
                 final String key = (String) entry.getKey();
                 if (key.contains(OBJECT_KEY))
                 {
                     String newKey = key.substring(0, key.lastIndexOf(".")) + objectCounter++;
-                    unnamedObjects.put(newKey, entry.getValue());
+                    unnamedObjects.add(new BoostrapProperty(registryBootstrapService, newKey, entry.getValue()));
                 }
                 else if (key.contains(TRANSFORMER_KEY))
                 {
                     String newKey = key.substring(0, key.lastIndexOf(".")) + transformerCounter++;
-                    transformers.put(newKey, entry.getValue());
+                    transformers.add(new BoostrapProperty(registryBootstrapService, newKey, entry.getValue()));
                 }
                 else if (key.contains(SINGLE_TX))
                 {
                     if (!key.contains(".transaction.resource"))
                     {
-                        String transactionResourceKey = key.replace(".transaction.factory",".transaction.resource");
-                        String transactionResource = bootstrap.getProperty(transactionResourceKey);
+                        String transactionResourceKey = key.replace(".transaction.factory", ".transaction.resource");
+                        String transactionResource = bootstrapProperties.getProperty(transactionResourceKey);
                         if (transactionResource == null)
                         {
-                            throw new InitialisationException(CoreMessages.createStaticMessage(String.format("Theres no transaction resource specified for transaction factory %s",key)),this);
+                            throw new InitialisationException(CoreMessages.createStaticMessage(String.format("Theres no transaction resource specified for transaction factory %s", key)), this);
                         }
-                        singleTransactionFactories.put((String) entry.getValue(),transactionResource);
+                        singleTransactionFactories.add(new BoostrapProperty(registryBootstrapService, (String) entry.getValue(), transactionResource));
                     }
                 }
                 else
                 {
-                    namedObjects.put(key, entry.getValue());
+                    namedObjects.add(new BoostrapProperty(registryBootstrapService, key, entry.getValue()));
                 }
             }
         }
@@ -224,12 +261,13 @@ public class SimpleRegistryBootstrap implements Initialisable, MuleContextAware
         }
     }
 
-    private void registerTransactionFactories(Map<String, String> singleTransactionFactories, MuleContext context) throws Exception
+    private void registerTransactionFactories(List<BoostrapProperty> singleTransactionFactories, MuleContext context) throws Exception
     {
-        for (Entry<String, String> entry : singleTransactionFactories.entrySet())
+
+        for (BoostrapProperty boostrapProperty : singleTransactionFactories)
         {
-            String transactionResourceClassNameProperties = entry.getValue();
-            String transactionFactoryClassName = entry.getKey();
+            String transactionResourceClassNameProperties = (String) boostrapProperty.getValue();
+            String transactionFactoryClassName = (String) boostrapProperty.getKey();
             boolean optional = false;
             // reset
             int x = transactionResourceClassNameProperties.indexOf(",");
@@ -241,7 +279,9 @@ public class SimpleRegistryBootstrap implements Initialisable, MuleContextAware
             final String transactionResourceClassName = (x == -1 ? transactionResourceClassNameProperties : transactionResourceClassNameProperties.substring(0, x));
             try
             {
-                context.getTransactionFactoryManager().registerTransactionFactory(Class.forName(transactionResourceClassName), (TransactionFactory) Class.forName(transactionFactoryClassName).newInstance());
+                Class<?> supportedType = boostrapProperty.getService().forName(transactionResourceClassName);
+
+                context.getTransactionFactoryManager().registerTransactionFactory(supportedType, (TransactionFactory) boostrapProperty.getService().instantiateClass(transactionFactoryClassName));
 
             }
             catch (NoClassDefFoundError ncdfe)
@@ -255,16 +295,17 @@ public class SimpleRegistryBootstrap implements Initialisable, MuleContextAware
         }
     }
 
-    private void registerTransformers(Properties props, MuleRegistry registry) throws Exception
+    private void registerTransformers(List<BoostrapProperty> props, MuleRegistry registry) throws Exception
     {
         String transString;
         String name = null;
         String returnClassString;
         boolean optional = false;
 
-        for (Map.Entry<Object, Object> entry : props.entrySet())
+        for (BoostrapProperty boostrapProperty : props)
         {
-            transString = (String)entry.getValue();
+
+            transString = (String) boostrapProperty.getValue();
             // reset
             Class<?> returnClass = null;
             returnClassString = null;
@@ -298,7 +339,7 @@ public class SimpleRegistryBootstrap implements Initialisable, MuleContextAware
                         returnClass = ClassUtils.loadClass(returnClassString, getClass());
                     }
                 }
-                Transformer trans = (Transformer) ClassUtils.instanciateClass(transClass);
+                Transformer trans = (Transformer) boostrapProperty.service.instantiateClass(transClass);
                 if (!(trans instanceof DiscoverableTransformer))
                 {
                     throw new RegistrationException(CoreMessages.transformerNotImplementDiscoverable(trans));
@@ -338,7 +379,9 @@ public class SimpleRegistryBootstrap implements Initialisable, MuleContextAware
 
             name = null;
             returnClass = null;
+
         }
+
     }
 
     private void registerTransformers(MuleRegistryHelper registry) throws MuleException
@@ -350,26 +393,24 @@ public class SimpleRegistryBootstrap implements Initialisable, MuleContextAware
         }
     }
 
-    private void registerObjects(Properties props, Registry registry) throws Exception
+    private void registerObjects(List<BoostrapProperty> boostrapProperties, Registry registry) throws Exception
     {
-        for (Map.Entry<Object, Object> entry : props.entrySet())
+        for (BoostrapProperty boostrapProperty : boostrapProperties)
         {
-            registerObject((String)entry.getKey(), (String)entry.getValue(), registry);
+            registerObject(boostrapProperty.getService(), (String) boostrapProperty.getKey(), (String) boostrapProperty.getValue(), registry);
         }
-        props.clear();
     }
 
-    private void registerUnnamedObjects(Properties props, Registry registry) throws Exception
+    private void registerUnnamedObjects(List<BoostrapProperty> boostrapProperties, Registry registry) throws Exception
     {
-        for (Map.Entry<Object, Object> entry : props.entrySet())
+        for (BoostrapProperty boostrapProperty : boostrapProperties)
         {
-            final String key = String.format("%s#%s", entry.getKey(), UUID.getUUID());
-            registerObject(key, (String) entry.getValue(), registry);
+            final String key = String.format("%s#%s", boostrapProperty.getKey(), UUID.getUUID());
+            registerObject(boostrapProperty.getService(), key, (String) boostrapProperty.getValue(), registry);
         }
-        props.clear();
     }
 
-    private void registerObject(String key, String value, Registry registry) throws Exception
+    private void registerObject(RegistryBootstrapService service, String key, String value, Registry registry) throws Exception
     {
         ArtifactType artifactTypeParameterValue = ArtifactType.APP;
 
@@ -399,7 +440,7 @@ public class SimpleRegistryBootstrap implements Initialisable, MuleContextAware
                 return;
             }
 
-            Object o = ClassUtils.instanciateClass(className);
+            Object o = service.instantiateClass(className);
             Class<?> meta = Object.class;
 
             if (o instanceof ObjectProcessor)

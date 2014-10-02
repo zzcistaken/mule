@@ -244,8 +244,20 @@ public class DefaultMuleContextFactory implements MuleContextFactory
     protected MuleContext buildMuleContext(MuleContextBuilder muleContextBuilder)
     {
         MuleContext muleContext = muleContextBuilder.buildMuleContext();
-        BundleWiring bundleWiring = bundleContext.getBundle().adapt(BundleWiring.class);
-        ClassLoader bundleClassLoader = bundleWiring.getClassLoader();
+
+        //TODO(pablo.kraan): OSGi - review if makes sense to use the class's classlaoder or we must configure a mock bundle context
+        // NOTE: setting TCCL in test cases running with paxexam can cause classloading issues when classes that are supposed to be found in
+        // the OSGi container are found in the Test's CL
+        ClassLoader bundleClassLoader;
+        if (bundleContext == null)
+        {
+            bundleClassLoader = Thread.currentThread().getContextClassLoader();
+        }
+        else
+        {   BundleWiring bundleWiring = bundleContext.getBundle().adapt(BundleWiring.class);
+            bundleClassLoader = bundleWiring.getClassLoader();
+        }
+
         muleContext.setExecutionClassLoader(bundleClassLoader);
 
         return muleContext;

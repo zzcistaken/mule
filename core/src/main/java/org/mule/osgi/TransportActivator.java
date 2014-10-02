@@ -7,6 +7,9 @@
 
 package org.mule.osgi;
 
+import org.mule.config.bootstrap.DefaultRegistryBootstrapService;
+import org.mule.config.bootstrap.RegistryBootstrapService;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,11 +24,15 @@ public class TransportActivator implements BundleActivator
 {
 
     private List<ServiceRegistration> descriptorRefs = new ArrayList<>();
+    private ServiceRegistration<?> bootstrapService;
 
-    public void start(BundleContext bc) throws Exception
+    public void start(BundleContext bundleContext) throws Exception
     {
-        descriptorRefs = new BundleContextTransportServiceDescriptorFactoryDiscoverer(bc).discover();
+        descriptorRefs = new BundleContextTransportServiceDescriptorFactoryDiscoverer(bundleContext).discover();
+
+        bootstrapService = bundleContext.registerService(RegistryBootstrapService.class.getName(), new DefaultRegistryBootstrapService(bundleContext), null);
     }
+
     public void stop(BundleContext bc) throws Exception
     {
         for (ServiceRegistration descriptorRef : descriptorRefs)
@@ -40,6 +47,11 @@ public class TransportActivator implements BundleActivator
                 // Ignore and continue
             }
 
+        }
+
+        if (bootstrapService != null)
+        {
+            bootstrapService.unregister();
         }
     }
 
