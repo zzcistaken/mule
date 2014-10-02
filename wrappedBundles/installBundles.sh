@@ -20,4 +20,7 @@ mvn install:install-file -Dfile=dom4j-1.6.1-osgi.jar -DgroupId=dom4j -DartifactI
 # tests
 mvn install:install-file -Dfile=objenesis-1.4.jar -DgroupId=org.objenesis -DartifactId=objenesis -Dversion=1.4 -Dpackaging=jar
 
+# jboosts
+mvn install:install-file -Dfile=jbossjta-4.15.0.Final-osgi.jar -DgroupId=org.jboss.jbossts -DartifactId=jbossjta -Dversion=4.15.0.Final-osgi -Dpackaging=jar
+
 

@@ -198,7 +198,7 @@
         <javaXmlBindVersion>2.1.9</javaXmlBindVersion>
         <javaXmlWsVersion>2.2.1</javaXmlWsVersion>
         <jaxenVersion>1.1.1</jaxenVersion>
-        <jbossTsVersion>4.15.0.Final</jbossTsVersion>
+        <jbossTsVersion>4.15.0.Final-osgi</jbossTsVersion>
         <jbpmVersion>4.4</jbpmVersion>
         <jcrVersion>1.0</jcrVersion>
         <jdomVersion>1.1.3</jdomVersion>
