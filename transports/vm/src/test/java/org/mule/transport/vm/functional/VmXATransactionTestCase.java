@@ -10,9 +10,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import org.mule.api.MuleMessage;
 import org.mule.api.client.MuleClient;
-import org.mule.functional.junit4.FunctionalTestCase;
 import org.mule.transaction.TransactionCoordination;
 import org.mule.transaction.XaTransaction;
+import org.mule.transport.vm.AbstractVmOsgiTestCase;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -28,7 +28,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 
-public class VmXATransactionTestCase extends FunctionalTestCase
+public class VmXATransactionTestCase extends AbstractVmOsgiTestCase
 {
 
     protected static final Log logger = LogFactory.getLog(VmTransactionTestCase.class);
