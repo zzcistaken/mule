@@ -9,10 +9,12 @@ package org.mule.api.registry;
 
 import org.mule.api.MuleContext;
 
+import java.util.Properties;
+
 public interface TransportServiceDescriptorFactory
 {
 
     public static final String TRANSPORT_SERVICE_TYPE = "transport";
 
-    ServiceDescriptor create(MuleContext muleContext) throws ServiceException;
+    ServiceDescriptor create(MuleContext muleContext, Properties overrides) throws ServiceException;
 }

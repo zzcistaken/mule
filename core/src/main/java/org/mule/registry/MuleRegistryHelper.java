@@ -466,7 +466,7 @@ public class MuleRegistryHelper implements MuleRegistry
     {
         if (TransportServiceDescriptorFactory.TRANSPORT_SERVICE_TYPE.equals(type.getName()))
         {
-            return getTransportServiceDescriptor(name);
+            return getTransportServiceDescriptor(name, overrides);
         }
         else
         {
@@ -474,7 +474,7 @@ public class MuleRegistryHelper implements MuleRegistry
         }
     }
 
-    private ServiceDescriptor getTransportServiceDescriptor(String name) throws ServiceException
+    private ServiceDescriptor getTransportServiceDescriptor(String name, Properties overrides) throws ServiceException
     {
         String filter = "(transport=" + name + ")";
         try
@@ -494,7 +494,7 @@ public class MuleRegistryHelper implements MuleRegistry
 
             TransportServiceDescriptorFactory serviceDescriptorFactory = MuleCoreActivator.bundleContext.getService(serviceReferences.iterator().next());
 
-            return serviceDescriptorFactory.create(muleContext);
+            return serviceDescriptorFactory.create(muleContext, overrides);
         }
         catch (InvalidSyntaxException e)
         {

@@ -279,7 +279,7 @@ public class SimpleRegistryBootstrap implements Initialisable, MuleContextAware
             final String transactionResourceClassName = (x == -1 ? transactionResourceClassNameProperties : transactionResourceClassNameProperties.substring(0, x));
             try
             {
-                Class<?> supportedType = boostrapProperty.getService().forName(transactionResourceClassName);
+                Class<?> supportedType = Class.forName(transactionResourceClassName);
 
                 context.getTransactionFactoryManager().registerTransactionFactory(supportedType, (TransactionFactory) boostrapProperty.getService().instantiateClass(transactionFactoryClassName));
 

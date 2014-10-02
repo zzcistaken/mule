@@ -31,10 +31,14 @@ public class DefaultTransportServiceDescriptorFactory implements TransportServic
     }
 
     @Override
-    public ServiceDescriptor create(MuleContext muleContext) throws ServiceException
+    public ServiceDescriptor create(MuleContext muleContext, Properties overrides) throws ServiceException
     {
         Properties properties = new Properties();
         properties.putAll(props);
+        if (overrides != null)
+        {
+            properties.putAll(overrides);
+        }
 
         serviceDescriptor = ServiceDescriptorFactory.create(ServiceType.TRANSPORT, transport, properties, null, muleContext, muleContext.getExecutionClassLoader());
 
