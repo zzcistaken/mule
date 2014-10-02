@@ -97,7 +97,9 @@ public class TransformerUtils
         catch (MuleException e)
         {
             logger.debug(e.getMessage(), e);
-            return null;
+            //TODO(pablo.kraan): OSGi - why is this returning null?
+            //return null;
+            throw new IllegalStateException(e);
         }
     }
 
