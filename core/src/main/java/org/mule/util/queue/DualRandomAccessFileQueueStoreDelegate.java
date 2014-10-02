@@ -61,11 +61,11 @@ public class DualRandomAccessFileQueueStoreDelegate extends AbstractQueueStoreDe
         randomAccessFileQueueStore2 = new RandomAccessFileQueueStore(queuesDirectory, queueName + QUEUE_STORE_2_SUFFIX);
         writeFile = randomAccessFileQueueStore1;
         readFile = randomAccessFileQueueStore1;
+        filesLock = new ReentrantReadWriteLock();
         if (logger.isDebugEnabled())
         {
             logger.debug(String.format("Queue %s has %s messages", queueName, getSize()));
         }
-        filesLock = new ReentrantReadWriteLock();
     }
 
     private static File getQueuesDirectory(String workingDirectory)
