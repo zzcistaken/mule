@@ -13,14 +13,9 @@ import static org.junit.Assert.assertTrue;
 
 import org.mule.api.MuleMessage;
 import org.mule.api.client.MuleClient;
-import org.mule.api.store.ObjectStoreException;
-import org.mule.api.store.QueueStore;
 import org.mule.tck.junit4.rule.SystemProperty;
+import org.mule.transport.vm.test.CustomObjectStore;
 import org.mule.util.queue.DelegateQueueManager;
-import org.mule.functional.junit4.FunctionalTestCase;
-import org.mule.util.store.SimpleMemoryObjectStore;
-
-import java.io.Serializable;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -112,20 +107,4 @@ public class VMFunctionalTestCase extends AbstractVmOsgiTestCase
         assertNull(secondMessage);
     }
 
-    public static class CustomObjectStore<T extends Serializable> extends SimpleMemoryObjectStore<T> implements QueueStore<T>
-    {
-        static int count;
-
-        public CustomObjectStore()
-        {
-            super();
-        }
-
-        @Override
-        protected void doStore(Serializable key, T value) throws ObjectStoreException
-        {
-            count++;
-            super.doStore(key, value);
-        }
-    }
 }
