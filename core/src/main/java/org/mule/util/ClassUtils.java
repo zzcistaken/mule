@@ -270,7 +270,7 @@ public class ClassUtils extends org.apache.commons.lang.ClassUtils
                     final ClassLoader cl = Thread.currentThread().getContextClassLoader();
                     if (cl != null)
                     {
-                        System.out.println("OSGi loading class: " + className+ " classloader:" + cl);
+                        System.out.println("OSGi loading class from context classloader: " + className+ " classloader:" + cl);
                         return cl.loadClass(className);
                     }
                     else
@@ -294,7 +294,7 @@ public class ClassUtils extends org.apache.commons.lang.ClassUtils
                 {
                     try
                     {
-                        System.out.println("OSGi loading class: " + className+ " classloader:" + Class.class.getClassLoader());
+                        System.out.println("OSGi loading class from base classloader: " + className+ " classloader:" + Class.class.getClassLoader());
                         return Class.forName(className);
                     }
                     catch (ClassNotFoundException e)
@@ -314,7 +314,7 @@ public class ClassUtils extends org.apache.commons.lang.ClassUtils
                     try
                     {
                         ClassLoader classLoader = ClassUtils.class.getClassLoader();
-                        System.out.println("OSGi loading class: " + className+ " classloader:" + classLoader);
+                        System.out.println("OSGi loading class from core classlaoder: " + className+ " classloader:" + classLoader);
                         return classLoader.loadClass(className);
                     }
                     catch (ClassNotFoundException e)
@@ -334,7 +334,7 @@ public class ClassUtils extends org.apache.commons.lang.ClassUtils
                     try
                     {
                         ClassLoader classLoader = callingClass.getClassLoader();
-                        System.out.println("OSGi loading class: " + className+ " classloader:" + classLoader + " callingClass: " + callingClass);
+                        System.out.println("OSGi loading class fro calling class's classloader: " + className+ " classloader:" + classLoader + " callingClass: " + callingClass);
                         return classLoader.loadClass(className);
                     }
                     catch (ClassNotFoundException e)
@@ -371,7 +371,6 @@ public class ClassUtils extends org.apache.commons.lang.ClassUtils
     public static Class loadClass(final String className, final ClassLoader classLoader)
             throws ClassNotFoundException
     {
-        System.out.println("OSGi loading class: " + className+ " classloader:" + classLoader);
         return classLoader.loadClass(className);
     }
 
