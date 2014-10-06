@@ -11,8 +11,6 @@ import static org.ops4j.pax.exam.CoreOptions.bundle;
 import static org.ops4j.pax.exam.CoreOptions.junitBundles;
 import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.CoreOptions.options;
-import org.mule.api.context.MuleContextFactory;
-import org.mule.context.DefaultMuleContextFactory;
 import org.mule.functional.junit4.FunctionalTestCase;
 
 import java.io.File;
@@ -22,10 +20,13 @@ import javax.inject.Inject;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
+import org.ops4j.pax.exam.ProbeBuilder;
+import org.ops4j.pax.exam.TestProbeBuilder;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerSuite;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.Constants;
 
 /**
  * Defines a base class for VM transport tests that run inside an OSGi container
@@ -37,6 +38,14 @@ public abstract class AbstractVmOsgiTestCase extends FunctionalTestCase
 
     @Inject
     public BundleContext bundleContext;
+
+    @ProbeBuilder
+    public TestProbeBuilder build(TestProbeBuilder builder)
+    {
+        builder.setHeader(Constants.BUNDLE_NAME, this.getClass().getSimpleName() + System.identityHashCode(this));
+
+        return builder;
+    }
 
     @Configuration
     public Option[] config() {
@@ -106,16 +115,17 @@ public abstract class AbstractVmOsgiTestCase extends FunctionalTestCase
                 bundle(projectDir.toURI().toString() + "/bundles/mule-tests-unit-4.0-SNAPSHOT.jar"),
 
                 bundle(projectDir.toURI().toString() + "/bundles/mule-tests-functional-4.0-SNAPSHOT.jar"),
+
+                mavenBundle().groupId("org.jboss.jbossts").artifactId("jbossjta").versionAsInProject(),
+                bundle(projectDir.toURI().toString() + "/bundles/mule-module-jbossts-4.0-SNAPSHOT.jar"),
+
                 junitBundles()
         );
     }
 
     @Override
-    protected MuleContextFactory createMuleContextFactory()
+    protected BundleContext getBundleContext()
     {
-        DefaultMuleContextFactory defaultMuleContextFactory = new DefaultMuleContextFactory();
-        defaultMuleContextFactory.setBundleContext(bundleContext);
-
-        return defaultMuleContextFactory;
+        return bundleContext;
     }
 }
