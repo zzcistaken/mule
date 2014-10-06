@@ -23,11 +23,13 @@ import org.mule.util.ExceptionUtils;
 
 import javax.transaction.Transaction;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 /** Test transaction behavior when "joinExternal" is set to allow joining external transactions
  * There is one test per legal transactional behavior (e.g. ALWAYS_BEGIN).
  */
+@Ignore("Need a working jbossts bundle")
 public class ExternalTransactionTestCase extends AbstractExternalTransactionTestCase
 {
 

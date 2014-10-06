@@ -19,11 +19,13 @@ import javax.transaction.Transaction;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /** Test transaction behavior when "joinExternal" is set to disallow joining external transactions
  * There is one test per legal transactional behavior (e.g. ALWAYS_BEGIN).
  */
+@Ignore("Need a working jbossts bundle")
 public class NoExternalTransactionTestCase extends AbstractExternalTransactionTestCase
 {
 
