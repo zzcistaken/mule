@@ -48,11 +48,24 @@ public abstract class AbstractVmOsgiTestCase extends FunctionalTestCase
     }
 
     @Configuration
-    public Option[] config() {
+    public Option[] config()
+    {
         //TODO(pablo.kraan): OSGi - need to automatically load the dependencies
         File projectDir = new File(".");
 
         return options(
+                //TODO(pablo.kraan): OSGi - update this version in mule
+                mavenBundle().groupId("org.apache.geronimo.specs").artifactId("geronimo-jms_1.1_spec").version("1.1.1"),
+                mavenBundle().groupId("org.slf4j").artifactId("slf4j-api").versionAsInProject(),
+                mavenBundle().groupId("org.slf4j").artifactId("jcl-over-slf4j").versionAsInProject(),
+
+                mavenBundle().groupId("org.apache.logging.log4j").artifactId("log4j-api").versionAsInProject(),
+                mavenBundle().groupId("org.apache.logging.log4j").artifactId("log4j-core").versionAsInProject(),
+                mavenBundle().groupId("org.apache.logging.log4j").artifactId("log4j-slf4j-impl").versionAsInProject(),
+                mavenBundle().groupId("org.apache.logging.log4j").artifactId("log4j-1.2-api").versionAsInProject(),
+                mavenBundle().groupId("org.apache.logging.log4j").artifactId("log4j-jcl").versionAsInProject(),
+                mavenBundle().groupId("commons-logging").artifactId("commons-logging").versionAsInProject(),
+
                 mavenBundle().groupId("com.google.guava").artifactId("guava").versionAsInProject(),
                 mavenBundle().groupId("org.apache.geronimo.specs").artifactId("geronimo-j2ee-connector_1.5_spec").versionAsInProject(),
                 mavenBundle().groupId("com.github.stephenc.eaio-uuid").artifactId("uuid").versionAsInProject(),

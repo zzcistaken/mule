@@ -104,39 +104,6 @@
             <scope>test</scope>
         </dependency>
 
-
-        <!--&lt;!&ndash; Pax-exam &ndash;&gt;-->
-        <!--<dependency>-->
-            <!--<groupId>org.ops4j.pax.swissbox</groupId>-->
-            <!--<artifactId>pax-swissbox-bnd</artifactId>-->
-            <!--<version>1.8.0</version>-->
-            <!--<scope>test</scope>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>org.ops4j.pax.exam</groupId>-->
-            <!--<artifactId>pax-exam-container-native</artifactId>-->
-            <!--<version>${exam.version}</version>-->
-            <!--<scope>test</scope>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>org.ops4j.pax.runner</groupId>-->
-            <!--<artifactId>pax-runner-no-jcl</artifactId>-->
-            <!--<version>${runner.version}</version>-->
-            <!--<scope>test</scope>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>org.ops4j.pax.exam</groupId>-->
-            <!--<artifactId>pax-exam-junit4</artifactId>-->
-            <!--<version>${exam.version}</version>-->
-            <!--<scope>test</scope>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>org.ops4j.pax.exam</groupId>-->
-            <!--<artifactId>pax-exam-link-mvn</artifactId>-->
-            <!--<version>${exam.version}</version>-->
-            <!--<scope>test</scope>-->
-        <!--</dependency>-->
-
         <dependency>
             <groupId>org.ops4j.pax.exam</groupId>
             <artifactId>pax-exam-container-native</artifactId>
@@ -171,11 +138,5 @@
             <version>4.4.1</version>
             <scope>test</scope>
         </dependency>
-
-        <!--<dependency>-->
-            <!--<groupId>org.ops4j.pax.exam</groupId>-->
-            <!--<artifactId>pax-exam-spring</artifactId>-->
-            <!--<version>3.5.0</version>-->
-        <!--</dependency>-->
     </dependencies>
 </project>
