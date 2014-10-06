@@ -35,7 +35,7 @@ import org.mule.endpoint.EndpointURIEndpointBuilder;
 import org.mule.message.DefaultExceptionPayload;
 import org.mule.processor.NullMessageProcessor;
 import org.mule.tck.security.TestSecurityFilter;
-import org.mule.transformer.simple.InboundAppendTransformer;
+import org.mule.transformer.simple.test.InboundAppendTransformer;
 import org.mule.transformer.simple.ResponseAppendTransformer;
 
 import java.util.HashMap;

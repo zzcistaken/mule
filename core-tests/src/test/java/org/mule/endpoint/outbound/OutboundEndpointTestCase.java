@@ -35,7 +35,7 @@ import org.mule.endpoint.EndpointURIEndpointBuilder;
 import org.mule.tck.security.TestSecurityFilter;
 import org.mule.tck.testmodels.mule.TestMessageDispatcher;
 import org.mule.tck.testmodels.mule.TestMessageDispatcherFactory;
-import org.mule.transformer.simple.OutboundAppendTransformer;
+import org.mule.transformer.simple.test.OutboundAppendTransformer;
 import org.mule.transformer.simple.ResponseAppendTransformer;
 import org.mule.transport.AbstractMessageDispatcher;
 import org.mule.util.concurrent.Latch;

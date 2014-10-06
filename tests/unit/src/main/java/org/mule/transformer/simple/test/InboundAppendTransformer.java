@@ -4,7 +4,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.transformer.simple;
+package org.mule.transformer.simple.test;
 
 import org.mule.transformer.simple.StringAppendTransformer;
 

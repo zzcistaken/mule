@@ -14,8 +14,8 @@
     <jms:activemq-connector name="jmsConnector"/>
 
     <vm:connector name="default">
-        <service-overrides inboundTransformer="org.mule.transformer.simple.InboundAppendTransformer"
-                           outboundTransformer="org.mule.transformer.simple.OutboundAppendTransformer"
+        <service-overrides inboundTransformer="org.mule.transformer.simple.test.InboundAppendTransformer"
+                           outboundTransformer="org.mule.transformer.simple.test.OutboundAppendTransformer"
                            responseTransformer="org.mule.transformer.simple.ResponseAppendTransformer"/>
     </vm:connector>
 
