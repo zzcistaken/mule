@@ -476,6 +476,7 @@ public class MuleRegistryHelper implements MuleRegistry
 
     private ServiceDescriptor getTransportServiceDescriptor(String name, Properties overrides) throws ServiceException
     {
+        //TODO(pablo.kraan): OSGi - service descriptor has to be registered!! (this was changed during the intial OSGi refactoring)
         String filter = "(transport=" + name + ")";
         try
         {
