@@ -176,7 +176,7 @@ public abstract class AbstractMuleContextTestCase extends AbstractMuleTestCase
 
     protected BundleContext getBundleContext()
     {
-        return mock(BundleContext.class);
+        return new BundleContextBuilder().build();
     }
 
     protected void doSetUpBeforeMuleContextCreation() throws Exception
