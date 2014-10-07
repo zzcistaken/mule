@@ -190,6 +190,12 @@ public class SimpleRegistryBootstrap implements Initialisable, MuleContextAware
     /** {@inheritDoc} */
     public void initialise() throws InitialisationException
     {
+        //TODO(pablo.kraan): OSGi - hack to fix some tests that don't depend on bootstrapped objects. Change the design to avoid an OSGi dependency here
+        if (MuleCoreActivator.bundleContext == null)
+        {
+            return;
+        }
+
         Collection<ServiceReference<RegistryBootstrapService>> serviceReferences = null;
         try
         {

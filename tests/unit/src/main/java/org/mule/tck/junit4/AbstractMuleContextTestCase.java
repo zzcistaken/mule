@@ -6,6 +6,7 @@
  */
 package org.mule.tck.junit4;
 
+import static org.mockito.Mockito.mock;
 import org.mule.MessageExchangePattern;
 import org.mule.api.MuleContext;
 import org.mule.api.MuleEvent;
@@ -21,6 +22,7 @@ import org.mule.api.context.notification.MuleContextNotificationListener;
 import org.mule.api.endpoint.InboundEndpoint;
 import org.mule.api.endpoint.OutboundEndpoint;
 import org.mule.api.processor.MessageProcessor;
+import org.mule.api.registry.MuleTransportDescriptorService;
 import org.mule.api.registry.RegistrationException;
 import org.mule.api.routing.filter.Filter;
 import org.mule.api.transformer.Transformer;
@@ -32,6 +34,7 @@ import org.mule.construct.Flow;
 import org.mule.context.DefaultMuleContextBuilder;
 import org.mule.context.DefaultMuleContextFactory;
 import org.mule.context.notification.MuleContextNotification;
+import org.mule.osgi.MuleCoreActivator;
 import org.mule.tck.MuleTestUtils;
 import org.mule.tck.SensingNullMessageProcessor;
 import org.mule.tck.TestingWorkListener;
@@ -54,6 +57,7 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.rules.TemporaryFolder;
+import org.osgi.framework.BundleContext;
 
 /**
  * Extends {@link AbstractMuleTestCase} providing access to a {@link MuleContext}
@@ -118,6 +122,8 @@ public abstract class AbstractMuleContextTestCase extends AbstractMuleTestCase
      * false, which means that a context will be instantiated per test method.
      */
     private boolean disposeContextPerClass;
+    private BundleContext bundleContext;
+    private MuleTransportDescriptorService transportDescriptorService;
 
     protected boolean isDisposeContextPerClass()
     {
@@ -132,6 +138,14 @@ public abstract class AbstractMuleContextTestCase extends AbstractMuleTestCase
     @Before
     public final void setUpMuleContext() throws Exception
     {
+        bundleContext = getBundleContext();
+
+        //TODO(pablo.kraan): OSGi - hack to set the global reference for tests running with no OSGi container
+        if (MuleCoreActivator.bundleContext == null)
+        {
+            MuleCoreActivator.bundleContext = bundleContext;
+        }
+
         workingDirectory.create();
         String workingDirectoryOldValue = System.setProperty(WORKING_DIRECTORY_SYSTEM_PROPERTY_KEY, workingDirectory.getRoot().getAbsolutePath());
         try
@@ -158,6 +172,11 @@ public abstract class AbstractMuleContextTestCase extends AbstractMuleTestCase
                 System.clearProperty(WORKING_DIRECTORY_SYSTEM_PROPERTY_KEY);
             }
         }
+    }
+
+    protected BundleContext getBundleContext()
+    {
+        return mock(BundleContext.class);
     }
 
     protected void doSetUpBeforeMuleContextCreation() throws Exception
@@ -210,6 +229,9 @@ public abstract class AbstractMuleContextTestCase extends AbstractMuleTestCase
         }
         else
         {
+            //TODO(pablo.kraan): OSGi - move this initialization to somewhere else
+            transportDescriptorService = createTransportDescriptorService();
+
             MuleContextFactory muleContextFactory = createMuleContextFactory();
             List<ConfigurationBuilder> builders = new ArrayList<ConfigurationBuilder>();
             builders.add(new SimpleConfigurationBuilder(getStartUpProperties()));
@@ -222,7 +244,8 @@ public abstract class AbstractMuleContextTestCase extends AbstractMuleTestCase
             }
             builders.add(getBuilder());
             addBuilders(builders);
-            MuleContextBuilder contextBuilder = new DefaultMuleContextBuilder();
+            DefaultMuleContextBuilder contextBuilder = new DefaultMuleContextBuilder();
+            contextBuilder.setTransportDescriptorService(transportDescriptorService);
             DefaultMuleConfiguration muleConfiguration = new DefaultMuleConfiguration();
             String workingDirectory = this.workingDirectory.getRoot().getAbsolutePath();
             logger.info("Using working directory for test: " + workingDirectory);
@@ -240,7 +263,16 @@ public abstract class AbstractMuleContextTestCase extends AbstractMuleTestCase
 
     protected MuleContextFactory createMuleContextFactory()
     {
-        return new DefaultMuleContextFactory();
+        DefaultMuleContextFactory defaultMuleContextFactory = new DefaultMuleContextFactory();
+        defaultMuleContextFactory.setBundleContext(bundleContext);
+        defaultMuleContextFactory.setTransportDescriptorService(transportDescriptorService);
+
+        return defaultMuleContextFactory;
+    }
+
+    protected MuleTransportDescriptorService createTransportDescriptorService()
+    {
+        return new MuleTransportDescriptorService();
     }
 
     //This sohuldn't be needed by Test cases but can be used by base testcases that wish to add further builders when

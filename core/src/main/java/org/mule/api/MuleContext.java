@@ -185,7 +185,7 @@ public interface MuleContext extends Lifecycle
      * service queues.
      */
     QueueManager getQueueManager();
-    
+
     ObjectStoreManager getObjectStoreManager();
 
     AllStatistics getStatistics();
@@ -257,7 +257,7 @@ public interface MuleContext extends Lifecycle
     void setExceptionListener(SystemExceptionHandler exceptionListener);
 
     void setObjectStore(String name, ListableObjectStore<Serializable> store) throws RegistrationException;
-    
+
     void handleException(Exception e, RollbackSourceCallback rollbackMethod);
 
     void handleException(Exception e);
@@ -305,10 +305,10 @@ public interface MuleContext extends Lifecycle
      * @return a non null {@link org.mule.DataTypeConversionResolver} instance to resolve implicit data type conversions
      */
     DataTypeConversionResolver getDataTypeConverterResolver();
-    
+
     /**
      * Expression Language for evaluating expressions using Mule as the context
-     * @return 
+     * @return
      */
     ExpressionLanguage getExpressionLanguage();
 
@@ -334,6 +334,5 @@ public interface MuleContext extends Lifecycle
      * @throws InterruptedException if the current thread is interrupted while waiting
      */
     boolean waitUntilStarted(int timeout) throws InterruptedException;
-
 }
 

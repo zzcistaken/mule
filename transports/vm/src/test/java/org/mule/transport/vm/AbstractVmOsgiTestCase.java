@@ -11,12 +11,17 @@ import static org.ops4j.pax.exam.CoreOptions.bundle;
 import static org.ops4j.pax.exam.CoreOptions.junitBundles;
 import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.CoreOptions.options;
+import org.mule.api.registry.MuleTransportDescriptorService;
+import org.mule.api.registry.TransportServiceDescriptorFactory;
 import org.mule.functional.junit4.FunctionalTestCase;
+import org.mule.transport.service.TransportServiceDescriptor;
 
 import java.io.File;
+import java.util.Collection;
 
 import javax.inject.Inject;
 
+import org.junit.After;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
@@ -27,6 +32,9 @@ import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerSuite;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceEvent;
+import org.osgi.framework.ServiceReference;
 
 /**
  * Defines a base class for VM transport tests that run inside an OSGi container
@@ -38,6 +46,7 @@ public abstract class AbstractVmOsgiTestCase extends FunctionalTestCase
 
     @Inject
     public BundleContext bundleContext;
+    private TransportDescriptorServiceWrapper transportDescriptorServiceWrapper;
 
     @ProbeBuilder
     public TestProbeBuilder build(TestProbeBuilder builder)
@@ -140,5 +149,49 @@ public abstract class AbstractVmOsgiTestCase extends FunctionalTestCase
     protected BundleContext getBundleContext()
     {
         return bundleContext;
+    }
+
+    @Override
+    protected MuleTransportDescriptorService createTransportDescriptorService()
+    {
+        MuleTransportDescriptorService muleTransportDescriptorService = super.createTransportDescriptorService();
+
+        transportDescriptorServiceWrapper = new TransportDescriptorServiceWrapper(bundleContext, muleTransportDescriptorService);
+        try
+        {
+            String filter = "(objectclass=" + TransportServiceDescriptorFactory.class.getName() + ")";
+            bundleContext.addServiceListener(transportDescriptorServiceWrapper, filter);
+
+            bundleContext.addServiceListener(transportDescriptorServiceWrapper, filter);
+            Collection<ServiceReference<TransportServiceDescriptorFactory>> serviceReferences = bundleContext.getServiceReferences(TransportServiceDescriptorFactory.class, null);
+
+            for (ServiceReference<TransportServiceDescriptorFactory> serviceReference : serviceReferences)
+            {
+                transportDescriptorServiceWrapper.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, serviceReference));
+
+            }
+        }
+        catch (InvalidSyntaxException e)
+        {
+            throw new IllegalStateException(e);
+        }
+
+        return muleTransportDescriptorService;
+    }
+
+    @After
+    public void unregisterTransportDescriptorServiceWrapper() throws Exception
+    {
+        if (transportDescriptorServiceWrapper != null)
+        {
+            try
+            {
+                bundleContext.removeServiceListener(transportDescriptorServiceWrapper);
+            }
+            catch (IllegalStateException serviceNotValidAnymore)
+            {
+                // Ignore
+            }
+        }
     }
 }

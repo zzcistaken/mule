@@ -20,15 +20,16 @@ import org.mule.api.lifecycle.Initialisable;
 import org.mule.api.lifecycle.InitialisationException;
 import org.mule.api.lifecycle.LifecycleException;
 import org.mule.api.registry.AbstractServiceDescriptor;
-import org.mule.api.registry.ServiceDescriptorFactory;
 import org.mule.api.registry.MuleRegistry;
 import org.mule.api.registry.RegistrationException;
 import org.mule.api.registry.ResolverException;
 import org.mule.api.registry.ServiceDescriptor;
-import org.mule.api.registry.TransportServiceDescriptorFactory;
+import org.mule.api.registry.ServiceDescriptorFactory;
 import org.mule.api.registry.ServiceException;
 import org.mule.api.registry.ServiceType;
 import org.mule.api.registry.TransformerResolver;
+import org.mule.api.registry.TransportDescriptorService;
+import org.mule.api.registry.TransportServiceDescriptorFactory;
 import org.mule.api.schedule.Scheduler;
 import org.mule.api.transformer.Converter;
 import org.mule.api.transformer.DataType;
@@ -36,8 +37,6 @@ import org.mule.api.transformer.Transformer;
 import org.mule.api.transformer.TransformerException;
 import org.mule.api.transport.Connector;
 import org.mule.config.i18n.CoreMessages;
-import org.mule.config.i18n.MessageFactory;
-import org.mule.osgi.MuleCoreActivator;
 import org.mule.transformer.types.SimpleDataType;
 import org.mule.util.Predicate;
 import org.mule.util.SpiUtils;
@@ -59,8 +58,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.framework.ServiceReference;
 
 /**
  * Adds lookup/register/unregister methods for Mule-specific entities to the standard
@@ -96,6 +93,8 @@ public class MuleRegistryHelper implements MuleRegistry
      * Transformers are registered on context start, then they are usually not unregistered
      */
     private Collection<Transformer> transformers = new CopyOnWriteArrayList<Transformer>();
+
+    private TransportDescriptorService transportDescriptorService;
 
     public MuleRegistryHelper(DefaultRegistryBroker registry, MuleContext muleContext)
     {
@@ -477,30 +476,30 @@ public class MuleRegistryHelper implements MuleRegistry
     private ServiceDescriptor getTransportServiceDescriptor(String name, Properties overrides) throws ServiceException
     {
         //TODO(pablo.kraan): OSGi - service descriptor has to be registered!! (this was changed during the intial OSGi refactoring)
-        String filter = "(transport=" + name + ")";
-        try
-        {
-            Collection<ServiceReference<TransportServiceDescriptorFactory>> serviceReferences = MuleCoreActivator.bundleContext.getServiceReferences(TransportServiceDescriptorFactory.class, filter);
-
-            if (serviceReferences.size() == 0)
-            {
-
-                throw new IllegalStateException(String.format("Unable to obtain a service descriptor for transport '%s'", name));
-            }
-            if (serviceReferences.size() > 1)
-            {
-                //TODO(pablo.kraan): OSGi - find a way to choose between multiple service providers
-                throw new IllegalStateException(String.format("Found multiple service descriptors for transport '%s'", name));
-            }
-
-            TransportServiceDescriptorFactory serviceDescriptorFactory = MuleCoreActivator.bundleContext.getService(serviceReferences.iterator().next());
-
-            return serviceDescriptorFactory.create(muleContext, overrides);
-        }
-        catch (InvalidSyntaxException e)
-        {
-            throw new ServiceException(MessageFactory.createStaticMessage("Unable to look up TransportServiceDescriptors with filter: " + filter), e);
-        }
+        //String filter = "(transport=" + name + ")";
+        //try
+        //{
+        //    Collection<ServiceReference<TransportServiceDescriptorFactory>> serviceReferences = MuleCoreActivator.bundleContext.getServiceReferences(TransportServiceDescriptorFactory.class, filter);
+        //
+        //    if (serviceReferences.size() == 0)
+        //    {
+        //        throw new IllegalStateException(String.format("Unable to obtain a service descriptor for transport '%s'", name));
+        //    }
+        //    if (serviceReferences.size() > 1)
+        //    {
+        //        //TODO(pablo.kraan): OSGi - find a way to choose between multiple service providers
+        //        throw new IllegalStateException(String.format("Found multiple service descriptors for transport '%s'", name));
+        //    }
+        //
+        //    TransportServiceDescriptorFactory serviceDescriptorFactory = MuleCoreActivator.bundleContext.getService(serviceReferences.iterator().next());
+        //
+        //    return serviceDescriptorFactory.create(muleContext, overrides);
+        //}
+        //catch (InvalidSyntaxException e)
+        //{
+        //    throw new ServiceException(MessageFactory.createStaticMessage("Unable to look up TransportServiceDescriptors with filter: " + filter), e);
+        //}
+        return transportDescriptorService.getDescriptor(name, muleContext, overrides);
     }
 
     private ServiceDescriptor getServiceDescriptor(ServiceType type, String name, Properties overrides) throws ServiceException
@@ -878,6 +877,16 @@ public class MuleRegistryHelper implements MuleRegistry
     public boolean isRemote()
     {
         return false;
+    }
+
+    public TransportDescriptorService getTransportDescriptorService()
+    {
+        return transportDescriptorService;
+    }
+
+    public void setTransportDescriptorService(TransportDescriptorService transportDescriptorService)
+    {
+        this.transportDescriptorService = transportDescriptorService;
     }
 
     private String getDataTypeSourceResultPairHash(DataType<?> source, DataType<?> result)

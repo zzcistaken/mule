@@ -7,26 +7,20 @@
 
 package org.mule.osgi;
 
-import org.mule.api.DefaultMuleException;
 import org.mule.api.MuleException;
 import org.mule.api.config.ConfigurationException;
 import org.mule.api.registry.TransportServiceDescriptorFactory;
 import org.mule.config.builders.ConfigurationBuilderFactory;
 import org.mule.config.i18n.MessageFactory;
 import org.mule.transport.service.TransportServiceDescriptor;
-import org.mule.util.SpiUtils;
 import org.mule.util.StringUtils;
 
-import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Properties;
 
 import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 
 /**
@@ -35,18 +29,20 @@ import org.osgi.framework.ServiceRegistration;
 public class BundleContextTransportServiceDescriptorFactoryDiscoverer implements TransportServiceDescriptorFactoryDiscoverer
 {
 
-    private final BundleContext bundleContext;
+    private final Bundle bundle;
+    private final TransportServiceDescriptorFactoryFactory transportServiceDescriptorFactoryFactory;
 
-    public BundleContextTransportServiceDescriptorFactoryDiscoverer(BundleContext bundleContext)
+    public BundleContextTransportServiceDescriptorFactoryDiscoverer(Bundle bundle, TransportServiceDescriptorFactoryFactory transportServiceDescriptorFactoryFactory)
     {
-        this.bundleContext = bundleContext;
+        this.bundle = bundle;
+        this.transportServiceDescriptorFactoryFactory = transportServiceDescriptorFactoryFactory;
     }
 
     @Override
     public List<ServiceRegistration> discover() throws MuleException
     {
         List<ServiceRegistration> descriptorRefs = new ArrayList<>();
-        final Bundle bundle = bundleContext.getBundle();
+        //final Bundle bundle = bundleContext.getBundle();
         Dictionary headers = bundle.getHeaders();
 
         // Transports are defined in the bundle manifest using Mule-Transports header
@@ -60,31 +56,33 @@ public class BundleContextTransportServiceDescriptorFactoryDiscoverer implements
 
         for (final String transport : transports)
         {
-            // Look up the service descriptor file (e.g., "tcp.serviceProperties")
-            String descriptorPath = "/" + SpiUtils.SERVICE_ROOT + SpiUtils.PROVIDER_SERVICE_PATH + transport + ".properties";
-            URL descriptorUrl = bundle.getEntry(descriptorPath);
-            if (descriptorUrl == null)
-            {
-                throw new ConfigurationException(MessageFactory.createStaticMessage("Unable to locate service descriptor file: " + descriptorPath));
-            }
 
-            final Properties props = new Properties();
-            try
-            {
-                props.load(descriptorUrl.openStream());
-            }
-            catch (IOException e)
-            {
-                throw new DefaultMuleException(e);
-            }
-
-            TransportServiceDescriptorFactory serviceDescriptorFactory = new DefaultTransportServiceDescriptorFactory(transport, props);
+            //// Look up the service descriptor file (e.g., "tcp.serviceProperties")
+            //String descriptorPath = "/" + SpiUtils.SERVICE_ROOT + SpiUtils.PROVIDER_SERVICE_PATH + transport + ".properties";
+            //URL descriptorUrl = bundle.getEntry(descriptorPath);
+            //if (descriptorUrl == null)
+            //{
+            //    throw new ConfigurationException(MessageFactory.createStaticMessage("Unable to locate service descriptor file: " + descriptorPath));
+            //}
+            //
+            //final Properties props = new Properties();
+            //try
+            //{
+            //    props.load(descriptorUrl.openStream());
+            //}
+            //catch (IOException e)
+            //{
+            //    throw new DefaultMuleException(e);
+            //}
+            //
+            //TransportServiceDescriptorFactory serviceDescriptorFactory = new DefaultTransportServiceDescriptorFactory(transport, props);
+            TransportServiceDescriptorFactory serviceDescriptorFactory = transportServiceDescriptorFactoryFactory.create(transport);
 
             Dictionary<String, String> serviceProperties = new Hashtable<>();
             serviceProperties.put(ConfigurationBuilderFactory.EXTENSION, "xml");
             serviceProperties.put("transport", transport);
 
-            descriptorRefs.add(bundleContext.registerService(TransportServiceDescriptorFactory.class.getName(), serviceDescriptorFactory, serviceProperties));
+            descriptorRefs.add(bundle.getBundleContext().registerService(TransportServiceDescriptorFactory.class.getName(), serviceDescriptorFactory, serviceProperties));
         }
 
         return descriptorRefs;

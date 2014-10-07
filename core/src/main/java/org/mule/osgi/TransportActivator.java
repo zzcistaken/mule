@@ -28,7 +28,7 @@ public class TransportActivator implements BundleActivator
 
     public void start(BundleContext bundleContext) throws Exception
     {
-        descriptorRefs = new BundleContextTransportServiceDescriptorFactoryDiscoverer(bundleContext).discover();
+        descriptorRefs = new BundleContextTransportServiceDescriptorFactoryDiscoverer(bundleContext.getBundle(), new OsgiTransportServiceDescriptorFactoryFactory(bundleContext.getBundle())).discover();
 
         bootstrapService = bundleContext.registerService(RegistryBootstrapService.class.getName(), new DefaultRegistryBootstrapService(bundleContext), null);
     }

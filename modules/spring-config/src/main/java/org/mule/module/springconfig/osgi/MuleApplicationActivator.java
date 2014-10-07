@@ -50,6 +50,7 @@ public class MuleApplicationActivator implements BundleActivator
             //addStartupPropertiesConfigBuilder(configBuilders);
             configBuilders.add(cfgBuilder);
 
+            //TODO(pablo.kraan): OSGi - need to register all the service wrappers to registering services (like TransportDescriptorServiceWrapper)
             MuleConfiguration configuration = createMuleConfiguration(configResource);
 
             MuleContextBuilder contextBuilder = new DefaultMuleContextBuilder();

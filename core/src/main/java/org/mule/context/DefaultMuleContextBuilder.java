@@ -28,6 +28,7 @@ import org.mule.api.context.notification.RoutingNotificationListener;
 import org.mule.api.context.notification.SecurityNotificationListener;
 import org.mule.api.context.notification.TransactionNotificationListener;
 import org.mule.api.lifecycle.LifecycleManager;
+import org.mule.api.registry.TransportDescriptorService;
 import org.mule.client.DefaultLocalMuleClient;
 import org.mule.config.DefaultMuleConfiguration;
 import org.mule.config.ImmutableThreadingProfile;
@@ -68,6 +69,7 @@ import org.apache.commons.logging.LogFactory;
  * values for {@link MuleConfiguration}, {@link LifecycleManager}, {@link WorkManager}, 
  * {@link WorkListener} and {@link ServerNotificationManager}.
  */
+
 public class DefaultMuleContextBuilder implements MuleContextBuilder
 {
 
@@ -88,6 +90,12 @@ public class DefaultMuleContextBuilder implements MuleContextBuilder
 
     protected SplashScreen shutdownScreen;
 
+    protected TransportDescriptorService transportDescriptorService;
+
+    public DefaultMuleContextBuilder()
+    {
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -103,11 +111,14 @@ public class DefaultMuleContextBuilder implements MuleContextBuilder
         muleContext.setExpressionManager(injectMuleContextIfRequired(new DefaultExpressionManager(),muleContext));
         DefaultRegistryBroker registryBroker = new DefaultRegistryBroker(muleContext);
         muleContext.setRegistryBroker(registryBroker);
-        muleContext.setMuleRegistry(new MuleRegistryHelper(registryBroker, muleContext));
+        MuleRegistryHelper muleRegistry = new MuleRegistryHelper(registryBroker, muleContext);
+        muleRegistry.setTransportDescriptorService(transportDescriptorService);
+        muleContext.setMuleRegistry(muleRegistry);
         muleContext.setLocalMuleClient(new DefaultLocalMuleClient(muleContext));
         muleContext.setExceptionListener(new DefaultSystemExceptionStrategy(muleContext));
         //TODO(pablo.kraan): OSGi - this is wrong - context classLoader is the root app classlodear conating System + OSGi classes only
         //muleContext.setExecutionClassLoader(Thread.currentThread().getContextClassLoader());
+        muleContext .setTransportDescriptorService(transportDescriptorService);
         return muleContext;
     }
 
@@ -235,6 +246,16 @@ public class DefaultMuleContextBuilder implements MuleContextBuilder
     public void setShutdownScreen(SplashScreen shutdownScreen)
     {
         this.shutdownScreen = shutdownScreen;
+    }
+
+    public TransportDescriptorService getTransportDescriptorService()
+    {
+        return transportDescriptorService;
+    }
+
+    public void setTransportDescriptorService(TransportDescriptorService transportDescriptorService)
+    {
+        this.transportDescriptorService = transportDescriptorService;
     }
 
     protected DefaultMuleConfiguration createMuleConfiguration()

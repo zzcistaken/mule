@@ -34,6 +34,7 @@ import org.mule.api.lifecycle.Stoppable;
 import org.mule.api.registry.MuleRegistry;
 import org.mule.api.registry.RegistrationException;
 import org.mule.api.registry.Registry;
+import org.mule.api.registry.TransportDescriptorService;
 import org.mule.api.security.SecurityManager;
 import org.mule.api.store.ListableObjectStore;
 import org.mule.api.store.ObjectStoreManager;
@@ -167,6 +168,7 @@ public class DefaultMuleContext implements MuleContext
     private final Latch startLatch = new Latch();
 
     private QueueManager queueManager;
+    private TransportDescriptorService transportDescriptorService;
 
     /**
      * @deprecated Use empty constructor instead and use setter for dependencies.
@@ -205,7 +207,10 @@ public class DefaultMuleContext implements MuleContext
 
     protected MuleRegistry createRegistryHelper(DefaultRegistryBroker registry)
     {
-        return new MuleRegistryHelper(registry, this);
+        MuleRegistryHelper muleRegistryHelper = new MuleRegistryHelper(registry, this);
+        muleRegistryHelper.setTransportDescriptorService(transportDescriptorService);
+
+        return muleRegistryHelper;
     }
 
     public synchronized void initialise() throws InitialisationException
@@ -934,6 +939,16 @@ public class DefaultMuleContext implements MuleContext
     public boolean waitUntilStarted(int timeout) throws InterruptedException
     {
         return startLatch.await(timeout, TimeUnit.MILLISECONDS);
+    }
+
+    public TransportDescriptorService getTransportDescriptorService()
+    {
+        return transportDescriptorService;
+    }
+
+    public void setTransportDescriptorService(TransportDescriptorService transportDescriptorService)
+    {
+        this.transportDescriptorService = transportDescriptorService;
     }
 
     private void overrideClusterConfiguration()

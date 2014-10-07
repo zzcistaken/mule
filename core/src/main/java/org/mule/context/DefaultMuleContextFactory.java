@@ -14,6 +14,7 @@ import org.mule.api.context.MuleContextBuilder;
 import org.mule.api.context.MuleContextFactory;
 import org.mule.api.context.notification.MuleContextListener;
 import org.mule.api.lifecycle.InitialisationException;
+import org.mule.api.registry.TransportDescriptorService;
 import org.mule.config.DefaultMuleConfiguration;
 import org.mule.config.builders.AutoConfigurationBuilder;
 import org.mule.config.builders.DefaultsConfigurationBuilder;
@@ -40,6 +41,7 @@ public class DefaultMuleContextFactory implements MuleContextFactory
 
     private List<MuleContextListener> listeners = new LinkedList<>();
     private BundleContext bundleContext;
+    private TransportDescriptorService transportDescriptorService;
 
     /**
      * Use default ConfigurationBuilder, default MuleContextBuilder
@@ -183,6 +185,7 @@ public class DefaultMuleContextFactory implements MuleContextFactory
         // Create MuleContext
         DefaultMuleContextBuilder contextBuilder = new DefaultMuleContextBuilder();
         contextBuilder.setMuleConfiguration(configuration);
+        contextBuilder.setTransportDescriptorService(transportDescriptorService);
         return doCreateMuleContext(contextBuilder, new ContextConfigurator()
         {
             @Override
@@ -245,18 +248,8 @@ public class DefaultMuleContextFactory implements MuleContextFactory
     {
         MuleContext muleContext = muleContextBuilder.buildMuleContext();
 
-        //TODO(pablo.kraan): OSGi - review if makes sense to use the class's classlaoder or we must configure a mock bundle context
-        // NOTE: setting TCCL in test cases running with paxexam can cause classloading issues when classes that are supposed to be found in
-        // the OSGi container are found in the Test's CL
-        ClassLoader bundleClassLoader;
-        if (bundleContext == null)
-        {
-            bundleClassLoader = Thread.currentThread().getContextClassLoader();
-        }
-        else
-        {   BundleWiring bundleWiring = bundleContext.getBundle().adapt(BundleWiring.class);
-            bundleClassLoader = bundleWiring.getClassLoader();
-        }
+        BundleWiring bundleWiring = bundleContext.getBundle().adapt(BundleWiring.class);
+        ClassLoader bundleClassLoader = bundleWiring.getClassLoader();
 
         muleContext.setExecutionClassLoader(bundleClassLoader);
 
@@ -302,6 +295,11 @@ public class DefaultMuleContextFactory implements MuleContextFactory
     public void setBundleContext(BundleContext bundleContext)
     {
         this.bundleContext = bundleContext;
+    }
+
+    public void setTransportDescriptorService(TransportDescriptorService transportDescriptorService)
+    {
+        this.transportDescriptorService = transportDescriptorService;
     }
 
     private abstract class ContextConfigurator
