@@ -152,11 +152,9 @@ public abstract class AbstractVmOsgiTestCase extends FunctionalTestCase
     }
 
     @Override
-    protected MuleTransportDescriptorService createTransportDescriptorService()
+    protected void configureTransportDescriptorService(MuleTransportDescriptorService transportDescriptorService)
     {
-        MuleTransportDescriptorService muleTransportDescriptorService = super.createTransportDescriptorService();
-
-        transportDescriptorServiceWrapper = new TransportDescriptorServiceWrapper(bundleContext, muleTransportDescriptorService);
+        transportDescriptorServiceWrapper = new TransportDescriptorServiceWrapper(bundleContext, transportDescriptorService);
         try
         {
             String filter = "(objectclass=" + TransportServiceDescriptorFactory.class.getName() + ")";
@@ -175,8 +173,6 @@ public abstract class AbstractVmOsgiTestCase extends FunctionalTestCase
         {
             throw new IllegalStateException(e);
         }
-
-        return muleTransportDescriptorService;
     }
 
     @After
