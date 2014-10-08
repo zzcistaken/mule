@@ -244,13 +244,14 @@ public abstract class AbstractMuleContextTestCase extends AbstractMuleTestCase
             MuleContextFactory muleContextFactory = createMuleContextFactory();
             List<ConfigurationBuilder> builders = new ArrayList<ConfigurationBuilder>();
             builders.add(new SimpleConfigurationBuilder(getStartUpProperties()));
+            //TODO(pablo.kraan): OSGi - CLASSNAME_ANNOTATIONS_CONFIG_BUILDER is not in the classpath anymore.
             //If the annotations module is on the classpath, add the annotations config builder to the list
             //This will enable annotations config for this instance
-            if (ClassUtils.isClassOnPath(CLASSNAME_ANNOTATIONS_CONFIG_BUILDER, getClass()))
-            {
-                builders.add((ConfigurationBuilder) ClassUtils.instanciateClass(CLASSNAME_ANNOTATIONS_CONFIG_BUILDER,
-                                                                                ClassUtils.NO_ARGS, getClass()));
-            }
+            //if (ClassUtils.isClassOnPath(CLASSNAME_ANNOTATIONS_CONFIG_BUILDER, getClass()))
+            //{
+            //    builders.add((ConfigurationBuilder) ClassUtils.instanciateClass(CLASSNAME_ANNOTATIONS_CONFIG_BUILDER,
+            //                                                                    ClassUtils.NO_ARGS, getClass()));
+            //}
             builders.add(getBuilder());
             addBuilders(builders);
             DefaultMuleContextBuilder contextBuilder = new DefaultMuleContextBuilder();
@@ -278,11 +279,12 @@ public abstract class AbstractMuleContextTestCase extends AbstractMuleTestCase
             // easy to do without requiring a complex test case hierarchy
             //TODO(pablo.kraan): OSGi - added spring-core as a dependency just to have access to this class
             PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-            Resource[] transports = resolver.getResources("classpath*:" + SpiUtils.SERVICE_ROOT + SpiUtils.PROVIDER_SERVICE_PATH + "/*.properties");
+            Resource[] transports = resolver.getResources("classpath*:/" + SpiUtils.SERVICE_ROOT + SpiUtils.PROVIDER_SERVICE_PATH+ "*.properties");
 
             for (Resource transport : transports)
             {
-                registerTransport(transportDescriptorService, FilenameUtils.getBaseName(transport.getFile().toString()));
+                String baseName = FilenameUtils.getBaseName(transport.getFilename());
+                registerTransport(transportDescriptorService, baseName);
             }
         }
         catch (IOException e)
@@ -291,10 +293,10 @@ public abstract class AbstractMuleContextTestCase extends AbstractMuleTestCase
         }
     }
 
-    private void registerTransport(MuleTransportDescriptorService transportDescriptorService, String testTransport)
+    private void registerTransport(MuleTransportDescriptorService transportDescriptorService, String transport)
     {
-        DefaultTransportServiceDescriptorFactory testTransportServiceDescriptorFactory = new DefaultTransportServiceDescriptorFactory(testTransport, SpiUtils.findServiceDescriptor(ServiceType.TRANSPORT, testTransport));
-        transportDescriptorService.registerDescriptorFactory(testTransport, testTransportServiceDescriptorFactory);
+        DefaultTransportServiceDescriptorFactory testTransportServiceDescriptorFactory = new DefaultTransportServiceDescriptorFactory(transport, SpiUtils.findServiceDescriptor(ServiceType.TRANSPORT, transport));
+        transportDescriptorService.registerDescriptorFactory(transport, testTransportServiceDescriptorFactory);
     }
 
     protected MuleContextFactory createMuleContextFactory()
