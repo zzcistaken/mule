@@ -17,6 +17,7 @@ import org.mule.api.lifecycle.InitialisationException;
 import org.mule.api.registry.TransportDescriptorService;
 import org.mule.config.DefaultMuleConfiguration;
 import org.mule.config.builders.AutoConfigurationBuilder;
+import org.mule.config.builders.ConfigurationBuilderService;
 import org.mule.config.builders.DefaultsConfigurationBuilder;
 import org.mule.config.builders.SimpleConfigurationBuilder;
 
@@ -42,6 +43,7 @@ public class DefaultMuleContextFactory implements MuleContextFactory
     private List<MuleContextListener> listeners = new LinkedList<>();
     private BundleContext bundleContext;
     private TransportDescriptorService transportDescriptorService;
+    private ConfigurationBuilderService configurationBuilderService;
 
     /**
      * Use default ConfigurationBuilder, default MuleContextBuilder
@@ -154,7 +156,9 @@ public class DefaultMuleContextFactory implements MuleContextFactory
 
                 // Automatically resolve Configuration to be used and delegate configuration
                 // to it.
-                new AutoConfigurationBuilder(configResources).configure(muleContext, bundleContext);
+                AutoConfigurationBuilder configurationBuilder = new AutoConfigurationBuilder(configResources);
+                configurationBuilder.setConfigurationBuilderService(configurationBuilderService);
+                configurationBuilder.configure(muleContext, bundleContext);
 
                 notifyMuleContextConfiguration(muleContext);
             }
@@ -186,6 +190,8 @@ public class DefaultMuleContextFactory implements MuleContextFactory
         DefaultMuleContextBuilder contextBuilder = new DefaultMuleContextBuilder();
         contextBuilder.setMuleConfiguration(configuration);
         contextBuilder.setTransportDescriptorService(transportDescriptorService);
+        configurationBuilderService = null;
+        contextBuilder.setConfigurationBuilderService(configurationBuilderService);
         return doCreateMuleContext(contextBuilder, new ContextConfigurator()
         {
             @Override
@@ -300,6 +306,11 @@ public class DefaultMuleContextFactory implements MuleContextFactory
     public void setTransportDescriptorService(TransportDescriptorService transportDescriptorService)
     {
         this.transportDescriptorService = transportDescriptorService;
+    }
+
+    public void setConfigurationBuilderService(ConfigurationBuilderService configurationBuilderService)
+    {
+        this.configurationBuilderService = configurationBuilderService;
     }
 
     private abstract class ContextConfigurator

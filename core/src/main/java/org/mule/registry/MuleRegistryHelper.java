@@ -465,41 +465,12 @@ public class MuleRegistryHelper implements MuleRegistry
     {
         if (TransportServiceDescriptorFactory.TRANSPORT_SERVICE_TYPE.equals(type.getName()))
         {
-            return getTransportServiceDescriptor(name, overrides);
+            return transportDescriptorService.getDescriptor(name, muleContext, overrides);
         }
         else
         {
             return getServiceDescriptor(type, name, overrides);
         }
-    }
-
-    private ServiceDescriptor getTransportServiceDescriptor(String name, Properties overrides) throws ServiceException
-    {
-        //TODO(pablo.kraan): OSGi - service descriptor has to be registered!! (this was changed during the intial OSGi refactoring)
-        //String filter = "(transport=" + name + ")";
-        //try
-        //{
-        //    Collection<ServiceReference<TransportServiceDescriptorFactory>> serviceReferences = MuleCoreActivator.bundleContext.getServiceReferences(TransportServiceDescriptorFactory.class, filter);
-        //
-        //    if (serviceReferences.size() == 0)
-        //    {
-        //        throw new IllegalStateException(String.format("Unable to obtain a service descriptor for transport '%s'", name));
-        //    }
-        //    if (serviceReferences.size() > 1)
-        //    {
-        //        //TODO(pablo.kraan): OSGi - find a way to choose between multiple service providers
-        //        throw new IllegalStateException(String.format("Found multiple service descriptors for transport '%s'", name));
-        //    }
-        //
-        //    TransportServiceDescriptorFactory serviceDescriptorFactory = MuleCoreActivator.bundleContext.getService(serviceReferences.iterator().next());
-        //
-        //    return serviceDescriptorFactory.create(muleContext, overrides);
-        //}
-        //catch (InvalidSyntaxException e)
-        //{
-        //    throw new ServiceException(MessageFactory.createStaticMessage("Unable to look up TransportServiceDescriptors with filter: " + filter), e);
-        //}
-        return transportDescriptorService.getDescriptor(name, muleContext, overrides);
     }
 
     private ServiceDescriptor getServiceDescriptor(ServiceType type, String name, Properties overrides) throws ServiceException

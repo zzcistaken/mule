@@ -32,6 +32,7 @@ import org.mule.api.registry.TransportDescriptorService;
 import org.mule.client.DefaultLocalMuleClient;
 import org.mule.config.DefaultMuleConfiguration;
 import org.mule.config.ImmutableThreadingProfile;
+import org.mule.config.builders.ConfigurationBuilderService;
 import org.mule.config.i18n.Message;
 import org.mule.config.i18n.MessageFactory;
 import org.mule.context.notification.AsyncMessageNotification;
@@ -92,6 +93,8 @@ public class DefaultMuleContextBuilder implements MuleContextBuilder
 
     protected TransportDescriptorService transportDescriptorService;
 
+    protected ConfigurationBuilderService configurationBuilderService;
+
     public DefaultMuleContextBuilder()
     {
     }
@@ -118,7 +121,7 @@ public class DefaultMuleContextBuilder implements MuleContextBuilder
         muleContext.setExceptionListener(new DefaultSystemExceptionStrategy(muleContext));
         //TODO(pablo.kraan): OSGi - this is wrong - context classLoader is the root app classlodear conating System + OSGi classes only
         //muleContext.setExecutionClassLoader(Thread.currentThread().getContextClassLoader());
-        muleContext .setTransportDescriptorService(transportDescriptorService);
+        muleContext.setTransportDescriptorService(transportDescriptorService);
         return muleContext;
     }
 
@@ -256,6 +259,16 @@ public class DefaultMuleContextBuilder implements MuleContextBuilder
     public void setTransportDescriptorService(TransportDescriptorService transportDescriptorService)
     {
         this.transportDescriptorService = transportDescriptorService;
+    }
+
+    public void setConfigurationBuilderService(ConfigurationBuilderService configurationBuilderService)
+    {
+        this.configurationBuilderService = configurationBuilderService;
+    }
+
+    public ConfigurationBuilderService getConfigurationBuilderService()
+    {
+        return configurationBuilderService;
     }
 
     protected DefaultMuleConfiguration createMuleConfiguration()

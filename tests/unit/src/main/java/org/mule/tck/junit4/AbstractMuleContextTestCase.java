@@ -28,7 +28,9 @@ import org.mule.api.routing.filter.Filter;
 import org.mule.api.transformer.Transformer;
 import org.mule.api.transport.Connector;
 import org.mule.config.DefaultMuleConfiguration;
+import org.mule.config.builders.ConfigurationBuilderService;
 import org.mule.config.builders.DefaultsConfigurationBuilder;
+import org.mule.config.builders.MuleConfigurationBuilderService;
 import org.mule.config.builders.SimpleConfigurationBuilder;
 import org.mule.construct.Flow;
 import org.mule.context.DefaultMuleContextBuilder;
@@ -132,6 +134,7 @@ public abstract class AbstractMuleContextTestCase extends AbstractMuleTestCase
     private boolean disposeContextPerClass;
     private BundleContext bundleContext;
     private MuleTransportDescriptorService transportDescriptorService;
+    private ConfigurationBuilderService configurationBuilderService;
 
     protected boolean isDisposeContextPerClass()
     {
@@ -241,6 +244,9 @@ public abstract class AbstractMuleContextTestCase extends AbstractMuleTestCase
             transportDescriptorService = createTransportDescriptorService();
             configureTransportDescriptorService(transportDescriptorService);
 
+            configurationBuilderService = createConfigurationBuilderService();
+            configureConfigurationBuilderService(configurationBuilderService);
+
             MuleContextFactory muleContextFactory = createMuleContextFactory();
             List<ConfigurationBuilder> builders = new ArrayList<ConfigurationBuilder>();
             builders.add(new SimpleConfigurationBuilder(getStartUpProperties()));
@@ -269,6 +275,16 @@ public abstract class AbstractMuleContextTestCase extends AbstractMuleTestCase
             }
         }
         return context;
+    }
+
+    protected void configureConfigurationBuilderService(ConfigurationBuilderService configurationBuilderService)
+    {
+
+    }
+
+    protected ConfigurationBuilderService createConfigurationBuilderService()
+    {
+        return new MuleConfigurationBuilderService();
     }
 
     protected void configureTransportDescriptorService(MuleTransportDescriptorService transportDescriptorService)
@@ -304,6 +320,7 @@ public abstract class AbstractMuleContextTestCase extends AbstractMuleTestCase
         DefaultMuleContextFactory defaultMuleContextFactory = new DefaultMuleContextFactory();
         defaultMuleContextFactory.setBundleContext(bundleContext);
         defaultMuleContextFactory.setTransportDescriptorService(transportDescriptorService);
+        defaultMuleContextFactory.setConfigurationBuilderService(configurationBuilderService);
 
         return defaultMuleContextFactory;
     }

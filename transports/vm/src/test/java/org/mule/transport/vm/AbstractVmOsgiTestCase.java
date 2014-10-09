@@ -12,9 +12,11 @@ import static org.ops4j.pax.exam.CoreOptions.junitBundles;
 import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.CoreOptions.options;
 import org.mule.api.registry.MuleTransportDescriptorService;
-import org.mule.api.registry.TransportServiceDescriptorFactory;
+import org.mule.config.builders.ConfigurationBuilderFactory;
+import org.mule.config.builders.ConfigurationBuilderService;
 import org.mule.functional.junit4.FunctionalTestCase;
-import org.mule.transport.service.TransportServiceDescriptor;
+import org.mule.osgi.ConfigurationBuilderServiceWrapper;
+import org.mule.osgi.TransportDescriptorServiceWrapper;
 
 import java.io.File;
 import java.util.Collection;
@@ -34,6 +36,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceEvent;
+import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceReference;
 
 /**
@@ -46,7 +49,10 @@ public abstract class AbstractVmOsgiTestCase extends FunctionalTestCase
 
     @Inject
     public BundleContext bundleContext;
+
     private TransportDescriptorServiceWrapper transportDescriptorServiceWrapper;
+
+    private ConfigurationBuilderServiceWrapper configurationBuilderServiceWrapper;
 
     @ProbeBuilder
     public TestProbeBuilder build(TestProbeBuilder builder)
@@ -154,18 +160,23 @@ public abstract class AbstractVmOsgiTestCase extends FunctionalTestCase
     @Override
     protected void configureTransportDescriptorService(MuleTransportDescriptorService transportDescriptorService)
     {
-        transportDescriptorServiceWrapper = new TransportDescriptorServiceWrapper(bundleContext, transportDescriptorService);
+        transportDescriptorServiceWrapper = TransportDescriptorServiceWrapper.createTransportDescriptorServiceWrapper(transportDescriptorService, bundleContext);
+    }
+
+    @Override
+    protected void configureConfigurationBuilderService(ConfigurationBuilderService configurationBuilderService)
+    {
+        configurationBuilderServiceWrapper = new ConfigurationBuilderServiceWrapper(bundleContext, configurationBuilderService);
         try
         {
-            String filter = "(objectclass=" + TransportServiceDescriptorFactory.class.getName() + ")";
-            bundleContext.addServiceListener(transportDescriptorServiceWrapper, filter);
+            String filter = "(objectclass=" + ConfigurationBuilderFactory.class.getName() + ")";
+            bundleContext.addServiceListener(configurationBuilderServiceWrapper, filter);
 
-            bundleContext.addServiceListener(transportDescriptorServiceWrapper, filter);
-            Collection<ServiceReference<TransportServiceDescriptorFactory>> serviceReferences = bundleContext.getServiceReferences(TransportServiceDescriptorFactory.class, null);
+            Collection<ServiceReference<ConfigurationBuilderFactory>> serviceReferences = bundleContext.getServiceReferences(ConfigurationBuilderFactory.class, null);
 
-            for (ServiceReference<TransportServiceDescriptorFactory> serviceReference : serviceReferences)
+            for (ServiceReference<ConfigurationBuilderFactory> serviceReference : serviceReferences)
             {
-                transportDescriptorServiceWrapper.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, serviceReference));
+                configurationBuilderServiceWrapper.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, serviceReference));
 
             }
         }
@@ -176,13 +187,19 @@ public abstract class AbstractVmOsgiTestCase extends FunctionalTestCase
     }
 
     @After
-    public void unregisterTransportDescriptorServiceWrapper() throws Exception
+    public void unregisterServiceWrappers() throws Exception
     {
-        if (transportDescriptorServiceWrapper != null)
+        removeServiceListener(transportDescriptorServiceWrapper);
+        removeServiceListener(configurationBuilderServiceWrapper);
+    }
+
+    private void removeServiceListener(ServiceListener listener)
+    {
+        if (listener != null)
         {
             try
             {
-                bundleContext.removeServiceListener(transportDescriptorServiceWrapper);
+                bundleContext.removeServiceListener(listener);
             }
             catch (IllegalStateException serviceNotValidAnymore)
             {

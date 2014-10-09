@@ -11,18 +11,14 @@ import org.mule.api.config.ConfigurationBuilder;
 import org.mule.api.config.ConfigurationException;
 import org.mule.api.config.DomainMuleContextAwareConfigurationBuilder;
 import org.mule.config.ConfigResource;
-import org.mule.osgi.MuleCoreActivator;
 import org.mule.util.StringUtils;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.framework.ServiceReference;
 
 /**
  * Configures Mule from a configuration resource or comma seperated list of configuration resources by
@@ -32,6 +28,8 @@ import org.osgi.framework.ServiceReference;
 public class AutoConfigurationBuilder extends AbstractResourceConfigurationBuilder implements DomainMuleContextAwareConfigurationBuilder
 {
     private MuleContext domainContext;
+
+    private ConfigurationBuilderService configurationBuilderService;
 
     public AutoConfigurationBuilder(String resource) throws ConfigurationException
     {
@@ -79,9 +77,7 @@ public class AutoConfigurationBuilder extends AbstractResourceConfigurationBuild
                 String extension = e.getKey();
                 List<ConfigResource> configs = e.getValue();
 
-                ConfigurationBuilderFactory configurationBuilderFactory = getConfigurationBuilderFactory(extension);
-
-                ConfigurationBuilder cb = configurationBuilderFactory.createConfigurationBuilder(domainContext, configs);
+                ConfigurationBuilder cb = configurationBuilderService.createConfigurationBuilder(extension, domainContext, configs);
                 //TODO(pablo.kraan): OSGi - set the bundleContext
                 cb.configure(muleContext, null);
             }
@@ -96,32 +92,14 @@ public class AutoConfigurationBuilder extends AbstractResourceConfigurationBuild
         }
     }
 
-    private ConfigurationBuilderFactory getConfigurationBuilderFactory(String extension)
-    {
-        Collection<ServiceReference<ConfigurationBuilderFactory>> serviceReferences = null;
-        try
-        {
-            serviceReferences = MuleCoreActivator.bundleContext.getServiceReferences(ConfigurationBuilderFactory.class, "(extension="+ extension + ")");
-
-            if (serviceReferences.size() == 0)
-            {
-
-                throw new IllegalStateException("Unable to obtain a configuration builder factory");
-            }
-        }
-        catch (InvalidSyntaxException e)
-        {
-            logger.error("Unable to get ConfigurationBuilder service");
-        }
-
-        ServiceReference<ConfigurationBuilderFactory> configurationBuilderFactoryServiceReference = serviceReferences.iterator().next();
-
-        return MuleCoreActivator.bundleContext.getService(configurationBuilderFactoryServiceReference);
-    }
-
     @Override
     public void setDomainContext(MuleContext domainContext)
     {
         this.domainContext  = domainContext;
+    }
+
+    public void setConfigurationBuilderService(ConfigurationBuilderService configurationBuilderService)
+    {
+        this.configurationBuilderService = configurationBuilderService;
     }
 }

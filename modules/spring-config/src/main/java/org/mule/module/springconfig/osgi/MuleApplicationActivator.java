@@ -10,11 +10,12 @@ package org.mule.module.springconfig.osgi;
 import org.mule.api.MuleContext;
 import org.mule.api.config.ConfigurationBuilder;
 import org.mule.api.config.MuleConfiguration;
-import org.mule.api.context.MuleContextBuilder;
+import org.mule.api.registry.MuleTransportDescriptorService;
 import org.mule.config.PropertiesMuleConfigurationFactory;
 import org.mule.context.DefaultMuleContextBuilder;
 import org.mule.context.DefaultMuleContextFactory;
 import org.mule.module.springconfig.SpringXmlConfigurationBuilder;
+import org.mule.osgi.TransportDescriptorServiceWrapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +28,7 @@ public class MuleApplicationActivator implements BundleActivator
 
     //TODO(pablo.kraan): OSGi - move this class to another package/module
     private MuleContext muleContext;
+    private TransportDescriptorServiceWrapper transportDescriptorServiceWrapper;
 
     @Override
     public void start(BundleContext bundleContext) throws Exception
@@ -53,11 +55,16 @@ public class MuleApplicationActivator implements BundleActivator
             //TODO(pablo.kraan): OSGi - need to register all the service wrappers to registering services (like TransportDescriptorServiceWrapper)
             MuleConfiguration configuration = createMuleConfiguration(configResource);
 
-            MuleContextBuilder contextBuilder = new DefaultMuleContextBuilder();
+            MuleTransportDescriptorService muleTransportDescriptorService = new MuleTransportDescriptorService();
+            transportDescriptorServiceWrapper = TransportDescriptorServiceWrapper.createTransportDescriptorServiceWrapper(muleTransportDescriptorService, bundleContext);
+
+            DefaultMuleContextBuilder contextBuilder = new DefaultMuleContextBuilder();
             contextBuilder.setMuleConfiguration(configuration);
+            contextBuilder.setTransportDescriptorService(muleTransportDescriptorService);
 
             DefaultMuleContextFactory contextFactory = new DefaultMuleContextFactory();
             contextFactory.setBundleContext(bundleContext);
+            contextFactory.setTransportDescriptorService(muleTransportDescriptorService);
 
             muleContext = contextFactory.createMuleContext(configBuilders, contextBuilder);
             muleContext.start();
@@ -91,6 +98,12 @@ public class MuleApplicationActivator implements BundleActivator
     public void stop(BundleContext bundleContext) throws Exception
     {
         System.out.println("Stopping Example bundle");
+
+        if (transportDescriptorServiceWrapper != null)
+        {
+            bundleContext.removeServiceListener(transportDescriptorServiceWrapper);
+        }
+
         if (muleContext != null)
         {
             muleContext.stop();
