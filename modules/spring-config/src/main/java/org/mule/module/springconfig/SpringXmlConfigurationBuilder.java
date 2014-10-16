@@ -70,8 +70,6 @@ public class SpringXmlConfigurationBuilder extends AbstractResourceConfiguration
     @Override
     protected void doConfigure(MuleContext muleContext, BundleContext bundleContext) throws Exception
     {
-        BundleWiring bundleWiring = bundleContext.getBundle().adapt(BundleWiring.class);
-        ClassLoader bundleClassLoader = bundleWiring.getClassLoader();
         ClassLoader springModuleClassLoader = this.getClass().getClassLoader();
 
         ConfigResource[] allResources;
