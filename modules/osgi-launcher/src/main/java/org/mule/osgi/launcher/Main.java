@@ -34,6 +34,8 @@ import org.osgi.framework.wiring.FrameworkWiring;
  */
 public class Main
 {
+    public static final boolean SHOW_BUNDLE_STATUSES = isShowBundleStatuses();
+    public static final boolean SHOW_BUNDLE_DEPENDENCIES = isShowBundleDependencies();
 
     public static final String BASE_FOLDER = "/Users/pablokraan/devel/osgiDemo/";
     private static Framework framework = null;
@@ -77,8 +79,14 @@ public class Main
                 // Start the framework.
                 framework.start();
 
-                showBundleStatuses(context);
-                showDependencies(context);
+                if (SHOW_BUNDLE_STATUSES)
+                {
+                    showBundleStatuses(context);
+                }
+                if (SHOW_BUNDLE_DEPENDENCIES)
+                {
+                    showDependencies(context);
+                }
 
                 System.out.println("***************************");
                 System.out.println("Mule OSGi Container started");
@@ -385,5 +393,19 @@ public class Main
     private static boolean isFragment(Bundle bundle)
     {
         return bundle.getHeaders().get(Constants.FRAGMENT_HOST) != null;
+    }
+
+    private static boolean isShowBundleStatuses()
+    {
+        String value = System.getProperty("mule.osgi.showBundleStatuses", "false");
+
+        return Boolean.valueOf(value);
+    }
+
+    private static boolean isShowBundleDependencies()
+    {
+        String value = System.getProperty("mule.osgi.showBundleDependencies", "false");
+
+        return Boolean.valueOf(value);
     }
 }
