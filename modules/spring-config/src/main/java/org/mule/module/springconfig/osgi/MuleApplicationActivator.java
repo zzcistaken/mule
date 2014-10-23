@@ -20,11 +20,15 @@ import org.mule.osgi.TransportDescriptorServiceWrapper;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
 public class MuleApplicationActivator implements BundleActivator
 {
+
+    protected transient Log logger = LogFactory.getLog(MuleApplicationActivator.class);
 
     //TODO(pablo.kraan): OSGi - move this class to another package/module
     private MuleContext muleContext;
@@ -33,7 +37,8 @@ public class MuleApplicationActivator implements BundleActivator
     @Override
     public void start(BundleContext bundleContext) throws Exception
     {
-        System.out.println("Starting Example bundle ");
+        logger.info("Starting application:" + bundleContext.getBundle().getSymbolicName());
+
         //TODO(pablo.kraan): OSGi - setting property to see full exceptions
         System.setProperty("mule.verbose.exceptions", "true");
 
@@ -68,14 +73,13 @@ public class MuleApplicationActivator implements BundleActivator
 
             muleContext = contextFactory.createMuleContext(configBuilders, contextBuilder);
             muleContext.start();
+            logger.info("Application started: " + bundleContext.getBundle().getSymbolicName());
         }
         catch (Throwable e)
         {
             System.out.println("Error starting Example bundle: " + e.getMessage());
             e.printStackTrace();
         }
-        System.out.println("Example bundle started");
-
     }
 
     protected MuleConfiguration createMuleConfiguration(String appConfigurationResource)

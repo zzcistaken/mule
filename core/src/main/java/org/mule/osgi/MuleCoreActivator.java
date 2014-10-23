@@ -22,7 +22,6 @@ public class MuleCoreActivator implements BundleActivator
     @Override
     public void start(BundleContext context) throws Exception
     {
-        System.out.println("Starting Mule core bundle");
         bundleContext = context;
 
         transportActivator.start(context);

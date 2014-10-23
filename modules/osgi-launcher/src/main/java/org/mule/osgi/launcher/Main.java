@@ -88,10 +88,6 @@ public class Main
                     showDependencies(context);
                 }
 
-                System.out.println("***************************");
-                System.out.println("Mule OSGi Container started");
-                System.out.println("***************************");
-
                 // Wait for framework to stop to exit the VM.
                 event = framework.waitForStop(0);
             }
@@ -128,7 +124,10 @@ public class Main
         Bundle[] bundles = context.getBundles();
         for (int i = 0; i < bundles.length; i++)
         {
-            System.out.println("Installed bundle: " + bundles[i].getLocation());
+            if (SHOW_BUNDLE_STATUSES)
+            {
+                System.out.println("Installed bundle: " + bundles[i].getLocation());
+            }
             installedBundleMap.put(bundles[i].getLocation(), bundles[i]);
         }
         return installedBundleMap;
@@ -138,7 +137,11 @@ public class Main
     {
         for (Bundle bundle : bundlesToStart)
         {
-            System.out.println("Starting bundle: " + bundle.getSymbolicName());
+            if (SHOW_BUNDLE_STATUSES)
+            {
+                System.out.println("Starting bundle: " + bundle.getSymbolicName());
+            }
+
             bundle.start();
         }
     }

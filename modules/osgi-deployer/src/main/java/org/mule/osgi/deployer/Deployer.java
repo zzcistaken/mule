@@ -53,9 +53,6 @@ public class Deployer implements Runnable
     @Override
     public void run()
     {
-        //ServiceReference<RepositoryAdmin> serviceReference = context.getServiceReference(RepositoryAdmin.class);
-        //RepositoryAdmin repositoryAdmin = context.getService(serviceReference);
-        System.out.println("STARTING APPLICATION DEPLOYMENT....");
         //TODO(pablo.kraan): OSGi - move this property into a separate file
         final String BASE_FOLDER = context.getProperty("mule.server.baseFolder");
 

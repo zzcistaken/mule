@@ -7,6 +7,8 @@
 
 package org.mule.osgi.launcher;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.felix.framework.Logger;
 import org.osgi.framework.FrameworkEvent;
 import org.osgi.framework.FrameworkListener;
@@ -16,6 +18,8 @@ import org.osgi.framework.FrameworkListener;
  */
 public class MuleOsgiListener implements FrameworkListener
 {
+
+    protected transient Log logger = LogFactory.getLog(MuleOsgiListener.class);
 
     @Override
     public void frameworkEvent(FrameworkEvent event)
@@ -37,13 +41,12 @@ public class MuleOsgiListener implements FrameworkListener
     {
         if (throwable != null)
         {
-            System.err.println(msg + "\n" + throwable.getMessage());
+            logger.debug(msg, throwable);
         }
         else
         {
-            System.err.println(msg);
+            logger.debug(msg);
         }
-
     }
 
     private void log(int level, String s)

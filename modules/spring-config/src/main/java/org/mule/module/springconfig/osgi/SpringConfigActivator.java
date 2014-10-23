@@ -25,8 +25,6 @@ public class SpringConfigActivator implements BundleActivator
     @Override
     public void start(BundleContext context) throws Exception
     {
-        System.out.println("Activating spring config module");
-
         Dictionary<String, String> properties = new Hashtable<>();
         properties.put(ConfigurationBuilderFactory.EXTENSION, "xml");
 
