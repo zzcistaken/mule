@@ -35,10 +35,13 @@ import org.osgi.framework.wiring.FrameworkWiring;
 public class Main
 {
 
+    public static final String BASE_FOLDER = "/Users/pablokraan/devel/osgiDemo/";
     private static Framework framework = null;
 
     public static void main(String[] args) throws Exception
     {
+        System.setProperty("mule.server.baseFolder", BASE_FOLDER);
+
         // Register a shutdown hook to make sure the framework is
         // cleanly shutdown when the VM exits.
         registerShutDownHook();
@@ -205,35 +208,35 @@ public class Main
     private static List getCoreBundles()
     {
         List jarList = new ArrayList();
-        jarList.add(new File("/Users/pablokraan/devel/osgiexample/core/geronimo-jta_1.1_spec-1.1.1.jar"));
-        jarList.add(new File("/Users/pablokraan/devel/osgiexample/core/geronimo-j2ee-connector_1.5_spec-2.0.0.jar"));
-        jarList.add(new File("/Users/pablokraan/devel/osgiexample/core/geronimo-jms_1.1_spec-1.1.1.jar"));
+        jarList.add(new File(BASE_FOLDER + "core/geronimo-jta_1.1_spec-1.1.1.jar"));
+        jarList.add(new File(BASE_FOLDER + "core/geronimo-j2ee-connector_1.5_spec-2.0.0.jar"));
+        jarList.add(new File(BASE_FOLDER + "core/geronimo-jms_1.1_spec-1.1.1.jar"));
 
-        jarList.add(new File("/Users/pablokraan/devel/osgiexample/core/log4j-core-2.0.2.jar"));
-        jarList.add(new File("/Users/pablokraan/devel/osgiexample/core/log4j-api-2.0.2.jar"));
+        jarList.add(new File(BASE_FOLDER + "core/log4j-core-2.0.2.jar"));
+        jarList.add(new File(BASE_FOLDER + "core/log4j-api-2.0.2.jar"));
 
-        jarList.add(new File("/Users/pablokraan/devel/osgiexample/core/antlr-runtime-osgi.jar"));
-        jarList.add(new File("/Users/pablokraan/devel/osgiexample/core/asm-commons-osgi.jar"));
-        jarList.add(new File("/Users/pablokraan/devel/osgiexample/core/asm-osgi.jar"));
+        jarList.add(new File(BASE_FOLDER + "core/antlr-runtime-osgi.jar"));
+        jarList.add(new File(BASE_FOLDER + "core/asm-commons-osgi.jar"));
+        jarList.add(new File(BASE_FOLDER + "core/asm-osgi.jar"));
 
-        jarList.add(new File("/Users/pablokraan/devel/osgiexample/core/slf4j-api-1.7.7.jar"));
-        jarList.add(new File("/Users/pablokraan/devel/osgiexample/core/log4j-slf4j-impl-2.0.2.jar"));
-        jarList.add(new File("/Users/pablokraan/devel/osgiexample/core/log4j-1.2-api-2.0.2.jar"));
-        jarList.add(new File("/Users/pablokraan/devel/osgiexample/core/log4j-jcl-2.0.2.jar"));
-        jarList.add(new File("/Users/pablokraan/devel/osgiexample/core/jcl-over-slf4j-1.7.7.jar"));
+        jarList.add(new File(BASE_FOLDER + "core/slf4j-api-1.7.7.jar"));
+        jarList.add(new File(BASE_FOLDER + "core/log4j-slf4j-impl-2.0.2.jar"));
+        jarList.add(new File(BASE_FOLDER + "core/log4j-1.2-api-2.0.2.jar"));
+        jarList.add(new File(BASE_FOLDER + "core/log4j-jcl-2.0.2.jar"));
+        jarList.add(new File(BASE_FOLDER + "core/jcl-over-slf4j-1.7.7.jar"));
 
-        jarList.add(new File("/Users/pablokraan/devel/osgiexample/core/commons-logging-1.2.jar"));
-        jarList.add(new File("/Users/pablokraan/devel/osgiexample/core/commons-beanutils-osgi.jar"));
-        jarList.add(new File("/Users/pablokraan/devel/osgiexample/core/commons-cli-osgi.jar"));
-        jarList.add(new File("/Users/pablokraan/devel/osgiexample/core/commons-collections-osgi.jar"));
-        jarList.add(new File("/Users/pablokraan/devel/osgiexample/core/commons-io-osgi.jar"));
-        jarList.add(new File("/Users/pablokraan/devel/osgiexample/core/commons-lang-osgi.jar"));
-        jarList.add(new File("/Users/pablokraan/devel/osgiexample/core/commons-pool-osgi.jar"));
-        jarList.add(new File("/Users/pablokraan/devel/osgiexample/core/eaio-uuid-osgi.jar"));
-        jarList.add(new File("/Users/pablokraan/devel/osgiexample/core/guava-16.0.1.jar"));
-        jarList.add(new File("/Users/pablokraan/devel/osgiexample/core/jgrapht-osgi.jar"));
-        jarList.add(new File("/Users/pablokraan/devel/osgiexample/core/xmlbeans-osgi.jar"));
-        jarList.add(new File("/Users/pablokraan/devel/osgiexample/core/mule-core-4.0-SNAPSHOT.jar"));
+        jarList.add(new File(BASE_FOLDER + "core/commons-logging-1.2.jar"));
+        jarList.add(new File(BASE_FOLDER + "core/commons-beanutils-osgi.jar"));
+        jarList.add(new File(BASE_FOLDER + "core/commons-cli-osgi.jar"));
+        jarList.add(new File(BASE_FOLDER + "core/commons-collections-osgi.jar"));
+        jarList.add(new File(BASE_FOLDER + "core/commons-io-osgi.jar"));
+        jarList.add(new File(BASE_FOLDER + "core/commons-lang-osgi.jar"));
+        jarList.add(new File(BASE_FOLDER + "core/commons-pool-osgi.jar"));
+        jarList.add(new File(BASE_FOLDER + "core/eaio-uuid-osgi.jar"));
+        jarList.add(new File(BASE_FOLDER + "core/guava-16.0.1.jar"));
+        jarList.add(new File(BASE_FOLDER + "core/jgrapht-osgi.jar"));
+        jarList.add(new File(BASE_FOLDER + "core/xmlbeans-osgi.jar"));
+        jarList.add(new File(BASE_FOLDER + "core/mule-core-4.0-SNAPSHOT.jar"));
 
         return jarList;
     }
@@ -241,22 +244,22 @@ public class Main
     private static List getSpringConfigBundles()
     {
         List jarList = new ArrayList();
-        jarList.add(new File("/Users/pablokraan/devel/osgiexample/spring-config/cglib-osgi.jar"));
-        jarList.add(new File("/Users/pablokraan/devel/osgiexample/spring-config/mule-module-annotations-4.0-SNAPSHOT.jar"));
-        jarList.add(new File("/Users/pablokraan/devel/osgiexample/spring-config/org.apache.servicemix.bundles.aopalliance-1.0_6.jar"));
-        jarList.add(new File("/Users/pablokraan/devel/osgiexample/spring-config/org.springframework.core-3.2.1.RELEASE.jar"));
-        jarList.add(new File("/Users/pablokraan/devel/osgiexample/spring-config/org.springframework.aop-3.2.1.RELEASE.jar"));
-        jarList.add(new File("/Users/pablokraan/devel/osgiexample/spring-config/org.springframework.beans-3.2.1.RELEASE.jar"));
-        jarList.add(new File("/Users/pablokraan/devel/osgiexample/spring-config/org.springframework.context-3.2.1.RELEASE.jar"));
-        jarList.add(new File("/Users/pablokraan/devel/osgiexample/spring-config/org.springframework.context.support-3.2.1.RELEASE.jar"));
-        jarList.add(new File("/Users/pablokraan/devel/osgiexample/spring-config/org.springframework.expression-3.2.1.RELEASE.jar"));
-        jarList.add(new File("/Users/pablokraan/devel/osgiexample/spring-config/gemini-blueprint-io-1.0.2.RELEASE.jar"));
-        jarList.add(new File("/Users/pablokraan/devel/osgiexample/spring-config/gemini-blueprint-core-1.0.2.RELEASE.jar"));
-        jarList.add(new File("/Users/pablokraan/devel/osgiexample/spring-config/gemini-blueprint-extender-1.0.2.RELEASE.jar"));
-        jarList.add(new File("/Users/pablokraan/devel/osgiexample/spring-config/dom4j-osgi.jar"));
-        jarList.add(new File("/Users/pablokraan/devel/osgiexample/spring-config/mule-module-spring-config-4.0-SNAPSHOT.jar"));
+        jarList.add(new File(BASE_FOLDER + "spring-config/cglib-osgi.jar"));
+        jarList.add(new File(BASE_FOLDER + "spring-config/mule-module-annotations-4.0-SNAPSHOT.jar"));
+        jarList.add(new File(BASE_FOLDER + "spring-config/org.apache.servicemix.bundles.aopalliance-1.0_6.jar"));
+        jarList.add(new File(BASE_FOLDER + "spring-config/org.springframework.core-3.2.1.RELEASE.jar"));
+        jarList.add(new File(BASE_FOLDER + "spring-config/org.springframework.aop-3.2.1.RELEASE.jar"));
+        jarList.add(new File(BASE_FOLDER + "spring-config/org.springframework.beans-3.2.1.RELEASE.jar"));
+        jarList.add(new File(BASE_FOLDER + "spring-config/org.springframework.context-3.2.1.RELEASE.jar"));
+        jarList.add(new File(BASE_FOLDER + "spring-config/org.springframework.context.support-3.2.1.RELEASE.jar"));
+        jarList.add(new File(BASE_FOLDER + "spring-config/org.springframework.expression-3.2.1.RELEASE.jar"));
+        jarList.add(new File(BASE_FOLDER + "spring-config/gemini-blueprint-io-1.0.2.RELEASE.jar"));
+        jarList.add(new File(BASE_FOLDER + "spring-config/gemini-blueprint-core-1.0.2.RELEASE.jar"));
+        jarList.add(new File(BASE_FOLDER + "spring-config/gemini-blueprint-extender-1.0.2.RELEASE.jar"));
+        jarList.add(new File(BASE_FOLDER + "spring-config/dom4j-osgi.jar"));
+        jarList.add(new File(BASE_FOLDER + "spring-config/mule-module-spring-config-4.0-SNAPSHOT.jar"));
 
-        jarList.add(new File("/Users/pablokraan/devel/osgiexample/spring-config/mule-transport-vm-4.0-SNAPSHOT.jar"));
+        jarList.add(new File(BASE_FOLDER + "spring-config/mule-transport-vm-4.0-SNAPSHOT.jar"));
 
         return jarList;
     }
@@ -264,10 +267,11 @@ public class Main
     private static List getDeployerBundles()
     {
         List jarList = new ArrayList();
-        jarList.add(new File("/Users/pablokraan/devel/osgiexample/deployer/org.apache.felix.fileinstall-3.4.0.jar"));
-        jarList.add(new File("/Users/pablokraan/devel/osgiexample/deployer/org.eclipse.equinox.region-1.1.0.v20120522-1841.jar"));
-        jarList.add(new File("/Users/pablokraan/devel/osgiexample/deployer/mule-module-osgi-utils-4.0-SNAPSHOT.jar"));
-        jarList.add(new File("/Users/pablokraan/devel/osgiexample/deployer/mule-module-osgi-deployer-4.0-SNAPSHOT.jar"));
+        jarList.add(new File(BASE_FOLDER + "deployer/org.apache.felix.bundlerepository-2.0.2.jar"));
+        jarList.add(new File(BASE_FOLDER + "deployer/org.apache.felix.fileinstall-3.4.0.jar"));
+        jarList.add(new File(BASE_FOLDER + "deployer/org.eclipse.equinox.region-1.1.0.v20120522-1841.jar"));
+        jarList.add(new File(BASE_FOLDER + "deployer/mule-module-osgi-utils-4.0-SNAPSHOT.jar"));
+        jarList.add(new File(BASE_FOLDER + "deployer/mule-module-osgi-deployer-4.0-SNAPSHOT.jar"));
 
         return jarList;
     }

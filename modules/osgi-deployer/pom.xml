@@ -55,11 +55,11 @@
     </plugins></build>
 
     <dependencies>
-        <dependency>
-            <groupId>org.mule</groupId>
-            <artifactId>mule-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.mule</groupId>-->
+            <!--<artifactId>mule-core</artifactId>-->
+            <!--<version>${project.version}</version>-->
+        <!--</dependency>-->
 
         <dependency>
             <groupId>org.mule.modules</groupId>
@@ -76,6 +76,11 @@
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.fileinstall</artifactId>
             <version>3.4.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.bundlerepository</artifactId>
+            <version>2.0.2</version>
         </dependency>
 
         <!--<dependency>-->
