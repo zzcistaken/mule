@@ -290,8 +290,16 @@ public class Deployer implements Runnable
 
     private static class MuleRegionFilter implements RegionFilter
     {
+        public static final boolean SHOW_REGION_FILTERING = isShowRegionFiltering();
 
-        private String region;
+        private static boolean isShowRegionFiltering()
+        {
+            String value = System.getProperty("mule.osgi.showRegionFiltering", "false");
+
+            return Boolean.valueOf(value);
+        }
+
+        private final String region;
 
         private MuleRegionFilter(String region)
         {
@@ -301,43 +309,51 @@ public class Deployer implements Runnable
         @Override
         public boolean isAllowed(Bundle bundle)
         {
-            System.out.println("Region: " + region + " - isAllowed bundle: " + bundle.getSymbolicName());
+            logRegionFiltering("Region: " + region + " - isAllowed bundle: " + bundle.getSymbolicName());
             return true;
         }
 
         @Override
         public boolean isAllowed(BundleRevision bundleRevision)
         {
-            System.out.println("Region: " + region + " - isAllowed bundleRevision:: " + bundleRevision);
+            logRegionFiltering("Region: " + region + " - isAllowed bundleRevision:: " + bundleRevision);
             return true;
         }
 
         @Override
         public boolean isAllowed(ServiceReference<?> serviceReference)
         {
-            System.out.println("Region: " + region + " - isAllowed: serviceReference: " + serviceReference);
+            logRegionFiltering("Region: " + region + " - isAllowed: serviceReference: " + serviceReference);
             return true;
         }
 
         @Override
         public boolean isAllowed(BundleCapability bundleCapability)
         {
-            System.out.println("Region: " + region + " - isAllowed: bundleCapability: " + bundleCapability);
+            logRegionFiltering("Region: " + region + " - isAllowed: bundleCapability: " + bundleCapability);
             return true;
         }
 
         @Override
         public boolean isAllowed(String s, Map<String, ?> stringMap)
         {
-            System.out.println("Region: " + region + " - isAllowed: " + s + " stringMap: " + stringMap);
+            logRegionFiltering("Region: " + region + " - isAllowed: " + s + " stringMap: " + stringMap);
             return true;
         }
 
         @Override
         public Map<String, Collection<String>> getSharingPolicy()
         {
-            System.out.println("Region: " + region + " - isAllowed: getSharingPolicy");
+            logRegionFiltering("Region: " + region + " - isAllowed: getSharingPolicy");
             return null;
+        }
+
+        private void logRegionFiltering(String message)
+        {
+            if (SHOW_REGION_FILTERING)
+            {
+                System.out.println(message);
+            }
         }
     }
 }
