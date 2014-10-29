@@ -77,7 +77,7 @@ public class MuleApplicationActivator implements BundleActivator
         }
         catch (Throwable e)
         {
-            System.out.println("Error starting Example bundle: " + e.getMessage());
+            System.out.println("Error starting bundle: " + bundleContext.getBundle().getSymbolicName() + ". " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -101,7 +101,8 @@ public class MuleApplicationActivator implements BundleActivator
     @Override
     public void stop(BundleContext bundleContext) throws Exception
     {
-        System.out.println("Stopping Example bundle");
+        String bundleName = bundleContext.getBundle().getSymbolicName();
+        System.out.println("Stopping application " + bundleName);
 
         if (transportDescriptorServiceWrapper != null)
         {
@@ -112,6 +113,6 @@ public class MuleApplicationActivator implements BundleActivator
         {
             muleContext.stop();
         }
-        System.out.println("Example bundle stopped");
+        System.out.println(bundleName + " stopped");
     }
 }
