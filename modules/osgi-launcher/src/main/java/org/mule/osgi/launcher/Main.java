@@ -39,7 +39,7 @@ public class Main
     public static final boolean SHOW_BUNDLE_STATUSES = isShowBundleStatuses();
     public static final boolean SHOW_BUNDLE_DEPENDENCIES = isShowBundleDependencies();
 
-    public static final String DEFAULT_BASE_FOLDER = "/Users/pablokraan/devel/osgiDemo/";
+    public static final String DEFAULT_BASE_FOLDER = "/Users/pablokraan/devel/osgiDev/";
     private static Framework framework = null;
 
     public static String BASE_FOLDER;
