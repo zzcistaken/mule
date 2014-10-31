@@ -254,8 +254,17 @@ public class DefaultMuleContextFactory implements MuleContextFactory
     {
         MuleContext muleContext = muleContextBuilder.buildMuleContext();
 
-        BundleWiring bundleWiring = bundleContext.getBundle().adapt(BundleWiring.class);
-        ClassLoader bundleClassLoader = bundleWiring.getClassLoader();
+        //TODO(pablo.kraan): OSGi - kind of temporarily hack to maintain working other parts of mule
+        ClassLoader bundleClassLoader;
+        if (bundleContext == null)
+        {
+            bundleClassLoader = this.getClass().getClassLoader();
+        }
+        else
+        {
+            BundleWiring bundleWiring = bundleContext.getBundle().adapt(BundleWiring.class);
+            bundleClassLoader = bundleWiring.getClassLoader();
+        }
 
         muleContext.setExecutionClassLoader(bundleClassLoader);
 
