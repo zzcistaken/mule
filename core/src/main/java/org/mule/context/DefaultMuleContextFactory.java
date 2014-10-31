@@ -14,11 +14,13 @@ import org.mule.api.context.MuleContextBuilder;
 import org.mule.api.context.MuleContextFactory;
 import org.mule.api.context.notification.MuleContextListener;
 import org.mule.api.lifecycle.InitialisationException;
+import org.mule.api.registry.MuleTransportDescriptorService;
 import org.mule.api.registry.TransportDescriptorService;
 import org.mule.config.DefaultMuleConfiguration;
 import org.mule.config.builders.AutoConfigurationBuilder;
 import org.mule.config.builders.ConfigurationBuilderService;
 import org.mule.config.builders.DefaultsConfigurationBuilder;
+import org.mule.config.builders.MuleConfigurationBuilderService;
 import org.mule.config.builders.SimpleConfigurationBuilder;
 
 import java.util.LinkedList;
@@ -42,8 +44,8 @@ public class DefaultMuleContextFactory implements MuleContextFactory
 
     private List<MuleContextListener> listeners = new LinkedList<>();
     private BundleContext bundleContext;
-    private TransportDescriptorService transportDescriptorService;
-    private ConfigurationBuilderService configurationBuilderService;
+    private TransportDescriptorService transportDescriptorService = new MuleTransportDescriptorService();
+    private ConfigurationBuilderService configurationBuilderService = new MuleConfigurationBuilderService();
 
     /**
      * Use default ConfigurationBuilder, default MuleContextBuilder

@@ -11,6 +11,7 @@ import org.mule.api.MuleContext;
 import org.mule.api.config.ConfigurationBuilder;
 import org.mule.api.config.ConfigurationException;
 import org.mule.config.ConfigResource;
+import org.mule.config.i18n.CoreMessages;
 
 import java.util.HashMap;
 import java.util.List;
@@ -31,7 +32,7 @@ public class MuleConfigurationBuilderService implements ConfigurationBuilderServ
 
         if (configurationBuilderFactory == null)
         {
-            throw new IllegalStateException("Unable to obtain a configuration builder factory");
+            throw new ConfigurationException(CoreMessages.configurationBuilderNoMatching(configs.toString()));
         }
 
         return configurationBuilderFactory.createConfigurationBuilder(domainContext, configs);
