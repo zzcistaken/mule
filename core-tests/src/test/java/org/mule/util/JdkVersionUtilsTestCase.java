@@ -21,9 +21,11 @@ import java.util.jar.Manifest;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+@Ignore("Version checking must be reviewed")
 public class JdkVersionUtilsTestCase extends AbstractMuleTestCase
 {
 	
