@@ -1214,7 +1214,7 @@
         <site>
             <id>mule-site</id>
             <name>Mule Website</name>
-            <url>dav:https://dav.codehaus.org/mule/docs/${version}</url>
+            <url>dav:https://dav.codehaus.org/mule/docs/${project.version}</url>
         </site>
     </distributionManagement>
 
@@ -1239,46 +1239,14 @@
             </releases>
         </repository>
         <repository>
-            <id>apache-snapshots</id>
-            <name>Apache Snapshots</name>
-            <url>http://people.apache.org/maven-snapshot-repository</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-        </repository>
-        <!--
-        <repository>
-            <id>com.springsource.repository.bundles.external</id>
-            <name>SpringSource Enterprise Bundle Repository - External Bundle Releases</name>
-            <url>http://repository.springsource.com/maven/bundles/external</url>
-        </repository>
-        -->
-        <!-- for activemq -->
-        <repository>
-            <id>ops4j</id>
-            <name>OPS4J Repository</name>
-            <url>http://repository.ops4j.org/maven2</url>
+            <id>java-net</id>
+            <name>Java net repository</name>
+            <url>http://download.java.net/maven/2</url>
         </repository>
         <repository>
-            <id>apache.incubating.releases</id>
-            <name>Apache Incubating Release Distribution Repository</name>
-            <url>http://people.apache.org/repo/m2-incubating-repository</url>
-        </repository>
-        <repository>
-            <id>apache.snapshots</id>
-            <name>Apache Development Snapshot Repository</name>
-            <url>http://repository.apache.org/snapshots</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-        </repository>
-        <repository>
-            <id>jboss</id>
-            <name>JBoss Repository</name>
-            <url>http://repository.jboss.com</url>
+            <id>public-jboss</id>
+            <name>JBoss Public Repository</name>
+            <url>http://repository.jboss.org/nexus/content/groups/public-jboss</url>
         </repository>
         <repository>
             <id>mule-deps</id>
@@ -1288,47 +1256,9 @@
                 <enabled>true</enabled>
             </snapshots>
         </repository>
-        <!--
-        <repository>
-            <id>semanticweb</id>
-            <name>Semantic Web Repo</name>
-            <url>http://semweb4j.org/repo</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        -->
     </repositories>
 
     <pluginRepositories>
-        <pluginRepository>
-            <!--
-                This is the same as apache-snapshots, but for plugins now.
-                Technically it could've been a different repo, but they
-                put all snapshots in one location at Apache.
-             -->
-            <id>apache-plugin-snapshots</id>
-            <name>Apache Maven Plugins Snapshot Repository</name>
-            <url>http://people.apache.org/maven-snapshot-repository</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-        </pluginRepository>
-        <pluginRepository>
-            <id>apache-m2-incubator</id>
-            <name>Apache m2 Incubator</name>
-            <url>http://people.apache.org/repo/m2-incubating-repository</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-        </pluginRepository>
-
         <pluginRepository>
             <id>mule-deps</id>
             <name>Mule Dependencies</name>
