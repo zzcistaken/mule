@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesource.org/schema/mule/core/2.2"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:jetty-ssl="http://www.mulesource.org/schema/mule/jetty-ssl/2.2"
+      xsi:schemaLocation="http://www.mulesource.org/schema/mule/core/2.2 http://www.mulesource.org/schema/mule/core/2.2/mule.xsd
+       http://www.mulesource.org/schema/mule/jetty-ssl/2.2 http://www.mulesource.org/schema/mule/jetty-ssl/2.2/mule-jetty-ssl.xsd">
+
+    <jetty-ssl:connector name="jettyConnector">
+        <jetty-ssl:tls-client path="clientKeystore" storePassword="mulepassword"/>
+        <jetty-ssl:tls-key-store path="serverKeystore" keyPassword="mulepassword" storePassword="mulepassword"/>
+        <jetty-ssl:tls-server path="trustStore" storePassword="mulepassword"/>
+    </jetty-ssl:connector>
+
+    <model name="main">
+        <service name="badContentType">
+            <inbound>
+                <inbound-endpoint address="jetty-ssl:https://localhost:60199" connector-ref="jettyConnector"/>
+            </inbound>
+
+            <echo-component/>
+        </service>
+    </model>
+
+</mule>
