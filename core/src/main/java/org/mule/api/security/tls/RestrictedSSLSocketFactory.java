@@ -23,6 +23,8 @@ import javax.net.ssl.SSLSocketFactory;
 public class RestrictedSSLSocketFactory extends SSLSocketFactory
 {
 
+    private static final String[] DEFAULT_SUPPORTED_SSL_PROTOCOLS = new String[] {"SSLv2Hello", "TLSv1", "SSLv3"};
+
     private final SSLSocketFactory sslSocketFactory;
     private final String[] enabledCipherSuites;
     private final String[] enabledProtocols;
@@ -41,9 +43,9 @@ public class RestrictedSSLSocketFactory extends SSLSocketFactory
 
         if (protocols == null)
         {
-            protocols = sslContext.getDefaultSSLParameters().getProtocols();
+            protocols = DEFAULT_SUPPORTED_SSL_PROTOCOLS;
         }
-        this.enabledProtocols = ArrayUtils.intersection(protocols, sslContext.getSupportedSSLParameters().getProtocols());
+        this.enabledProtocols = ArrayUtils.intersection(protocols, DEFAULT_SUPPORTED_SSL_PROTOCOLS);
     }
 
     @Override

@@ -68,7 +68,6 @@ public class JettyHttpsCustomTlsConfigTestCase extends FunctionalTestCase
 
         socket.addHandshakeCompletedListener(new HandshakeCompletedListener()
         {
-            @Override
             public void handshakeCompleted(HandshakeCompletedEvent handshakeCompletedEvent)
             {
                 latch.countDown();
