@@ -29,7 +29,7 @@ public class RestrictedSSLServerSocketFactory extends SSLServerSocketFactory
 
     private static final Logger logger = LoggerFactory.getLogger(RestrictedSSLServerSocketFactory.class);
 
-    private static final String[] DEFAULT_SUPPORTED_SSL_PROTOCOLS = new String[] {"SSLv2Hello", "TLSv1"};
+    private static final String[] DEFAULT_SUPPORTED_SSL_PROTOCOLS = new String[] {"SSLv2Hello", "TLSv1", "SSLv3"};
 
     private final SSLServerSocketFactory sslServerSocketFactory;
     private final String[] enabledCipherSuites;
