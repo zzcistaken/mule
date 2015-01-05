@@ -14,8 +14,8 @@
     <jms:activemq-connector name="jmsConnector"/>
 
     <vm:connector name="default">
-        <service-overrides inboundTransformer="org.mule.transformer.simple.test.InboundAppendTransformer"
-                           outboundTransformer="org.mule.transformer.simple.test.OutboundAppendTransformer"
+        <service-overrides inboundTransformer="org.mule.transformer.simple.InboundAppendTransformer"
+                           outboundTransformer="org.mule.transformer.simple.OutboundAppendTransformer"
                            responseTransformer="org.mule.transformer.simple.ResponseAppendTransformer"/>
     </vm:connector>
 
@@ -23,7 +23,7 @@
         <spring:property name="message" value=" customResponse"/>
     </custom-transformer>
 
-    <custom-transformer class="org.mule.functional.functional.StringAppendTestTransformer" name="StringAppendTestTransformer"/>
+    <custom-transformer class="org.mule.tck.functional.StringAppendTestTransformer" name="StringAppendTestTransformer"/>
 
     <flow name="CxfSync">
         <inbound-endpoint address="http://localhost:${port1}/services/CxfSync"

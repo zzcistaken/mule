@@ -91,7 +91,7 @@
     <!-- Child flows/sub-flows -->
 
     <processor-chain name="chain">
-        <custom-processor class="org.mule.tck.lifecycle.LifecycleTrackerProcessor"/>
+        <custom-processor class="org.mule.lifecycle.LifecycleTrackerProcessor"/>
         <append-string-transformer message="x"/>
         <append-string-transformer message="y"/>
         <append-string-transformer message="z"/>
@@ -99,7 +99,7 @@
     </processor-chain>
 
     <processor-chain name="chain-singleton">
-        <custom-processor class="org.mule.tck.lifecycle.LifecycleTrackerProcessor"/>
+        <custom-processor class="org.mule.lifecycle.LifecycleTrackerProcessor"/>
         <append-string-transformer message="x"/>
         <append-string-transformer message="y"/>
         <append-string-transformer message="z"/>
@@ -109,7 +109,7 @@
     </processor-chain>
 
     <sub-flow name="sub-flow">
-        <custom-processor class="org.mule.tck.lifecycle.LifecycleTrackerProcessor"/>
+        <custom-processor class="org.mule.lifecycle.LifecycleTrackerProcessor"/>
         <append-string-transformer message="x"/>
         <append-string-transformer message="y"/>
         <append-string-transformer message="z"/>
@@ -117,7 +117,7 @@
     </sub-flow>
 
     <flow name="childFlow">
-        <custom-processor class="org.mule.tck.lifecycle.LifecycleTrackerProcessor"/>
+        <custom-processor class="org.mule.lifecycle.LifecycleTrackerProcessor"/>
         <append-string-transformer message="x"/>
         <append-string-transformer message="y"/>
         <append-string-transformer message="z"/>
@@ -125,7 +125,7 @@
     </flow>
 
     <sub-flow name="sub-flow-singleton">
-        <custom-processor class="org.mule.tck.lifecycle.LifecycleTrackerProcessor"/>
+        <custom-processor class="org.mule.lifecycle.LifecycleTrackerProcessor"/>
         <append-string-transformer message="x"/>
         <append-string-transformer message="y"/>
         <append-string-transformer message="z"/>

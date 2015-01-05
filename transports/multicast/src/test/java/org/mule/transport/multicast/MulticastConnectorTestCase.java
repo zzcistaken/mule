@@ -12,7 +12,7 @@ import static org.junit.Assert.fail;
 import org.mule.api.endpoint.InboundEndpoint;
 import org.mule.api.transport.Connector;
 import org.mule.construct.Flow;
-import org.mule.tck.transport.AbstractConnectorTestCase;
+import org.mule.transport.AbstractConnectorTestCase;
 
 import java.net.DatagramPacket;
 

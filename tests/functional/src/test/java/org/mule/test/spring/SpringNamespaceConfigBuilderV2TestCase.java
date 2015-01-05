@@ -15,10 +15,10 @@ import org.mule.api.config.ConfigurationBuilder;
 import org.mule.api.config.ConfigurationException;
 import org.mule.api.routing.MessageInfoMapping;
 import org.mule.api.transformer.Transformer;
-import org.mule.module.springconfig.SpringXmlConfigurationBuilder;
+import org.mule.config.spring.SpringXmlConfigurationBuilder;
 import org.mule.construct.Flow;
 import org.mule.routing.ExpressionMessageInfoMapping;
-import org.mule.functional.AbstractConfigBuilderTestCase;
+import org.mule.tck.AbstractConfigBuilderTestCase;
 import org.mule.tck.testmodels.fruit.Apple;
 import org.mule.tck.testmodels.mule.TestCompressionTransformer;
 

@@ -12,8 +12,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import org.mule.api.MuleMessage;
 import org.mule.api.client.MuleClient;
-import org.mule.functional.junit4.FunctionalTestCase;
-import org.mule.functional.listener.FlowExecutionListener;
+import org.mule.tck.junit4.FunctionalTestCase;
+import org.mule.tck.listener.FlowExecutionListener;
 import org.mule.transport.NullPayload;
 
 import org.junit.Test;

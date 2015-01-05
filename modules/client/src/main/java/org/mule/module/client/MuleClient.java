@@ -30,8 +30,7 @@ import org.mule.api.registry.RegistrationException;
 import org.mule.api.transport.ReceiveException;
 import org.mule.client.DefaultLocalMuleClient;
 import org.mule.config.DefaultMuleConfiguration;
-import org.mule.config.i18n.CoreMessages;
-import org.mule.module.springconfig.SpringXmlConfigurationBuilder;
+import org.mule.config.spring.SpringXmlConfigurationBuilder;
 import org.mule.context.DefaultMuleContextBuilder;
 import org.mule.context.DefaultMuleContextFactory;
 import org.mule.security.MuleCredentials;
@@ -129,7 +128,7 @@ public class MuleClient implements Disposable
      */
     public MuleClient(String configResources) throws MuleException
     {
-        this(configResources, new SpringXmlConfigurationBuilder(configResources, null));
+        this(configResources, new SpringXmlConfigurationBuilder(configResources));
     }
 
     /**
@@ -164,7 +163,7 @@ public class MuleClient implements Disposable
         {
             logger.info("Builder passed in was null, using default builder: "
                         + SpringXmlConfigurationBuilder.class.getName());
-            builder = new SpringXmlConfigurationBuilder(configResources, null);
+            builder = new SpringXmlConfigurationBuilder(configResources);
         }
         logger.info("Initializing Mule...");
         muleContext = muleContextFactory.createMuleContext(builder);

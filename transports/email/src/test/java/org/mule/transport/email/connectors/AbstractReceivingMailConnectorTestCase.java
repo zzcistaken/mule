@@ -15,8 +15,8 @@ import org.mule.api.processor.MessageProcessor;
 import org.mule.component.DefaultJavaComponent;
 import org.mule.construct.Flow;
 import org.mule.object.SingletonObjectFactory;
-import org.mule.functional.functional.EventCallback;
-import org.mule.functional.functional.FunctionalTestComponent;
+import org.mule.tck.functional.EventCallback;
+import org.mule.tck.functional.FunctionalTestComponent;
 import org.mule.transport.email.transformers.EmailMessageToString;
 
 import java.util.ArrayList;
@@ -30,7 +30,7 @@ import org.junit.Test;
 /**
  * Given an endpoint ({@link #getTestEndpointURI()}) this waits for up to 10 seconds,
  * hoping to receive the message stored in the mail server.  It also runs the unit tests
- * defined way down in {@link org.mule.tck.transport.AbstractConnectorTestCase}.
+ * defined way down in {@link org.mule.transport.AbstractConnectorTestCase}.
  */
 public abstract class AbstractReceivingMailConnectorTestCase extends AbstractMailConnectorFunctionalTestCase
 {

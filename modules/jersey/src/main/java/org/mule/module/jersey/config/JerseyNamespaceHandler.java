@@ -6,8 +6,8 @@
  */
 package org.mule.module.jersey.config;
 
+import org.mule.config.spring.handlers.AbstractMuleNamespaceHandler;
 import org.mule.module.jersey.JerseyResourcesComponent;
-import org.mule.module.springconfig.handlers.AbstractMuleNamespaceHandler;
 import org.mule.module.springconfig.parsers.collection.ChildListEntryDefinitionParser;
 import org.mule.module.springconfig.parsers.collection.ChildMapEntryDefinitionParser;
 import org.mule.module.springconfig.parsers.generic.ChildDefinitionParser;
