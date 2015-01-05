@@ -17,7 +17,7 @@ import org.junit.rules.TemporaryFolder;
 public class DualRandomAccessFileQueueStoreDelegateTestCase extends AbstractMuleTestCase
 {
     @Rule
-    public TemporaryFolder workingDirectory = new TemporaryFolder();;
+    public TemporaryFolder workingDirectory = new TemporaryFolder();
 
     @Test
     public void nameWithInvalidCharacters() throws IOException

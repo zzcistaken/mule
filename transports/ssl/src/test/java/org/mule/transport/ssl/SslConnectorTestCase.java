@@ -12,7 +12,7 @@ import static org.mockito.Mockito.mock;
 import org.mule.api.endpoint.InboundEndpoint;
 import org.mule.api.transport.Connector;
 import org.mule.construct.Flow;
-import org.mule.transport.AbstractConnectorTestCase;
+import org.mule.tck.transport.AbstractConnectorTestCase;
 
 import org.junit.Test;
 

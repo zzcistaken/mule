@@ -15,8 +15,8 @@ import org.mule.api.processor.MessageProcessor;
 import org.mule.component.DefaultJavaComponent;
 import org.mule.construct.Flow;
 import org.mule.object.SingletonObjectFactory;
-import org.mule.tck.functional.EventCallback;
-import org.mule.tck.functional.FunctionalTestComponent;
+import org.mule.functional.functional.EventCallback;
+import org.mule.functional.functional.FunctionalTestComponent;
 import org.mule.transport.email.transformers.EmailMessageToString;
 
 import java.util.ArrayList;

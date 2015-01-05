@@ -8,7 +8,6 @@ package org.mule.transport.http.multipart;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
-
 import org.mule.tck.junit4.AbstractMuleTestCase;
 import org.mule.util.FileUtils;
 import org.mule.util.IOUtils;
@@ -22,9 +21,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
