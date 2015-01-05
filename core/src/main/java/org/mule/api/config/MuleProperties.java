@@ -159,6 +159,7 @@ public class MuleProperties
     public static final String OBJECT_PROCESSING_TIME_WATCHER = "_muleProcessingTimeWatcher";
     public static final String OBJECT_POLLING_CONTROLLER = "_mulePollingController";
     public static final String OBJECT_CLUSTER_CONFIGURATION = "_muleClusterConfiguration";
+    public static final String OBJECT_CONNECTOR_MESSAGE_PROCESSOR_LOCATOR = "_muleConnectorMessageProcessorLocator";
 
     // Not currently used as these need to be instance variables of the MuleContext.
     public static final String OBJECT_WORK_MANAGER = "_muleWorkManager";
@@ -184,6 +185,7 @@ public class MuleProperties
     public static final String MULE_SECURITY_PROVIDER_PROPERTY = SYSTEM_PROPERTY_PREFIX + "security.provider";
     public static final String MULE_STREAMING_BUFFER_SIZE = SYSTEM_PROPERTY_PREFIX + "streaming.bufferSize";
     public static final String MULE_SIMPLE_LOG = SYSTEM_PROPERTY_PREFIX + "simpleLog";
+    public static final String MULE_FORCE_CONSOLE_LOG = SYSTEM_PROPERTY_PREFIX + "forceConsoleLog";
 
     public static final String CONTENT_TYPE_PROPERTY = "Content-Type";
 }

@@ -6,11 +6,14 @@
  */
 package org.mule.transport.tcp.config;
 
+import org.mule.endpoint.URIBuilder;
 import org.mule.module.springconfig.handlers.AbstractMuleNamespaceHandler;
 import org.mule.module.springconfig.parsers.ClassOrRefDefinitionParser;
+import org.mule.module.springconfig.parsers.delegate.RootOrNestedElementBeanDefinitionParser;
 import org.mule.module.springconfig.parsers.generic.ChildDefinitionParser;
 import org.mule.module.springconfig.parsers.generic.MuleOrphanDefinitionParser;
-import org.mule.endpoint.URIBuilder;
+import org.mule.transport.tcp.DefaultTcpClientSocketProperties;
+import org.mule.transport.tcp.DefaultTcpServerSocketProperties;
 import org.mule.transport.tcp.PollingTcpConnector;
 import org.mule.transport.tcp.TcpConnector;
 import org.mule.transport.tcp.TcpProtocol;
@@ -50,6 +53,8 @@ public class TcpNamespaceHandler extends AbstractMuleNamespaceHandler
         registerBeanDefinitionParser("streaming-protocol", new ByteOrMessageProtocolDefinitionParser(StreamingProtocol.class, MuleMessageDirectProtocol.class));
         registerBeanDefinitionParser("custom-protocol", new ClassOrRefDefinitionParser(TCP_PROTOCOL_PROPERTY));
         registerBeanDefinitionParser("custom-class-loading-protocol", new ByteOrMessageProtocolDefinitionParser(CustomClassLoadingLengthProtocol.class, CustomClassLoadingLengthProtocol.class));
+        registerBeanDefinitionParser("client-socket-properties", new RootOrNestedElementBeanDefinitionParser(DefaultTcpClientSocketProperties.class, "clientSocketProperties"));
+        registerBeanDefinitionParser("server-socket-properties",  new RootOrNestedElementBeanDefinitionParser(DefaultTcpServerSocketProperties.class, "serverSocketProperties"));
     }
 
 }

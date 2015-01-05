@@ -7,8 +7,8 @@
 
 package org.mule.osgi.util;
 
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.core.IsNot.not;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 import java.io.File;
@@ -17,8 +17,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Properties;
-import java.util.jar.JarInputStream;
-import java.util.jar.Manifest;
 
 import org.junit.Ignore;
 import org.junit.Test;

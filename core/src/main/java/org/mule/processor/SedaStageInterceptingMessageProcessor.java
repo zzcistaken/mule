@@ -37,6 +37,7 @@ import org.mule.util.queue.QueueSession;
 import org.mule.work.MuleWorkManager;
 
 import java.text.MessageFormat;
+import java.util.concurrent.TimeUnit;
 
 import javax.resource.spi.work.Work;
 import javax.resource.spi.work.WorkException;
@@ -49,6 +50,7 @@ public class SedaStageInterceptingMessageProcessor extends AsyncInterceptingMess
     implements Work, Lifecycle, Pausable, Resumable
 {
     protected static final String QUEUE_NAME_PREFIX = "seda.queue";
+    public static int DEFAULT_QUEUE_SIZE_MAX_THREADS_FACTOR = 4;
 
     protected QueueProfile queueProfile;
     protected int queueTimeout;
@@ -74,6 +76,18 @@ public class SedaStageInterceptingMessageProcessor extends AsyncInterceptingMess
         this.queueStatistics = queueStatistics;
         this.muleContext = muleContext;
         lifecycleManager = new SedaStageLifecycleManager(queueName, this);
+
+        // If user has not set an explicit queue size set one here, to prevent OutOfMemoryException's.
+        configureDefaultQueueSize(queueProfile, threadingProfile);
+    }
+
+    protected void configureDefaultQueueSize(QueueProfile queueProfile, ThreadingProfile threadingProfile)
+    {
+        if (queueProfile != null && queueProfile.getMaxOutstandingMessages() == 0)
+        {
+            queueProfile.setMaxOutstandingMessages(threadingProfile.getMaxThreadsActive() *
+                                                   DEFAULT_QUEUE_SIZE_MAX_THREADS_FACTOR);
+        }
     }
 
     @Override
@@ -85,9 +99,7 @@ public class SedaStageInterceptingMessageProcessor extends AsyncInterceptingMess
             {
                 queueStatistics.incQueuedEvent();
             }
-            // Events to be processed asynchronously should be copied before they are queued, otherwise
-            // concurrent modification of the event could occur.
-            enqueue(DefaultMuleEvent.copy(event));
+            enqueue(event);
         }
         catch (Exception e)
         {
@@ -111,10 +123,19 @@ public class SedaStageInterceptingMessageProcessor extends AsyncInterceptingMess
         if (logger.isDebugEnabled())
         {
             logger.debug(MessageFormat.format("{1}: Putting event on queue {2}", queue.getName(),
-                getStageDescription(), event));
+                                              getStageDescription(), event));
         }
-        queue.put(event);
-        fireAsyncScheduledNotification(event);
+        boolean queued = queue.offer(event, threadTimeout);
+        if (queued)
+        {
+            fireAsyncScheduledNotification(event);
+        }
+        else
+        {
+            String message = String.format("The queue for '%1s' did not accept new event within %2d %3s",
+                                           getStageDescription(), threadTimeout, TimeUnit.MILLISECONDS);
+            throw new FailedToQueueEventException(CoreMessages.createStaticMessage(message), event);
+        }
     }
 
     protected MuleEvent dequeue() throws Exception

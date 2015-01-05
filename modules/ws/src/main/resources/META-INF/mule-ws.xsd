@@ -9,9 +9,9 @@
 
     <xsd:import namespace="http://www.w3.org/XML/1998/namespace"/>
     <xsd:import namespace="http://www.mulesoft.org/schema/mule/core"
-                schemaLocation="http://www.mulesoft.org/schema/mule/core/3.5/mule.xsd" />
+                schemaLocation="http://www.mulesoft.org/schema/mule/core/3.6/mule.xsd" />
     <xsd:import namespace = "http://www.mulesoft.org/schema/mule/schemadoc"
-                schemaLocation = "http://www.mulesoft.org/schema/mule/schemadoc/3.5/mule-schemadoc.xsd"/>
+                schemaLocation = "http://www.mulesoft.org/schema/mule/schemadoc/3.6/mule-schemadoc.xsd"/>
 
     <xsd:annotation>
         <xsd:documentation>
@@ -191,6 +191,13 @@
                         <xsd:documentation>
                             A reference to the connector that will be used by this component. The protocol of the service
                             address must be supported by this connector.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="connectorConfig" type="xsd:string">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            A reference to a connector config that will be used by this component.
                         </xsd:documentation>
                     </xsd:annotation>
                 </xsd:attribute>

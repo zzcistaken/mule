@@ -30,6 +30,7 @@
         <module>drools</module>
         <module>launcher</module>
         <module>client</module>
+        <module>http</module>
         <module>jaas</module>
         <module>jboss-transactions</module>
         <module>jbpm</module>
@@ -39,6 +40,7 @@
         <module>osgi-deployer</module>
         <module>osgi-launcher</module>
         <module>osgi-utils</module>
+        <module>oauth</module>
         <module>pgp</module>
         <module>reboot</module>
         <module>rss</module>

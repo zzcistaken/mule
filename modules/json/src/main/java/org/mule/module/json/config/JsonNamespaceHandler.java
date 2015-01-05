@@ -6,25 +6,25 @@
  */
 package org.mule.module.json.config;
 
-import org.mule.module.springconfig.parsers.collection.ChildMapEntryDefinitionParser;
-import org.mule.module.springconfig.parsers.generic.OrphanDefinitionParser;
-import org.mule.module.springconfig.parsers.specific.FilterDefinitionParser;
-import org.mule.module.springconfig.parsers.specific.MessageProcessorDefinitionParser;
 import org.mule.module.json.filters.IsJsonFilter;
 import org.mule.module.json.transformers.JsonSchemaValidationFilter;
 import org.mule.module.json.transformers.JsonToObject;
 import org.mule.module.json.transformers.JsonToXml;
 import org.mule.module.json.transformers.JsonXsltTransformer;
 import org.mule.module.json.transformers.ObjectToJson;
-
 import org.mule.module.json.transformers.XmlToJson;
-import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
+import org.mule.module.springconfig.handlers.AbstractMuleNamespaceHandler;
+import org.mule.module.springconfig.parsers.collection.ChildMapEntryDefinitionParser;
+import org.mule.module.springconfig.parsers.generic.OrphanDefinitionParser;
+import org.mule.module.springconfig.parsers.specific.FilterDefinitionParser;
+import org.mule.module.springconfig.parsers.specific.MessageProcessorDefinitionParser;
 
 /**
  * Registers a Bean Definition Parser for handling elements defined in META-INF/mule-json.xsd
  */
-public class JsonNamespaceHandler extends NamespaceHandlerSupport
+public class JsonNamespaceHandler extends AbstractMuleNamespaceHandler
 {
+    @Override
     public void init()
     {
         registerBeanDefinitionParser("is-json-filter", new FilterDefinitionParser(IsJsonFilter.class));
@@ -37,6 +37,9 @@ public class JsonNamespaceHandler extends NamespaceHandlerSupport
         registerBeanDefinitionParser("json-to-xml-transformer", new MessageProcessorDefinitionParser(JsonToXml.class));
         registerBeanDefinitionParser("xml-to-json-transformer", new MessageProcessorDefinitionParser(XmlToJson.class));
         registerBeanDefinitionParser("json-xslt-transformer", new MessageProcessorDefinitionParser(JsonXsltTransformer.class));
-        registerBeanDefinitionParser("json-schema-validation-filter", new FilterDefinitionParser(JsonSchemaValidationFilter.class));
+        registerDeprecatedBeanDefinitionParser("json-schema-validation-filter", new FilterDefinitionParser(JsonSchemaValidationFilter.class), "Use validate-schema instead");
+        registerBeanDefinitionParser("validate-schema", new ValidateJsonSchemaMessageProcessorDefinitionParser());
+        registerIgnoredElement("schema-redirects");
+        registerIgnoredElement("schema-redirect");
     }
 }

@@ -135,9 +135,14 @@ public class MuleArtifactContext extends OsgiBundleXmlApplicationContext
     @Override
     protected void initBeanDefinitionReader(XmlBeanDefinitionReader beanDefinitionReader) {
 
-        beanDefinitionReader.setDocumentReaderClass(MuleBeanDefinitionDocumentReader.class);
+        beanDefinitionReader.setDocumentReaderClass(getBeanDefinitionDocumentReaderClass());
         //add error reporting
         beanDefinitionReader.setProblemReporter(new MissingParserProblemReporter());
+    }
+
+    protected Class<? extends MuleBeanDefinitionDocumentReader> getBeanDefinitionDocumentReaderClass()
+    {
+        return MuleBeanDefinitionDocumentReader.class;
     }
 
     @Override

@@ -10,11 +10,16 @@
 
     <xsd:import namespace="http://www.w3.org/XML/1998/namespace"/>
     <xsd:import namespace="http://www.mulesoft.org/schema/mule/core"
-                schemaLocation="http://www.mulesoft.org/schema/mule/core/3.5/mule.xsd"/>
+                schemaLocation="http://www.mulesoft.org/schema/mule/core/3.6/mule.xsd"/>
     <xsd:import namespace="http://www.mulesoft.org/schema/mule/tcp"
-                schemaLocation="http://www.mulesoft.org/schema/mule/tcp/3.5/mule-tcp.xsd"/>
+                schemaLocation="http://www.mulesoft.org/schema/mule/tcp/3.6/mule-tcp.xsd"/>
     <xsd:import namespace = "http://www.mulesoft.org/schema/mule/schemadoc"
-                schemaLocation = "http://www.mulesoft.org/schema/mule/schemadoc/3.5/mule-schemadoc.xsd"/>
+                schemaLocation = "http://www.mulesoft.org/schema/mule/schemadoc/3.6/mule-schemadoc.xsd"/>
+
+    <!--
+    We include all the elements defined in the schema of the new HTTP connector into this namespace.
+    -->
+    <xsd:include schemaLocation="http://www.mulesoft.org/schema/mule/httpn/current/mule-httpn.xsd" />
 
     <xsd:annotation>
         <xsd:documentation>The HTTP transport provides support for exposing services over HTTP and making HTTP client requests from Mule services to external services as part of service event flows. Mule supports inbound, outbound, and polling HTTP endpooints. These endpoints support all common features of the HTTP spec, such as ETag processing, cookies, and keepalive. Both HTTP 1.0 and 1.1 are supported.</xsd:documentation>
@@ -450,72 +455,6 @@
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>
-
-    <xsd:element name="response-builder" substitutionGroup="mule:abstract-message-processor">
-        <xsd:annotation>
-            <xsd:documentation>
-                HTTP response
-            </xsd:documentation>
-        </xsd:annotation>
-        <xsd:complexType>
-            <xsd:complexContent>
-                <xsd:extension base="mule:abstractMessageProcessorType">
-                    <xsd:sequence>
-                        <xsd:element name="cache-control" minOccurs="0" maxOccurs="1" type="cacheControlType">
-                            <xsd:annotation>
-                                <xsd:documentation>
-                                    The Cache-Control is used to specify directives that MUST be obeyed by all caching mechanisms along the request/response chain.
-                                </xsd:documentation>
-                            </xsd:annotation>
-                        </xsd:element>
-                        <xsd:element name="expires" minOccurs="0" maxOccurs="1" type="headerType">
-                            <xsd:annotation>
-                                <xsd:documentation>
-                                    Specifies when the cookie expires. It must be specified in the form Wdy, DD Mon YYYY HH:MM:SS GMT
-                                </xsd:documentation>
-                            </xsd:annotation>
-                        </xsd:element>
-                        <xsd:element name="location" minOccurs="0" maxOccurs="1" type="headerType">
-                            <xsd:annotation>
-                                <xsd:documentation>
-                                    The Location is used to redirect the recipient to a location other than the Request-URI for completion of the request or identification of a new resource.
-                                </xsd:documentation>
-                            </xsd:annotation>
-                        </xsd:element>
-                        <xsd:element name="set-cookie" minOccurs="0" maxOccurs="unbounded" type="cookieType">
-                            <xsd:annotation>
-                                <xsd:documentation>
-                                    Allows to configure one or more cookies.
-                                </xsd:documentation>
-                            </xsd:annotation>
-                        </xsd:element>
-                        <xsd:element name="header" minOccurs="0" maxOccurs="unbounded" type="mule:nameValueType">
-                            <xsd:annotation>
-                                <xsd:documentation>
-                                    Allows to configure HTTP headers providing the name and value of each header.
-                                </xsd:documentation>
-                            </xsd:annotation>
-                        </xsd:element>
-                        <xsd:element ref="mule:abstract-transformer" minOccurs="0" maxOccurs="1"/>
-                    </xsd:sequence>
-                    <xsd:attribute name="status" type="statusType">
-                        <xsd:annotation>
-                            <xsd:documentation>
-                                HTTP status code of the response
-                            </xsd:documentation>
-                        </xsd:annotation>
-                    </xsd:attribute>
-                    <xsd:attribute name="contentType" type="xsd:string">
-                        <xsd:annotation>
-                            <xsd:documentation>
-                                The content type of the response
-                            </xsd:documentation>
-                        </xsd:annotation>
-                    </xsd:attribute>
-                </xsd:extension>
-            </xsd:complexContent>
-        </xsd:complexType>
-    </xsd:element>
 
      <xsd:complexType name="headerType">
         <xsd:complexContent>

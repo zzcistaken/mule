@@ -7,11 +7,16 @@
 
 package org.mule.osgi;
 
-import org.mule.config.bootstrap.DefaultRegistryBootstrapService;
-import org.mule.config.bootstrap.RegistryBootstrapService;
+import org.mule.config.bootstrap.BootstrapPropertiesService;
+import org.mule.config.bootstrap.MuleBootstrapPropertiesService;
+import org.mule.config.bootstrap.RegistryBootstrapServiceUtil;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -30,7 +35,14 @@ public class TransportActivator implements BundleActivator
     {
         descriptorRefs = new BundleContextTransportServiceDescriptorFactoryDiscoverer(bundleContext.getBundle(), new OsgiTransportServiceDescriptorFactoryFactory(bundleContext.getBundle())).discover();
 
-        bootstrapService = bundleContext.registerService(RegistryBootstrapService.class.getName(), new DefaultRegistryBootstrapService(bundleContext), null);
+        URL resource = bundleContext.getBundle().getResource(RegistryBootstrapServiceUtil.BOOTSTRAP_PROPERTIES);
+        if (resource != null)
+        {
+            Properties properties = new Properties();
+            properties.load(resource.openStream());
+            BootstrapPropertiesService service = new MuleBootstrapPropertiesService(properties);
+            bootstrapService = bundleContext.registerService(BootstrapPropertiesService.class.getName(), service, null);
+        }
     }
 
     public void stop(BundleContext bc) throws Exception

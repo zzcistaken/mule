@@ -9,9 +9,9 @@ package org.mule.transport.udp;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-
 import org.mule.api.MuleMessage;
 import org.mule.api.transport.MuleMessageFactory;
+import org.mule.util.NetworkUtils;
 import org.mule.tck.transport.AbstractMuleMessageFactoryTestCase;
 
 import java.net.DatagramPacket;
@@ -31,7 +31,7 @@ public class UdpMuleMessageFactoryTestCase extends AbstractMuleMessageFactoryTes
     @Override
     protected Object getValidTransportMessage() throws Exception
     {
-        InetAddress address = InetAddress.getLocalHost();
+        InetAddress address = NetworkUtils.getLocalHost();
         return new DatagramPacket(TEST_MESSAGE.getBytes(), TEST_MESSAGE.length(), address, PORT);
     }
 

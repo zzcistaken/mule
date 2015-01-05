@@ -12,32 +12,45 @@ import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertSame;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
+import static org.hamcrest.Matchers.hasSize;
+import static org.junit.Assert.assertThat;
 import org.mule.api.ExceptionPayload;
 import org.mule.api.MessagingException;
 import org.mule.api.MuleEvent;
 import org.mule.api.MuleException;
+import org.mule.api.processor.MessageProcessor;
 import org.mule.api.routing.AggregationContext;
 import org.mule.api.routing.ResponseTimeoutException;
 import org.mule.api.transport.DispatchException;
-import org.mule.routing.AggregationStrategy;
-import org.mule.routing.CompositeRoutingException;
 import org.mule.functional.functional.FlowAssert;
 import org.mule.functional.junit4.FunctionalTestCase;
+import org.mule.routing.AggregationStrategy;
+import org.mule.routing.CompositeRoutingException;
+import org.mule.util.concurrent.Latch;
 
 import java.io.ByteArrayInputStream;
 import java.util.Arrays;
-import java.util.Date;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.Test;
 
 public class ScatterGatherRouterTestCase extends FunctionalTestCase
 {
 
+    private static Set<Thread> capturedThreads;
+
     @Override
     protected String getConfigFile()
     {
         return "scatter-gather-test.xml";
+    }
+
+    @Override
+    protected void doSetUp() throws Exception
+    {
+        capturedThreads = new HashSet<>();
     }
 
     @Test
@@ -76,9 +89,20 @@ public class ScatterGatherRouterTestCase extends FunctionalTestCase
     @Test
     public void routeWithException() throws Exception
     {
+        assertRouteException("routeWithException");
+    }
+
+    @Test
+    public void routeWithExceptionInSequentialProcessing() throws Exception
+    {
+        assertRouteException("routeWithExceptionInSequentialProcessing");
+    }
+
+    private void assertRouteException(String flow) throws Exception
+    {
         try
         {
-            this.runFlow("routeWithException");
+            this.runFlow(flow);
             fail("Was expecting a failure");
         }
         catch (CompositeRoutingException e)
@@ -107,14 +131,10 @@ public class ScatterGatherRouterTestCase extends FunctionalTestCase
     }
 
     @Test
-    public void customThreadingProfile() throws Exception
+    public void sequentialProcessing() throws Exception
     {
-        Date start = new Date();
-        this.runFlow("customThreadingProfile", "");
-        Date end = new Date();
-
-        long waitTime = end.getTime() - start.getTime();
-        assertTrue(String.format("it only took %d ms", waitTime), waitTime >= 5000);
+        this.runFlow("sequentialProcessing", "");
+        assertThat(capturedThreads, hasSize(1));
         FlowAssert.verify("customThreadingProfile");
     }
 
@@ -181,10 +201,34 @@ public class ScatterGatherRouterTestCase extends FunctionalTestCase
     }
 
     @Test
+    public void expressionFilterRoute() throws Exception
+    {
+        muleContext.getClient().send("vm://expressionFilterRoute", getTestEvent("").getMessage());
+        FlowAssert.verify("expressionFilterRoute");
+    }
+
+    @Test
+    public void doesThreading() throws Exception
+    {
+        MuleEvent event = getTestEvent("");
+        event.setFlowVariable("latch", new Latch());
+        testFlow("doesThreading", event);
+
+        assertThat(capturedThreads, hasSize(3));
+    }
+
+    @Test
     public void oneWayRoutesOnly() throws Exception
     {
         muleContext.getClient().send("vm://oneWayRoutesOnly", getTestEvent("").getMessage());
         FlowAssert.verify("oneWayRoutesOnly");
+    }
+
+    @Test
+    public void setsVariablesAfterRouting() throws Exception
+    {
+        runFlow("setsVariablesAfterRouting");
+        FlowAssert.verify("setsVariablesAfterRouting");
     }
 
     public static class TestAggregationStrategy implements AggregationStrategy
@@ -216,6 +260,25 @@ public class ScatterGatherRouterTestCase extends FunctionalTestCase
         public MuleEvent aggregate(AggregationContext context) throws MuleException
         {
             throw new UnsupportedOperationException();
+        }
+    }
+
+    public static class ThreadCaptor implements MessageProcessor
+    {
+        @Override
+        public MuleEvent process(MuleEvent event) throws MuleException
+        {
+            capturedThreads.add(Thread.currentThread());
+            if (capturedThreads.size() > 1)
+            {
+                Latch latch = event.getFlowVariable("latch");
+                if (latch != null)
+                {
+                    latch.release();
+                }
+            }
+
+            return event;
         }
     }
 }

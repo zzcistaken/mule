@@ -7,14 +7,27 @@
 package org.mule.module.ws.consumer;
 
 
+import static org.mule.module.http.api.HttpConstants.Methods.POST;
+import static org.mule.module.http.api.client.HttpRequestOptionsBuilder.newOptions;
+
 import org.mule.api.MuleContext;
+import org.mule.api.MuleEvent;
 import org.mule.api.MuleException;
+import org.mule.api.MuleMessage;
+import org.mule.api.config.ConfigurationException;
 import org.mule.api.context.MuleContextAware;
 import org.mule.api.endpoint.EndpointBuilder;
 import org.mule.api.endpoint.OutboundEndpoint;
+import org.mule.api.processor.MessageProcessor;
 import org.mule.api.transport.Connector;
+import org.mule.config.i18n.CoreMessages;
 import org.mule.endpoint.MuleEndpointURI;
+import org.mule.module.http.api.client.HttpRequestOptions;
+import org.mule.module.http.api.client.HttpRequestOptionsBuilder;
+import org.mule.module.http.internal.config.HttpConfiguration;
+import org.mule.module.http.internal.request.DefaultHttpRequesterConfig;
 import org.mule.module.ws.security.WSSecurity;
+import org.mule.transport.http.HttpConnector;
 import org.mule.util.Preconditions;
 import org.mule.util.StringUtils;
 
@@ -28,6 +41,7 @@ public class WSConsumerConfig implements MuleContextAware
     private String port;
     private String serviceAddress;
     private Connector connector;
+    private DefaultHttpRequesterConfig connectorConfig;
     private WSSecurity security;
 
     @Override
@@ -39,10 +53,49 @@ public class WSConsumerConfig implements MuleContextAware
     /**
      * Creates an outbound endpoint for the service address.
      */
-    public OutboundEndpoint createOutboundEndpoint() throws MuleException
+    public MessageProcessor createOutboundMessageProcessor() throws MuleException
     {
         Preconditions.checkState(StringUtils.isNotEmpty(serviceAddress), "No serviceAddress provided in WS consumer config");
 
+        if (connectorConfig != null && connector != null)
+        {
+            throw new ConfigurationException(CoreMessages.createStaticMessage("Cannot set both connector-config and connector-ref attributes. Set either one of them, or none for default behavior."));
+        }
+
+        if (useHttpModule())
+        {
+            return createHttpRequester();
+        }
+        else
+        {
+            return createOutboundEndpoint();
+        }
+    }
+
+
+    private boolean useHttpModule()
+    {
+        if (connectorConfig != null)
+        {
+            return true;
+        }
+        if (!isHttp())
+        {
+            return false;
+        }
+        if (connector != null)
+        {
+            return false;
+        }
+        if (HttpConfiguration.useTransportForUris(muleContext))
+        {
+            return false;
+        }
+        return true;
+    }
+
+    private OutboundEndpoint createOutboundEndpoint() throws MuleException
+    {
         EndpointBuilder builder = muleContext.getEndpointFactory().getEndpointBuilder(serviceAddress);
 
         if (connector != null)
@@ -59,6 +112,40 @@ public class WSConsumerConfig implements MuleContextAware
         return muleContext.getEndpointFactory().getOutboundEndpoint(builder);
     }
 
+    private MessageProcessor createHttpRequester() throws MuleException
+    {
+        return new MessageProcessor()
+        {
+            private HttpRequestOptions requestOptions;
+
+            @Override
+            public MuleEvent process(MuleEvent event) throws MuleException
+            {
+                final MuleMessage responseMessage = muleContext.getClient().send(serviceAddress, event.getMessage(), getRequestOptions());
+                event.setMessage(responseMessage);
+                return event;
+            }
+
+            private HttpRequestOptions getRequestOptions()
+            {
+                if (requestOptions == null)
+                {
+                    final HttpRequestOptionsBuilder builder = newOptions().method(POST.name()).disableStatusCodeValidation().disableParseResponse();
+                    if (connectorConfig != null)
+                    {
+                        builder.requestConfig(connectorConfig);
+                    }
+                    requestOptions = builder.build();
+                }
+                return requestOptions;
+            }
+        };
+    }
+
+    private boolean isHttp()
+    {
+        return serviceAddress.startsWith(HttpConnector.HTTP);
+    }
 
     public String getName()
     {
@@ -118,6 +205,16 @@ public class WSConsumerConfig implements MuleContextAware
     public void setConnector(Connector connector)
     {
         this.connector = connector;
+    }
+
+    public DefaultHttpRequesterConfig getConnectorConfig()
+    {
+        return connectorConfig;
+    }
+
+    public void setConnectorConfig(DefaultHttpRequesterConfig connectorConfig)
+    {
+        this.connectorConfig = connectorConfig;
     }
 
     public WSSecurity getSecurity()

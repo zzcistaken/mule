@@ -9,7 +9,7 @@ package org.mule.functional.junit4;
 import org.mule.api.MuleContext;
 import org.mule.api.config.ConfigurationBuilder;
 import org.mule.api.context.MuleContextBuilder;
-import org.mule.api.context.MuleContextFactory;
+import org.mule.config.bootstrap.RegistryBootstrapService;
 import org.mule.context.DefaultMuleContextBuilder;
 import org.mule.context.DefaultMuleContextFactory;
 import org.mule.module.springconfig.SpringXmlConfigurationBuilder;
@@ -23,6 +23,7 @@ public class ApplicationContextBuilder
 
     private MuleContext domainContext;
     private String[] applicationResources;
+    private RegistryBootstrapService registryBootstrapService;
 
     public ApplicationContextBuilder setDomainContext(MuleContext domainContext)
     {
@@ -36,11 +37,19 @@ public class ApplicationContextBuilder
         return this;
     }
 
+    public ApplicationContextBuilder setRegistryBootstrapService(RegistryBootstrapService registryBootstrapService)
+    {
+        this.registryBootstrapService = registryBootstrapService;
+
+        return this;
+    }
+
     public MuleContext build() throws Exception
     {
         // Should we set up the manager for every method?
         MuleContext context;
-        MuleContextFactory muleContextFactory = new DefaultMuleContextFactory();
+        DefaultMuleContextFactory muleContextFactory = new DefaultMuleContextFactory();
+        muleContextFactory.setRegistryBootstrapService(registryBootstrapService);
         List<ConfigurationBuilder> builders = new ArrayList<ConfigurationBuilder>();
         //TODO(pablo.kraan): OSGi - CLASSNAME_ANNOTATIONS_CONFIG_BUILDER is not in the classpath anymore.
         //If the annotations module is on the classpath, add the annotations config builder to the list
@@ -52,6 +61,7 @@ public class ApplicationContextBuilder
         //}
         builders.add(getAppBuilder(this.applicationResources));
         DefaultMuleContextBuilder contextBuilder = new DefaultMuleContextBuilder();
+        contextBuilder.setRegistryBootstrapService(registryBootstrapService);
         configureMuleContext(contextBuilder);
         context = muleContextFactory.createMuleContext(builders, contextBuilder);
         context.start();
@@ -76,5 +86,4 @@ public class ApplicationContextBuilder
     {
         contextBuilder.setWorkListener(new TestingWorkListener());
     }
-
 }

@@ -58,6 +58,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.mule</groupId>
+            <artifactId>mule-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <!-- needed for SSL in httpS -->
             <groupId>org.mule.transports</groupId>
             <artifactId>mule-transport-ssl</artifactId>
@@ -77,14 +82,13 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>tomcat</groupId>
-            <artifactId>tomcat-util</artifactId>
-            <version>5.5.23</version>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>coyote</artifactId>
+            <version>${tomcatVersion}</version>
             <exclusions>
-                <!-- we use slf4j -->
                 <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging-api</artifactId>
+                    <groupId>org.apache.tomcat</groupId>
+                    <artifactId>servlet-api</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -97,6 +101,11 @@
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
             <version>${jodaTimeVersion}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.modules</groupId>
+            <artifactId>mule-module-http</artifactId>
+            <version>4.0-SNAPSHOT</version>
         </dependency>
 
         <!-- Unit tests -->

@@ -24,6 +24,7 @@ import javax.jms.Session;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.junit.Test;
+import org.springframework.jms.connection.CachingConnectionFactory;
 
 public class ActiveMQJmsConnectorTestCase extends FunctionalTestCase
 {
@@ -71,7 +72,7 @@ public class ActiveMQJmsConnectorTestCase extends FunctionalTestCase
         assertFalse(c.isNoLocal());
         assertFalse(c.isPersistentDelivery());
         assertEquals(0, c.getMaxRedelivery());
-        assertFalse(c.isCacheJmsSessions());
+        assertTrue(c.isCacheJmsSessions());
         assertFalse(c.isEagerConsumer());
 
         assertEquals("1.0.2b", c.getSpecification());
@@ -84,9 +85,10 @@ public class ActiveMQJmsConnectorTestCase extends FunctionalTestCase
 
         assertNotNull(c);
         assertTrue(c instanceof ActiveMQJmsConnector);
-        
+
         assertNotNull(c.getConnectionFactory());
-        assertTrue(c.getConnectionFactory() instanceof ActiveMQConnectionFactory);
+        assertTrue(c.getConnectionFactory() instanceof CachingConnectionFactory);
+        assertTrue(((CachingConnectionFactory) c.getConnectionFactory()).getTargetConnectionFactory() instanceof ActiveMQConnectionFactory);
         assertEquals(Session.DUPS_OK_ACKNOWLEDGE, c.getAcknowledgementMode());
         assertNull(c.getUsername());
         assertNull(c.getPassword());

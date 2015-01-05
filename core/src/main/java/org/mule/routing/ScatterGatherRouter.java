@@ -8,6 +8,7 @@
 package org.mule.routing;
 
 import org.mule.DefaultMuleEvent;
+import org.mule.OptimizedRequestContext;
 import org.mule.api.DefaultMuleException;
 import org.mule.api.ExceptionPayload;
 import org.mule.api.MuleEvent;
@@ -33,6 +34,7 @@ import org.mule.routing.outbound.MulticastingRouter;
 import org.mule.util.Preconditions;
 import org.mule.util.concurrent.ThreadNameHelper;
 import org.mule.work.ProcessingMuleEventWork;
+import org.mule.work.SerialWorkManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -140,6 +142,7 @@ public class ScatterGatherRouter extends AbstractMessageProcessorOwner implement
             // to assure that all property changes
             // are flushed from the worker thread to this one
             response = DefaultMuleEvent.copy(response);
+            OptimizedRequestContext.unsafeSetEvent(response);
         }
 
         return response;
@@ -250,9 +253,16 @@ public class ScatterGatherRouter extends AbstractMessageProcessorOwner implement
                 timeout = Long.MAX_VALUE;
             }
 
-            workManager = threadingProfile.createWorkManager(
-                ThreadNameHelper.getPrefix(muleContext) + "ScatterGatherWorkManager",
-                muleContext.getConfiguration().getShutdownTimeout());
+            if (threadingProfile.isDoThreading())
+            {
+                workManager = threadingProfile.createWorkManager(
+                        ThreadNameHelper.getPrefix(muleContext) + "ScatterGatherWorkManager",
+                        muleContext.getConfiguration().getShutdownTimeout());
+            }
+            else
+            {
+                workManager = new SerialWorkManager();
+            }
         }
         catch (Exception e)
         {

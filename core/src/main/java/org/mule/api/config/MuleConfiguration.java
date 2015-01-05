@@ -92,4 +92,5 @@ public interface MuleConfiguration
      * @return extension configured of type extensionType, if there's no such extension then null.
      */
     <T> T getExtension(final Class<T> extensionType);
+
 }

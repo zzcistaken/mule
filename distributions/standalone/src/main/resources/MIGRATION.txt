@@ -1,7 +1,7 @@
 MIGRATION GUIDE
 ===============
 
-The following is a list of changes you have to execute to migrate from Mule ESB Community edition version 3.4.x to version 4.x.
+The following is a list of changes you have to execute to migrate from Mule ESB Community edition to version 4.x.
 Please check http://www.mulesoft.org/documentation/display/current/Mule+Release+Notes for more details.
 
 MULE-7757: The OGNL module has been removed. You can obtain the same functionality by using MEL expressions.

@@ -141,6 +141,7 @@
             <xsd:element ref="abstract-transformer"/>
             <xsd:element ref="processor-chain"/>
             <xsd:element ref="custom-processor"/>
+            <xsd:element ref="abstract-empty-processor"/>
             <xsd:element ref="invoke"/>
             <xsd:element ref="abstract-global-intercepting-message-processor"/>
             <xsd:element ref="custom-queue-store" minOccurs="0" maxOccurs="unbounded"/>
@@ -537,6 +538,13 @@
                     </xsd:annotation>
                 </xsd:attribute>
             </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:element name="abstract-empty-processor" type="abstractEmptyMessageProcessorType" substitutionGroup="abstract-message-processor"/>
+    <xsd:complexType name="abstractEmptyMessageProcessorType">
+        <xsd:complexContent>
+            <xsd:extension base="abstractMessageProcessorType"/>
         </xsd:complexContent>
     </xsd:complexType>
 
@@ -2273,7 +2281,7 @@
                 <xsd:attribute name="maxQueueSize" type="substitutableInt">
                     <xsd:annotation>
                         <xsd:documentation>
-                            Defines the maximum number of messages that can be queued.
+                            Defines the maximum number of messages that can be queued or '-1' for unlimited.  From 3.6 the default value used is four times the value of the 'maxThreads' attribute, previously the default value was '-1' (unlimited).
                         </xsd:documentation>
                     </xsd:annotation>
                 </xsd:attribute>
@@ -5827,7 +5835,7 @@
                                 </xsd:documentation>
                             </xsd:annotation>
                         </xsd:element>
-                        <xsd:element name="threading-profile" type="asynchronousThreadingProfileType" minOccurs="0">
+                        <xsd:element name="threading-profile" type="threadingProfileType" minOccurs="0">
                             <xsd:annotation>
                                 <xsd:documentation>
                                     Threading profile used to process the message processors inside the until-successful.
@@ -6535,6 +6543,26 @@
             </xsd:documentation>
         </xsd:annotation>
         <xsd:union>
+            <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                    <xsd:pattern value=".*[^ ]+.*"/>
+                </xsd:restriction>
+            </xsd:simpleType>
+        </xsd:union>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="expression">
+        <xsd:annotation>
+            <xsd:documentation>
+                A custom xsd:string-like type that represents a MEL expresions.
+                Attributes should use this type to declare that they support expressions.
+                Those which don't will be assumed not to support them
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:union>
+            <xsd:simpleType>
+                <xsd:restriction base="propertyPlaceholderType"/>
+            </xsd:simpleType>
             <xsd:simpleType>
                 <xsd:restriction base="xsd:string">
                     <xsd:pattern value=".*[^ ]+.*"/>

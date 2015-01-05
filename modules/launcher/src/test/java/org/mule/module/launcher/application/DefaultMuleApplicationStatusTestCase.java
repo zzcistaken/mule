@@ -7,9 +7,16 @@
 package org.mule.module.launcher.application;
 
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.notNullValue;
+import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import org.mule.context.notification.MuleContextNotification;
+import org.mule.module.launcher.artifact.ArtifactClassLoader;
+import org.mule.module.launcher.descriptor.ApplicationDescriptor;
+import org.mule.module.launcher.domain.Domain;
 import org.mule.tck.junit4.AbstractMuleContextTestCase;
 import org.mule.tck.probe.JUnitProbe;
 import org.mule.tck.probe.PollingProber;
@@ -73,6 +80,22 @@ public class DefaultMuleApplicationStatusTestCase extends AbstractMuleContextTes
     }
 
     @Test
+    public void nullDeploymentClassLoaderAfterDispose()
+    {
+        ApplicationDescriptor descriptor = mock(ApplicationDescriptor.class);
+        when(descriptor.getAbsoluteResourcePaths()).thenReturn(new String[] {});
+
+        ApplicationClassLoaderFactory classLoaderFactory = mock(ApplicationClassLoaderFactory.class);
+        when(classLoaderFactory.create(descriptor)).thenReturn(mock(ArtifactClassLoader.class));
+
+        DefaultMuleApplication application = new DefaultMuleApplication(descriptor, classLoaderFactory, mock(Domain.class));
+        application.install();
+        assertThat(application.deploymentClassLoader, is(notNullValue()));
+        application.dispose();
+        assertThat(application.deploymentClassLoader, is(nullValue()));
+    }
+
+    @Test
     public void deploymentFailedOnInit()
     {
         try
@@ -87,7 +110,7 @@ public class DefaultMuleApplicationStatusTestCase extends AbstractMuleContextTes
     }
 
     @Test
-    public void deploymentFailedOnStart()
+    public void deploymentFailedOnStart() throws Exception
     {
         try
         {
@@ -96,6 +119,8 @@ public class DefaultMuleApplicationStatusTestCase extends AbstractMuleContextTes
         }
         catch (Exception e)
         {
+            muleContext.stop();
+            muleContext.dispose();
             assertStatus(ApplicationStatus.DEPLOYMENT_FAILED);
         }
     }

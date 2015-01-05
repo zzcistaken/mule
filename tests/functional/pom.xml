@@ -128,16 +128,19 @@
             <!-- Override scope="test" from parent -->
             <scope>compile</scope>
         </dependency>
-
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-library</artifactId>
+            <scope>compile</scope>
+        </dependency>
         <dependency>
             <groupId>commons-net</groupId>
             <artifactId>commons-net</artifactId>
-            <version>${commonsNetVersion}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.ftpserver</groupId>
             <artifactId>ftpserver-core</artifactId>
-            <version>1.0.2</version>
+            <version>${testFtpServerVersion}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
@@ -148,7 +151,7 @@
         <dependency>
             <groupId>org.apache.ftpserver</groupId>
             <artifactId>ftplet-api</artifactId>
-            <version>1.0.2</version>
+            <version>${testFtpServerVersion}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.sshd</groupId>

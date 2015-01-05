@@ -8,6 +8,7 @@ package org.mule.transport.email.issues;
 
 import org.mule.transport.email.functional.AbstractEmailFunctionalTestCase;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class Pop3WithConnectorMule2042TestCase extends AbstractEmailFunctionalTestCase
@@ -25,6 +26,7 @@ public class Pop3WithConnectorMule2042TestCase extends AbstractEmailFunctionalTe
     }
 
     @Test
+    @Ignore("MULE-6926: flaky test")
     public void testRequest() throws Exception
     {
         doRequest();

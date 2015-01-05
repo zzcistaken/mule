@@ -9,6 +9,7 @@ package org.mule.module.springconfig.parsers.processors;
 import org.mule.module.springconfig.parsers.PreProcessor;
 import org.mule.module.springconfig.parsers.assembly.configuration.PropertyConfiguration;
 import org.mule.module.springconfig.util.SpringXMLUtils;
+import org.mule.util.StringUtils;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -40,14 +41,15 @@ public class CheckExclusiveAttribute implements PreProcessor
         NamedNodeMap attributes = element.getAttributes();
         for (int i = 0; i < attributes.getLength(); i++)
         {
-            String alias = SpringXMLUtils.attributeName((Attr) attributes.item(i));
+            Attr attribute = (Attr) attributes.item(i);
+            String alias = SpringXMLUtils.attributeName(attribute);
             if (! config.isIgnored(alias))
             {
                 if (attribute.equals(alias))
                 {
                     found = true;
                 }
-                else
+                else if (StringUtils.equals(element.getNamespaceURI(), attribute.getNamespaceURI()))
                 {
                     foundAttributes.add(alias);
                 }

@@ -6,7 +6,6 @@
  */
 package org.mule.processor;
 
-import org.mule.DefaultMuleEvent;
 import org.mule.VoidMuleEvent;
 import org.mule.api.MessagingException;
 import org.mule.api.MuleEvent;
@@ -45,6 +44,7 @@ public class AsyncInterceptingMessageProcessor extends AbstractInterceptingMessa
 
     protected WorkManagerSource workManagerSource;
     protected boolean doThreading = true;
+    protected long threadTimeout;
     protected WorkManager workManager;
 
     private MessagingExceptionHandler messagingExceptionHandler;
@@ -59,6 +59,7 @@ public class AsyncInterceptingMessageProcessor extends AbstractInterceptingMessa
                                              int shutdownTimeout)
     {
         this.doThreading = threadingProfile.isDoThreading();
+        this.threadTimeout = threadingProfile.getThreadWaitTimeout();
         workManager = threadingProfile.createWorkManager(name, shutdownTimeout);
         workManagerSource = new WorkManagerSource()
         {
@@ -144,7 +145,7 @@ public class AsyncInterceptingMessageProcessor extends AbstractInterceptingMessa
     {
         try
         {
-            workManagerSource.getWorkManager().scheduleWork(new AsyncMessageProcessorWorker(DefaultMuleEvent.copy(event)),
+            workManagerSource.getWorkManager().scheduleWork(new AsyncMessageProcessorWorker(event),
                 WorkManager.INDEFINITE, null, new AsyncWorkListener(next));
             fireAsyncScheduledNotification(event);
         }

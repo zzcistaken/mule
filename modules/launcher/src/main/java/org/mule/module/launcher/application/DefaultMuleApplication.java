@@ -13,7 +13,10 @@ import org.mule.api.MuleException;
 import org.mule.api.config.ConfigurationBuilder;
 import org.mule.api.config.MuleProperties;
 import org.mule.api.context.notification.MuleContextNotificationListener;
+import org.mule.api.context.notification.ServerNotificationListener;
 import org.mule.api.lifecycle.Stoppable;
+import org.mule.config.bootstrap.MuleRegistryBootstrapService;
+import org.mule.config.bootstrap.RegistryBootstrapServiceUtil;
 import org.mule.config.builders.SimpleConfigurationBuilder;
 import org.mule.config.i18n.CoreMessages;
 import org.mule.config.i18n.MessageFactory;
@@ -58,6 +61,7 @@ public class DefaultMuleApplication implements Application
     protected ArtifactClassLoader deploymentClassLoader;
     private Domain domain;
     protected DeploymentListener deploymentListener;
+    private ServerNotificationListener<MuleContextNotification> statusListener;
 
     public DefaultMuleApplication(ApplicationDescriptor descriptor, ApplicationClassLoaderFactory applicationClassLoaderFactory, Domain domain)
     {
@@ -145,7 +149,7 @@ public class DefaultMuleApplication implements Application
         }
         catch (Exception e)
         {
-            status = ApplicationStatus.DEPLOYMENT_FAILED;
+            setStatusToFailed();
 
             // log it here so it ends up in app log, sys log will only log a message without stacktrace
             logger.error(null, ExceptionUtils.getRootCause(e));
@@ -176,18 +180,22 @@ public class DefaultMuleApplication implements Application
                 builders.add(cfgBuilder);
 
                 DefaultMuleContextFactory muleContextFactory = new DefaultMuleContextFactory();
+                MuleRegistryBootstrapService registryBootstrapService = new MuleRegistryBootstrapService();
+                RegistryBootstrapServiceUtil.configureUsingClassPath(registryBootstrapService);
+                muleContextFactory.setRegistryBootstrapService(registryBootstrapService);
                 if (deploymentListener != null)
                 {
                     muleContextFactory.addListener(new MuleContextDeploymentListener(getArtifactName(), deploymentListener));
                 }
 
                 ApplicationMuleContextBuilder applicationContextBuilder = new ApplicationMuleContextBuilder(descriptor);
+                applicationContextBuilder.setRegistryBootstrapService(registryBootstrapService);
                 setMuleContext(muleContextFactory.createMuleContext(builders, applicationContextBuilder));
             }
         }
         catch (Exception e)
         {
-            status = ApplicationStatus.DEPLOYMENT_FAILED;
+            setStatusToFailed();
 
             // log it here so it ends up in app log, sys log will only log a message without stacktrace
             logger.error(null, ExceptionUtils.getRootCause(e));
@@ -197,8 +205,7 @@ public class DefaultMuleApplication implements Application
 
     protected void setMuleContext(final MuleContext muleContext) throws NotificationException
     {
-        this.muleContext = muleContext;
-        this.muleContext.registerListener(new MuleContextNotificationListener<MuleContextNotification>()
+        statusListener = new MuleContextNotificationListener<MuleContextNotification>()
         {
             @Override
             public void onNotification(MuleContextNotification notification)
@@ -212,12 +219,25 @@ public class DefaultMuleApplication implements Application
                     updateStatusFor(muleContext.getLifecycleManager().getCurrentPhase());
                 }
             }
-        });
+        };
+
+        muleContext.registerListener(statusListener);
+        this.muleContext = muleContext;
     }
 
     private void updateStatusFor(String phase)
     {
         status = ApplicationStatusMapper.getApplicationStatus(phase);
+    }
+
+    private void setStatusToFailed()
+    {
+        if (muleContext != null)
+        {
+            muleContext.unregisterListener(statusListener);
+        }
+
+        status = ApplicationStatus.DEPLOYMENT_FAILED;
     }
 
     protected ConfigurationBuilder createConfigurationBuilderFromApplicationProperties()
@@ -285,6 +305,7 @@ public class DefaultMuleApplication implements Application
         {
             // kill any refs to the old classloader to avoid leaks
             Thread.currentThread().setContextClassLoader(null);
+            deploymentClassLoader = null;
         }
     }
 

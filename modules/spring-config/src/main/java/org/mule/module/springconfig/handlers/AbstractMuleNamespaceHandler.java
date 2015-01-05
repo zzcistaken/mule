@@ -6,7 +6,7 @@
  */
 package org.mule.module.springconfig.handlers;
 
-import org.mule.config.spring.parsers.DeprecatedBeanDefinitionParser;
+import org.mule.module.springconfig.parsers.DeprecatedBeanDefinitionParser;
 import org.mule.endpoint.EndpointURIEndpointBuilder;
 import org.mule.module.springconfig.MuleHierarchicalBeanDefinitionParserDelegate;
 import org.mule.module.springconfig.factories.InboundEndpointFactoryBean;

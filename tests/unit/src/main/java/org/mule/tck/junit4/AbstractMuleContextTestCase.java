@@ -6,11 +6,13 @@
  */
 package org.mule.tck.junit4;
 
+import org.mule.DefaultMuleMessage;
 import org.mule.MessageExchangePattern;
 import org.mule.api.MuleContext;
 import org.mule.api.MuleEvent;
 import org.mule.api.MuleEventContext;
 import org.mule.api.MuleException;
+import org.mule.api.MuleMessage;
 import org.mule.api.MuleSession;
 import org.mule.api.config.ConfigurationBuilder;
 import org.mule.api.config.MuleConfiguration;
@@ -28,6 +30,9 @@ import org.mule.api.routing.filter.Filter;
 import org.mule.api.transformer.Transformer;
 import org.mule.api.transport.Connector;
 import org.mule.config.DefaultMuleConfiguration;
+import org.mule.config.bootstrap.MuleRegistryBootstrapService;
+import org.mule.config.bootstrap.RegistryBootstrapService;
+import org.mule.config.bootstrap.RegistryBootstrapServiceUtil;
 import org.mule.config.builders.ConfigurationBuilderService;
 import org.mule.config.builders.DefaultsConfigurationBuilder;
 import org.mule.config.builders.MuleConfigurationBuilderService;
@@ -52,9 +57,7 @@ import org.mule.util.concurrent.Latch;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -76,6 +79,7 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 public abstract class AbstractMuleContextTestCase extends AbstractMuleTestCase
 {
 
+    public static final String TEST_PAYLOAD = "test";
     public static final String WORKING_DIRECTORY_SYSTEM_PROPERTY_KEY = "workingDirectory";
 
     public TemporaryFolder workingDirectory = new TemporaryFolder();
@@ -135,6 +139,8 @@ public abstract class AbstractMuleContextTestCase extends AbstractMuleTestCase
     private BundleContext bundleContext;
     private MuleTransportDescriptorService transportDescriptorService;
     private ConfigurationBuilderService configurationBuilderService;
+
+    protected RegistryBootstrapService registryBootstrapService;
 
     protected boolean isDisposeContextPerClass()
     {
@@ -241,13 +247,16 @@ public abstract class AbstractMuleContextTestCase extends AbstractMuleTestCase
         else
         {
             //TODO(pablo.kraan): OSGi - move this initialization to somewhere else
+            registryBootstrapService = createRegistryBootstrapService();
+            configureRegistryBootstrapService(registryBootstrapService);
+
             transportDescriptorService = createTransportDescriptorService();
             configureTransportDescriptorService(transportDescriptorService);
 
             configurationBuilderService = createConfigurationBuilderService();
             configureConfigurationBuilderService(configurationBuilderService);
 
-            MuleContextFactory muleContextFactory = createMuleContextFactory();
+            DefaultMuleContextFactory muleContextFactory = createMuleContextFactory();
             List<ConfigurationBuilder> builders = new ArrayList<ConfigurationBuilder>();
             builders.add(new SimpleConfigurationBuilder(getStartUpProperties()));
             //TODO(pablo.kraan): OSGi - CLASSNAME_ANNOTATIONS_CONFIG_BUILDER is not in the classpath anymore.
@@ -267,6 +276,7 @@ public abstract class AbstractMuleContextTestCase extends AbstractMuleTestCase
             logger.info("Using working directory for test: " + workingDirectory);
             muleConfiguration.setWorkingDirectory(workingDirectory);
             contextBuilder.setMuleConfiguration(muleConfiguration);
+            contextBuilder.setRegistryBootstrapService(registryBootstrapService);
             configureMuleContext(contextBuilder);
             context = muleContextFactory.createMuleContext(builders, contextBuilder);
             if (!isGracefulShutdown())
@@ -315,7 +325,7 @@ public abstract class AbstractMuleContextTestCase extends AbstractMuleTestCase
         transportDescriptorService.registerDescriptorFactory(transport, testTransportServiceDescriptorFactory);
     }
 
-    protected MuleContextFactory createMuleContextFactory()
+    protected DefaultMuleContextFactory createMuleContextFactory()
     {
         DefaultMuleContextFactory defaultMuleContextFactory = new DefaultMuleContextFactory();
         defaultMuleContextFactory.setBundleContext(bundleContext);
@@ -329,6 +339,17 @@ public abstract class AbstractMuleContextTestCase extends AbstractMuleTestCase
     {
         return new MuleTransportDescriptorService();
     }
+
+    protected RegistryBootstrapService createRegistryBootstrapService()
+    {
+        return new MuleRegistryBootstrapService();
+    }
+
+    protected void configureRegistryBootstrapService(RegistryBootstrapService registryBootstrapService)
+    {
+        RegistryBootstrapServiceUtil.configureUsingClassPath(registryBootstrapService);
+    }
+
 
     //This sohuldn't be needed by Test cases but can be used by base testcases that wish to add further builders when
     //creating the MuleContext.
@@ -477,6 +498,14 @@ public abstract class AbstractMuleContextTestCase extends AbstractMuleTestCase
                                                            List<Transformer> transformers, Filter filter, Map<Object, Object> properties, Connector connector) throws Exception
     {
         return MuleTestUtils.getTestOutboundEndpoint(name, muleContext, uri, transformers, filter, properties, connector);
+    }
+
+    /**
+     * @return creates a new {@link org.mule.api.MuleMessage} with a test payload
+     */
+    protected MuleMessage getTestMuleMessage()
+    {
+        return new DefaultMuleMessage(TEST_PAYLOAD, muleContext);
     }
 
     public static MuleEvent getTestEvent(Object data, FlowConstruct service) throws Exception

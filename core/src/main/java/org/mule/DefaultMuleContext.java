@@ -44,6 +44,7 @@ import org.mule.client.DefaultLocalMuleClient;
 import org.mule.config.ClusterConfiguration;
 import org.mule.config.DefaultMuleConfiguration;
 import org.mule.config.NullClusterConfiguration;
+import org.mule.config.bootstrap.RegistryBootstrapService;
 import org.mule.config.i18n.CoreMessages;
 import org.mule.context.notification.MuleContextNotification;
 import org.mule.context.notification.NotificationException;
@@ -169,6 +170,7 @@ public class DefaultMuleContext implements MuleContext
 
     private QueueManager queueManager;
     private TransportDescriptorService transportDescriptorService;
+    private RegistryBootstrapService registryBootstrapService;
 
     /**
      * @deprecated Use empty constructor instead and use setter for dependencies.
@@ -949,6 +951,17 @@ public class DefaultMuleContext implements MuleContext
     public void setTransportDescriptorService(TransportDescriptorService transportDescriptorService)
     {
         this.transportDescriptorService = transportDescriptorService;
+    }
+
+    public void setRegistryBootstrapService(RegistryBootstrapService registryBootstrapService)
+    {
+        this.registryBootstrapService = registryBootstrapService;
+    }
+
+    @Override
+    public RegistryBootstrapService getRegistryBootstrapService()
+    {
+        return registryBootstrapService;
     }
 
     private void overrideClusterConfiguration()

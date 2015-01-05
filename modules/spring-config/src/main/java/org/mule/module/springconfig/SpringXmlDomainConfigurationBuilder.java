@@ -6,7 +6,11 @@
  */
 package org.mule.module.springconfig;
 
+import org.mule.api.MuleContext;
 import org.mule.api.config.ConfigurationException;
+import org.mule.config.ConfigResource;
+
+import org.springframework.context.ApplicationContext;
 
 import org.osgi.framework.BundleContext;
 
@@ -20,5 +24,11 @@ public class SpringXmlDomainConfigurationBuilder extends SpringXmlConfigurationB
     {
         super(configResources, bundleContext);
         setUseMinimalConfigResource(true);
+    }
+
+    @Override
+    protected ApplicationContext createApplicationContext(MuleContext muleContext, ConfigResource[] configResources, BundleContext bundleContext) throws Exception
+    {
+        return new MuleDomainContext(muleContext, configResources);
     }
 }

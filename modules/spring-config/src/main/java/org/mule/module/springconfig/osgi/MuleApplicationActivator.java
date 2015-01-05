@@ -12,9 +12,12 @@ import org.mule.api.config.ConfigurationBuilder;
 import org.mule.api.config.MuleConfiguration;
 import org.mule.api.registry.MuleTransportDescriptorService;
 import org.mule.config.PropertiesMuleConfigurationFactory;
+import org.mule.config.bootstrap.MuleRegistryBootstrapService;
+import org.mule.config.bootstrap.RegistryBootstrapService;
 import org.mule.context.DefaultMuleContextBuilder;
 import org.mule.context.DefaultMuleContextFactory;
 import org.mule.module.springconfig.SpringXmlConfigurationBuilder;
+import org.mule.osgi.RegistryBootstrapServiceWrapper;
 import org.mule.osgi.TransportDescriptorServiceWrapper;
 
 import java.util.ArrayList;
@@ -33,6 +36,7 @@ public class MuleApplicationActivator implements BundleActivator
     //TODO(pablo.kraan): OSGi - move this class to another package/module
     private MuleContext muleContext;
     private TransportDescriptorServiceWrapper transportDescriptorServiceWrapper;
+    private RegistryBootstrapServiceWrapper registryBootstrapServiceWrapper;
 
     @Override
     public void start(BundleContext bundleContext) throws Exception
@@ -63,13 +67,18 @@ public class MuleApplicationActivator implements BundleActivator
             MuleTransportDescriptorService muleTransportDescriptorService = new MuleTransportDescriptorService();
             transportDescriptorServiceWrapper = TransportDescriptorServiceWrapper.createTransportDescriptorServiceWrapper(muleTransportDescriptorService, bundleContext);
 
+            RegistryBootstrapService registryBootstrapService = new MuleRegistryBootstrapService();
+            registryBootstrapServiceWrapper = RegistryBootstrapServiceWrapper.createServiceWrapper(registryBootstrapService, bundleContext);
+
             DefaultMuleContextBuilder contextBuilder = new DefaultMuleContextBuilder();
             contextBuilder.setMuleConfiguration(configuration);
             contextBuilder.setTransportDescriptorService(muleTransportDescriptorService);
+            contextBuilder.setRegistryBootstrapService(registryBootstrapService);
 
             DefaultMuleContextFactory contextFactory = new DefaultMuleContextFactory();
             contextFactory.setBundleContext(bundleContext);
             contextFactory.setTransportDescriptorService(muleTransportDescriptorService);
+            contextFactory.setRegistryBootstrapService(registryBootstrapService);
 
             muleContext = contextFactory.createMuleContext(configBuilders, contextBuilder);
             muleContext.start();
@@ -107,6 +116,11 @@ public class MuleApplicationActivator implements BundleActivator
         if (transportDescriptorServiceWrapper != null)
         {
             bundleContext.removeServiceListener(transportDescriptorServiceWrapper);
+        }
+
+        if (registryBootstrapServiceWrapper != null)
+        {
+            bundleContext.removeServiceListener(registryBootstrapServiceWrapper);
         }
 
         if (muleContext != null)

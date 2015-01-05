@@ -12,10 +12,13 @@ import static org.ops4j.pax.exam.CoreOptions.junitBundles;
 import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.CoreOptions.options;
 import org.mule.api.registry.MuleTransportDescriptorService;
+import org.mule.config.bootstrap.MuleRegistryBootstrapService;
+import org.mule.config.bootstrap.RegistryBootstrapService;
 import org.mule.config.builders.ConfigurationBuilderFactory;
 import org.mule.config.builders.ConfigurationBuilderService;
 import org.mule.functional.junit4.FunctionalTestCase;
 import org.mule.osgi.ConfigurationBuilderServiceWrapper;
+import org.mule.osgi.RegistryBootstrapServiceWrapper;
 import org.mule.osgi.TransportDescriptorServiceWrapper;
 
 import java.io.File;
@@ -53,6 +56,7 @@ public abstract class AbstractVmOsgiTestCase extends FunctionalTestCase
     private TransportDescriptorServiceWrapper transportDescriptorServiceWrapper;
 
     private ConfigurationBuilderServiceWrapper configurationBuilderServiceWrapper;
+    private RegistryBootstrapServiceWrapper registryBootstrapServiceWrapper;
 
     @ProbeBuilder
     public TestProbeBuilder build(TestProbeBuilder builder)
@@ -164,6 +168,12 @@ public abstract class AbstractVmOsgiTestCase extends FunctionalTestCase
     }
 
     @Override
+    protected void configureRegistryBootstrapService(RegistryBootstrapService registryBootstrapService)
+    {
+        registryBootstrapServiceWrapper = RegistryBootstrapServiceWrapper.createServiceWrapper(registryBootstrapService, bundleContext);
+    }
+
+    @Override
     protected void configureConfigurationBuilderService(ConfigurationBuilderService configurationBuilderService)
     {
         configurationBuilderServiceWrapper = new ConfigurationBuilderServiceWrapper(bundleContext, configurationBuilderService);
@@ -191,6 +201,7 @@ public abstract class AbstractVmOsgiTestCase extends FunctionalTestCase
     {
         removeServiceListener(transportDescriptorServiceWrapper);
         removeServiceListener(configurationBuilderServiceWrapper);
+        removeServiceListener(registryBootstrapServiceWrapper);
     }
 
     private void removeServiceListener(ServiceListener listener)

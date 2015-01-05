@@ -17,6 +17,8 @@ import org.mule.api.lifecycle.InitialisationException;
 import org.mule.api.registry.MuleTransportDescriptorService;
 import org.mule.api.registry.TransportDescriptorService;
 import org.mule.config.DefaultMuleConfiguration;
+import org.mule.config.bootstrap.MuleRegistryBootstrapService;
+import org.mule.config.bootstrap.RegistryBootstrapService;
 import org.mule.config.builders.AutoConfigurationBuilder;
 import org.mule.config.builders.ConfigurationBuilderService;
 import org.mule.config.builders.DefaultsConfigurationBuilder;
@@ -47,13 +49,18 @@ public class DefaultMuleContextFactory implements MuleContextFactory
     private TransportDescriptorService transportDescriptorService = new MuleTransportDescriptorService();
     private ConfigurationBuilderService configurationBuilderService = new MuleConfigurationBuilderService();
 
+    private RegistryBootstrapService registryBootstrapService = new MuleRegistryBootstrapService();
+
     /**
      * Use default ConfigurationBuilder, default MuleContextBuilder
      */
     public MuleContext createMuleContext() throws InitialisationException, ConfigurationException
     {
         // Configure with defaults needed for a feasible/startable MuleContext
-        return createMuleContext(new DefaultsConfigurationBuilder(), new DefaultMuleContextBuilder());
+        DefaultMuleContextBuilder muleContextBuilder = new DefaultMuleContextBuilder();
+        muleContextBuilder.setRegistryBootstrapService(registryBootstrapService);
+
+        return createMuleContext(new DefaultsConfigurationBuilder(), muleContextBuilder);
     }
 
     /**
@@ -191,6 +198,7 @@ public class DefaultMuleContextFactory implements MuleContextFactory
         // Create MuleContext
         DefaultMuleContextBuilder contextBuilder = new DefaultMuleContextBuilder();
         contextBuilder.setMuleConfiguration(configuration);
+        contextBuilder.setRegistryBootstrapService(registryBootstrapService);
         contextBuilder.setTransportDescriptorService(transportDescriptorService);
         configurationBuilderService = null;
         contextBuilder.setConfigurationBuilderService(configurationBuilderService);
@@ -307,6 +315,11 @@ public class DefaultMuleContextFactory implements MuleContextFactory
         {
             listener.onConfiguration(context);
         }
+    }
+
+    public void setRegistryBootstrapService(RegistryBootstrapService registryBootstrapService)
+    {
+        this.registryBootstrapService = registryBootstrapService;
     }
 
     public void setBundleContext(BundleContext bundleContext)

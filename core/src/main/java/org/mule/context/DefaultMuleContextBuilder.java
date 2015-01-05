@@ -33,6 +33,7 @@ import org.mule.client.DefaultLocalMuleClient;
 import org.mule.config.DefaultMuleConfiguration;
 import org.mule.config.ImmutableThreadingProfile;
 import org.mule.config.builders.ConfigurationBuilderService;
+import org.mule.config.bootstrap.RegistryBootstrapService;
 import org.mule.config.i18n.Message;
 import org.mule.config.i18n.MessageFactory;
 import org.mule.context.notification.AsyncMessageNotification;
@@ -70,7 +71,6 @@ import org.apache.commons.logging.LogFactory;
  * values for {@link MuleConfiguration}, {@link LifecycleManager}, {@link WorkManager}, 
  * {@link WorkListener} and {@link ServerNotificationManager}.
  */
-
 public class DefaultMuleContextBuilder implements MuleContextBuilder
 {
 
@@ -99,6 +99,8 @@ public class DefaultMuleContextBuilder implements MuleContextBuilder
     {
     }
 
+    protected RegistryBootstrapService registryBootstrapService;
+
     /**
      * {@inheritDoc}
      */
@@ -119,6 +121,9 @@ public class DefaultMuleContextBuilder implements MuleContextBuilder
         muleContext.setMuleRegistry(muleRegistry);
         muleContext.setLocalMuleClient(new DefaultLocalMuleClient(muleContext));
         muleContext.setExceptionListener(new DefaultSystemExceptionStrategy(muleContext));
+        muleContext.setExecutionClassLoader(Thread.currentThread().getContextClassLoader());
+        muleContext.setRegistryBootstrapService(registryBootstrapService);
+
         //TODO(pablo.kraan): OSGi - this is wrong - context classLoader is the root app classlodear conating System + OSGi classes only
         //muleContext.setExecutionClassLoader(Thread.currentThread().getContextClassLoader());
         muleContext.setTransportDescriptorService(transportDescriptorService);
@@ -249,6 +254,11 @@ public class DefaultMuleContextBuilder implements MuleContextBuilder
     public void setShutdownScreen(SplashScreen shutdownScreen)
     {
         this.shutdownScreen = shutdownScreen;
+    }
+
+    public void setRegistryBootstrapService(RegistryBootstrapService registryBootstrapService)
+    {
+        this.registryBootstrapService = registryBootstrapService;
     }
 
     public TransportDescriptorService getTransportDescriptorService()
