@@ -40,7 +40,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Export-Package>org.mule.tck.*</Export-Package>
+                        <Export-Package>org.mule.functional.*</Export-Package>
                     </instructions>
                 </configuration>
             </plugin>
