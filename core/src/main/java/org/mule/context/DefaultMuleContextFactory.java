@@ -200,8 +200,8 @@ public class DefaultMuleContextFactory implements MuleContextFactory
         contextBuilder.setMuleConfiguration(configuration);
         contextBuilder.setRegistryBootstrapService(registryBootstrapService);
         contextBuilder.setTransportDescriptorService(transportDescriptorService);
-        configurationBuilderService = null;
-        contextBuilder.setConfigurationBuilderService(configurationBuilderService);
+        //configurationBuilderService = null;
+        //contextBuilder.setConfigurationBuilderService(configurationBuilderService);
         return doCreateMuleContext(contextBuilder, new ContextConfigurator()
         {
             @Override

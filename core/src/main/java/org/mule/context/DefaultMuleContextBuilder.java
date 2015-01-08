@@ -32,7 +32,6 @@ import org.mule.api.registry.TransportDescriptorService;
 import org.mule.client.DefaultLocalMuleClient;
 import org.mule.config.DefaultMuleConfiguration;
 import org.mule.config.ImmutableThreadingProfile;
-import org.mule.config.builders.ConfigurationBuilderService;
 import org.mule.config.bootstrap.RegistryBootstrapService;
 import org.mule.config.i18n.Message;
 import org.mule.config.i18n.MessageFactory;
@@ -93,7 +92,7 @@ public class DefaultMuleContextBuilder implements MuleContextBuilder
 
     protected TransportDescriptorService transportDescriptorService;
 
-    protected ConfigurationBuilderService configurationBuilderService;
+    //protected ConfigurationBuilderService configurationBuilderService;
 
     public DefaultMuleContextBuilder()
     {
@@ -271,15 +270,10 @@ public class DefaultMuleContextBuilder implements MuleContextBuilder
         this.transportDescriptorService = transportDescriptorService;
     }
 
-    public void setConfigurationBuilderService(ConfigurationBuilderService configurationBuilderService)
-    {
-        this.configurationBuilderService = configurationBuilderService;
-    }
-
-    public ConfigurationBuilderService getConfigurationBuilderService()
-    {
-        return configurationBuilderService;
-    }
+    //public void setConfigurationBuilderService(ConfigurationBuilderService configurationBuilderService)
+    //{
+    //    this.configurationBuilderService = configurationBuilderService;
+    //}
 
     protected DefaultMuleConfiguration createMuleConfiguration()
     {

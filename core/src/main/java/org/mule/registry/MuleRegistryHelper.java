@@ -463,18 +463,6 @@ public class MuleRegistryHelper implements MuleRegistry
      */
     public ServiceDescriptor lookupServiceDescriptor(ServiceType type, String name, Properties overrides) throws ServiceException
     {
-        if (TransportServiceDescriptorFactory.TRANSPORT_SERVICE_TYPE.equals(type.getName()))
-        {
-            return transportDescriptorService.getDescriptor(name, muleContext, overrides);
-        }
-        else
-        {
-            return getServiceDescriptor(type, name, overrides);
-        }
-    }
-
-    private ServiceDescriptor getServiceDescriptor(ServiceType type, String name, Properties overrides) throws ServiceException
-    {
         String key = new AbstractServiceDescriptor.Key(name, overrides).getKey();
         // TODO If we want these descriptors loaded form Spring we need to change the key mechanism
         // and the scope, and then deal with circular reference issues.
@@ -484,7 +472,15 @@ public class MuleRegistryHelper implements MuleRegistry
         {
             if (sd == null)
             {
-                sd = createServiceDescriptor(type, name, overrides);
+                if (TransportServiceDescriptorFactory.TRANSPORT_SERVICE_TYPE.equals(type.getName()))
+                {
+                    sd = transportDescriptorService.getDescriptor(name, muleContext, overrides);
+                }
+                else
+                {
+                    sd = createServiceDescriptor(type, name, overrides);
+                }
+
                 try
                 {
                     registry.registerObject(key, sd, ServiceDescriptor.class);

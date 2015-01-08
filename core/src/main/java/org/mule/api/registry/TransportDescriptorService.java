@@ -12,15 +12,36 @@ import org.mule.api.MuleContext;
 import java.util.Properties;
 
 /**
- *
+ * Creates {@link org.mule.api.registry.ServiceDescriptor} for registered transports.
  */
 public interface TransportDescriptorService
 {
 
-    ServiceDescriptor getDescriptor(String name, MuleContext muleContext, Properties overrides) throws ServiceException;
+    /**
+     * Provides a service descriptor for a given transport
+     *
+     * @param transport name of the transport
+     * @param muleContext context associated with the descriptor
+     * @param overrides properties used to override the default transport properties
+     * @return a {@link ServiceDescriptor} for the transport using overridden properties
+     * @throws ServiceException
+     */
+    ServiceDescriptor getDescriptor(String transport, MuleContext muleContext, Properties overrides) throws ServiceException;
 
+    /**
+     * Registers a transport's {@link TransportServiceDescriptorFactory} into the service
+     *
+     * @param transport name of the transport to register
+     * @param factory factory used to create {@link ServiceDescriptor} for this transport
+     */
     void registerDescriptorFactory(String transport, TransportServiceDescriptorFactory factory);
 
+    /**
+     * Unregisters a transport from the service
+     *
+     * @param transport name of the transport to unregister
+     * @return true if transport was previously registered, false otherwise
+     */
     boolean unregisterDescriptorFactory(String transport);
 
 }
