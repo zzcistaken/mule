@@ -15,6 +15,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.Collection;
 
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
@@ -29,17 +31,34 @@ import org.apache.cxf.mime.TestMtomService;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameter;
+import org.junit.runners.Parameterized.Parameters;
 
 @Ignore("Broken on removing services")
+@RunWith(Parameterized.class)
 public class MtomTestCase extends FunctionalTestCase
 {
     @Rule
     public DynamicPort dynamicPort = new DynamicPort("port1");
 
+    @Parameter
+    public String config;
+
+    @Parameters
+    public static Collection<Object[]> parameters()
+    {
+        return Arrays.asList(new Object[][] {
+                {"mtom-conf-flow.xml"},
+                {"mtom-conf-flow-httpn.xml"}
+        });
+    }
+
     @Override
     protected String getConfigFile()
     {
-        return "mtom-conf-flow.xml";
+        return config;
     }
 
     @Test

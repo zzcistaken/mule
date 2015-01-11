@@ -171,6 +171,7 @@ public class DefaultMuleContext implements MuleContext
     private QueueManager queueManager;
     private TransportDescriptorService transportDescriptorService;
     private RegistryBootstrapService registryBootstrapService;
+    private TransportDescriptorService transportDescriptorService;
 
     /**
      * @deprecated Use empty constructor instead and use setter for dependencies.
@@ -956,6 +957,16 @@ public class DefaultMuleContext implements MuleContext
     public void setRegistryBootstrapService(RegistryBootstrapService registryBootstrapService)
     {
         this.registryBootstrapService = registryBootstrapService;
+    }
+
+    public TransportDescriptorService getTransportDescriptorService()
+    {
+        return transportDescriptorService;
+    }
+
+    public void setTransportDescriptorService(TransportDescriptorService transportDescriptorService)
+    {
+        this.transportDescriptorService = transportDescriptorService;
     }
 
     @Override

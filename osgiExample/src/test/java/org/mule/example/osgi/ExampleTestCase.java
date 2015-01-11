@@ -5,25 +5,19 @@ package org.mule.example.osgi;/*
  * LICENSE.txt file.
  */
 
-import org.mule.functional.junit4.FunctionalTestCase;
-
-import org.junit.Ignore;
-import org.junit.Test;
-
-@Ignore
-public class ExampleTestCase extends FunctionalTestCase
+public class ExampleTestCase
 {
 
-    @Override
-    protected String getConfigFile()
-    {
-        return "test-config.xml";
-    }
-
-    @Test
-    public void testName() throws Exception
-    {
-        Thread.sleep(5000);
-
-    }
+//    @Override
+//    protected String getConfigFile()
+//    {
+//        return "test-config.xml";
+//    }
+//
+//    @Test
+//    public void testName() throws Exception
+//    {
+//        Thread.sleep(5000);
+//
+//    }
 }

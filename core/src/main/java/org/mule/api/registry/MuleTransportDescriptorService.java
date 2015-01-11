@@ -8,42 +8,85 @@
 package org.mule.api.registry;
 
 import org.mule.api.MuleContext;
+import org.mule.config.i18n.MessageFactory;
+import org.mule.util.SpiUtils;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+
 import java.util.Properties;
+import java.util.concurrent.ExecutionException;
 
-/**
- *
- */
 public class MuleTransportDescriptorService implements TransportDescriptorService
 {
 
-    private final Map<String, TransportServiceDescriptorFactory> serviceDescriptorFactories = new HashMap<>();
+    private final LoadingCache<String, TransportServiceDescriptorFactory> serviceDescriptorFactories = CacheBuilder.newBuilder().build(new CacheLoader<String, TransportServiceDescriptorFactory>()
+    {
+        @Override
+        public TransportServiceDescriptorFactory load(String transport) throws Exception
+        {
+            return createServiceDescriptorFactory(transport);
+        }
+    });
 
     @Override
-    public ServiceDescriptor getDescriptor(String name, MuleContext muleContext, Properties overrides) throws ServiceException
+    public ServiceDescriptor getDescriptor(String transport, MuleContext muleContext, Properties overrides) throws ServiceException
     {
-        TransportServiceDescriptorFactory transportServiceDescriptorFactory = serviceDescriptorFactories.get(name);
-
-        if (transportServiceDescriptorFactory == null)
+        try
         {
-            throw new IllegalStateException(String.format("Unable to obtain a service descriptor for transport '%s'", name));
+            TransportServiceDescriptorFactory transportServiceDescriptorFactory = serviceDescriptorFactories.get(transport);
+
+            return transportServiceDescriptorFactory.create(muleContext, overrides);
+        }
+        catch (ExecutionException e)
+        {
+            if (e.getCause() instanceof ServiceException)
+            {
+                throw (ServiceException) e.getCause();
+            }
+            else
+            {
+                throw new ServiceException(MessageFactory.createStaticMessage("Cannot create service descriptor"), e);
+            }
+        }
+    }
+
+    private TransportServiceDescriptorFactory createServiceDescriptorFactory(String transport) throws ServiceException
+    {
+        // Strips off and use the meta-scheme if present
+        String scheme = transport;
+        if (scheme.contains(":"))
+        {
+            scheme = transport.substring(0, transport.indexOf(":"));
         }
 
-        return transportServiceDescriptorFactory.create(muleContext, overrides);
+        Properties serviceDescriptor = SpiUtils.findServiceDescriptor(ServiceType.TRANSPORT, scheme);
+        if (serviceDescriptor == null)
+        {
+            throw new ServiceException(MessageFactory.createStaticMessage(String.format("Unable to obtain a service descriptor for transport '%s'", transport)));
+        }
+
+        TransportServiceDescriptorFactory transportServiceDescriptorFactory = new MuleTransportServiceDescriptorFactory(transport, serviceDescriptor);
+        serviceDescriptorFactories.put(transport, transportServiceDescriptorFactory);
+
+        return transportServiceDescriptorFactory;
     }
 
-    @Override
-    public void registerDescriptorFactory(String transport, TransportServiceDescriptorFactory factory)
-    {
-        //TODO(pablo.kraan): OSGi - synchronize access
-        serviceDescriptorFactories.put(transport, factory);
-    }
-
+    //TODO(pablo.kraan): OSGi - add this
     @Override
     public boolean unregisterDescriptorFactory(String transport)
     {
         return serviceDescriptorFactories.remove(transport) != null;
     }
+
+    /*
+    @Override
+    
+    public void registerDescriptorFactory(String transport, TransportServiceDescriptorFactory factory)
+    {
+        //TODO(pablo.kraan): OSGi - synchronize access
+        serviceDescriptorFactories.put(transport, factory);
+    }
+     */
 }

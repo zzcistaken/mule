@@ -11,42 +11,84 @@ import org.mule.api.MuleContext;
 import org.mule.api.config.ConfigurationBuilder;
 import org.mule.api.config.ConfigurationException;
 import org.mule.config.ConfigResource;
-import org.mule.config.i18n.CoreMessages;
+import org.mule.util.ClassUtils;
 
-import java.util.HashMap;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+
+import java.io.IOException;
 import java.util.List;
-import java.util.Map;
+import java.util.Properties;
+import java.util.concurrent.ExecutionException;
 
 /**
- *
+ * Provides {@link ConfigurationBuilder} instances that are declared in the configuration-builders.properties
+ * file.
  */
 public class MuleConfigurationBuilderService implements ConfigurationBuilderService
 {
 
-    private final Map<String, ConfigurationBuilderFactory> configurationBuilderFactories = new HashMap<>();
+    private final LoadingCache<String, ConfigurationBuilderFactory> configurationBuilderFactories = CacheBuilder.newBuilder().build(new CacheLoader<String, ConfigurationBuilderFactory>()
+    {
+        @Override
+        public ConfigurationBuilderFactory load(String fileExtension) throws Exception
+        {
+            return createConfigurationBuilderFactory(fileExtension);
+        }
+    });
 
     @Override
     public ConfigurationBuilder createConfigurationBuilder(String fileExtension, MuleContext domainContext, List<ConfigResource> configs) throws ConfigurationException
     {
-        ConfigurationBuilderFactory configurationBuilderFactory = configurationBuilderFactories.get(fileExtension);
-
-        if (configurationBuilderFactory == null)
+        try
         {
-            throw new ConfigurationException(CoreMessages.configurationBuilderNoMatching(configs.toString()));
+            ConfigurationBuilderFactory configurationBuilderFactory = configurationBuilderFactories.get(fileExtension);
+
+            return configurationBuilderFactory.createConfigurationBuilder(domainContext, configs);
+        }
+        catch (ExecutionException e)
+        {
+            if (e.getCause() instanceof ConfigurationException)
+            {
+                throw (ConfigurationException) e.getCause();
+            }
+            else
+            {
+                throw new ConfigurationException(e);
+            }
+        }
+    }
+
+    private ConfigurationBuilderFactory createConfigurationBuilderFactory(String fileExtension) throws ConfigurationException
+    {
+        Properties props = new Properties();
+        try
+        {
+            props.load(ClassUtils.getResource("configuration-builders.properties", this.getClass()).openStream());
+        }
+        catch (IOException e)
+        {
+            throw new ConfigurationException(e);
         }
 
-        return configurationBuilderFactory.createConfigurationBuilder(domainContext, configs);
+        String className = (String) props.get(fileExtension);
+
+        return new MuleConfigurationBuilderFactory(className);
     }
 
-    @Override
+    //@Override
     public void registerconfigurationBuilderFactory(String extension, ConfigurationBuilderFactory factory)
     {
-        configurationBuilderFactories.put(extension, factory);
+        //TODO(pablo.kraan): OSGi - add this
+        //configurationBuilderFactories.put(extension, factory);
     }
 
-    @Override
+    //@Override
     public boolean unregisterDescriptorFactory(String extension)
     {
+        //TODO(pablo.kraan): OSGi - add this
         return configurationBuilderFactories.remove(extension) != null;
     }
+
 }

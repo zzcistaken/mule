@@ -36,6 +36,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 @RunWith(Parameterized.class)
 public class ClientCredentialsFullConfigTestCase extends AbstractOAuthAuthorizationTestCase
@@ -65,7 +66,7 @@ public class ClientCredentialsFullConfigTestCase extends AbstractOAuthAuthorizat
         this.configFile = configFile;
     }
 
-    @Parameterized.Parameters
+    @Parameters
     public static Collection<Object[]> parameters()
     {
         return Arrays.asList(new Object[] {"client-credentials/client-credentials-full-config-tls-global.xml"},
@@ -130,6 +131,6 @@ public class ClientCredentialsFullConfigTestCase extends AbstractOAuthAuthorizat
     @Override
     protected String getProtocol()
     {
-        return HTTPS;
+        return HTTPS.getScheme();
     }
 }

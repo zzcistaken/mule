@@ -11,11 +11,18 @@ import org.mule.functional.junit4.FunctionalTestCase;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.util.concurrent.Latch;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameter;
+import org.junit.runners.Parameterized.Parameters;
 
+@RunWith(Parameterized.class)
 public class UsernameTokenTestCase extends FunctionalTestCase
 {
     private Latch greetLatch;
@@ -23,14 +30,25 @@ public class UsernameTokenTestCase extends FunctionalTestCase
     @Rule
     public DynamicPort dynamicPort = new DynamicPort("port1");
 
+    @Parameter
+    public String[] configFiles;
+
+    @Parameters
+    public static Collection<Object[]> parameters()
+    {
+        return Arrays.asList(new Object[][]
+        {
+                {new String[] {"org/mule/module/cxf/wssec/cxf-secure-service-flow.xml", "org/mule/module/cxf/wssec/username-token-conf.xml"}},
+                {new String[] {"org/mule/module/cxf/wssec/cxf-secure-service-flow-httpn.xml", "org/mule/module/cxf/wssec/username-token-conf.xml"}}
+        });
+    }
+    
     @Override
     protected String[] getConfigFiles()
     {
-        return new String[] {
-                "org/mule/module/cxf/wssec/cxf-secure-service-flow.xml",
-                "org/mule/module/cxf/wssec/username-token-conf.xml"
-        };
+        return configFiles;
     }
+    
 
     @Override
     protected void doSetUp() throws Exception

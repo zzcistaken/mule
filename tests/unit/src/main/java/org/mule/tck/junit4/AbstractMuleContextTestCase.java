@@ -26,6 +26,7 @@ import org.mule.api.processor.MessageProcessor;
 import org.mule.api.registry.MuleTransportDescriptorService;
 import org.mule.api.registry.RegistrationException;
 import org.mule.api.registry.ServiceType;
+import org.mule.api.registry.TransportDescriptorService;
 import org.mule.api.routing.filter.Filter;
 import org.mule.api.transformer.Transformer;
 import org.mule.api.transport.Connector;
@@ -137,10 +138,12 @@ public abstract class AbstractMuleContextTestCase extends AbstractMuleTestCase
      */
     private boolean disposeContextPerClass;
     private BundleContext bundleContext;
-    private MuleTransportDescriptorService transportDescriptorService;
-    private ConfigurationBuilderService configurationBuilderService;
 
     protected RegistryBootstrapService registryBootstrapService;
+
+    protected TransportDescriptorService transportDescriptorService;
+
+    protected ConfigurationBuilderService configurationBuilderService;
 
     protected boolean isDisposeContextPerClass()
     {
@@ -251,12 +254,20 @@ public abstract class AbstractMuleContextTestCase extends AbstractMuleTestCase
             configureRegistryBootstrapService(registryBootstrapService);
 
             transportDescriptorService = createTransportDescriptorService();
-            configureTransportDescriptorService(transportDescriptorService);
+            //TODO(pablo.kraan): OSGi - chck if this requires any changes
+            //configureTransportDescriptorService(transportDescriptorService);
 
             configurationBuilderService = createConfigurationBuilderService();
-            configureConfigurationBuilderService(configurationBuilderService);
+            //configureConfigurationBuilderService(configurationBuilderService);
 
             DefaultMuleContextFactory muleContextFactory = createMuleContextFactory();
+            transportDescriptorService = createTransportDescriptorService();
+
+            configurationBuilderService = createConfigurationBuilderService();
+
+            DefaultMuleContextFactory muleContextFactory = new DefaultMuleContextFactory();
+            muleContextFactory.setTransportDescriptorService(transportDescriptorService);
+            muleContextFactory.setConfigurationBuilderService(configurationBuilderService);
             List<ConfigurationBuilder> builders = new ArrayList<ConfigurationBuilder>();
             builders.add(new SimpleConfigurationBuilder(getStartUpProperties()));
             //TODO(pablo.kraan): OSGi - CLASSNAME_ANNOTATIONS_CONFIG_BUILDER is not in the classpath anymore.
@@ -277,6 +288,7 @@ public abstract class AbstractMuleContextTestCase extends AbstractMuleTestCase
             muleConfiguration.setWorkingDirectory(workingDirectory);
             contextBuilder.setMuleConfiguration(muleConfiguration);
             contextBuilder.setRegistryBootstrapService(registryBootstrapService);
+            contextBuilder.setTransportDescriptorService(transportDescriptorService);
             configureMuleContext(contextBuilder);
             context = muleContextFactory.createMuleContext(builders, contextBuilder);
             if (!isGracefulShutdown())
@@ -340,6 +352,11 @@ public abstract class AbstractMuleContextTestCase extends AbstractMuleTestCase
         return new MuleTransportDescriptorService();
     }
 
+    private ConfigurationBuilderService createConfigurationBuilderService()
+    {
+        return new MuleConfigurationBuilderService();
+    }
+
     protected RegistryBootstrapService createRegistryBootstrapService()
     {
         return new MuleRegistryBootstrapService();
@@ -350,6 +367,10 @@ public abstract class AbstractMuleContextTestCase extends AbstractMuleTestCase
         RegistryBootstrapServiceUtil.configureUsingClassPath(registryBootstrapService);
     }
 
+    protected MuleTransportDescriptorService createTransportDescriptorService()
+    {
+        return new MuleTransportDescriptorService();
+    }
 
     //This sohuldn't be needed by Test cases but can be used by base testcases that wish to add further builders when
     //creating the MuleContext.

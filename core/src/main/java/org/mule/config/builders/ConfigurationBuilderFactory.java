@@ -15,13 +15,20 @@ import org.mule.config.ConfigResource;
 import java.util.List;
 
 /**
- *
+ * Creates {@link ConfigurationBuilder}
  */
 public interface ConfigurationBuilderFactory
 {
 
     String EXTENSION = "extension";
-
-    //TODO(pablo.kraan): OSGi - clean up API
+    
+    /**
+     * Creates a configuration builder for an application's context
+     *
+     * @param domainContext context for application domain
+     * @param configs application configuration resources
+     * @return a {@link ConfigurationBuilder} for the application context
+     * @throws ConfigurationException when builder cannot be created
+     */
     ConfigurationBuilder createConfigurationBuilder(MuleContext domainContext, List<ConfigResource> configs) throws ConfigurationException;
 }

@@ -9,17 +9,22 @@ package org.mule.module.cxf;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-
+import static org.mule.module.http.api.client.HttpRequestOptionsBuilder.newOptions;
 import org.mule.DefaultMuleMessage;
 import org.mule.api.MuleContext;
 import org.mule.api.MuleMessage;
 import org.mule.functional.junit4.ApplicationContextBuilder;
 import org.mule.functional.junit4.FunctionalTestCase;
-import org.mule.tck.junit4.rule.DynamicPort;
+import org.mule.config.bootstrap.MuleRegistryBootstrapService;
+import org.mule.config.bootstrap.RegistryBootstrapServiceUtil;
+import org.mule.module.http.api.HttpConstants;
+import org.mule.module.http.api.client.HttpRequestOptions;
+import org.mule.tck.junit4.rule.DynamicPåort;
 import org.mule.transport.NullPayload;
 
 import java.io.StringReader;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -28,10 +33,13 @@ import org.apache.cxf.helpers.DOMUtils;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 
+@RunWith(Parameterized.class)
 public class ProxyWSDLRewriteSchemaLocationsTestCase extends FunctionalTestCase
 {
     @Rule
@@ -40,19 +48,40 @@ public class ProxyWSDLRewriteSchemaLocationsTestCase extends FunctionalTestCase
     @Rule
     public final DynamicPort httpPortMockServer = new DynamicPort("portMockServer");
 
+    @Parameterized.Parameter(0)
+    public String config;
+
+    @Parameterized.Parameter(1)
+    public String serverConfig;
+
+    private static final HttpRequestOptions HTTP_REQUEST_OPTIONS = newOptions().method(HttpConstants.Methods.POST.name()).build();
+
     private MuleContext mockServerContext;
+
+    @Parameterized.Parameters
+    public static Collection<Object[]> parameters()
+    {
+        return Arrays.asList(new Object[][] {
+                {"wsdlAndXsdMockServer/proxy-wsdl-rewrite-schema-locations-conf.xml", "wsdlAndXsdMockServer/proxy-wsdl-rewrite-schema-locations-conf-server.xml"},
+                {"wsdlAndXsdMockServer/proxy-wsdl-rewrite-schema-locations-conf-httpn.xml", "wsdlAndXsdMockServer/proxy-wsdl-rewrite-schema-locations-conf-server-httpn.xml"}
+        });
+    }
 
     @Override
     protected String getConfigFile()
     {
-        return "wsdlAndXsdMockServer/proxy-wsdl-rewrite-schema-locations-conf.xml";
+        return config;
     }
 
     @Override
     protected void doSetUpBeforeMuleContextCreation() throws Exception
     {
+        registryBootstrapService = new MuleRegistryBootstrapService();
+        RegistryBootstrapServiceUtil.configureUsingClassPath(registryBootstrapService);
+
         ApplicationContextBuilder applicationContextBuilder = new ApplicationContextBuilder();
-        applicationContextBuilder.setApplicationResources(new String[]{"wsdlAndXsdMockServer/proxy-wsdl-rewrite-schema-locations-conf-server.xml"});
+        applicationContextBuilder.setApplicationResources(new String[] {serverConfig});
+        applicationContextBuilder.setRegistryBootstrapService(registryBootstrapService);
         mockServerContext = applicationContextBuilder.build();
         super.doSetUpBeforeMuleContextCreation();
     }
@@ -71,7 +100,7 @@ public class ProxyWSDLRewriteSchemaLocationsTestCase extends FunctionalTestCase
     public void testProxyWSDLRewriteAllSchemaLocations() throws Exception
     {
         String proxyAddress = "http://localhost:" + httpPortProxy.getNumber() + "/localServicePath";
-        MuleMessage response = muleContext.getClient().send(proxyAddress + "?wsdl", new DefaultMuleMessage(NullPayload.getInstance(), muleContext));
+        MuleMessage response = muleContext.getClient().send(proxyAddress + "?wsdl", new DefaultMuleMessage(NullPayload.getInstance(), muleContext), HTTP_REQUEST_OPTIONS);
 
         Set<String> expectedParametersValues = new HashSet<String>();
         expectedParametersValues.addAll(Arrays.asList("xsd=xsd0"));

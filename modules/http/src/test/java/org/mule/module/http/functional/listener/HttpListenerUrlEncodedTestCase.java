@@ -25,6 +25,7 @@ import org.mule.util.StringUtils;
 import com.google.common.base.Charsets;
 
 import java.io.IOException;
+import java.net.URLDecoder;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
@@ -84,7 +85,11 @@ public class HttpListenerUrlEncodedTestCase extends FunctionalTestCase
                 .addHeader(CONTENT_TYPE, APPLICATION_X_WWW_FORM_URLENCODED)
                 .execute();
 
-        assertThat(response.returnResponse().getStatusLine().getStatusCode(), equalTo(400));
+        final HttpResponse httpResponse = response.returnResponse();
+
+        assertThat(httpResponse.getStatusLine().getStatusCode(), equalTo(200));
+
+        assertThat(URLDecoder.decode(IOUtils.toString(httpResponse.getEntity().getContent()), Charsets.UTF_8.name()), is("Invalid url encoded content"));
     }
 
     @Test
@@ -99,9 +104,9 @@ public class HttpListenerUrlEncodedTestCase extends FunctionalTestCase
         ParameterMap payloadAsMap = (ParameterMap) receivedMessage.getPayload();
         assertThat(payloadAsMap.size(), is(2));
         assertThat(payloadAsMap.get(PARAM_1_NAME), Is.<Object>is(PARAM_1_VALUE));
-        assertThat(payloadAsMap.getAsList(PARAM_2_NAME).size(), Is.is(2));
-        assertThat(payloadAsMap.getAsList(PARAM_2_NAME).get(0), Is.is(PARAM_2_VALUE_1));
-        assertThat(payloadAsMap.getAsList(PARAM_2_NAME).get(1), Is.is(PARAM_2_VALUE_2));
+        assertThat(payloadAsMap.getAll(PARAM_2_NAME).size(), Is.is(2));
+        assertThat(payloadAsMap.getAll(PARAM_2_NAME).get(0), Is.is(PARAM_2_VALUE_1));
+        assertThat(payloadAsMap.getAll(PARAM_2_NAME).get(1), Is.is(PARAM_2_VALUE_2));
 
         compareParameterMaps(response, payloadAsMap);
     }
@@ -123,7 +128,7 @@ public class HttpListenerUrlEncodedTestCase extends FunctionalTestCase
         final HttpResponse httpResponse = response.returnResponse();
         assertThat(httpResponse.getFirstHeader(HttpHeaders.Names.CONTENT_TYPE).getValue(), Is.is(HttpHeaders.Values.APPLICATION_X_WWW_FORM_URLENCODED));
         final String responseContent = IOUtils.toString(httpResponse.getEntity().getContent());
-        assertThat(payloadAsMap, ParamMapMatcher.isEqual(HttpParser.decodeUrlEncodedBody(responseContent, Charsets.UTF_8.name()).toCollectionMap()));
+        assertThat(payloadAsMap, ParamMapMatcher.isEqual(HttpParser.decodeUrlEncodedBody(responseContent, Charsets.UTF_8.name()).toListValuesMap()));
     }
 
     private String getListenerUrl()

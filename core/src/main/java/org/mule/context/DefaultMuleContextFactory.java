@@ -46,10 +46,9 @@ public class DefaultMuleContextFactory implements MuleContextFactory
 
     private List<MuleContextListener> listeners = new LinkedList<>();
     private BundleContext bundleContext;
+    private RegistryBootstrapService registryBootstrapService = new MuleRegistryBootstrapService();
     private TransportDescriptorService transportDescriptorService = new MuleTransportDescriptorService();
     private ConfigurationBuilderService configurationBuilderService = new MuleConfigurationBuilderService();
-
-    private RegistryBootstrapService registryBootstrapService = new MuleRegistryBootstrapService();
 
     /**
      * Use default ConfigurationBuilder, default MuleContextBuilder
@@ -59,6 +58,7 @@ public class DefaultMuleContextFactory implements MuleContextFactory
         // Configure with defaults needed for a feasible/startable MuleContext
         DefaultMuleContextBuilder muleContextBuilder = new DefaultMuleContextBuilder();
         muleContextBuilder.setRegistryBootstrapService(registryBootstrapService);
+        muleContextBuilder.setTransportDescriptorService(transportDescriptorService);
 
         return createMuleContext(new DefaultsConfigurationBuilder(), muleContextBuilder);
     }
@@ -199,6 +199,7 @@ public class DefaultMuleContextFactory implements MuleContextFactory
         DefaultMuleContextBuilder contextBuilder = new DefaultMuleContextBuilder();
         contextBuilder.setMuleConfiguration(configuration);
         contextBuilder.setRegistryBootstrapService(registryBootstrapService);
+        //TODO(pablo.kraan): OSGi - is this setTrans.. required?
         contextBuilder.setTransportDescriptorService(transportDescriptorService);
         //configurationBuilderService = null;
         //contextBuilder.setConfigurationBuilderService(configurationBuilderService);
@@ -320,11 +321,6 @@ public class DefaultMuleContextFactory implements MuleContextFactory
     public void setRegistryBootstrapService(RegistryBootstrapService registryBootstrapService)
     {
         this.registryBootstrapService = registryBootstrapService;
-    }
-
-    public void setBundleContext(BundleContext bundleContext)
-    {
-        this.bundleContext = bundleContext;
     }
 
     public void setTransportDescriptorService(TransportDescriptorService transportDescriptorService)

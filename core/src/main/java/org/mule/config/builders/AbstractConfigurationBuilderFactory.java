@@ -14,12 +14,13 @@ import org.mule.api.config.ConfigurationException;
 import org.mule.api.config.DomainMuleContextAwareConfigurationBuilder;
 import org.mule.config.ConfigResource;
 import org.mule.config.i18n.CoreMessages;
+import org.mule.config.i18n.MessageFactory;
 import org.mule.util.ClassUtils;
 
 import java.util.List;
 
 /**
- *
+ * Base class for @{@link ConfigurationBuilderFactory}
  */
 public abstract class AbstractConfigurationBuilderFactory implements ConfigurationBuilderFactory
 {
@@ -30,9 +31,7 @@ public abstract class AbstractConfigurationBuilderFactory implements Configurati
         String className = getClassName();
         if (className == null || !ClassUtils.isClassOnPath(className, this.getClass()))
         {
-            //TODO(pablo.kraan): OSGi - use createConfigResourcesString() as in AutoConfigurationBuilder
-            throw new ConfigurationException(
-                    CoreMessages.configurationBuilderNoMatching(configs.toString()));
+            throw new ConfigurationException(MessageFactory.createStaticMessage("Configuration builder class not found: " + className));
         }
 
         ConfigResource[] constructorArg = new ConfigResource[configs.size()];

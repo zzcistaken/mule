@@ -17,11 +17,28 @@ public abstract class HttpConstants
         POST, GET, PUT, OPTIONS, HEAD, DELETE;
     }
 
-    public static final class Protocols
+    public static enum Protocols
     {
+        HTTP("http", 80), HTTPS("https", 443);
 
-        public static final String HTTP = "http";
-        public static final String HTTPS = "https";
+        private final String scheme;
+        private final int defaultPort;
+
+        Protocols(String scheme, int defaultPort)
+        {
+            this.scheme = scheme;
+            this.defaultPort = defaultPort;
+        }
+
+        public String getScheme()
+        {
+            return scheme;
+        }
+
+        public int getDefaultPort()
+        {
+            return defaultPort;
+        }
     }
 
     public static final class RequestProperties
@@ -43,6 +60,7 @@ public abstract class HttpConstants
     public static final class ResponseProperties
     {
         public static final String HTTP_STATUS_PROPERTY = RequestProperties.HTTP_STATUS_PROPERTY;
+        public static final String HTTP_REASON_PROPERTY = RequestProperties.HTTP_PREFIX + "reason";
     }
 
     public static final String ALL_INTERFACES_IP = "0.0.0.0";

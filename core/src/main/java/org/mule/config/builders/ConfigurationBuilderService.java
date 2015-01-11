@@ -15,14 +15,28 @@ import org.mule.config.ConfigResource;
 import java.util.List;
 
 /**
- *
+ * Provides {@link ConfigurationBuilder} for a given file extension
  */
 public interface ConfigurationBuilderService
 {
 
+    /**
+     * Creates a configuration builder for an application context
+     *
+     * @param fileExtension configuration file extension
+     * @param domainContext context for application domain
+     * @param configs application configuration resources
+     * @return a {@link ConfigurationBuilder} for the application context
+     * @throws ConfigurationException when builder cannot be created
+     */
     ConfigurationBuilder createConfigurationBuilder(String fileExtension, MuleContext domainContext, List<ConfigResource> configs) throws ConfigurationException;
+    
+    //TODO(pablo.kraan): OSGi - add this
+    /*
+    
+    void registerconfigurationBuilderFactory(String extension, ConfigurationBuilderFactory factory);??boolean 
+    unregisterDescriptorFactory(String extension);
 
-    void registerconfigurationBuilderFactory(String extension, ConfigurationBuilderFactory factory);
 
-    boolean unregisterDescriptorFactory(String extension);
+     */
 }

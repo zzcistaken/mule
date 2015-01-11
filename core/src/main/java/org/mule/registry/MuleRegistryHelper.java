@@ -28,7 +28,6 @@ import org.mule.api.registry.ServiceDescriptorFactory;
 import org.mule.api.registry.ServiceException;
 import org.mule.api.registry.ServiceType;
 import org.mule.api.registry.TransformerResolver;
-import org.mule.api.registry.TransportDescriptorService;
 import org.mule.api.registry.TransportServiceDescriptorFactory;
 import org.mule.api.schedule.Scheduler;
 import org.mule.api.transformer.Converter;
@@ -93,8 +92,6 @@ public class MuleRegistryHelper implements MuleRegistry
      * Transformers are registered on context start, then they are usually not unregistered
      */
     private Collection<Transformer> transformers = new CopyOnWriteArrayList<Transformer>();
-
-    private TransportDescriptorService transportDescriptorService;
 
     public MuleRegistryHelper(DefaultRegistryBroker registry, MuleContext muleContext)
     {
@@ -474,11 +471,11 @@ public class MuleRegistryHelper implements MuleRegistry
             {
                 if (TransportServiceDescriptorFactory.TRANSPORT_SERVICE_TYPE.equals(type.getName()))
                 {
-                    sd = transportDescriptorService.getDescriptor(name, muleContext, overrides);
+                    sd = muleContext.getTransportDescriptorService().getDescriptor(name, muleContext, overrides);
                 }
                 else
                 {
-                    sd = createServiceDescriptor(type, name, overrides);
+                    sd =  createServiceDescriptor(type, name, overrides);
                 }
 
                 try
@@ -496,7 +493,7 @@ public class MuleRegistryHelper implements MuleRegistry
 
     protected ServiceDescriptor createServiceDescriptor(ServiceType type, String name, Properties overrides) throws ServiceException
     {
-        //Stripe off and use the meta-scheme if present
+        // Strips off and use the meta-scheme if present
         String scheme = name;
         if (name.contains(":"))
         {
@@ -510,7 +507,7 @@ public class MuleRegistryHelper implements MuleRegistry
         }
 
         return ServiceDescriptorFactory.create(type, name, props, overrides, muleContext,
-                                                     muleContext.getExecutionClassLoader());
+                                               muleContext.getExecutionClassLoader());
     }
 
     /**
@@ -844,16 +841,6 @@ public class MuleRegistryHelper implements MuleRegistry
     public boolean isRemote()
     {
         return false;
-    }
-
-    public TransportDescriptorService getTransportDescriptorService()
-    {
-        return transportDescriptorService;
-    }
-
-    public void setTransportDescriptorService(TransportDescriptorService transportDescriptorService)
-    {
-        this.transportDescriptorService = transportDescriptorService;
     }
 
     private String getDataTypeSourceResultPairHash(DataType<?> source, DataType<?> result)

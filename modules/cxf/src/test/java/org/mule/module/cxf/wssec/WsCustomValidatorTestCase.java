@@ -16,23 +16,41 @@ import org.mule.api.client.MuleClient;
 import org.mule.functional.junit4.FunctionalTestCase;
 import org.mule.tck.junit4.rule.DynamicPort;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Map;
 
 import javax.xml.ws.soap.SOAPFaultException;
 
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameter;
+import org.junit.runners.Parameterized.Parameters;
 
-
+@RunWith(Parameterized.class)
 public class WsCustomValidatorTestCase extends FunctionalTestCase
 {
     @Rule
     public DynamicPort dynamicPort = new DynamicPort("port1");
 
+    @Parameter
+    public String configFile;
+
+    @Parameters
+    public static Collection<Object[]> parameters()
+    {
+        return Arrays.asList(new Object[][] {
+                {"org/mule/module/cxf/wssec/ws-custom-validator-config.xml"},
+                {"org/mule/module/cxf/wssec/ws-custom-validator-config-httpn.xml"}
+        });
+    }
+
     @Override
     protected String getConfigFile()
     {
-        return "org/mule/module/cxf/wssec/ws-custom-validator-config.xml";
+        return configFile;
     }
 
     @Test

@@ -28,8 +28,7 @@ import org.osgi.framework.BundleContext;
 public class AutoConfigurationBuilder extends AbstractResourceConfigurationBuilder implements DomainMuleContextAwareConfigurationBuilder
 {
     private MuleContext domainContext;
-
-    private ConfigurationBuilderService configurationBuilderService;
+    private ConfigurationBuilderService configurationBuilderService = new MuleConfigurationBuilderService();
 
     public AutoConfigurationBuilder(String resource) throws ConfigurationException
     {
@@ -78,6 +77,7 @@ public class AutoConfigurationBuilder extends AbstractResourceConfigurationBuild
                 List<ConfigResource> configs = e.getValue();
 
                 ConfigurationBuilder cb = configurationBuilderService.createConfigurationBuilder(extension, domainContext, configs);
+
                 //TODO(pablo.kraan): OSGi - set the bundleContext
                 cb.configure(muleContext, null);
             }

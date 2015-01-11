@@ -6,15 +6,36 @@
  */
 package org.mule.module.jersey;
 
+import java.util.Arrays;
+import java.util.Collection;
+
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameter;
+import org.junit.runners.Parameterized.Parameters;
+
+@RunWith(Parameterized.class)
 public class BasicJerseyWithExceptionMapperTestCase extends BasicJerseyTestCase
 {
+
+    @Parameter
+    public String config;
+    
+    @Parameters
+    public static Collection<Object[]> parameters()
+    {
+        return Arrays.asList(new Object[][] {
+                {"basic-exception-mapper-conf-flow.xml"},
+                {"basic-exception-mapper-http-connector-conf-flow.xml"}
+        });
+    }      
 
     @Override
     protected String getConfigFile()
     {
-        return "basic-exception-mapper-conf-flow.xml";
+        return config;
     }
-
+    
     @Override
     public void testThrowException() throws Exception
     {
