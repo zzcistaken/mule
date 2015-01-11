@@ -29,6 +29,8 @@ import org.mule.transport.NullPayload;
 import org.mule.transport.http.HttpConnector;
 import org.mule.transport.http.HttpConstants;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;

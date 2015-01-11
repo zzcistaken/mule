@@ -22,7 +22,7 @@ import org.mule.config.i18n.CoreMessages;
 import org.mule.exception.TemplateMessagingExceptionStrategy;
 import org.mule.functional.junit4.FunctionalTestCase;
 import org.mule.module.http.api.client.HttpRequestOptions;
-import org.mule.tck.junåit4.rule.DynamicPort;
+import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.transformer.AbstractTransformer;
 import org.mule.transport.http.HttpConnector;
 import org.mule.transport.http.HttpConstants;

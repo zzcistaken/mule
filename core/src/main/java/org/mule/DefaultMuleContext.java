@@ -169,7 +169,6 @@ public class DefaultMuleContext implements MuleContext
     private final Latch startLatch = new Latch();
 
     private QueueManager queueManager;
-    private TransportDescriptorService transportDescriptorService;
     private RegistryBootstrapService registryBootstrapService;
     private TransportDescriptorService transportDescriptorService;
 
@@ -211,7 +210,8 @@ public class DefaultMuleContext implements MuleContext
     protected MuleRegistry createRegistryHelper(DefaultRegistryBroker registry)
     {
         MuleRegistryHelper muleRegistryHelper = new MuleRegistryHelper(registry, this);
-        muleRegistryHelper.setTransportDescriptorService(transportDescriptorService);
+        //TODO(pablo.kraan): OSGi - is this needed?
+        //muleRegistryHelper.setTransportDescriptorService(transportDescriptorService);
 
         return muleRegistryHelper;
     }
@@ -944,11 +944,6 @@ public class DefaultMuleContext implements MuleContext
         return startLatch.await(timeout, TimeUnit.MILLISECONDS);
     }
 
-    public TransportDescriptorService getTransportDescriptorService()
-    {
-        return transportDescriptorService;
-    }
-
     public void setTransportDescriptorService(TransportDescriptorService transportDescriptorService)
     {
         this.transportDescriptorService = transportDescriptorService;
@@ -962,11 +957,6 @@ public class DefaultMuleContext implements MuleContext
     public TransportDescriptorService getTransportDescriptorService()
     {
         return transportDescriptorService;
-    }
-
-    public void setTransportDescriptorService(TransportDescriptorService transportDescriptorService)
-    {
-        this.transportDescriptorService = transportDescriptorService;
     }
 
     @Override

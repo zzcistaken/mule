@@ -261,13 +261,7 @@ public abstract class AbstractMuleContextTestCase extends AbstractMuleTestCase
             //configureConfigurationBuilderService(configurationBuilderService);
 
             DefaultMuleContextFactory muleContextFactory = createMuleContextFactory();
-            transportDescriptorService = createTransportDescriptorService();
 
-            configurationBuilderService = createConfigurationBuilderService();
-
-            DefaultMuleContextFactory muleContextFactory = new DefaultMuleContextFactory();
-            muleContextFactory.setTransportDescriptorService(transportDescriptorService);
-            muleContextFactory.setConfigurationBuilderService(configurationBuilderService);
             List<ConfigurationBuilder> builders = new ArrayList<ConfigurationBuilder>();
             builders.add(new SimpleConfigurationBuilder(getStartUpProperties()));
             //TODO(pablo.kraan): OSGi - CLASSNAME_ANNOTATIONS_CONFIG_BUILDER is not in the classpath anymore.
@@ -308,54 +302,50 @@ public abstract class AbstractMuleContextTestCase extends AbstractMuleTestCase
     {
         return new MuleConfigurationBuilderService();
     }
-
-    protected void configureTransportDescriptorService(MuleTransportDescriptorService transportDescriptorService)
-    {
-        try
-        {
-            //TODO(pablo.kraan): OSGi - tests should register transports only when they need them. Find a way to make that
-            // easy to do without requiring a complex test case hierarchy
-            //TODO(pablo.kraan): OSGi - added spring-core as a dependency just to have access to this class
-            PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-            Resource[] transports = resolver.getResources("classpath*:/" + SpiUtils.SERVICE_ROOT + SpiUtils.PROVIDER_SERVICE_PATH+ "*.properties");
-
-            for (Resource transport : transports)
-            {
-                String baseName = FilenameUtils.getBaseName(transport.getFilename());
-                registerTransport(transportDescriptorService, baseName);
-            }
-        }
-        catch (IOException e)
-        {
-            throw new IllegalStateException("Unable to load transport descriptor", e);
-        }
-    }
-
-    private void registerTransport(MuleTransportDescriptorService transportDescriptorService, String transport)
-    {
-        DefaultTransportServiceDescriptorFactory testTransportServiceDescriptorFactory = new DefaultTransportServiceDescriptorFactory(transport, SpiUtils.findServiceDescriptor(ServiceType.TRANSPORT, transport));
-        transportDescriptorService.registerDescriptorFactory(transport, testTransportServiceDescriptorFactory);
-    }
+    //
+    //protected void configureTransportDescriptorService(MuleTransportDescriptorService transportDescriptorService)
+    //{
+    //    try
+    //    {
+    //        //TODO(pablo.kraan): OSGi - tests should register transports only when they need them. Find a way to make that
+    //        // easy to do without requiring a complex test case hierarchy
+    //        //TODO(pablo.kraan): OSGi - added spring-core as a dependency just to have access to this class
+    //        PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+    //        Resource[] transports = resolver.getResources("classpath*:/" + SpiUtils.SERVICE_ROOT + SpiUtils.PROVIDER_SERVICE_PATH+ "*.properties");
+    //
+    //        for (Resource transport : transports)
+    //        {
+    //            String baseName = FilenameUtils.getBaseName(transport.getFilename());
+    //            registerTransport(transportDescriptorService, baseName);
+    //        }
+    //    }
+    //    catch (IOException e)
+    //    {
+    //        throw new IllegalStateException("Unable to load transport descriptor", e);
+    //    }
+    //}
+    //
+    //private void registerTransport(MuleTransportDescriptorService transportDescriptorService, String transport)
+    //{
+    //    DefaultTransportServiceDescriptorFactory testTransportServiceDescriptorFactory = new DefaultTransportServiceDescriptorFactory(transport, SpiUtils.findServiceDescriptor(ServiceType.TRANSPORT, transport));
+    //    transportDescriptorService.registerDescriptorFactory(transport, testTransportServiceDescriptorFactory);
+    //}
 
     protected DefaultMuleContextFactory createMuleContextFactory()
     {
         DefaultMuleContextFactory defaultMuleContextFactory = new DefaultMuleContextFactory();
         defaultMuleContextFactory.setBundleContext(bundleContext);
         defaultMuleContextFactory.setTransportDescriptorService(transportDescriptorService);
-        defaultMuleContextFactory.setConfigurationBuilderService(configurationBuilderService);
+        //defaultMuleContextFactory.setConfigurationBuilderService(configurationBuilderService);
 
         return defaultMuleContextFactory;
     }
 
-    protected MuleTransportDescriptorService createTransportDescriptorService()
+    protected TransportDescriptorService createTransportDescriptorService()
     {
         return new MuleTransportDescriptorService();
     }
 
-    private ConfigurationBuilderService createConfigurationBuilderService()
-    {
-        return new MuleConfigurationBuilderService();
-    }
 
     protected RegistryBootstrapService createRegistryBootstrapService()
     {
@@ -365,11 +355,6 @@ public abstract class AbstractMuleContextTestCase extends AbstractMuleTestCase
     protected void configureRegistryBootstrapService(RegistryBootstrapService registryBootstrapService)
     {
         RegistryBootstrapServiceUtil.configureUsingClassPath(registryBootstrapService);
-    }
-
-    protected MuleTransportDescriptorService createTransportDescriptorService()
-    {
-        return new MuleTransportDescriptorService();
     }
 
     //This sohuldn't be needed by Test cases but can be used by base testcases that wish to add further builders when

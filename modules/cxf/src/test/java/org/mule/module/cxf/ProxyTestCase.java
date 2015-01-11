@@ -17,11 +17,11 @@ import org.mule.api.MuleEventContext;
 import org.mule.api.MuleException;
 import org.mule.api.MuleMessage;
 import org.mule.api.client.MuleClient;
-import org.mule.module.cxf.testmodels.AsyncService;
-import org.mule.module.cxf.testmodels.AsyncServiceWithSoapAction;
 import org.mule.functional.functional.EventCallback;
 import org.mule.functional.functional.FunctionalTestComponent;
 import org.mule.functional.junit4.FunctionalTestCase;
+import org.mule.module.cxf.testmodels.AsyncService;
+import org.mule.module.cxf.testmodels.AsyncServiceWithSoapAction;
 import org.mule.module.http.api.client.HttpRequestOptions;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.ForceXalanTransformerFactory;
@@ -29,6 +29,8 @@ import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.transport.http.HttpConstants;
 import org.mule.util.concurrent.Latch;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -90,7 +92,7 @@ public class ProxyTestCase extends FunctionalTestCase
     @Parameters
     public static Collection<Object[]> parameters()
     {
-        return Arrays.asList(new Object[][]{
+        return Arrays.asList(new Object[][] {
                 {"proxy-conf-flow.xml"},
                 {"proxy-conf-flow-httpn.xml"}
         });

@@ -77,7 +77,6 @@ public class AutoConfigurationBuilder extends AbstractResourceConfigurationBuild
                 List<ConfigResource> configs = e.getValue();
 
                 ConfigurationBuilder cb = configurationBuilderService.createConfigurationBuilder(extension, domainContext, configs);
-
                 //TODO(pablo.kraan): OSGi - set the bundleContext
                 cb.configure(muleContext, null);
             }

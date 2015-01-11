@@ -72,21 +72,4 @@ public class MuleTransportDescriptorService implements TransportDescriptorServic
 
         return transportServiceDescriptorFactory;
     }
-
-    //TODO(pablo.kraan): OSGi - add this
-    @Override
-    public boolean unregisterDescriptorFactory(String transport)
-    {
-        return serviceDescriptorFactories.remove(transport) != null;
-    }
-
-    /*
-    @Override
-    
-    public void registerDescriptorFactory(String transport, TransportServiceDescriptorFactory factory)
-    {
-        //TODO(pablo.kraan): OSGi - synchronize access
-        serviceDescriptorFactories.put(transport, factory);
-    }
-     */
 }

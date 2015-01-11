@@ -7,7 +7,9 @@
 package org.mule.transport.http.config;
 
 
-
+import org.mule.endpoint.URIBuilder;
+import org.mule.module.springconfig.parsers.MuleDefinitionParser;
+import org.mule.module.springconfig.parsers.MuleDefinitionParserConfiguration;
 import org.mule.module.springconfig.parsers.collection.ChildListEntryDefinitionParser;
 import org.mule.module.springconfig.parsers.collection.ChildMapEntryDefinitionParser;
 import org.mule.module.springconfig.parsers.generic.ChildDefinitionParser;
@@ -19,7 +21,6 @@ import org.mule.module.springconfig.parsers.specific.ComponentDefinitionParser;
 import org.mule.module.springconfig.parsers.specific.FilterDefinitionParser;
 import org.mule.module.springconfig.parsers.specific.MessageProcessorDefinitionParser;
 import org.mule.module.springconfig.parsers.specific.SecurityFilterDefinitionParser;
-import org.mule.endpoint.URIBuilder;
 import org.mule.transport.http.CacheControlHeader;
 import org.mule.transport.http.CookieWrapper;
 import org.mule.transport.http.HttpConnector;

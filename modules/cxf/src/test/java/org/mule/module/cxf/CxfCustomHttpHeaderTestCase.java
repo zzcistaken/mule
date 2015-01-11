@@ -64,7 +64,7 @@ public class CxfCustomHttpHeaderTestCase extends FunctionalTestCase implements F
     public String config;
 
     @Parameters
-    public static Colleåction<Object[]> parameters()
+    public static Collection<Object[]> parameters()
     {
         return Arrays.asList(new Object[][] {
                 {"headers-conf-flow.xml"},

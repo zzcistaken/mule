@@ -13,13 +13,13 @@ import static org.mule.module.http.api.client.HttpRequestOptionsBuilder.newOptio
 import org.mule.DefaultMuleMessage;
 import org.mule.api.MuleContext;
 import org.mule.api.MuleMessage;
-import org.mule.functional.junit4.ApplicationContextBuilder;
-import org.mule.functional.junit4.FunctionalTestCase;
 import org.mule.config.bootstrap.MuleRegistryBootstrapService;
 import org.mule.config.bootstrap.RegistryBootstrapServiceUtil;
+import org.mule.functional.junit4.ApplicationContextBuilder;
+import org.mule.functional.junit4.FunctionalTestCase;
 import org.mule.module.http.api.HttpConstants;
 import org.mule.module.http.api.client.HttpRequestOptions;
-import org.mule.tck.junit4.rule.DynamicPåort;
+import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.transport.NullPayload;
 
 import java.io.StringReader;

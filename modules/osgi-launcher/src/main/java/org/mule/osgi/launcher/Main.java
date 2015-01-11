@@ -63,7 +63,7 @@ public class Main
 
             Map<String, String> configProperties = new HashMap<>();
             configProperties.put("org.osgi.framework.bsnversion", "multiple");
-            //configProperties.put("org.osgi.framework.system.packages.extra", "sun.misc");
+            configProperties.put("org.osgi.framework.system.packages.extra", "sun.misc");
             framework = factory.newFramework(configProperties);
 
             // Initialize the framework, but don't start it yet.
@@ -232,17 +232,18 @@ public class Main
         jarList.add(new File(BASE_FOLDER + "/core/geronimo-j2ee-connector_1.5_spec-2.0.0.jar"));
         jarList.add(new File(BASE_FOLDER + "/core/geronimo-jms_1.1_spec-1.1.1.jar"));
 
-        jarList.add(new File(BASE_FOLDER + "/core/log4j-core-2.0.2.jar"));
-        jarList.add(new File(BASE_FOLDER + "/core/log4j-api-2.0.2.jar"));
+        jarList.add(new File(BASE_FOLDER + "/core/disruptor-3.3.0.jar"));
+        jarList.add(new File(BASE_FOLDER + "/core/log4j-core-2.1.jar"));
+        jarList.add(new File(BASE_FOLDER + "/core/log4j-api-2.1.jar"));
 
         jarList.add(new File(BASE_FOLDER + "/core/antlr-runtime-osgi.jar"));
         jarList.add(new File(BASE_FOLDER + "/core/asm-commons-osgi.jar"));
         jarList.add(new File(BASE_FOLDER + "/core/asm-osgi.jar"));
 
         jarList.add(new File(BASE_FOLDER + "/core/slf4j-api-1.7.7.jar"));
-        jarList.add(new File(BASE_FOLDER + "/core/log4j-slf4j-impl-2.0.2.jar"));
-        jarList.add(new File(BASE_FOLDER + "/core/log4j-1.2-api-2.0.2.jar"));
-        jarList.add(new File(BASE_FOLDER + "/core/log4j-jcl-2.0.2.jar"));
+        jarList.add(new File(BASE_FOLDER + "/core/log4j-slf4j-impl-2.1.jar"));
+        jarList.add(new File(BASE_FOLDER + "/core/log4j-1.2-api-2.1.jar"));
+        jarList.add(new File(BASE_FOLDER + "/core/log4j-jcl-2.1.jar"));
         jarList.add(new File(BASE_FOLDER + "/core/jcl-over-slf4j-1.7.7.jar"));
 
         jarList.add(new File(BASE_FOLDER + "/core/commons-logging-1.2.jar"));
@@ -253,7 +254,7 @@ public class Main
         jarList.add(new File(BASE_FOLDER + "/core/commons-lang-osgi.jar"));
         jarList.add(new File(BASE_FOLDER + "/core/commons-pool-osgi.jar"));
         jarList.add(new File(BASE_FOLDER + "/core/eaio-uuid-osgi.jar"));
-        jarList.add(new File(BASE_FOLDER + "/core/guava-16.0.1.jar"));
+        jarList.add(new File(BASE_FOLDER + "/core/guava-18.0.jar"));
         jarList.add(new File(BASE_FOLDER + "/core/jgrapht-osgi.jar"));
         jarList.add(new File(BASE_FOLDER + "/core/xmlbeans-osgi.jar"));
         jarList.add(new File(BASE_FOLDER + "/core/mule-core-4.0-SNAPSHOT.jar"));

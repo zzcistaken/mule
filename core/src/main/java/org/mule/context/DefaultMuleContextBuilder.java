@@ -95,11 +95,6 @@ public class DefaultMuleContextBuilder implements MuleContextBuilder
 
     protected TransportDescriptorService transportDescriptorService = new MuleTransportDescriptorService();
 
-
-    public DefaultMuleContextBuilder()
-    {
-        //TODO(pablo.kraan): is this constructor required?
-    }
     /**
      * {@inheritDoc}
      */

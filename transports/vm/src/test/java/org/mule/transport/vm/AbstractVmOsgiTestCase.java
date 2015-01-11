@@ -12,7 +12,7 @@ import static org.ops4j.pax.exam.CoreOptions.junitBundles;
 import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.CoreOptions.options;
 import org.mule.api.registry.MuleTransportDescriptorService;
-import org.mule.config.bootstrap.MuleRegistryBootstrapService;
+import org.mule.api.registry.TransportDescriptorService;
 import org.mule.config.bootstrap.RegistryBootstrapService;
 import org.mule.config.builders.ConfigurationBuilderFactory;
 import org.mule.config.builders.ConfigurationBuilderService;
@@ -162,9 +162,10 @@ public abstract class AbstractVmOsgiTestCase extends FunctionalTestCase
     }
 
     @Override
-    protected void configureTransportDescriptorService(MuleTransportDescriptorService transportDescriptorService)
+    protected TransportDescriptorService createTransportDescriptorService()
     {
-        transportDescriptorServiceWrapper = TransportDescriptorServiceWrapper.createTransportDescriptorServiceWrapper(transportDescriptorService, bundleContext);
+        TransportDescriptorServiceWrapper transportDescriptorServiceWrapper1 = TransportDescriptorServiceWrapper.createTransportDescriptorServiceWrapper(bundleContext);
+        return transportDescriptorServiceWrapper1;
     }
 
     @Override

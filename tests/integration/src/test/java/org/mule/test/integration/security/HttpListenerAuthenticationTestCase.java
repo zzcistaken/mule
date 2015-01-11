@@ -12,7 +12,7 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.module.http.api.HttpHeaders.Names.WWW_AUTHENTICATE;
-import org.mule.tck.junit4.FunctionalTestCase;
+import org.mule.functional.junit4.FunctionalTestCase;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.util.IOUtils;
 
@@ -55,8 +55,9 @@ public class HttpListenerAuthenticationTestCase extends FunctionalTestCase
     @After
     public void tearDown()
     {
-        IOUtils.closeQuietly(httpResponse);
-        IOUtils.closeQuietly(httpClient);
+        //TODO(pablo.kraan): OSGi - fix this IOUtils mismatch
+        //IOUtils.closeQuietly(httpResponse);
+        //IOUtils.closeQuietly(httpClient);
     }
 
     @Test

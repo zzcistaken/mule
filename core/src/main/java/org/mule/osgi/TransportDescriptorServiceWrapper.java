@@ -7,11 +7,16 @@
 
 package org.mule.osgi;
 
-import org.mule.api.registry.MuleTransportDescriptorService;
+import org.mule.api.MuleContext;
+import org.mule.api.registry.ServiceDescriptor;
+import org.mule.api.registry.ServiceException;
 import org.mule.api.registry.TransportDescriptorService;
 import org.mule.api.registry.TransportServiceDescriptorFactory;
 
 import java.util.Collection;
+import java.util.Map;
+import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
@@ -21,20 +26,19 @@ import org.osgi.framework.ServiceReference;
 /**
  *
  */
-public class TransportDescriptorServiceWrapper extends OsgiServiceWrapper
+public class TransportDescriptorServiceWrapper extends OsgiServiceWrapper implements TransportDescriptorService
 {
 
-    private final TransportDescriptorService transportDescriptorService;
+    private final Map<String, TransportServiceDescriptorFactory> serviceDescriptorFactories = new ConcurrentHashMap<>();
 
-    public TransportDescriptorServiceWrapper(BundleContext bundleContext, TransportDescriptorService transportDescriptorService)
+    public TransportDescriptorServiceWrapper(BundleContext bundleContext)
     {
         super(bundleContext);
-        this.transportDescriptorService = transportDescriptorService;
     }
 
-    public static TransportDescriptorServiceWrapper createTransportDescriptorServiceWrapper(MuleTransportDescriptorService transportDescriptorService, BundleContext bundleContext)
+    public static TransportDescriptorServiceWrapper createTransportDescriptorServiceWrapper(BundleContext bundleContext)
     {
-        TransportDescriptorServiceWrapper transportDescriptorServiceWrapper = new TransportDescriptorServiceWrapper(bundleContext, transportDescriptorService);
+        TransportDescriptorServiceWrapper transportDescriptorServiceWrapper = new TransportDescriptorServiceWrapper(bundleContext);
         try
         {
             String filter = "(objectclass=" + TransportServiceDescriptorFactory.class.getName() + ")";
@@ -60,7 +64,7 @@ public class TransportDescriptorServiceWrapper extends OsgiServiceWrapper
     protected void doUnregisterService(ServiceReference serviceReference)
     {
         String transport = (String) serviceReference.getProperty(TransportServiceDescriptorFactory.TRANSPORT_SERVICE_TYPE);
-        transportDescriptorService.unregisterDescriptorFactory(transport);
+        serviceDescriptorFactories.remove(transport);
         bundleContext.ungetService(serviceReference);
     }
 
@@ -69,6 +73,19 @@ public class TransportDescriptorServiceWrapper extends OsgiServiceWrapper
     {
         TransportServiceDescriptorFactory service = (TransportServiceDescriptorFactory) bundleContext.getService(serviceReference);
         String transport = (String) serviceReference.getProperty(TransportServiceDescriptorFactory.TRANSPORT_SERVICE_TYPE);
-        transportDescriptorService.registerDescriptorFactory(transport, service);
+        serviceDescriptorFactories.put(transport, service);
+    }
+
+    @Override
+    public ServiceDescriptor getDescriptor(String transport, MuleContext muleContext, Properties overrides) throws ServiceException
+    {
+        TransportServiceDescriptorFactory transportServiceDescriptorFactory = serviceDescriptorFactories.get(transport);
+
+        if (transportServiceDescriptorFactory == null)
+        {
+            throw new IllegalStateException(String.format("Unable to obtain a service descriptor for transport '%s'", transport));
+        }
+
+        return transportServiceDescriptorFactory.create(muleContext, overrides);
     }
 }

@@ -7,7 +7,6 @@
 
 package org.mule.osgi;
 
-import org.mule.config.builders.ConfigurationBuilderFactory;
 import org.mule.config.builders.ConfigurationBuilderService;
 
 import org.osgi.framework.BundleContext;
@@ -31,16 +30,18 @@ public class ConfigurationBuilderServiceWrapper extends OsgiServiceWrapper
     @Override
     protected void doUnregisterService(ServiceReference serviceReference)
     {
-        String extension = (String) serviceReference.getProperty(ConfigurationBuilderFactory.EXTENSION);
-        configurationBuilderService.unregisterDescriptorFactory(extension);
-        bundleContext.ungetService(serviceReference);
+        //TODO(pablo.kraan): OSGi - re add this
+        //String extension = (String) serviceReference.getProperty(ConfigurationBuilderFactory.EXTENSION);
+        //configurationBuilderService.unregisterDescriptorFactory(extension);
+        //bundleContext.ungetService(serviceReference);
     }
 
     @Override
     protected void doRegisterService(ServiceReference serviceReference)
     {
-        ConfigurationBuilderFactory service = (ConfigurationBuilderFactory) bundleContext.getService(serviceReference);
-        String extension = (String) serviceReference.getProperty(ConfigurationBuilderFactory.EXTENSION);
-        configurationBuilderService.registerconfigurationBuilderFactory(extension, service);
+        //TODO(pablo.kraan): OSGi - re add this
+        //ConfigurationBuilderFactory service = (ConfigurationBuilderFactory) bundleContext.getService(serviceReference);
+        //String extension = (String) serviceReference.getProperty(ConfigurationBuilderFactory.EXTENSION);
+        //configurationBuilderService.registerconfigurationBuilderFactory(extension, service);
     }
 }

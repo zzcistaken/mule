@@ -65,7 +65,7 @@ public class MuleConfigurationBuilderService implements ConfigurationBuilderServ
         Properties props = new Properties();
         try
         {
-            props.load(ClassUtils.getResource("configuration-builders.properties", this.getClass()).openStream());
+            props.load(ClassUtils.getResource("configuration-builders.properties", this.getClass().getClassLoader()).openStream());
         }
         catch (IOException e)
         {
@@ -88,7 +88,8 @@ public class MuleConfigurationBuilderService implements ConfigurationBuilderServ
     public boolean unregisterDescriptorFactory(String extension)
     {
         //TODO(pablo.kraan): OSGi - add this
-        return configurationBuilderFactories.remove(extension) != null;
+        //return configurationBuilderFactories.remove(extension) != null;
+        return false;
     }
 
 }

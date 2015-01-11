@@ -323,6 +323,11 @@ public class DefaultMuleContextFactory implements MuleContextFactory
         this.registryBootstrapService = registryBootstrapService;
     }
 
+    public void setBundleContext(BundleContext bundleContext)
+    {
+        this.bundleContext = bundleContext;
+    }
+
     public void setTransportDescriptorService(TransportDescriptorService transportDescriptorService)
     {
         this.transportDescriptorService = transportDescriptorService;

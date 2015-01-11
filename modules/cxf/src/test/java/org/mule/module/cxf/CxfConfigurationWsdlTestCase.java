@@ -26,7 +26,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
 
-@RunWith(Parameterized.claåss)
+@RunWith(Parameterized.class)
 public class CxfConfigurationWsdlTestCase extends FunctionalTestCase
 {
     @Rule

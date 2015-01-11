@@ -64,20 +64,19 @@ public class MuleApplicationActivator implements BundleActivator
             //TODO(pablo.kraan): OSGi - need to register all the service wrappers to registering services (like TransportDescriptorServiceWrapper)
             MuleConfiguration configuration = createMuleConfiguration(configResource);
 
-            MuleTransportDescriptorService muleTransportDescriptorService = new MuleTransportDescriptorService();
-            transportDescriptorServiceWrapper = TransportDescriptorServiceWrapper.createTransportDescriptorServiceWrapper(muleTransportDescriptorService, bundleContext);
+            transportDescriptorServiceWrapper = TransportDescriptorServiceWrapper.createTransportDescriptorServiceWrapper(bundleContext);
 
             RegistryBootstrapService registryBootstrapService = new MuleRegistryBootstrapService();
             registryBootstrapServiceWrapper = RegistryBootstrapServiceWrapper.createServiceWrapper(registryBootstrapService, bundleContext);
 
             DefaultMuleContextBuilder contextBuilder = new DefaultMuleContextBuilder();
             contextBuilder.setMuleConfiguration(configuration);
-            contextBuilder.setTransportDescriptorService(muleTransportDescriptorService);
+            contextBuilder.setTransportDescriptorService(transportDescriptorServiceWrapper);
             contextBuilder.setRegistryBootstrapService(registryBootstrapService);
 
             DefaultMuleContextFactory contextFactory = new DefaultMuleContextFactory();
             contextFactory.setBundleContext(bundleContext);
-            contextFactory.setTransportDescriptorService(muleTransportDescriptorService);
+            contextFactory.setTransportDescriptorService(transportDescriptorServiceWrapper);
             contextFactory.setRegistryBootstrapService(registryBootstrapService);
 
             muleContext = contextFactory.createMuleContext(configBuilders, contextBuilder);
