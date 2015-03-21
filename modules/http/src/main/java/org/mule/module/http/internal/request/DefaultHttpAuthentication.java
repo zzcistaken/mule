@@ -15,12 +15,23 @@ public class DefaultHttpAuthentication implements HttpAuthentication
 {
     private final HttpAuthenticationType type;
 
+    private String ntlmDomain;
     private String username;
     private String password;
 
     public DefaultHttpAuthentication(HttpAuthenticationType type)
     {
         this.type = type;
+    }
+
+    public String getNtlmDomain()
+    {
+        return ntlmDomain;
+    }
+
+    public void setNtlmDomain(String ntlmDomain)
+    {
+        this.ntlmDomain = ntlmDomain;
     }
 
     public String getUsername()

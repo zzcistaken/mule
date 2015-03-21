@@ -38,6 +38,7 @@ import com.ning.http.client.providers.grizzly.GrizzlyAsyncHttpProvider;
 import com.ning.http.client.providers.grizzly.GrizzlyAsyncHttpProviderConfig;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.concurrent.ExecutionException;
@@ -69,6 +70,8 @@ public class GrizzlyHttpClient implements HttpClient
     private AsyncHttpClient asyncHttpClient;
     private SSLContext sslContext;
 
+    private NtlmResponseFilter ntlmResponseFilter;
+
     public GrizzlyHttpClient(GrizzlyHttpClientConfiguration config)
     {
         this.tlsContextFactory = config.getTlsContextFactory();
@@ -94,6 +97,9 @@ public class GrizzlyHttpClient implements HttpClient
         configureProxy(builder);
 
         configureConnections(builder);
+
+        ntlmResponseFilter = new NtlmResponseFilter();
+        builder.addResponseFilter(ntlmResponseFilter);
 
         AsyncHttpClientConfig config = builder.build();
 
@@ -228,6 +234,11 @@ public class GrizzlyHttpClient implements HttpClient
             {
                 realmBuilder.setScheme(Realm.AuthScheme.DIGEST);
             }
+            else if (defaultHttpAuthentication.getType() == HttpAuthenticationType.NTLM)
+            {
+                String ntlmHost = InetAddress.getLocalHost().getHostName();
+                realmBuilder.setNtlmDomain(defaultHttpAuthentication.getNtlmDomain()).setNtlmHost(ntlmHost).setScheme(Realm.AuthScheme.NTLM);
+            }
 
             builder.setRealm(realmBuilder.build());
 
@@ -271,7 +282,15 @@ public class GrizzlyHttpClient implements HttpClient
         }
         catch (ExecutionException e)
         {
-            throw new IOException(e);
+            String message = e.getMessage();
+            if (message.contains("Unsupported authorization method:") && (message.contains("NTLM") || message.contains("Negotiate")))
+            {
+                response = new Response.ResponseBuilder().accumulate(ntlmResponseFilter.getHttpResponseHeaders()).accumulate(ntlmResponseFilter.getHttpResponseStatus()).build();
+            }
+            else
+            {
+                throw new IOException(e);
+            }
         }
 
         HttpResponseBuilder responseBuilder = new HttpResponseBuilder();
