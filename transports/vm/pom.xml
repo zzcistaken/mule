@@ -32,9 +32,6 @@
                     <instructions>
                         <Bundle-Activator>org.mule.osgi.TransportActivator</Bundle-Activator>
                         <Mule-Transport>vm</Mule-Transport>
-                        <Export-Package>
-                            org.mule.transport.vm.*
-                        </Export-Package>
                     </instructions>
                 </configuration>
             </plugin>
@@ -135,7 +132,7 @@
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.framework</artifactId>
-            <version>4.4.1</version>
+            <version>${felix.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

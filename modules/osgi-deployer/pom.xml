@@ -55,12 +55,6 @@
     </plugins></build>
 
     <dependencies>
-        <!--<dependency>-->
-            <!--<groupId>org.mule</groupId>-->
-            <!--<artifactId>mule-core</artifactId>-->
-            <!--<version>${project.version}</version>-->
-        <!--</dependency>-->
-
         <dependency>
             <groupId>org.mule.modules</groupId>
             <artifactId>mule-module-osgi-utils</artifactId>
@@ -70,24 +64,20 @@
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.framework</artifactId>
-            <version>4.4.1</version>
+            <version>${felix.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.fileinstall</artifactId>
-            <version>3.4.2</version>
+            <version>${felixFileInstallVersion}</version>
         </dependency>
+
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.bundlerepository</artifactId>
             <version>2.0.2</version>
         </dependency>
 
-        <!--<dependency>-->
-            <!--<groupId>org.apache.felix</groupId>-->
-            <!--<artifactId>org.apache.felix.resolver</artifactId>-->
-            <!--<scope>provided</scope>-->
-        <!--</dependency>-->
         <dependency>
             <groupId>org.eclipse.equinox</groupId>
             <artifactId>org.eclipse.equinox.region</artifactId>
@@ -95,42 +85,8 @@
         </dependency>
 
         <dependency>
-            <groupId>org.ops4j.pax.swissbox</groupId>
-            <artifactId>pax-swissbox-bnd</artifactId>
-            <version>1.7.1</version>
-        </dependency>
-        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-
-        <dependency>
-            <groupId>org.ops4j.pax.exam</groupId>
-            <artifactId>pax-exam-container-native</artifactId>
-            <version>${exam.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.ops4j.pax.runner</groupId>
-            <artifactId>pax-runner-no-jcl</artifactId>
-            <version>${runner.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.ops4j.pax.exam</groupId>
-            <artifactId>pax-exam-junit4</artifactId>
-            <version>${exam.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.ops4j.pax.exam</groupId>
-            <artifactId>pax-exam-link-mvn</artifactId>
-            <version>${exam.version}</version>
             <scope>test</scope>
         </dependency>
 
