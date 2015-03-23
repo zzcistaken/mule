@@ -112,8 +112,11 @@ public abstract class AbstractVmOsgiTestCase extends FunctionalTestCase
                 bundle("file:/Users/pablokraan/devel/osgiexample/spring-config/org.springframework.beans-3.2.1.RELEASE.jar"),
                 bundle("file:/Users/pablokraan/devel/osgiexample/spring-config/org.springframework.aop-3.2.1.RELEASE.jar"),
 
-                ////TODO(pablo.kraan): OSGi: where does this dependency comes from?
+                //TODO(pablo.kraan): OSGi: where does this dependency comes from?
                 mavenBundle().groupId("org.apache.servicemix.bundles").artifactId("org.apache.servicemix.bundles.aopalliance").version("1.0_6"),
+                mavenBundle().groupId("com.fasterxml.jackson.core").artifactId("jackson-annotations").versionAsInProject(),
+                mavenBundle().groupId("com.fasterxml.jackson.core").artifactId("jackson-core").versionAsInProject(),
+                mavenBundle().groupId("com.fasterxml.jackson.core").artifactId("jackson-databind").versionAsInProject(),
                 mavenBundle().groupId("dom4j").artifactId("dom4j").versionAsInProject(),
                 mavenBundle().groupId("org.eclipse.gemini.blueprint").artifactId("gemini-blueprint-io").versionAsInProject(),
                 mavenBundle().groupId("org.eclipse.gemini.blueprint").artifactId("gemini-blueprint-core").versionAsInProject(),
@@ -122,7 +125,8 @@ public abstract class AbstractVmOsgiTestCase extends FunctionalTestCase
 
                 //TODO(pablo.kraan): OSGi - update muleCommon to use this version
                 mavenBundle().groupId("org.antlr").artifactId("antlr-runtime").version("3.5-osgi"),
-                mavenBundle().groupId("org.coosproject.messaging.org.apache.xmlbeans").artifactId("org.apache.xmlbeans.xmlbeans").versionAsInProject(),
+                mavenBundle().groupId("org.coosproject.messaging.org.apache.xmlbeans").artifactId("org.apache.xmlbeans.xmlbeans").version("2.4.0"),
+                mavenBundle().groupId("org.json").artifactId("json").version("20140107-osgi"),
                 mavenBundle().groupId("org.mule.common").artifactId("mule-common").versionAsInProject(),
 
                 bundle(projectDir.toURI().toString() + "/bundles/mule-module-spring-config-4.0-SNAPSHOT.jar"),
@@ -130,7 +134,6 @@ public abstract class AbstractVmOsgiTestCase extends FunctionalTestCase
                 //TODO(pablo.kraan): OSGi -problem: add a wrong transport in the Mule-Transport header and deployment won't fail but there is an exception in the log
                 //TODO(pablo.kraan): OSGi -problem: changes in the maven bundle plugin config is not taken from the IDE
                 bundle(projectDir.toURI().toString() + "/bundles/mule-transport-vm-4.0-SNAPSHOT.jar"),
-
 
                 mavenBundle().groupId("commons-dbutils").artifactId("commons-dbutils").versionAsInProject(),
                 mavenBundle().groupId("commons-net").artifactId("commons-net").versionAsInProject(),
@@ -148,8 +151,8 @@ public abstract class AbstractVmOsgiTestCase extends FunctionalTestCase
 
                 bundle(projectDir.toURI().toString() + "/bundles/mule-tests-functional-4.0-SNAPSHOT.jar"),
 
-                mavenBundle().groupId("org.jboss.jbossts").artifactId("jbossjta").versionAsInProject(),
-                bundle(projectDir.toURI().toString() + "/bundles/mule-module-jbossts-4.0-SNAPSHOT.jar"),
+                //mavenBundle().groupId("org.jboss.jbossts").artifactId("jbossjta").versionAsInProject(),
+                //bundle(projectDir.toURI().toString() + "/bundles/mule-module-jbossts-4.0-SNAPSHOT.jar"),
 
                 junitBundles()
         );
