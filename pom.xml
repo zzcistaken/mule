@@ -183,8 +183,9 @@
         <cxfVersion>2.5.9</cxfVersion>
         <derbyVersion>10.11.1.1</derbyVersion>
         <dom4jVersion>1.6.1-osgi</dom4jVersion>
-        <felix.version>4.6.0</felix.version>
-        <felixFileInstallVersion>3.4.2</felixFileInstallVersion>
+        <!-- //TODO(pablo.kraan): try to update to 4.6.1 or newer version-->
+        <felix.version>4.4.1</felix.version>
+        <felixFileInstallVersion>3.5.0</felixFileInstallVersion>
         <flatpackVersion>3.1.1</flatpackVersion>
         <geronimoSpecsVersion>1.1</geronimoSpecsVersion>
         <newGeronimoSpecsVersion>2.0.0</newGeronimoSpecsVersion>

@@ -238,7 +238,7 @@ public class Main
 
         jarList.add(new File(BASE_FOLDER + "/core/antlr-runtime-osgi.jar"));
         jarList.add(new File(BASE_FOLDER + "/core/asm-commons-osgi.jar"));
-        jarList.add(new File(BASE_FOLDER + "/core/asm-osgi.jar"));
+        jarList.add(new File(BASE_FOLDER + "/core/asm-3.1-osgi.jar"));
 
         jarList.add(new File(BASE_FOLDER + "/core/slf4j-api-1.7.7.jar"));
         jarList.add(new File(BASE_FOLDER + "/core/log4j-slf4j-impl-2.1.jar"));
@@ -257,6 +257,12 @@ public class Main
         jarList.add(new File(BASE_FOLDER + "/core/guava-18.0.jar"));
         jarList.add(new File(BASE_FOLDER + "/core/jgrapht-osgi.jar"));
         jarList.add(new File(BASE_FOLDER + "/core/xmlbeans-osgi.jar"));
+
+        jarList.add(new File(BASE_FOLDER + "/core/jackson-core-2.4.3.jar"));
+        jarList.add(new File(BASE_FOLDER + "/core/jackson-databind-2.4.3.jar"));
+        jarList.add(new File(BASE_FOLDER + "/core/jackson-annotations-2.4.2.jar"));
+        jarList.add(new File(BASE_FOLDER + "/core/json-20140107-osgi.jar"));
+
         jarList.add(new File(BASE_FOLDER + "/core/mule-core-4.0-SNAPSHOT.jar"));
 
         return jarList;
@@ -289,7 +295,7 @@ public class Main
     {
         List jarList = new ArrayList();
         jarList.add(new File(BASE_FOLDER + "/deployer/org.apache.felix.bundlerepository-2.0.2.jar"));
-        jarList.add(new File(BASE_FOLDER + "/deployer/org.apache.felix.fileinstall-3.4.0.jar"));
+        jarList.add(new File(BASE_FOLDER + "/deployer/org.apache.felix.fileinstall-3.5.0.jar"));
         jarList.add(new File(BASE_FOLDER + "/deployer/org.eclipse.equinox.region-1.1.0.v20120522-1841.jar"));
         jarList.add(new File(BASE_FOLDER + "/deployer/mule-module-osgi-utils-4.0-SNAPSHOT.jar"));
         jarList.add(new File(BASE_FOLDER + "/deployer/mule-module-osgi-deployer-4.0-SNAPSHOT.jar"));
