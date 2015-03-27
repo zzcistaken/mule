@@ -5,7 +5,7 @@
     <groupId>org.mule</groupId>
     <artifactId>mule</artifactId>
     <packaging>pom</packaging>
-    <version>3.7.0-M1-SNAPSHOT</version>
+    <version>3.7.0-M1</version>
 
     <!-- Organization -->
     <organization>
@@ -221,7 +221,7 @@
         <disruptorVersion>3.3.0</disruptorVersion>
         <maven.buildnumber.plugin.version>1.1</maven.buildnumber.plugin.version>
         <mockitoVersion>1.9.5</mockitoVersion>
-        <muleExtensionsApiVersion>1.0.0-SNAPSHOT</muleExtensionsApiVersion>
+        <muleExtensionsApiVersion>1.0.0-alpha-M1</muleExtensionsApiVersion>
         <multithreadedtcVersion>1.01</multithreadedtcVersion>
         <!-- TODO EE-1395 -->
         <mqSeriesVersion>6.0</mqSeriesVersion>
