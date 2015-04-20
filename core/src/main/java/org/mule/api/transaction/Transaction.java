@@ -49,6 +49,10 @@ public interface Transaction
 
     boolean isCommitted() throws TransactionException;
 
+    int getTimeout();
+
+    void setTimeout(int timeout);
+
     Object getResource(Object key);
 
     boolean hasResource(Object key);

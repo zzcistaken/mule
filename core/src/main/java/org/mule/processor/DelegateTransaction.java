@@ -182,6 +182,16 @@ public class DelegateTransaction extends AbstractTransaction
         }
 
         @Override
+        public int getTimeout() {
+            return 120000;
+        }
+
+        @Override
+        public void setTimeout(int timeout)
+        {
+        }
+
+        @Override
         public Object getResource(Object key)
         {
             return null;

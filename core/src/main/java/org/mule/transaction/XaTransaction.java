@@ -13,17 +13,12 @@ import org.mule.config.i18n.MessageFactory;
 import org.mule.util.Preconditions;
 import org.mule.util.xa.XaResourceFactoryHolder;
 
+import javax.transaction.*;
+import javax.transaction.xa.XAException;
+import javax.transaction.xa.XAResource;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
-import javax.transaction.HeuristicRollbackException;
-import javax.transaction.InvalidTransactionException;
-import javax.transaction.RollbackException;
-import javax.transaction.SystemException;
-import javax.transaction.Transaction;
-import javax.transaction.TransactionManager;
-import javax.transaction.xa.XAResource;
 
 /**
  * <code>XaTransaction</code> represents an XA transaction in Mule.
@@ -306,6 +301,7 @@ public class XaTransaction extends AbstractTransaction
             {
                 throw new TransactionException(MessageFactory.createStaticMessage("XATransaction is null"));
             }
+            resource.setTransactionTimeout(getTimeout());
             return jtaTransaction.enlistResource(resource);
         }
         catch (RollbackException e)
@@ -314,6 +310,9 @@ public class XaTransaction extends AbstractTransaction
         }
         catch (SystemException e)
         {
+            throw new TransactionException(e);
+        }
+        catch (XAException e) {
             throw new TransactionException(e);
         }
     }
