@@ -36,6 +36,7 @@ public class ErrorHandlingExecutionTemplate implements ExecutionTemplate<MuleEve
         final TransactionConfig transactionConfig = new MuleTransactionConfig();
         final boolean processTransactionOnException = false;
         ExecutionInterceptor<MuleEvent> tempExecutionInterceptor = new ExecuteCallbackInterceptor<MuleEvent>();
+        tempExecutionInterceptor = new CommitTransactionInterceptor(tempExecutionInterceptor);
         tempExecutionInterceptor = new HandleExceptionInterceptor(tempExecutionInterceptor, messagingExceptionHandler);
         tempExecutionInterceptor = new BeginAndResolveTransactionInterceptor<MuleEvent>(tempExecutionInterceptor,transactionConfig,muleContext, processTransactionOnException, false);
         tempExecutionInterceptor = new SuspendXaTransactionInterceptor<MuleEvent>(tempExecutionInterceptor,transactionConfig,processTransactionOnException);

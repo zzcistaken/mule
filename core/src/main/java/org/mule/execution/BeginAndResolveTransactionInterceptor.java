@@ -6,8 +6,6 @@
  */
 package org.mule.execution;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.mule.api.MessagingException;
 import org.mule.api.MuleContext;
 import org.mule.api.execution.ExecutionCallback;
@@ -15,6 +13,9 @@ import org.mule.api.transaction.Transaction;
 import org.mule.api.transaction.TransactionConfig;
 import org.mule.api.transaction.TransactionException;
 import org.mule.transaction.TransactionCoordination;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 class BeginAndResolveTransactionInterceptor<T> implements ExecutionInterceptor<T>
 {
@@ -59,14 +60,7 @@ class BeginAndResolveTransactionInterceptor<T> implements ExecutionInterceptor<T
         try
         {
             result = next.execute(callback);
-            try{
-
-                resolveTransactionIfRequired(resolveStartedTransaction);
-            } catch (Exception e) {
-                System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXX\nxXXXXXXXXXXXXXX");
-                throw e;
-            }
-
+            resolveTransactionIfRequired(resolveStartedTransaction);
             return result;
         }
         catch (MessagingException e)

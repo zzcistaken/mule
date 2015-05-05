@@ -40,6 +40,7 @@ public class TransactionalErrorHandlingExecutionTemplate implements ExecutionTem
     {
         final boolean processTransactionOnException = true;
         ExecutionInterceptor<MuleEvent> tempExecutionInterceptor = new ExecuteCallbackInterceptor<MuleEvent>();
+        tempExecutionInterceptor = new CommitTransactionInterceptor(tempExecutionInterceptor);
         tempExecutionInterceptor = new HandleExceptionInterceptor(tempExecutionInterceptor, messagingExceptionHandler);
         tempExecutionInterceptor = new BeginAndResolveTransactionInterceptor<MuleEvent>(tempExecutionInterceptor,transactionConfig,muleContext, processTransactionOnException, resolveAnyTransaction);
         tempExecutionInterceptor = new ResolvePreviousTransactionInterceptor<MuleEvent>(tempExecutionInterceptor,transactionConfig);
