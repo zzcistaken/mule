@@ -23,7 +23,10 @@
         <jms:inbound-endpoint queue="in1" connector-ref="activeMq">
             <jms:transaction action="ALWAYS_BEGIN"/>
         </jms:inbound-endpoint>
-        <test:component throwException="true"/>
+        <test:component />
+        <expression-component>
+            bad = expression
+        </expression-component>
         <catch-exception-strategy/>
     </flow>
 
@@ -38,6 +41,23 @@
             <jms:transaction action="ALWAYS_BEGIN"/>
         </jms:outbound-endpoint>
         <test:component throwException="true"/>
+        <catch-exception-strategy/>
+    </flow>
+
+    <flow name="xaTransactionCommitFails">
+        <jms:inbound-endpoint queue="in3" connector-ref="activeXaMq">
+            <xa-transaction action="ALWAYS_BEGIN" />
+        </jms:inbound-endpoint>
+        <vm:outbound-endpoint path="vmIn2">
+            <xa-transaction action="ALWAYS_JOIN"/>
+        </vm:outbound-endpoint>
+        <jms:outbound-endpoint queue="out2" connector-ref="activeXaMq">
+            <xa-transaction action="ALWAYS_JOIN"/>
+        </jms:outbound-endpoint>
+        <test:component />
+        <expression-component>
+            bad = expression
+        </expression-component>
         <catch-exception-strategy/>
     </flow>
 

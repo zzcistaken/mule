@@ -57,6 +57,6 @@ public class ErrorHandlingExecutionTemplate implements ExecutionTemplate<MuleEve
     @Override
     public MuleEvent execute(ExecutionCallback<MuleEvent> executionCallback) throws Exception
     {
-        return this.processingInterceptor.execute(executionCallback);
+        return this.processingInterceptor.execute(executionCallback, new ExecutionContext());
     }
 }

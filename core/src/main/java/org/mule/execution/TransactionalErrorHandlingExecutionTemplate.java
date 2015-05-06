@@ -107,6 +107,6 @@ public class TransactionalErrorHandlingExecutionTemplate implements ExecutionTem
     @Override
     public MuleEvent execute(ExecutionCallback<MuleEvent> executionCallback) throws Exception
     {
-        return this.executionInterceptor.execute(executionCallback);
+        return this.executionInterceptor.execute(executionCallback, new ExecutionContext());
     }
 }

@@ -27,7 +27,7 @@ class ResolvePreviousTransactionInterceptor<T> implements ExecutionInterceptor<T
     }
 
     @Override
-    public T execute(ExecutionCallback<T> callback) throws Exception
+    public T execute(ExecutionCallback<T> callback, ExecutionContext executionContext) throws Exception
     {
         byte action = transactionConfig.getAction();
         Transaction transactionBeforeTemplate = TransactionCoordination.getInstance().getTransaction();
@@ -41,7 +41,7 @@ class ResolvePreviousTransactionInterceptor<T> implements ExecutionInterceptor<T
 
             resolveTransaction(transactionBeforeTemplate);
         }
-        return next.execute(callback);
+        return next.execute(callback, executionContext);
     }
 
     protected void resolveTransaction(Transaction tx) throws TransactionException

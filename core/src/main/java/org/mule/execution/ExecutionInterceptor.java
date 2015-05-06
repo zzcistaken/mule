@@ -10,5 +10,5 @@ import org.mule.api.execution.ExecutionCallback;
 
 interface ExecutionInterceptor<T>
 {
-    T execute(ExecutionCallback<T> callback) throws Exception;
+    T execute(ExecutionCallback<T> callback, ExecutionContext executionContext) throws Exception;
 }

@@ -28,19 +28,22 @@ class CommitTransactionInterceptor implements ExecutionInterceptor<MuleEvent>
     }
 
     @Override
-    public MuleEvent execute(ExecutionCallback<MuleEvent> callback) throws Exception
+    public MuleEvent execute(ExecutionCallback<MuleEvent> callback, ExecutionContext executionContext) throws Exception
     {
-        MuleEvent result = nextInterceptor.execute(callback);
-        try
+        MuleEvent result = nextInterceptor.execute(callback, executionContext);
+        if (executionContext.isTransactionStarted())
         {
-            if (TransactionCoordination.getInstance().getTransaction() != null)
+            try
             {
-                TransactionCoordination.getInstance().resolveTransaction();
+                if (TransactionCoordination.getInstance().getTransaction() != null)
+                {
+                    TransactionCoordination.getInstance().resolveTransaction();
+                }
             }
-        }
-        catch (Exception e)
-        {
-            throw new MessagingException(result, e);
+            catch (Exception e)
+            {
+                throw new MessagingException(result, e);
+            }
         }
         return result;
     }
