@@ -19,6 +19,8 @@ import com.ning.http.client.uri.Uri;
 import com.ning.http.client.ws.WebSocket;
 import com.ning.http.util.AsyncHttpProviderUtils;
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import org.glassfish.grizzly.CloseListener;
 import org.glassfish.grizzly.CloseType;
 import org.glassfish.grizzly.Closeable;
@@ -43,7 +45,7 @@ public final class HttpTransactionContext {
     private static final Attribute<HttpTransactionContext> REQUEST_STATE_ATTR =
             Grizzly.DEFAULT_ATTRIBUTE_BUILDER.createAttribute(HttpTransactionContext.class.getName());
 
-    int redirectCount;
+    final AtomicInteger redirectCount = new AtomicInteger(0);
     final int maxRedirectCount;
     final boolean redirectsAllowed;
     final GrizzlyAsyncHttpProvider provider;
@@ -65,8 +67,8 @@ public final class HttpTransactionContext {
     GrizzlyResponseStatus responseStatus;
 
 
-    Uri lastRedirectUri;
-    long totalBodyWritten;
+    String lastRedirectURI;
+    AtomicLong totalBodyWritten = new AtomicLong();
     AsyncHandler.STATE currentState;
     Uri wsRequestURI;
     boolean isWSRequest;
@@ -174,8 +176,8 @@ public final class HttpTransactionContext {
         newContext.payloadGenerator = payloadGenerator;
         newContext.currentState = currentState;
         newContext.statusHandler = statusHandler;
-        newContext.lastRedirectUri = lastRedirectUri;
-        newContext.redirectCount = redirectCount;
+        newContext.lastRedirectURI = lastRedirectURI;
+        newContext.redirectCount.set(redirectCount.get());
 
         // detach the future
         future = null;
