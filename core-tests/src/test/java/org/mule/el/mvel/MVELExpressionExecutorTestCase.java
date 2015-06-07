@@ -20,8 +20,6 @@ import org.mule.tck.size.SmallTest;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.Opcodes;
 
 @SmallTest
 public class MVELExpressionExecutorTestCase extends AbstractELTestCase
@@ -152,16 +150,17 @@ public class MVELExpressionExecutorTestCase extends AbstractELTestCase
         @Override
         protected Class<?> findClass(String className) throws ClassNotFoundException
         {
-            if (className.equals("org.MyClass"))
-            {
-                ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
-                cw.visit(Opcodes.V1_5, Opcodes.ACC_PUBLIC, "org/MyClass", null, "java/lang/Object", null);
-                return defineClass(className, cw.toByteArray(), 0, cw.toByteArray().length);
-            }
-            else
-            {
-                return super.findClass(className);
-            }
+            //if (className.equals("org.MyClass"))
+            //{
+            //    ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+            //    cw.visit(Opcodes.V1_5, Opcodes.ACC_PUBLIC, "org/MyClass", null, "java/lang/Object", null);
+            //    return defineClass(className, cw.toByteArray(), 0, cw.toByteArray().length);
+            //}
+            //else
+            //{
+            //    return super.findClass(className);
+            //}
+            throw new UnsupportedOperationException("These tests were broken when ASM was removed as a dependency");
         }
     }
 }
