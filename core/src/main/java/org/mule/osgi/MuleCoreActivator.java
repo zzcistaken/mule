@@ -9,12 +9,16 @@ package org.mule.osgi;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  */
 public class MuleCoreActivator implements BundleActivator
 {
+    private static final Logger LOG = LoggerFactory.getLogger(MuleCoreActivator.class);
+
     //TODO(pablo.kraan): OSGi - accesing bundleContext is not the right way to do this. Used just for the prototype
     public static BundleContext bundleContext;
 
@@ -22,6 +26,7 @@ public class MuleCoreActivator implements BundleActivator
     @Override
     public void start(BundleContext context) throws Exception
     {
+        LOG.info("STARTING MULE CORE BUNDLE");
         bundleContext = context;
 
         transportActivator.start(context);
