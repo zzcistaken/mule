@@ -1,0 +1,8 @@
+<store:config name="xxx" >
+    <store:persistent-policy … />
+    <store:expiration-policy … />
+    <store:acceptance-policy … />
+    <store:transactional-policy … />
+    <store:management-policy … />
+    <store:hook-policy … />
+</store>
