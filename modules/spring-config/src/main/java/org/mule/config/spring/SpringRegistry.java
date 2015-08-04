@@ -54,6 +54,7 @@ public class SpringRegistry extends AbstractRegistry implements LifecycleRegistr
     private boolean readOnly;
 
     private RegistrationDelegate registrationDelegate;
+    private SpringBeanCache springBeanCache;
 
     //This is used to track the Spring context lifecycle since there is no way to confirm the
     //lifecycle phase from the application context
@@ -98,6 +99,8 @@ public class SpringRegistry extends AbstractRegistry implements LifecycleRegistr
             readOnly = true;
             registrationDelegate = new ReadOnlyRegistrationDelegate();
         }
+
+        springBeanCache = new SpringBeanCache(applicationContext);
     }
 
     @Override
@@ -190,10 +193,10 @@ public class SpringRegistry extends AbstractRegistry implements LifecycleRegistr
         }
         else
         {
-            Object object;
+            SpringBeanCache.CachedBean bean;
             try
             {
-                object = applicationContext.getBean(key);
+                bean = springBeanCache.get(key);
             }
             catch (NoSuchBeanDefinitionException e)
             {
@@ -204,7 +207,9 @@ public class SpringRegistry extends AbstractRegistry implements LifecycleRegistr
                 return null;
             }
 
-            if (applyLifecycle && !applicationContext.isSingleton(key))
+            Object object = bean.getObject();
+
+            if (applyLifecycle && !bean.isSingleton())
             {
                 try
                 {
@@ -268,7 +273,10 @@ public class SpringRegistry extends AbstractRegistry implements LifecycleRegistr
     @Override
     protected Object doUnregisterObject(String key) throws RegistrationException
     {
-        return registrationDelegate.unregisterObject(key);
+        Object value = registrationDelegate.unregisterObject(key);
+        springBeanCache.remove(key);
+
+        return value;
     }
 
     /**
