@@ -67,6 +67,12 @@
                     <xsd:element ref="context-resolver" minOccurs="0" maxOccurs="unbounded" />
                 </xsd:sequence>
                 <xsd:attributeGroup ref="componentAttributes" />
+                <xsd:attribute name="jaxbContext-ref" type="xsd:string" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>

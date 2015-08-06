@@ -7,6 +7,7 @@
 
 package org.mule.module.jersey;
 
+import static java.lang.String.format;
 import org.mule.api.MuleEvent;
 import org.mule.api.MuleMessage;
 import org.mule.api.component.JavaComponent;
@@ -40,7 +41,9 @@ import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.ExceptionMapper;
+import javax.xml.bind.JAXBContext;
 
+import org.glassfish.jersey.CommonProperties;
 import org.glassfish.jersey.internal.MapPropertiesDelegate;
 import org.glassfish.jersey.jackson1.Jackson1Feature;
 import org.glassfish.jersey.server.ApplicationHandler;
@@ -97,6 +100,7 @@ public class JerseyResourcesComponent extends AbstractComponent
     private List<ContextResolver<?>> contextResolvers = new ArrayList<>();
     private Set<String> packages = new HashSet<>();
     private Map<String, Object> properties = new HashMap<>();
+    private String jaxbContextName = null;
 
     private ApplicationHandler application;
     private ResourceConfig resourceConfig;
@@ -163,9 +167,17 @@ public class JerseyResourcesComponent extends AbstractComponent
             resourceConfig.packages(pkg);
         }
 
-        resourceConfig.addProperties(properties)
+        resourceConfig
+                .addProperties(properties)
+                .property(CommonProperties.FEATURE_AUTO_DISCOVERY_DISABLE, true)
                 .registerClasses(resources)
-                .register(Jackson1Feature.class);
+                .register(JsonProviderFeature.class)
+        .register(Jackson1Feature.class);
+
+
+
+
+        registerJaxbContextResolverIfNecessary();
 
         if (!resourceConfig.isRegistered(ResponseErrorMapper.class))
         {
@@ -173,6 +185,28 @@ public class JerseyResourcesComponent extends AbstractComponent
         }
 
         return new ApplicationHandler(resourceConfig);
+    }
+
+    private void registerJaxbContextResolverIfNecessary()
+    {
+        if (jaxbContextName != null)
+        {
+            Object jaxbContextCandidate = muleContext.getRegistry().get(jaxbContextName);
+            if (jaxbContextCandidate == null)
+            {
+                throw new IllegalArgumentException(format("jaxbContext-ref points to key '%s' but that reference resolved to null", jaxbContextName));
+            }
+            if (jaxbContextCandidate instanceof JAXBContext)
+            {
+                resourceConfig
+                        .register(new StaticJaxbContextResolver((JAXBContext) jaxbContextCandidate));
+            }
+            else
+            {
+                throw new IllegalArgumentException(format("'%s' was specified as jaxbContext-ref but it resolved to an instance of %s while a %s was expected",
+                                                          jaxbContextName, jaxbContextCandidate.getClass().getName(), JAXBContext.class.getName()));
+            }
+        }
     }
 
     @Override
@@ -406,6 +440,11 @@ public class JerseyResourcesComponent extends AbstractComponent
     public void setPackages(Set<String> packages)
     {
         this.packages = packages;
+    }
+
+    public void setJaxbContextName(String jaxbContextName)
+    {
+        this.jaxbContextName = jaxbContextName;
     }
 
     public void setProperties(Map<String, Object> properties)

@@ -8,13 +8,16 @@ package org.mule.module.jersey.contextresolver;
 
 import org.mule.module.jersey.HelloBean;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
-import org.glassfish.jersey.jettison.JettisonConfig;
-import org.glassfish.jersey.jettison.JettisonJaxbContext;
+import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 
 @Provider
 public class JaxbCustomContextResolver implements ContextResolver<JAXBContext>
@@ -31,7 +34,9 @@ public class JaxbCustomContextResolver implements ContextResolver<JAXBContext>
             {
                 try
                 {
-                    context = new JettisonJaxbContext(JettisonConfig.DEFAULT, type);
+                    Map<String, Object> properties = new HashMap<>();
+                    properties.put(JAXBContextProperties.JSON_INCLUDE_ROOT, true);
+                    context = JAXBContextFactory.createContext(new Class[] {type}, properties);
                 }
                 catch (JAXBException e)
                 {

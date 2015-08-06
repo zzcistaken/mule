@@ -62,10 +62,10 @@
                 </executions>
             </plugin>
 
-            <plugin>
-                <groupId>org.mule.tools</groupId>
-                <artifactId>mule-assembly-verifier</artifactId>
-            </plugin>
+            <!--<plugin>-->
+                <!--<groupId>org.mule.tools</groupId>-->
+                <!--<artifactId>mule-assembly-verifier</artifactId>-->
+            <!--</plugin>-->
 
             <plugin>
                 <groupId>org.codehaus.gmaven</groupId>

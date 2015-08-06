@@ -39,7 +39,6 @@ public class BasicJerseyWithContextResolverTestCase extends BasicJerseyTestCase
     @Override
     protected String getJsonHelloBean()
     {
-        //note the number 0 is not enclosed in quotes
-        return "{\"message\":\"Hello Dan\",\"number\":0}";
+        return "{\"helloBean\":{\"message\":\"Hello Dan\",\"number\":0}}";
     }
 }
