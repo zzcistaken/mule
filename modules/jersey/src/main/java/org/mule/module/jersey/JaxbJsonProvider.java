@@ -35,7 +35,7 @@ public class JaxbJsonProvider extends ConfigurableMoxyJsonProvider
     @Context
     private Providers providers;
 
-    @Override
+    //@Override
     protected JAXBContext getJAXBContext(Class<?> domainClass, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, ?> httpHeaders) throws JAXBException
     {
         JAXBContext jaxbContext = contextCache.get(domainClass);

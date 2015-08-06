@@ -202,7 +202,7 @@
         <jacksonVersion>1.9.11</jacksonVersion>
         <jackson2Version>2.4.3</jackson2Version>
         <javax.inject.version>1</javax.inject.version>
-        <jerseyVersion>2.11</jerseyVersion>
+        <jerseyVersion>2.19</jerseyVersion>
         <jaxbApiVersion>2.1</jaxbApiVersion>
         <javassistVersion>3.7.ga</javassistVersion>
         <javaMailVersion>1.4.3</javaMailVersion>

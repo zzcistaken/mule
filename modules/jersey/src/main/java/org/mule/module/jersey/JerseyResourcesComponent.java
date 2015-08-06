@@ -45,7 +45,7 @@ import javax.xml.bind.JAXBContext;
 
 import org.glassfish.jersey.CommonProperties;
 import org.glassfish.jersey.internal.MapPropertiesDelegate;
-import org.glassfish.jersey.jackson1.Jackson1Feature;
+import org.glassfish.jersey.moxy.json.MoxyJsonFeature;
 import org.glassfish.jersey.server.ApplicationHandler;
 import org.glassfish.jersey.server.ContainerRequest;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -171,8 +171,7 @@ public class JerseyResourcesComponent extends AbstractComponent
                 .addProperties(properties)
                 .property(CommonProperties.FEATURE_AUTO_DISCOVERY_DISABLE, true)
                 .registerClasses(resources)
-                .register(JsonProviderFeature.class)
-        .register(Jackson1Feature.class);
+                .register(MoxyJsonFeature.class);
 
 
 
