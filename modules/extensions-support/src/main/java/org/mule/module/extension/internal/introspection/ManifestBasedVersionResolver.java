@@ -16,6 +16,9 @@ import java.net.URL;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Implementation of {@link VersionResolver} that infers an extension's version based on the MANIFEST.MF file contained
  * on it's JAR. If that attempt fails, it fallbacks to searching for the file under target/test-classes.
@@ -24,7 +27,7 @@ import java.util.jar.Manifest;
  */
 final class ManifestBasedVersionResolver implements VersionResolver
 {
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(ManifestBasedVersionResolver.class);
     private final Class extensionType;
 
     public ManifestBasedVersionResolver(Class extensionType)
@@ -36,6 +39,7 @@ final class ManifestBasedVersionResolver implements VersionResolver
     public String resolveVersion(Extension extension)
     {
         String version = extensionType.getPackage().getImplementationVersion();
+        LOGGER.warn(String.format("Extension type is %s,package is %s, initial version is %s", extensionType.getName(), extensionType.getPackage().getName(), version));
         if (version == null)
         {
             version = fallback();
