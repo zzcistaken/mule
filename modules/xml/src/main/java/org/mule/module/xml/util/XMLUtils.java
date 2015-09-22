@@ -17,6 +17,10 @@ import org.mule.module.xml.transformer.XmlToDomDocument;
 import org.mule.transformer.types.DataTypeFactory;
 import org.mule.util.IOUtils;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileReader;
@@ -28,9 +32,13 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
+import javax.resource.NotSupportedException;
 import javax.xml.namespace.NamespaceContext;
+import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -80,6 +88,18 @@ public class XMLUtils extends org.mule.util.XMLUtils
     // JAXP implementation)
     public static final String JAXP_PROPERTIES_SCHEMA_LANGUAGE = "http://java.sun.com/xml/jaxp/properties/schemaLanguage";
     public static final String JAXP_PROPERTIES_SCHEMA_LANGUAGE_VALUE = "http://www.w3.org/2001/XMLSchema";
+
+    private static final Cache<String,DocumentBuilder> documentBuilderCache = CacheBuilder.newBuilder()
+        .expireAfterAccess(10, TimeUnit.SECONDS)
+        .build(new CacheLoader<String, DocumentBuilder>()
+            {
+                @Override
+                public DocumentBuilder load(String s) throws Exception
+                {
+                    throw new NotSupportedException("Loading default DocumentBuilders is not supported," +
+                                                    " please use asMap method for getting and adding entries.");
+                }
+            });
 
     /**
      * Converts a DOM to an XML string.
@@ -465,65 +485,84 @@ public class XMLUtils extends org.mule.util.XMLUtils
 
     public static Node toDOMNode(Object src, MuleEvent event, DocumentBuilderFactory factory) throws Exception
     {
+        DocumentBuilder documentBuilder = getDocumentBuilder(factory);
+
         if (src instanceof Node)
         {
             return (Node) src;
         }
-        else if (src instanceof InputSource)
-        {
-            return factory.newDocumentBuilder().parse((InputSource) src);
-        }
-        else if (src instanceof org.dom4j.Document)
-        {
-            return new DOMWriter().write((org.dom4j.Document) src);
-        }
-        else if (src instanceof OutputHandler)
-        {
-            OutputHandler handler = ((OutputHandler) src);
-            ByteArrayOutputStream output = new ByteArrayOutputStream();
-            handler.write(event, output);
-            InputStream stream = new ByteArrayInputStream(output.toByteArray());
-
-            return factory.newDocumentBuilder().parse(stream);
-        }
-        else if (src instanceof byte[])
-        {
-            ByteArrayInputStream stream = new ByteArrayInputStream((byte[]) src);
-            return factory.newDocumentBuilder().parse(stream);
-        }
-        else if (src instanceof InputStream)
-        {
-            return factory.newDocumentBuilder().parse((InputStream) src);
-        }
-        else if (src instanceof String)
-        {
-            return factory.newDocumentBuilder().parse(
-                    new InputSource(new StringReader((String) src)));
-        }
-        else if (src instanceof XMLStreamReader)
-        {
-            XMLStreamReader xsr = (XMLStreamReader) src;
-
-            // StaxSource requires that we advance to a start element/document event
-            if (!xsr.isStartElement() && xsr.getEventType() != XMLStreamConstants.START_DOCUMENT)
-            {
-                xsr.nextTag();
-            }
-
-            return factory.newDocumentBuilder().parse(new InputSource());
-        }
-        else if (src instanceof DelayedResult)
-        {
-            DelayedResult result = ((DelayedResult) src);
-            DOMResult domResult = new DOMResult();
-            result.write(domResult);
-            return domResult.getNode();
-        }
         else
         {
-            return null;
+            if (src instanceof InputSource)
+            {
+                return documentBuilder.parse((InputSource) src);
+            }
+            else if (src instanceof org.dom4j.Document)
+            {
+                return new DOMWriter().write((org.dom4j.Document) src);
+            }
+            else if (src instanceof OutputHandler)
+            {
+                OutputHandler handler = ((OutputHandler) src);
+                ByteArrayOutputStream output = new ByteArrayOutputStream();
+                handler.write(event, output);
+                InputStream stream = new ByteArrayInputStream(output.toByteArray());
+
+                return documentBuilder.parse(stream);
+            }
+            else if (src instanceof byte[])
+            {
+                ByteArrayInputStream stream = new ByteArrayInputStream((byte[]) src);
+                return documentBuilder.parse(stream);
+            }
+            else if (src instanceof InputStream)
+            {
+                return documentBuilder.parse((InputStream) src);
+            }
+            else if (src instanceof String)
+            {
+                return documentBuilder.parse(
+                        new InputSource(new StringReader((String) src)));
+            }
+            else if (src instanceof XMLStreamReader)
+            {
+                XMLStreamReader xsr = (XMLStreamReader) src;
+
+                // StaxSource requires that we advance to a start element/document event
+                if (!xsr.isStartElement() && xsr.getEventType() != XMLStreamConstants.START_DOCUMENT)
+                {
+                    xsr.nextTag();
+                }
+
+                return documentBuilder.parse(new InputSource());
+            }
+            else if (src instanceof DelayedResult)
+            {
+                DelayedResult result = ((DelayedResult) src);
+                DOMResult domResult = new DOMResult();
+                result.write(domResult);
+                return domResult.getNode();
+            }
+            else
+            {
+                return null;
+            }
         }
     }
+
+    private static DocumentBuilder getDocumentBuilder(DocumentBuilderFactory factory) throws ParserConfigurationException
+    {
+        DocumentBuilder documentBuilder;
+        String cacheId = Thread.currentThread().getName() + factory.getClass().getName();
+        if ( documentBuilderCache.asMap().containsKey(cacheId)){
+            documentBuilder = documentBuilderCache.asMap().get(cacheId);
+        } else {
+            documentBuilder = factory.newDocumentBuilder();
+            documentBuilderCache.asMap().put(cacheId, documentBuilder);
+        }
+        return documentBuilder;
+    }
+
 
 
     /**
