@@ -19,7 +19,6 @@ import org.mule.util.IOUtils;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -34,7 +33,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import javax.resource.NotSupportedException;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -91,15 +89,9 @@ public class XMLUtils extends org.mule.util.XMLUtils
 
     private static final Cache<String,DocumentBuilder> documentBuilderCache = CacheBuilder.newBuilder()
         .expireAfterAccess(10, TimeUnit.SECONDS)
-        .build(new CacheLoader<String, DocumentBuilder>()
-            {
-                @Override
-                public DocumentBuilder load(String s) throws Exception
-                {
-                    throw new NotSupportedException("Loading default DocumentBuilders is not supported," +
-                                                    " please use asMap method for getting and adding entries.");
-                }
-            });
+        .build();
+    private static ThreadLocal<DocumentBuilder> localDocumentBuilder = new ThreadLocal<DocumentBuilder>();
+    private static ThreadLocal<DocumentBuilderFactory> actualDocumentBuilderFactory = new ThreadLocal<DocumentBuilderFactory>();
 
     /**
      * Converts a DOM to an XML string.
@@ -286,7 +278,7 @@ public class XMLUtils extends org.mule.util.XMLUtils
     {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
-        return factory.newDocumentBuilder().parse(source);
+        return getDocumentBuilder(factory).parse(source);
     }
 
     /**
@@ -550,19 +542,38 @@ public class XMLUtils extends org.mule.util.XMLUtils
         }
     }
 
-    private static DocumentBuilder getDocumentBuilder(DocumentBuilderFactory factory) throws ParserConfigurationException
+    protected static DocumentBuilder getDocumentBuilder(DocumentBuilderFactory factory) throws ParserConfigurationException
     {
-        DocumentBuilder documentBuilder;
-        String cacheId = Thread.currentThread().getName() + factory.getClass().getName();
-        if ( documentBuilderCache.asMap().containsKey(cacheId)){
-            documentBuilder = documentBuilderCache.asMap().get(cacheId);
-        } else {
+        DocumentBuilder documentBuilder = localDocumentBuilder.get();
+
+        if ( documentBuilder == null){
             documentBuilder = factory.newDocumentBuilder();
-            documentBuilderCache.asMap().put(cacheId, documentBuilder);
+            localDocumentBuilder.set(documentBuilder);
+            actualDocumentBuilderFactory.set(factory);
+
+        } else if (!areTheFactoriesEquals(factory, actualDocumentBuilderFactory.get()))
+        {
+            documentBuilder = factory.newDocumentBuilder();
+            localDocumentBuilder.set(documentBuilder);
+            actualDocumentBuilderFactory.set(factory);
         }
         return documentBuilder;
     }
 
+    private static boolean areTheFactoriesEquals(DocumentBuilderFactory expected, DocumentBuilderFactory actual){
+        if (expected.getClass() == actual.getClass())
+        {
+            boolean isCoalescing = expected.isCoalescing() == actual.isCoalescing();
+            boolean isExpanded = expected.isExpandEntityReferences() == actual.isExpandEntityReferences();
+            boolean isIgnoringComments = expected.isIgnoringComments() == actual.isIgnoringComments();
+            boolean isIgnoringWhitespaces = expected.isIgnoringElementContentWhitespace() == actual.isIgnoringElementContentWhitespace();
+            boolean isNamespaceAware = expected.isNamespaceAware() == actual.isNamespaceAware();
+            boolean isValidating = expected.isValidating() == actual.isValidating();
+            boolean isXIncludeAware = expected.isXIncludeAware() == actual.isXIncludeAware();
+            return isCoalescing && isExpanded && isIgnoringComments && isIgnoringWhitespaces && isNamespaceAware && isValidating && isXIncludeAware;
+        }
+        return false;
+    }
 
 
     /**
