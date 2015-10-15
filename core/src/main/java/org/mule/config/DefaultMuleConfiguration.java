@@ -6,6 +6,9 @@
  */
 package org.mule.config;
 
+import static org.mule.util.StandaloneServerUtils.getMuleBase;
+import static org.mule.util.StandaloneServerUtils.getMuleHome;
+
 import org.mule.api.MuleContext;
 import org.mule.api.config.MuleConfiguration;
 import org.mule.api.config.MuleProperties;
@@ -250,7 +253,7 @@ public class DefaultMuleConfiguration implements MuleConfiguration, MuleContextA
         this.muleContext = context;
         if (containerMode)
         {
-            final String muleHome = System.getProperty("mule.home");
+            final String muleBase = getMuleBase();
             // in container mode the id is the app name, have each app isolate its work dir
             if (!isStandalone()) {
                 // fallback to current dir as a parent
@@ -258,7 +261,7 @@ public class DefaultMuleConfiguration implements MuleConfiguration, MuleContextA
             }
             else
             {
-                this.workingDirectory = String.format("%s/%s/%s", muleHome.trim(), getWorkingDirectory(), getId());
+                this.workingDirectory = String.format("%s/%s/%s", muleBase.trim(), getWorkingDirectory(), getId());
             }
         }
         else if (isStandalone())
@@ -447,7 +450,7 @@ public class DefaultMuleConfiguration implements MuleConfiguration, MuleContextA
 
     public String getMuleHomeDirectory()
     {
-        return System.getProperty(MuleProperties.MULE_HOME_DIRECTORY_PROPERTY);
+        return getMuleHome();
     }
 
     public void setWorkingDirectory(String workingDirectory)
