@@ -411,7 +411,16 @@
                     <groupId>velocity</groupId>
                     <artifactId>velocity-dep</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>org.opensaml</groupId>
+                    <artifactId>opensaml</artifactId>
+                </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.opensaml</groupId>
+            <artifactId>opensaml</artifactId>
+            <version>2.6.4</version>
         </dependency>
         <dependency>
             <groupId>org.apache.cxf</groupId>
