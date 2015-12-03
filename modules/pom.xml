@@ -21,6 +21,7 @@
         <module>cxf</module>
         <module>db</module>
         <module>devkit-support</module>
+        <module>extensions-studio-support</module>
         <module>extensions-support</module>
         <module>launcher</module>
         <module>client</module>
@@ -44,6 +45,7 @@
         <module>tomcat</module>
         <module>ws</module>
         <module>xml</module>
+
     </modules>
 
     <build>
