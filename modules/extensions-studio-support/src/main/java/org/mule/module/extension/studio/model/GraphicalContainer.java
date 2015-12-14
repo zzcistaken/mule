@@ -10,7 +10,8 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "graphical-container")
-public class GraphicalContainer extends AbstractContainer {
+public class GraphicalContainer extends AbstractContainer
+{
 
     private String pathExpression;
     private String childrenCreatorId;
@@ -21,75 +22,91 @@ public class GraphicalContainer extends AbstractContainer {
     private String prompt;
 
     @Override
-    public void accept(IEditorElementVisitor visitor) {
+    public void accept(IEditorElementVisitor visitor)
+    {
         visitor.visit(this);
     }
 
     @XmlAttribute
-    public String getChildrenCreatorId() {
+    public String getChildrenCreatorId()
+    {
         return childrenCreatorId;
     }
 
-    public void setChildrenCreatorId(String childrenCreatorId) {
+    public void setChildrenCreatorId(String childrenCreatorId)
+    {
         this.childrenCreatorId = childrenCreatorId;
     }
 
     @XmlAttribute
-    public Boolean getContributesToPath() {
+    public Boolean getContributesToPath()
+    {
         return contributesToPath;
     }
 
-    public void setContributesToPath(Boolean contributesToPath) {
+    public void setContributesToPath(Boolean contributesToPath)
+    {
         this.contributesToPath = contributesToPath;
     }
 
     @XmlAttribute
-    public String getEditPolicyFactoryId() {
+    public String getEditPolicyFactoryId()
+    {
         return editPolicyFactoryId;
     }
 
-    public void setEditPolicyFactoryId(String editPolicyFactoryId) {
+    public void setEditPolicyFactoryId(String editPolicyFactoryId)
+    {
         this.editPolicyFactoryId = editPolicyFactoryId;
     }
 
     @XmlAttribute
-    public String getLayoutFactoryId() {
+    public String getLayoutFactoryId()
+    {
         return layoutFactoryId;
     }
 
-    public void setLayoutFactoryId(String layoutFactoryId) {
+    public void setLayoutFactoryId(String layoutFactoryId)
+    {
         this.layoutFactoryId = layoutFactoryId;
     }
 
     @XmlAttribute
-    public String getUpdateParticipantId() {
+    public String getUpdateParticipantId()
+    {
         return updateParticipantId;
     }
 
-    public void setUpdateParticipantId(String updateParticipantId) {
+    public void setUpdateParticipantId(String updateParticipantId)
+    {
         this.updateParticipantId = updateParticipantId;
     }
 
     @XmlAttribute
-    public String getPrompt() {
+    public String getPrompt()
+    {
         return prompt;
     }
 
-    public void setPrompt(String prompt) {
+    public void setPrompt(String prompt)
+    {
         this.prompt = prompt;
     }
 
     @XmlAttribute
-    public String getPathExpression() {
+    public String getPathExpression()
+    {
         return pathExpression;
     }
 
-    public void setPathExpression(String pathExpression) {
+    public void setPathExpression(String pathExpression)
+    {
         this.pathExpression = pathExpression;
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         final int prime = 31;
         int result = super.hashCode();
         result = prime * result + ((childrenCreatorId == null) ? 0 : childrenCreatorId.hashCode());
@@ -103,49 +120,98 @@ public class GraphicalContainer extends AbstractContainer {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(Object obj)
+    {
         if (this == obj)
+        {
             return true;
+        }
         if (!super.equals(obj))
+        {
             return false;
+        }
         if (getClass() != obj.getClass())
+        {
             return false;
+        }
         GraphicalContainer other = (GraphicalContainer) obj;
-        if (childrenCreatorId == null) {
+        if (childrenCreatorId == null)
+        {
             if (other.childrenCreatorId != null)
+            {
                 return false;
-        } else if (!childrenCreatorId.equals(other.childrenCreatorId))
+            }
+        }
+        else if (!childrenCreatorId.equals(other.childrenCreatorId))
+        {
             return false;
-        if (contributesToPath == null) {
+        }
+        if (contributesToPath == null)
+        {
             if (other.contributesToPath != null)
+            {
                 return false;
-        } else if (!contributesToPath.equals(other.contributesToPath))
+            }
+        }
+        else if (!contributesToPath.equals(other.contributesToPath))
+        {
             return false;
-        if (editPolicyFactoryId == null) {
+        }
+        if (editPolicyFactoryId == null)
+        {
             if (other.editPolicyFactoryId != null)
+            {
                 return false;
-        } else if (!editPolicyFactoryId.equals(other.editPolicyFactoryId))
+            }
+        }
+        else if (!editPolicyFactoryId.equals(other.editPolicyFactoryId))
+        {
             return false;
-        if (layoutFactoryId == null) {
+        }
+        if (layoutFactoryId == null)
+        {
             if (other.layoutFactoryId != null)
+            {
                 return false;
-        } else if (!layoutFactoryId.equals(other.layoutFactoryId))
+            }
+        }
+        else if (!layoutFactoryId.equals(other.layoutFactoryId))
+        {
             return false;
-        if (pathExpression == null) {
+        }
+        if (pathExpression == null)
+        {
             if (other.pathExpression != null)
+            {
                 return false;
-        } else if (!pathExpression.equals(other.pathExpression))
+            }
+        }
+        else if (!pathExpression.equals(other.pathExpression))
+        {
             return false;
-        if (prompt == null) {
+        }
+        if (prompt == null)
+        {
             if (other.prompt != null)
+            {
                 return false;
-        } else if (!prompt.equals(other.prompt))
+            }
+        }
+        else if (!prompt.equals(other.prompt))
+        {
             return false;
-        if (updateParticipantId == null) {
+        }
+        if (updateParticipantId == null)
+        {
             if (other.updateParticipantId != null)
+            {
                 return false;
-        } else if (!updateParticipantId.equals(other.updateParticipantId))
+            }
+        }
+        else if (!updateParticipantId.equals(other.updateParticipantId))
+        {
             return false;
+        }
         return true;
     }
 

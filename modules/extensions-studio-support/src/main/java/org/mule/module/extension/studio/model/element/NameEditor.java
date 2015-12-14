@@ -12,42 +12,50 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.mule.module.extension.studio.model.IEditorElementVisitor;
 
 @XmlRootElement(name = "name")
-public class NameEditor extends BaseFieldEditorElement {
+public class NameEditor extends BaseFieldEditorElement
+{
 
     private String defaultValue;
     // TODO xq no usar el required??
     private Boolean appearsAsRequired;
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         return "NameEditor [getName()=" + getName() + ", getCaption()=" + getCaption() + ", getDescription()=" + getDescription() + "]";
     }
 
     @Override
-    public void accept(IEditorElementVisitor visitor) {
+    public void accept(IEditorElementVisitor visitor)
+    {
         visitor.visit(this);
     }
 
     @XmlAttribute
-    public Boolean getAppearsAsRequired() {
+    public Boolean getAppearsAsRequired()
+    {
         return appearsAsRequired;
     }
 
-    public void setAppearsAsRequired(Boolean appearsAsRequired) {
+    public void setAppearsAsRequired(Boolean appearsAsRequired)
+    {
         this.appearsAsRequired = appearsAsRequired;
     }
 
     @XmlAttribute
-    public String getDefaultValue() {
+    public String getDefaultValue()
+    {
         return defaultValue;
     }
 
-    public void setDefaultValue(String defaultValue) {
+    public void setDefaultValue(String defaultValue)
+    {
         this.defaultValue = defaultValue;
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         final int prime = 31;
         int result = super.hashCode();
         result = prime * result + ((appearsAsRequired == null) ? 0 : appearsAsRequired.hashCode());
@@ -56,24 +64,43 @@ public class NameEditor extends BaseFieldEditorElement {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(Object obj)
+    {
         if (this == obj)
+        {
             return true;
+        }
         if (!super.equals(obj))
+        {
             return false;
+        }
         if (getClass() != obj.getClass())
+        {
             return false;
+        }
         NameEditor other = (NameEditor) obj;
-        if (appearsAsRequired == null) {
+        if (appearsAsRequired == null)
+        {
             if (other.appearsAsRequired != null)
+            {
                 return false;
-        } else if (!appearsAsRequired.equals(other.appearsAsRequired))
+            }
+        }
+        else if (!appearsAsRequired.equals(other.appearsAsRequired))
+        {
             return false;
-        if (defaultValue == null) {
+        }
+        if (defaultValue == null)
+        {
             if (other.defaultValue != null)
+            {
                 return false;
-        } else if (!defaultValue.equals(other.defaultValue))
+            }
+        }
+        else if (!defaultValue.equals(other.defaultValue))
+        {
             return false;
+        }
         return true;
     }
 }

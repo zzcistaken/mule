@@ -9,10 +9,12 @@ package org.mule.module.extension.studio.model;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class Transformer extends AbstractPaletteComponent {
+public class Transformer extends AbstractPaletteComponent
+{
 
     @Override
-    public void accept(IEditorElementVisitor visitor) {
+    public void accept(IEditorElementVisitor visitor)
+    {
         visitor.visit(this);
     }
 }

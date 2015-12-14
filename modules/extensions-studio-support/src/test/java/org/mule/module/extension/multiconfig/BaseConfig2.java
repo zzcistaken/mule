@@ -13,6 +13,7 @@ import org.mule.extension.annotation.api.Parameter;
  */
 public class BaseConfig2 extends AbstractConfig
 {
+
     @Parameter
     private String checkSum;
 

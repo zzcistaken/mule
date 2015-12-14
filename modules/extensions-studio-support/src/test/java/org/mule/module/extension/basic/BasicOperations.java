@@ -12,8 +12,10 @@ import java.util.Calendar;
 
 public class BasicOperations
 {
-	@Operation
-    public char passthruChar(char value) {
+
+    @Operation
+    public char passthruChar(char value)
+    {
         return value;
     }
 
@@ -24,7 +26,8 @@ public class BasicOperations
      * @return The same string
      */
     @Operation
-    public String passthruString(String value) {
+    public String passthruString(String value)
+    {
         return value;
     }
 
@@ -35,7 +38,8 @@ public class BasicOperations
      * @return The same float
      */
     @Operation
-    public float passthruFloat(float value) {
+    public float passthruFloat(float value)
+    {
         return value;
     }
 
@@ -46,7 +50,8 @@ public class BasicOperations
      * @return The same boolean
      */
     @Operation
-    public boolean passthruBoolean(boolean value) {
+    public boolean passthruBoolean(boolean value)
+    {
         return value;
     }
 
@@ -57,7 +62,8 @@ public class BasicOperations
      * @return The same integer
      */
     @Operation
-    public int passthruInteger(int value) {
+    public int passthruInteger(int value)
+    {
         return value;
     }
 
@@ -68,7 +74,8 @@ public class BasicOperations
      * @return The same long
      */
     @Operation
-    public long passthruLong(long value) {
+    public long passthruLong(long value)
+    {
         return value;
     }
 
@@ -79,7 +86,8 @@ public class BasicOperations
      * @return The same complex float
      */
     @Operation
-    public Float passthruComplexFloat(Float value) {
+    public Float passthruComplexFloat(Float value)
+    {
         return value;
     }
 
@@ -90,7 +98,8 @@ public class BasicOperations
      * @return The same complex boolean
      */
     @Operation
-    public Boolean passthruComplexBoolean(Boolean value) {
+    public Boolean passthruComplexBoolean(Boolean value)
+    {
         return value;
     }
 
@@ -101,7 +110,8 @@ public class BasicOperations
      * @return The same complex integer
      */
     @Operation
-    public Integer passthruComplexInteger(Integer value) {
+    public Integer passthruComplexInteger(Integer value)
+    {
         return value;
     }
 
@@ -112,14 +122,17 @@ public class BasicOperations
      * @return The same complex long
      */
     @Operation
-    public Long passthruComplexLong(Long value) {
+    public Long passthruComplexLong(Long value)
+    {
         return value;
     }
 
-    public enum Mode {
+    public enum Mode
+    {
         In,
         Out;
     }
+
     /**
      * Passthru mode enum
      *
@@ -127,7 +140,8 @@ public class BasicOperations
      * @return The same cmode enum
      */
     @Operation
-    public String passthruEnum(Mode mode) {
+    public String passthruEnum(Mode mode)
+    {
         return mode.name();
     }
 
@@ -138,7 +152,8 @@ public class BasicOperations
      * @return The same complex object
      */
     @Operation
-    public String passthruComplexRef(MyComplexObject myComplexObject) {
+    public String passthruComplexRef(MyComplexObject myComplexObject)
+    {
         return myComplexObject.getValue();
     }
 
@@ -149,7 +164,8 @@ public class BasicOperations
      * @return The same calendar
      */
     @Operation
-    public Calendar passthruCalendar(Calendar calendar) {
+    public Calendar passthruCalendar(Calendar calendar)
+    {
         return calendar;
     }
 

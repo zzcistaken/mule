@@ -6,32 +6,37 @@
  */
 package org.mule.module.extension.studio.model.reference;
 
+import org.mule.module.extension.studio.model.IEditorElementVisitor;
+
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.mule.module.extension.studio.model.IEditorElementVisitor;
-
 @XmlRootElement
-public class ContainerRef extends AbstractRef {
+public class ContainerRef extends AbstractRef
+{
 
     private String acceptedOptionsTypes;
-    
+
     @Override
-    public void accept(IEditorElementVisitor visitor) {
+    public void accept(IEditorElementVisitor visitor)
+    {
         visitor.visit(this);
     }
-    
+
     @XmlAttribute
-    public String getAcceptedOptionsTypes() {
+    public String getAcceptedOptionsTypes()
+    {
         return acceptedOptionsTypes;
     }
 
-    public void setAcceptedOptionsTypes(String acceptedOptionsTypes) {
+    public void setAcceptedOptionsTypes(String acceptedOptionsTypes)
+    {
         this.acceptedOptionsTypes = acceptedOptionsTypes;
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         final int prime = 31;
         int result = super.hashCode();
         result = prime * result + ((acceptedOptionsTypes == null) ? 0 : acceptedOptionsTypes.hashCode());
@@ -39,19 +44,32 @@ public class ContainerRef extends AbstractRef {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(Object obj)
+    {
         if (this == obj)
+        {
             return true;
+        }
         if (!super.equals(obj))
+        {
             return false;
+        }
         if (getClass() != obj.getClass())
+        {
             return false;
+        }
         ContainerRef other = (ContainerRef) obj;
-        if (acceptedOptionsTypes == null) {
+        if (acceptedOptionsTypes == null)
+        {
             if (other.acceptedOptionsTypes != null)
+            {
                 return false;
-        } else if (!acceptedOptionsTypes.equals(other.acceptedOptionsTypes))
+            }
+        }
+        else if (!acceptedOptionsTypes.equals(other.acceptedOptionsTypes))
+        {
             return false;
+        }
         return true;
     }
 }

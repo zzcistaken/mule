@@ -16,8 +16,9 @@ import org.mule.extension.annotation.api.param.Optional;
 /**
  * Created by pablocabrera on 11/26/15.
  */
-public class FirstExtensionConnectionProvider implements ConnectionProvider<FirstExtension,FirstConnection>
+public class FirstExtensionConnectionProvider implements ConnectionProvider<FirstExtension, FirstConnection>
 {
+
     @Parameter
     @Optional(defaultValue = "5555")
     private String providerConfigurable;

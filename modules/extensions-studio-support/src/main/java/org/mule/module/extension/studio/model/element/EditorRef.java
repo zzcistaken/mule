@@ -13,51 +13,61 @@ import org.mule.module.extension.studio.model.AbstractEditorElement;
 import org.mule.module.extension.studio.model.IEditorElementVisitor;
 
 @XmlRootElement(name = "editor-ref")
-public class EditorRef extends AbstractEditorElement {
+public class EditorRef extends AbstractEditorElement
+{
 
     private String name;
     private String id;
     private String versions;
 
     @XmlAttribute
-    public String getName() {
+    public String getName()
+    {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(String name)
+    {
         this.name = name;
     }
 
     @XmlAttribute
-    public String getId() {
+    public String getId()
+    {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(String id)
+    {
         this.id = id;
     }
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         return "EditorRef [name=" + name + ", id=" + id + "]";
     }
 
     @Override
-    public void accept(IEditorElementVisitor visitor) {
+    public void accept(IEditorElementVisitor visitor)
+    {
         visitor.visit(this);
     }
 
     @XmlAttribute
-    public String getVersions() {
+    public String getVersions()
+    {
         return versions;
     }
 
-    public void setVersions(String versions) {
+    public void setVersions(String versions)
+    {
         this.versions = versions;
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         final int prime = 31;
         int result = super.hashCode();
         result = prime * result + ((id == null) ? 0 : id.hashCode());
@@ -67,29 +77,54 @@ public class EditorRef extends AbstractEditorElement {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(Object obj)
+    {
         if (this == obj)
+        {
             return true;
+        }
         if (!super.equals(obj))
+        {
             return false;
+        }
         if (getClass() != obj.getClass())
+        {
             return false;
+        }
         EditorRef other = (EditorRef) obj;
-        if (id == null) {
+        if (id == null)
+        {
             if (other.id != null)
+            {
                 return false;
-        } else if (!id.equals(other.id))
+            }
+        }
+        else if (!id.equals(other.id))
+        {
             return false;
-        if (name == null) {
+        }
+        if (name == null)
+        {
             if (other.name != null)
+            {
                 return false;
-        } else if (!name.equals(other.name))
+            }
+        }
+        else if (!name.equals(other.name))
+        {
             return false;
-        if (versions == null) {
+        }
+        if (versions == null)
+        {
             if (other.versions != null)
+            {
                 return false;
-        } else if (!versions.equals(other.versions))
+            }
+        }
+        else if (!versions.equals(other.versions))
+        {
             return false;
+        }
         return true;
     }
 

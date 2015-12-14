@@ -8,7 +8,8 @@ package org.mule.module.extension.studio.persistence;
 
 import org.mule.module.extension.studio.model.Namespace;
 
-public interface INamespaceDeserializer<T> {
+public interface INamespaceDeserializer<T>
+{
 
     Namespace deserialize(T input);
 }

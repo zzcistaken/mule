@@ -29,10 +29,13 @@ import org.apache.commons.lang.StringUtils;
  */
 public class FieldEditorFactory
 {
-    public static BaseFieldEditorElement generateFieldFrom(ParameterModel parameterModel){
 
-           return null;
+    public static BaseFieldEditorElement generateFieldFrom(ParameterModel parameterModel)
+    {
+
+        return null;
     }
+
     private void setCommonAttributes(BaseFieldEditorElement editor, ParameterModel parameterModel)
     {
         editor.setCaption(StringUtils.capitalize(CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, parameterModel.getName())));
@@ -40,7 +43,7 @@ public class FieldEditorFactory
         editor.setDescription(parameterModel.getDescription());
         editor.setSupportsExpressions(ExpressionSupport.SUPPORTED.equals(parameterModel.getExpressionSupport()));
         editor.setRequired(parameterModel.isRequired());
-        if(parameterModel.getDefaultValue()!=null)
+        if (parameterModel.getDefaultValue() != null)
         {
             configureDefault(editor, parameterModel);
         }
@@ -48,6 +51,7 @@ public class FieldEditorFactory
 
     /**
      * Sets the default value according to the editor type. The parameterModel must have a default value
+     *
      * @param editor
      * @param parameterModel
      */

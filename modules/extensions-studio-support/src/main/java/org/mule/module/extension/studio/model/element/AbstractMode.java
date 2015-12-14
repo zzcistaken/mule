@@ -10,7 +10,8 @@ import javax.xml.bind.annotation.XmlSeeAlso;
 
 import org.mule.module.extension.studio.model.AbstractEditorElement;
 
-@XmlSeeAlso({ Mode.class, NoOperation.class })
-public abstract class AbstractMode extends AbstractEditorElement {
+@XmlSeeAlso({Mode.class, NoOperation.class})
+public abstract class AbstractMode extends AbstractEditorElement
+{
 
 }

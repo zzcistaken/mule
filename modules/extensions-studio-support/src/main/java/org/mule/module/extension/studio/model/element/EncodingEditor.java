@@ -11,10 +11,12 @@ import org.mule.module.extension.studio.model.IEditorElementVisitor;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "encoding")
-public class EncodingEditor extends BaseFieldEditorElement {
+public class EncodingEditor extends BaseFieldEditorElement
+{
 
     @Override
-    public void accept(IEditorElementVisitor visitor) {
+    public void accept(IEditorElementVisitor visitor)
+    {
         visitor.visit(this);
     }
 }

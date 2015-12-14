@@ -10,7 +10,8 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "cloud-connector")
-public class CloudConnector extends AbstractPaletteComponent {
+public class CloudConnector extends AbstractPaletteComponent
+{
 
     private String metaDataStaticKey;
     private String returnType;
@@ -19,57 +20,69 @@ public class CloudConnector extends AbstractPaletteComponent {
     private String categories;
 
     @XmlAttribute
-    public String getReturnType() {
+    public String getReturnType()
+    {
         return returnType;
     }
 
-    public void setReturnType(String returnType) {
+    public void setReturnType(String returnType)
+    {
         this.returnType = returnType;
     }
 
     @XmlAttribute
-    public String getMetaDataStaticKey() {
+    public String getMetaDataStaticKey()
+    {
         return metaDataStaticKey;
     }
 
-    public void setMetaDataStaticKey(String metaDataStaticKey) {
+    public void setMetaDataStaticKey(String metaDataStaticKey)
+    {
         this.metaDataStaticKey = metaDataStaticKey;
     }
 
     @Override
-    public void accept(IEditorElementVisitor visitor) {
+    public void accept(IEditorElementVisitor visitor)
+    {
         visitor.visit(this);
     }
 
     @XmlAttribute
-    public Boolean getSupportsUserDefinedMetaData() {
+    public Boolean getSupportsUserDefinedMetaData()
+    {
         return supportsUserDefinedMetaData;
     }
 
-    public void setSupportsUserDefinedMetaData(Boolean supportsUserDefinedMetaData) {
+    public void setSupportsUserDefinedMetaData(Boolean supportsUserDefinedMetaData)
+    {
         this.supportsUserDefinedMetaData = supportsUserDefinedMetaData;
     }
 
     @XmlAttribute
-    public String getForceMetadataRefreshAtrributes() {
+    public String getForceMetadataRefreshAtrributes()
+    {
         return forceMetadataRefreshAtrributes;
     }
 
-    public void setForceMetadataRefreshAtrributes(String forceMetadataRefreshAtrributes) {
+    public void setForceMetadataRefreshAtrributes(String forceMetadataRefreshAtrributes)
+    {
         this.forceMetadataRefreshAtrributes = forceMetadataRefreshAtrributes;
     }
 
     @XmlAttribute
-    public String getCategories() {
+    public String getCategories()
+    {
         return categories;
     }
 
-    public void setCategories(String categories) {
+    public void setCategories(String categories)
+    {
         this.categories = categories;
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         final int prime = 31;
         int result = super.hashCode();
         result = prime * result + ((categories == null) ? 0 : categories.hashCode());
@@ -81,39 +94,76 @@ public class CloudConnector extends AbstractPaletteComponent {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(Object obj)
+    {
         if (this == obj)
+        {
             return true;
+        }
         if (!super.equals(obj))
+        {
             return false;
+        }
         if (getClass() != obj.getClass())
+        {
             return false;
+        }
         CloudConnector other = (CloudConnector) obj;
-        if (categories == null) {
+        if (categories == null)
+        {
             if (other.categories != null)
+            {
                 return false;
-        } else if (!categories.equals(other.categories))
+            }
+        }
+        else if (!categories.equals(other.categories))
+        {
             return false;
-        if (forceMetadataRefreshAtrributes == null) {
+        }
+        if (forceMetadataRefreshAtrributes == null)
+        {
             if (other.forceMetadataRefreshAtrributes != null)
+            {
                 return false;
-        } else if (!forceMetadataRefreshAtrributes.equals(other.forceMetadataRefreshAtrributes))
+            }
+        }
+        else if (!forceMetadataRefreshAtrributes.equals(other.forceMetadataRefreshAtrributes))
+        {
             return false;
-        if (metaDataStaticKey == null) {
+        }
+        if (metaDataStaticKey == null)
+        {
             if (other.metaDataStaticKey != null)
+            {
                 return false;
-        } else if (!metaDataStaticKey.equals(other.metaDataStaticKey))
+            }
+        }
+        else if (!metaDataStaticKey.equals(other.metaDataStaticKey))
+        {
             return false;
-        if (returnType == null) {
+        }
+        if (returnType == null)
+        {
             if (other.returnType != null)
+            {
                 return false;
-        } else if (!returnType.equals(other.returnType))
+            }
+        }
+        else if (!returnType.equals(other.returnType))
+        {
             return false;
-        if (supportsUserDefinedMetaData == null) {
+        }
+        if (supportsUserDefinedMetaData == null)
+        {
             if (other.supportsUserDefinedMetaData != null)
+            {
                 return false;
-        } else if (!supportsUserDefinedMetaData.equals(other.supportsUserDefinedMetaData))
+            }
+        }
+        else if (!supportsUserDefinedMetaData.equals(other.supportsUserDefinedMetaData))
+        {
             return false;
+        }
         return true;
     }
 }

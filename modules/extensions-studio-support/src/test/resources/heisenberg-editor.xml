@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<namespace xmlns="http://www.mulesoft.org/schema/mule/tooling.attributes"
+           xmlns:mule="http://www.mulesoft.org/schema/mule/core" prefix="heisenberg"
+           url="http://www.mulesoft.org/schema/mule/heisenberg">
+    <nested caption="Heisenberg:Connection" description="" icon="icons/small/heisenberg-extension-24x16.png"
+            image="icons/large/heisenberg-extension-48x32.png" abstract="false" localId="connection"
+            versions="[3.5.0,8.0.0]">
+        <string defaultValue="505-503-4455" name="saulPhoneNumber" required="false" supportsExpressions="true"
+                caption="Saul Phone Number" description=""/>
+    </nested>
+    <nested caption="" description="" localId="previous" xmlname="previous">
+        <string name="victim" required="false" supportsExpressions="false" caption="Victim"/>
+        <childElement allowMultiple="false" inplace="false" javaType="org.mule.module.extension.KnockeableDoor"
+                      name="http://www.mulesoft.org/schema/mule/heisenberg/previous" caption="  Reference"/>
+        <string name="address" required="false" supportsExpressions="false" caption="Address"/>
+    </nested>
+    <nested caption="Configure nextDoor" description="" localId="next-door" xmlname="next-door">
+        <string name="victim" required="false" supportsExpressions="false" caption="Victim"/>
+        <childElement allowMultiple="false" inplace="false" javaType="org.mule.module.extension.KnockeableDoor"
+                      name="http://www.mulesoft.org/schema/mule/heisenberg/previous" caption="  Reference"/>
+        <string name="address" required="false" supportsExpressions="false" caption="Address"/>
+    </nested>
+    <global-cloud-connector connectivityTesting="off" metaData="static" supportsUserDefinedMetaData="false"
+                            caption="Heisenberg config" description="Default configuration"
+                            icon="icons/small/heisenberg-extension-24x16.png"
+                            image="icons/large/heisenberg-extension-48x32.png" abstract="false" localId="config"
+                            versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="Configuration Properties">
+            <group id="basicGenericProperties" caption="Basic Settings">
+                <name name="name" required="true" caption="Name"
+                      description="Give a name to this configuration so it can be later referenced by config-ref."/>
+            </group>
+            <group id="general" caption="General">
+                <childElement allowMultiple="false" inplace="true" javaType="org.mule.module.extension.KnockeableDoor"
+                              name="http://www.mulesoft.org/schema/mule/heisenberg/next-door" caption="Next Door"/>
+                <element-controller-listOfPojo listName="ricin-packs" itemName="ricin-pack"
+                                               javaType="java.util.Set&lt;org.mule.module.extension.Ricin&gt;"
+                                               localName="ricin-packs" required="false" caption="Ricin Packs"
+                                               description=""/>
+                <element-controller-list listName="enemies" itemName="enemy"
+                                         javaType="java.util.List&lt;java.lang.String&gt;" localName="enemies"
+                                         required="true" caption="Enemies" description=""/>
+                <boolean name="cancer" required="true" supportsExpressions="true" caption="Cancer" description=""/>
+                <enum javaType="org.mule.module.extension.HealthStatus" name="finalHealth" required="true"
+                      supportsExpressions="true" caption="Final Health" description="">
+                    <option value="HEALTHY"/>
+                    <option value="CANCER"/>
+                    <option value="DEAD"/>
+                </enum>
+                <string name="labAddress" required="false" supportsExpressions="false" caption="Lab Address"
+                        description=""/>
+                <enum javaType="org.mule.module.extension.HealthStatus" name="initialHealth" required="true"
+                      supportsExpressions="true" caption="Initial Health" description="">
+                    <option value="HEALTHY"/>
+                    <option value="CANCER"/>
+                    <option value="DEAD"/>
+                </enum>
+                <string javaType="java.math.BigDecimal" name="money" required="true" supportsExpressions="true"
+                        caption="Money" description=""/>
+                <string name="firstEndevour" required="false" supportsExpressions="false" caption="First Endevour"
+                        description=""/>
+                <string defaultValue="Heisenberg" name="myName" required="false" supportsExpressions="true"
+                        caption="My Name" description=""/>
+                <integer defaultValue="50" name="age" required="false" supportsExpressions="true" caption="Age"
+                         description=""/>
+                <string javaType="java.util.Date" name="dateOfBirth" required="true" supportsExpressions="true"
+                        caption="Date Of Birth" description=""/>
+                <string javaType="java.util.Calendar" name="dateOfDeath" required="true" supportsExpressions="true"
+                        caption="Date Of Death" description=""/>
+            </group>
+        </attribute-category>
+        <attribute-category caption="Connection" description="Configure the Connection Properties">
+            <group id="general" caption="General">
+                <childElement inplace="true" xmlOrder="10" indented="false"
+                              name="http://www.mulesoft.org/schema/mule/heisenberg/connection"/>
+            </group>
+        </attribute-category>
+    </global-cloud-connector>
+    <cloud-connector caption="abstractHeisenbergGeneric" icon="icons/small/heisenberg-extension-24x16.png"
+                     image="icons/large/heisenberg-extension-48x32.png" abstract="true"
+                     localId="abstractHeisenbergGeneric" versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="Configuration Properties">
+            <group id="abstractHeisenbergGeneric" caption="Basic Settings">
+                <globalRef requiredType="http://www.mulesoft.org/schema/mule/heisenberg/config" name="config-ref"
+                           required="true" caption="Extension Configuration"
+                           description="Specify which configuration to use for this invocation."/>
+            </group>
+        </attribute-category>
+    </cloud-connector>
+    <cloud-connector returnType="java.lang.String" metaData="static" caption="Alias" description=""
+                     extends="http://www.mulesoft.org/schema/mule/heisenberg/abstractHeisenbergGeneric"
+                     icon="icons/small/heisenberg-extension-24x16.png"
+                     image="icons/large/heisenberg-extension-48x32.png" abstract="true" localId="alias" xmlname="alias"
+                     versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="Configuration Properties">
+            <group id="general" caption="General">
+                <string name="greeting" required="true" supportsExpressions="true" caption="Greeting" description=""/>
+                <string defaultValue="Heisenberg" name="myName" required="false" supportsExpressions="true"
+                        caption="My Name" description=""/>
+                <integer defaultValue="50" name="age" required="false" supportsExpressions="true" caption="Age"
+                         description=""/>
+            </group>
+        </attribute-category>
+    </cloud-connector>
+    <cloud-connector returnType="java.lang.String" metaData="static" caption="Call Saul" description=""
+                     extends="http://www.mulesoft.org/schema/mule/heisenberg/abstractHeisenbergGeneric"
+                     icon="icons/small/heisenberg-extension-24x16.png"
+                     image="icons/large/heisenberg-extension-48x32.png" abstract="true" localId="call-saul"
+                     xmlname="call-saul" versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="Configuration Properties">
+            <group id="general" caption="General"/>
+        </attribute-category>
+    </cloud-connector>
+    <cloud-connector returnType="void" metaData="static" caption="Die" description=""
+                     extends="http://www.mulesoft.org/schema/mule/heisenberg/abstractHeisenbergGeneric"
+                     icon="icons/small/heisenberg-extension-24x16.png"
+                     image="icons/large/heisenberg-extension-48x32.png" abstract="true" localId="die" xmlname="die"
+                     versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="Configuration Properties">
+            <group id="general" caption="General"/>
+        </attribute-category>
+    </cloud-connector>
+    <cloud-connector returnType="java.lang.String" metaData="static" caption="Get Enemy" description=""
+                     extends="http://www.mulesoft.org/schema/mule/heisenberg/abstractHeisenbergGeneric"
+                     icon="icons/small/heisenberg-extension-24x16.png"
+                     image="icons/large/heisenberg-extension-48x32.png" abstract="true" localId="get-enemy"
+                     xmlname="get-enemy" versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="Configuration Properties">
+            <group id="general" caption="General">
+                <integer name="index" required="true" supportsExpressions="true" caption="Index" description=""/>
+            </group>
+        </attribute-category>
+    </cloud-connector>
+    <cloud-connector returnType="org.mule.extension.api.ExtensionManager" metaData="static"
+                     caption="Get Injected Extension Manager" description=""
+                     extends="http://www.mulesoft.org/schema/mule/heisenberg/abstractHeisenbergGeneric"
+                     icon="icons/small/heisenberg-extension-24x16.png"
+                     image="icons/large/heisenberg-extension-48x32.png" abstract="true"
+                     localId="get-injected-extension-manager" xmlname="get-injected-extension-manager"
+                     versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="Configuration Properties">
+            <group id="general" caption="General"/>
+        </attribute-category>
+    </cloud-connector>
+    <cloud-connector returnType="void" metaData="static" caption="Hide Meth In Event" description=""
+                     extends="http://www.mulesoft.org/schema/mule/heisenberg/abstractHeisenbergGeneric"
+                     icon="icons/small/heisenberg-extension-24x16.png"
+                     image="icons/large/heisenberg-extension-48x32.png" abstract="true" localId="hide-meth-in-event"
+                     xmlname="hide-meth-in-event" versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="Configuration Properties">
+            <group id="general" caption="General"/>
+        </attribute-category>
+    </cloud-connector>
+    <cloud-connector returnType="void" metaData="static" caption="Hide Meth In Message" description=""
+                     extends="http://www.mulesoft.org/schema/mule/heisenberg/abstractHeisenbergGeneric"
+                     icon="icons/small/heisenberg-extension-24x16.png"
+                     image="icons/large/heisenberg-extension-48x32.png" abstract="true" localId="hide-meth-in-message"
+                     xmlname="hide-meth-in-message" versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="Configuration Properties">
+            <group id="general" caption="General"/>
+        </attribute-category>
+    </cloud-connector>
+    <cloud-connector returnType="java.lang.String" metaData="static" caption="Kill" description=""
+                     extends="http://www.mulesoft.org/schema/mule/heisenberg/abstractHeisenbergGeneric"
+                     icon="icons/small/heisenberg-extension-24x16.png"
+                     image="icons/large/heisenberg-extension-48x32.png" abstract="true" localId="kill" xmlname="kill"
+                     versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="Configuration Properties">
+            <group id="general" caption="General">
+                <string defaultValue="#[payload]" name="victim" required="false" supportsExpressions="true"
+                        caption="Victim" description=""/>
+                <string name="goodbyeMessage" required="true" supportsExpressions="true" caption="Goodbye Message"
+                        description=""/>
+            </group>
+        </attribute-category>
+    </cloud-connector>
+    <flow causesSplit="true" returnType="java.lang.String" metaData="static" caption="Kill Many" description=""
+          extends="http://www.mulesoft.org/schema/mule/heisenberg/abstractHeisenbergGeneric" abstract="false"
+          localId="kill-many" xmlname="kill-many" versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="Configuration Properties">
+            <group id="general" caption="General">
+                <string name="reason" required="true" supportsExpressions="true" caption="Reason" description=""/>
+            </group>
+        </attribute-category>
+    </flow>
+    <container acceptedByElements="!http://www.mulesoft.org/schema/mule/core/mule" pathExpression="${index}"
+               returnType="java.lang.String" titleColor="168, 206, 226" metaData="static" caption="Kill One"
+               description="" extends="http://www.mulesoft.org/schema/mule/heisenberg/abstractHeisenbergGeneric"
+               abstract="false" localId="kill-one" xmlname="kill-one" versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="Configuration Properties">
+            <group id="general" caption="General">
+                <string name="reason" required="true" supportsExpressions="true" caption="Reason" description=""/>
+            </group>
+        </attribute-category>
+    </container>
+    <cloud-connector returnType="java.lang.String" metaData="static" caption="Kill With Custom Message" description=""
+                     extends="http://www.mulesoft.org/schema/mule/heisenberg/abstractHeisenbergGeneric"
+                     icon="icons/small/heisenberg-extension-24x16.png"
+                     image="icons/large/heisenberg-extension-48x32.png" abstract="true"
+                     localId="kill-with-custom-message" xmlname="kill-with-custom-message" versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="Configuration Properties">
+            <group id="general" caption="General">
+                <string defaultValue="#[payload]" name="victim" required="false" supportsExpressions="true"
+                        caption="Victim" description=""/>
+                <string name="goodbyeMessage" required="true" supportsExpressions="true" caption="Goodbye Message"
+                        description=""/>
+            </group>
+        </attribute-category>
+    </cloud-connector>
+    <nested caption="Configure door" description="" localId="door" xmlname="door">
+        <string name="victim" required="false" supportsExpressions="false" caption="Victim"/>
+        <childElement allowMultiple="false" inplace="false" javaType="org.mule.module.extension.KnockeableDoor"
+                      name="http://www.mulesoft.org/schema/mule/heisenberg/previous" caption="  Reference"/>
+        <string name="address" required="false" supportsExpressions="false" caption="Address"/>
+    </nested>
+    <cloud-connector returnType="java.lang.String" metaData="static" caption="Knock" description=""
+                     extends="http://www.mulesoft.org/schema/mule/heisenberg/abstractHeisenbergGeneric"
+                     icon="icons/small/heisenberg-extension-24x16.png"
+                     image="icons/large/heisenberg-extension-48x32.png" abstract="true" localId="knock" xmlname="knock"
+                     versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="Configuration Properties">
+            <group id="general" caption="General">
+                <childElement allowMultiple="false" inplace="true" javaType="org.mule.module.extension.KnockeableDoor"
+                              name="http://www.mulesoft.org/schema/mule/heisenberg/door" caption="Door"/>
+            </group>
+        </attribute-category>
+    </cloud-connector>
+    <cloud-connector returnType="java.util.List&lt;java.lang.String&gt;" metaData="static" caption="Knock Many"
+                     description="" extends="http://www.mulesoft.org/schema/mule/heisenberg/abstractHeisenbergGeneric"
+                     icon="icons/small/heisenberg-extension-24x16.png"
+                     image="icons/large/heisenberg-extension-48x32.png" abstract="true" localId="knock-many"
+                     xmlname="knock-many" versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="Configuration Properties">
+            <group id="general" caption="General">
+                <element-controller-listOfPojo listName="doors" itemName="door"
+                                               javaType="java.util.List&lt;org.mule.module.extension.KnockeableDoor&gt;"
+                                               localName="doors" required="true" caption="Doors" description=""/>
+            </group>
+        </attribute-category>
+    </cloud-connector>
+    <cloud-connector returnType="java.lang.Long" metaData="static" caption="Launder" description=""
+                     extends="http://www.mulesoft.org/schema/mule/heisenberg/abstractHeisenbergGeneric"
+                     icon="icons/small/heisenberg-extension-24x16.png"
+                     image="icons/large/heisenberg-extension-48x32.png" abstract="true" localId="launder"
+                     xmlname="launder" versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="Configuration Properties">
+            <group id="general" caption="General">
+                <long name="amount" required="true" supportsExpressions="true" caption="Amount" description=""/>
+            </group>
+        </attribute-category>
+    </cloud-connector>
+    <cloud-connector returnType="java.lang.String" metaData="static" caption="Say My Name" description=""
+                     extends="http://www.mulesoft.org/schema/mule/heisenberg/abstractHeisenbergGeneric"
+                     icon="icons/small/heisenberg-extension-24x16.png"
+                     image="icons/large/heisenberg-extension-48x32.png" abstract="true" localId="say-my-name"
+                     xmlname="say-my-name" versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="Configuration Properties">
+            <group id="general" caption="General"/>
+        </attribute-category>
+        <attribute-category id="mimeTypeAttributeCategory" caption="Mime Type" description="Mime Type Configuration">
+            <group id="mimeTypeGroup" caption="Mime Type Attributes">
+                <enum name="outputMimeType" required="false" supportsExpressions="true" caption="MIME Type"
+                      description="The mime type of the payload that this operation outputs.">
+                    <option value="application/csv"/>
+                    <option value="application/json"/>
+                    <option value="application/pdf"/>
+                    <option value="application/x-compressed"/>
+                    <option value="application/xml"/>
+                    <option value="application/zip"/>
+                    <option value="binary/octet-stream"/>
+                    <option value="image/gif"/>
+                    <option value="image/jpeg"/>
+                    <option value="image/png"/>
+                    <option value="multipart/x-zip"/>
+                    <option value="text/css"/>
+                    <option value="text/csv"/>
+                    <option value="text/html"/>
+                    <option value="text/javascript"/>
+                    <option value="text/json"/>
+                    <option value="text/plain"/>
+                    <option value="text/xhtml"/>
+                    <option value="text/xml"/>
+                </enum>
+                <encoding name="outputEncoding" required="false" supportsExpressions="true" caption="Encoding"
+                          description="The encoding of the payload that this operation outputs."/>
+            </group>
+        </attribute-category>
+    </cloud-connector>
+    <cloud-connector aliasId="org.mule.tooling.ui.modules.core.pattern.heisenberg" caption="Heisenberg"
+                     description="My Test Extension just to unit test"
+                     extends="http://www.mulesoft.org/schema/mule/heisenberg/abstractHeisenbergGeneric"
+                     icon="icons/small/heisenberg-extension-24x16.png"
+                     image="icons/large/heisenberg-extension-48x32.png" localId="heisenberg-extension"
+                     versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="General.">
+            <group id="heisenbergConnectorGeneric" caption="Basic Settings">
+                <modeSwitch alwaysCombo="true" name="heisenberg operations to execute" caption="Operation"
+                            description="Operation.">
+                    <no-operation
+                            abstractElement="http://www.mulesoft.org/schema/mule/heisenberg/abstractHeisenbergGeneric"
+                            connector-name="processor"/>
+                    <mode modeId="http://www.mulesoft.org/schema/mule/heisenberg/alias" modeLabel="Alias"/>
+                    <mode modeId="http://www.mulesoft.org/schema/mule/heisenberg/call-saul" modeLabel="Call Saul"/>
+                    <mode modeId="http://www.mulesoft.org/schema/mule/heisenberg/die" modeLabel="Die"/>
+                    <mode modeId="http://www.mulesoft.org/schema/mule/heisenberg/get-enemy" modeLabel="Get Enemy"/>
+                    <mode modeId="http://www.mulesoft.org/schema/mule/heisenberg/get-injected-extension-manager"
+                          modeLabel="Get Injected Extension Manager"/>
+                    <mode modeId="http://www.mulesoft.org/schema/mule/heisenberg/hide-meth-in-event"
+                          modeLabel="Hide Meth In Event"/>
+                    <mode modeId="http://www.mulesoft.org/schema/mule/heisenberg/hide-meth-in-message"
+                          modeLabel="Hide Meth In Message"/>
+                    <mode modeId="http://www.mulesoft.org/schema/mule/heisenberg/kill" modeLabel="Kill"/>
+                    <mode modeId="http://www.mulesoft.org/schema/mule/heisenberg/kill-with-custom-message"
+                          modeLabel="Kill With Custom Message"/>
+                    <mode modeId="http://www.mulesoft.org/schema/mule/heisenberg/knock" modeLabel="Knock"/>
+                    <mode modeId="http://www.mulesoft.org/schema/mule/heisenberg/knock-many" modeLabel="Knock Many"/>
+                    <mode modeId="http://www.mulesoft.org/schema/mule/heisenberg/launder" modeLabel="Launder"/>
+                    <mode modeId="http://www.mulesoft.org/schema/mule/heisenberg/say-my-name" modeLabel="Say My Name"/>
+                </modeSwitch>
+            </group>
+        </attribute-category>
+    </cloud-connector>
+</namespace>

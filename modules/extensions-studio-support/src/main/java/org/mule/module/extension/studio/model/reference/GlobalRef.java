@@ -6,105 +6,141 @@
  */
 package org.mule.module.extension.studio.model.reference;
 
+import org.mule.module.extension.studio.model.IEditorElementVisitor;
+
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.mule.module.extension.studio.model.IEditorElementVisitor;
-
 @XmlRootElement
-public class GlobalRef extends AbstractRef {
+public class GlobalRef extends AbstractRef
+{
 
     private String attrName;
     private String requiredType;
     private String additionalCheckbox;
     private Boolean hideToolBar;// TODO should this be in the parent...it is only used here...but...
+    private String listRequiredType;
 
     @Override
-    public String toString() {
-        return "GlobalRef [getName()=" + getName() + ", getCaption()=" + getCaption() + ", getDescription()=" + getDescription() + "]";
-    }
-
-    @Override
-    public void accept(IEditorElementVisitor visitor) {
+    public void accept(IEditorElementVisitor visitor)
+    {
         visitor.visit(this);
     }
 
     @XmlAttribute
-    public String getRequiredType() {
+    public String getRequiredType()
+    {
         return requiredType;
     }
 
-    public void setRequiredType(String requiredType) {
+    public void setRequiredType(String requiredType)
+    {
         this.requiredType = requiredType;
     }
 
     @XmlAttribute
-    public String getAdditionalCheckbox() {
+    public String getAdditionalCheckbox()
+    {
         return additionalCheckbox;
     }
 
-    public void setAdditionalCheckbox(String additionalCheckbox) {
+    public void setAdditionalCheckbox(String additionalCheckbox)
+    {
         this.additionalCheckbox = additionalCheckbox;
     }
 
     @XmlAttribute
-    public Boolean getHideToolBar() {
+    public Boolean getHideToolBar()
+    {
         return hideToolBar;
     }
 
-    public void setHideToolBar(Boolean hideToolBar) {
+    public void setHideToolBar(Boolean hideToolBar)
+    {
         this.hideToolBar = hideToolBar;
     }
-    
+
     @XmlAttribute
-    public String getAttrName() {
+    public String getAttrName()
+    {
         return attrName;
     }
 
-    public void setAttrName(String attrName) {
+    public void setAttrName(String attrName)
+    {
         this.attrName = attrName;
     }
 
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = super.hashCode();
-        result = prime * result + ((additionalCheckbox == null) ? 0 : additionalCheckbox.hashCode());
-        result = prime * result + ((attrName == null) ? 0 : attrName.hashCode());
-        result = prime * result + ((hideToolBar == null) ? 0 : hideToolBar.hashCode());
-        result = prime * result + ((requiredType == null) ? 0 : requiredType.hashCode());
-        return result;
+    @XmlAttribute
+    public String getListRequiredType()
+    {
+        return listRequiredType;
+    }
+
+    public void setListRequiredType(String listRequiredType)
+    {
+        this.listRequiredType = listRequiredType;
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
+    public String toString()
+    {
+        return "GlobalRef{" +
+               "attrName='" + attrName + '\'' +
+               ", requiredType='" + requiredType + '\'' +
+               ", additionalCheckbox='" + additionalCheckbox + '\'' +
+               ", hideToolBar=" + hideToolBar +
+               ", listRequiredType='" + listRequiredType + '\'' +
+               '}';
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o)
+        {
             return true;
-        if (!super.equals(obj))
+        }
+        if (o == null || getClass() != o.getClass())
+        {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (!super.equals(o))
+        {
             return false;
-        GlobalRef other = (GlobalRef) obj;
-        if (additionalCheckbox == null) {
-            if (other.additionalCheckbox != null)
-                return false;
-        } else if (!additionalCheckbox.equals(other.additionalCheckbox))
+        }
+
+        GlobalRef globalRef = (GlobalRef) o;
+
+        if (attrName != null ? !attrName.equals(globalRef.attrName) : globalRef.attrName != null)
+        {
             return false;
-        if (attrName == null) {
-            if (other.attrName != null)
-                return false;
-        } else if (!attrName.equals(other.attrName))
+        }
+        if (requiredType != null ? !requiredType.equals(globalRef.requiredType) : globalRef.requiredType != null)
+        {
             return false;
-        if (hideToolBar == null) {
-            if (other.hideToolBar != null)
-                return false;
-        } else if (!hideToolBar.equals(other.hideToolBar))
+        }
+        if (additionalCheckbox != null ? !additionalCheckbox.equals(globalRef.additionalCheckbox) : globalRef.additionalCheckbox != null)
+        {
             return false;
-        if (requiredType == null) {
-            if (other.requiredType != null)
-                return false;
-        } else if (!requiredType.equals(other.requiredType))
+        }
+        if (hideToolBar != null ? !hideToolBar.equals(globalRef.hideToolBar) : globalRef.hideToolBar != null)
+        {
             return false;
-        return true;
+        }
+        return !(listRequiredType != null ? !listRequiredType.equals(globalRef.listRequiredType) : globalRef.listRequiredType != null);
+
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int result = super.hashCode();
+        result = 31 * result + (attrName != null ? attrName.hashCode() : 0);
+        result = 31 * result + (requiredType != null ? requiredType.hashCode() : 0);
+        result = 31 * result + (additionalCheckbox != null ? additionalCheckbox.hashCode() : 0);
+        result = 31 * result + (hideToolBar != null ? hideToolBar.hashCode() : 0);
+        result = 31 * result + (listRequiredType != null ? listRequiredType.hashCode() : 0);
+        return result;
     }
 }

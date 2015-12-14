@@ -6,65 +6,95 @@
  */
 package org.mule.module.extension.studio.model.element;
 
+import org.mule.module.extension.studio.model.IEditorElementVisitor;
+
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.mule.module.extension.studio.model.IEditorElementVisitor;
-
 @XmlRootElement(name = "type-chooser")
-public class TypeChooser extends BaseFieldEditorElement {
+public class TypeChooser extends BaseFieldEditorElement
+{
 
     private String associatedConfig;
     private MetaDataKeyParamAffectsType affects;
+    private Boolean disableButton;
 
     @XmlAttribute
-    public MetaDataKeyParamAffectsType getAffects() {
+    public MetaDataKeyParamAffectsType getAffects()
+    {
         return affects;
     }
 
-    public void setAffects(MetaDataKeyParamAffectsType affects) {
+    public void setAffects(MetaDataKeyParamAffectsType affects)
+    {
         this.affects = affects;
     }
 
     @Override
-    public void accept(IEditorElementVisitor visitor) {
+    public void accept(IEditorElementVisitor visitor)
+    {
         visitor.visit(this);
     }
 
     @XmlAttribute
-    public String getAssociatedConfig() {
+    public String getAssociatedConfig()
+    {
         return associatedConfig;
     }
 
-    public void setAssociatedConfig(String associatedConfig) {
+    public void setAssociatedConfig(String associatedConfig)
+    {
         this.associatedConfig = associatedConfig;
     }
 
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = super.hashCode();
-        result = prime * result + ((affects == null) ? 0 : affects.hashCode());
-        result = prime * result + ((associatedConfig == null) ? 0 : associatedConfig.hashCode());
-        return result;
+    @XmlAttribute
+    public Boolean getDisableButton()
+    {
+        return disableButton;
+    }
+
+    public void setDisableButton(Boolean disableButton)
+    {
+        this.disableButton = disableButton;
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
+    public boolean equals(Object o)
+    {
+        if (this == o)
+        {
             return true;
-        if (!super.equals(obj))
+        }
+        if (o == null || getClass() != o.getClass())
+        {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (!super.equals(o))
+        {
             return false;
-        TypeChooser other = (TypeChooser) obj;
-        if (affects != other.affects)
+        }
+
+        TypeChooser that = (TypeChooser) o;
+
+        if (associatedConfig != null ? !associatedConfig.equals(that.associatedConfig) : that.associatedConfig != null)
+        {
             return false;
-        if (associatedConfig == null) {
-            if (other.associatedConfig != null)
-                return false;
-        } else if (!associatedConfig.equals(other.associatedConfig))
+        }
+        if (affects != that.affects)
+        {
             return false;
-        return true;
+        }
+        return !(disableButton != null ? !disableButton.equals(that.disableButton) : that.disableButton != null);
+
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int result = super.hashCode();
+        result = 31 * result + (associatedConfig != null ? associatedConfig.hashCode() : 0);
+        result = 31 * result + (affects != null ? affects.hashCode() : 0);
+        result = 31 * result + (disableButton != null ? disableButton.hashCode() : 0);
+        return result;
     }
 }

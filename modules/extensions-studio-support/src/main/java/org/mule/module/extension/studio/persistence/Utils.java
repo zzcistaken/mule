@@ -19,20 +19,26 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 
-public class Utils implements INamespaceDeserializer<File>, INamespaceSerializer<File> {
+public class Utils implements INamespaceDeserializer<File>, INamespaceSerializer<File>
+{
 
     @Override
-    public void serialize(Namespace namespace, File output) {
+    public void serialize(Namespace namespace, File output)
+    {
 
-        if (output == null) {
+        if (output == null)
+        {
             throw new IllegalArgumentException("File cannot be null");
         }
-        try (FileOutputStream outputStream = new FileOutputStream(output)){
+        try (FileOutputStream outputStream = new FileOutputStream(output))
+        {
             JAXBContext jaxbContext = JAXBContext.newInstance(Namespace.class);
             Marshaller m = jaxbContext.createMarshaller();
             m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
             m.marshal(namespace, outputStream);
-        } catch (JAXBException | FileNotFoundException e) {
+        }
+        catch (JAXBException | FileNotFoundException e)
+        {
             e.printStackTrace();
         }
         catch (IOException e)
@@ -42,19 +48,24 @@ public class Utils implements INamespaceDeserializer<File>, INamespaceSerializer
     }
 
     @Override
-    public Namespace deserialize(File input) {
-        if (input == null) {
+    public Namespace deserialize(File input)
+    {
+        if (input == null)
+        {
             throw new IllegalArgumentException("Could not adapt input to IFile");
         }
 
         JAXBContext jaxbContext;
         Namespace namspace = null;
-        try {
+        try
+        {
             jaxbContext = JAXBContext.newInstance(Namespace.class);
 
             Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
             namspace = (Namespace) jaxbUnmarshaller.unmarshal(input);
-        } catch (JAXBException e) {
+        }
+        catch (JAXBException e)
+        {
             e.printStackTrace();
         }
         return namspace;

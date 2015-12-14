@@ -10,9 +10,10 @@ import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlEnumValue;
 
 @XmlEnum
-public enum MessageExchangePattern {
+public enum MessageExchangePattern
+{
     @XmlEnumValue("OneWay")
-    ONE_WAY, 
+    ONE_WAY,
     @XmlEnumValue("RequestResponse")
     REQUEST_RESPONSE
 }

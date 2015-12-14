@@ -14,9 +14,15 @@ import java.util.Date;
 public class LifetimeInfo
 {
 
+    /**
+     * Date of Birth Doc
+     */
     @Parameter
     private Date dateOfBirth;
 
+    /**
+     * Date of Death Doc
+     */
     @Parameter
     private Calendar dateOfDeath;
 

@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<namespace xmlns="http://www.mulesoft.org/schema/mule/tooling.attributes"
+           xmlns:mule="http://www.mulesoft.org/schema/mule/core" prefix="multi-config"
+           url="http://www.mulesoft.org/schema/mule/multi-config">
+    <nested caption="Multi-config:Connection" description="" icon="icons/small/multi-config-extension-24x16.png"
+            image="icons/large/multi-config-extension-48x32.png" abstract="false" localId="connection"
+            versions="[3.5.0,8.0.0]">
+        <string name="hashCode" required="true" supportsExpressions="true" caption="Hash Code" description=""/>
+    </nested>
+    <global-cloud-connector connectivityTesting="off" metaData="static" supportsUserDefinedMetaData="false"
+                            caption="Multi-config config1" description=""
+                            icon="icons/small/multi-config-extension-24x16.png"
+                            image="icons/large/multi-config-extension-48x32.png" abstract="false" localId="config1"
+                            versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="Configuration Properties">
+            <group id="basicGenericProperties" caption="Basic Settings">
+                <name name="name" required="true" caption="Name"
+                      description="Give a name to this configuration so it can be later referenced by config-ref."/>
+            </group>
+            <group id="general" caption="General">
+                <string name="hash" required="true" supportsExpressions="true" caption="Hash" description=""/>
+                <string name="parentField" required="true" supportsExpressions="true" caption="Parent Field"
+                        description=""/>
+            </group>
+        </attribute-category>
+        <attribute-category caption="Connection" description="Configure the Connection Properties">
+            <group id="general" caption="General">
+                <childElement inplace="true" xmlOrder="10" indented="false"
+                              name="http://www.mulesoft.org/schema/mule/multi-config/connection"/>
+            </group>
+        </attribute-category>
+    </global-cloud-connector>
+    <global-cloud-connector connectivityTesting="off" metaData="static" supportsUserDefinedMetaData="false"
+                            caption="Multi-config config" description="Default configuration"
+                            icon="icons/small/multi-config-extension-24x16.png"
+                            image="icons/large/multi-config-extension-48x32.png" abstract="false" localId="config"
+                            versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="Configuration Properties">
+            <group id="basicGenericProperties" caption="Basic Settings">
+                <name name="name" required="true" caption="Name"
+                      description="Give a name to this configuration so it can be later referenced by config-ref."/>
+            </group>
+            <group id="general" caption="General">
+                <string name="parentField" required="true" supportsExpressions="true" caption="Parent Field"
+                        description=""/>
+                <string name="checkSum" required="true" supportsExpressions="true" caption="Check Sum" description=""/>
+            </group>
+        </attribute-category>
+        <attribute-category caption="Connection" description="Configure the Connection Properties">
+            <group id="general" caption="General">
+                <childElement inplace="true" xmlOrder="10" indented="false"
+                              name="http://www.mulesoft.org/schema/mule/multi-config/connection"/>
+            </group>
+        </attribute-category>
+    </global-cloud-connector>
+    <cloud-connector caption="abstractMulti-configGeneric" icon="icons/small/multi-config-extension-24x16.png"
+                     image="icons/large/multi-config-extension-48x32.png" abstract="true"
+                     localId="abstractMulti-configGeneric" versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="Configuration Properties">
+            <group id="abstractMulti-configGeneric" caption="Basic Settings">
+                <globalRef
+                        requiredType="$http://www.mulesoft.org/schema/mule/multi-config/config, http://www.mulesoft.org/schema/mule/multi-config/config1"
+                        name="config-ref" required="true" caption="Extension Configuration"
+                        description="Specify which configuration to use for this invocation."/>
+            </group>
+        </attribute-category>
+    </cloud-connector>
+    <cloud-connector returnType="void" metaData="static" caption="Config 1 Operation" description=""
+                     extends="http://www.mulesoft.org/schema/mule/multi-config/abstractMulti-configGeneric"
+                     icon="icons/small/multi-config-extension-24x16.png"
+                     image="icons/large/multi-config-extension-48x32.png" abstract="true" localId="config1-operation"
+                     xmlname="config1-operation" versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="Configuration Properties">
+            <group id="general" caption="General"/>
+        </attribute-category>
+    </cloud-connector>
+    <cloud-connector returnType="java.lang.String" metaData="static" caption="Content Type Operation" description=""
+                     extends="http://www.mulesoft.org/schema/mule/multi-config/abstractMulti-configGeneric"
+                     icon="icons/small/multi-config-extension-24x16.png"
+                     image="icons/large/multi-config-extension-48x32.png" abstract="true"
+                     localId="content-type-operation" xmlname="content-type-operation" versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="Configuration Properties">
+            <group id="general" caption="General">
+                <string name="param1" required="true" supportsExpressions="true" caption="Param 1" description=""/>
+            </group>
+        </attribute-category>
+        <attribute-category id="mimeTypeAttributeCategory" caption="Mime Type" description="Mime Type Configuration">
+            <group id="mimeTypeGroup" caption="Mime Type Attributes">
+                <enum name="outputMimeType" required="false" supportsExpressions="true" caption="MIME Type"
+                      description="The mime type of the payload that this operation outputs.">
+                    <option value="application/csv"/>
+                    <option value="application/json"/>
+                    <option value="application/pdf"/>
+                    <option value="application/x-compressed"/>
+                    <option value="application/xml"/>
+                    <option value="application/zip"/>
+                    <option value="binary/octet-stream"/>
+                    <option value="image/gif"/>
+                    <option value="image/jpeg"/>
+                    <option value="image/png"/>
+                    <option value="multipart/x-zip"/>
+                    <option value="text/css"/>
+                    <option value="text/csv"/>
+                    <option value="text/html"/>
+                    <option value="text/javascript"/>
+                    <option value="text/json"/>
+                    <option value="text/plain"/>
+                    <option value="text/xhtml"/>
+                    <option value="text/xml"/>
+                </enum>
+                <encoding name="outputEncoding" required="false" supportsExpressions="true" caption="Encoding"
+                          description="The encoding of the payload that this operation outputs."/>
+            </group>
+        </attribute-category>
+    </cloud-connector>
+    <cloud-connector returnType="void" metaData="static" caption="Dummy Operation" description=""
+                     extends="http://www.mulesoft.org/schema/mule/multi-config/abstractMulti-configGeneric"
+                     icon="icons/small/multi-config-extension-24x16.png"
+                     image="icons/large/multi-config-extension-48x32.png" abstract="true" localId="dummy-operation"
+                     xmlname="dummy-operation" versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="Configuration Properties">
+            <group id="general" caption="General"/>
+        </attribute-category>
+    </cloud-connector>
+    <flow causesSplit="true" returnType="void" metaData="static" caption="Nested Multiple" description=""
+          extends="http://www.mulesoft.org/schema/mule/multi-config/abstractMulti-configGeneric" abstract="false"
+          localId="nested-multiple" xmlname="nested-multiple" versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="Configuration Properties">
+            <group id="general" caption="General"/>
+        </attribute-category>
+    </flow>
+    <container acceptedByElements="!http://www.mulesoft.org/schema/mule/core/mule" pathExpression="${index}"
+               returnType="void" titleColor="168, 206, 226" metaData="static" caption="Nested Single" description=""
+               extends="http://www.mulesoft.org/schema/mule/multi-config/abstractMulti-configGeneric" abstract="false"
+               localId="nested-single" xmlname="nested-single" versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="Configuration Properties">
+            <group id="general" caption="General"/>
+        </attribute-category>
+    </container>
+    <cloud-connector aliasId="org.mule.tooling.ui.modules.core.pattern.multi-config" caption="Multi-config"
+                     description=""
+                     extends="http://www.mulesoft.org/schema/mule/multi-config/abstractMulti-configGeneric"
+                     icon="icons/small/multi-config-extension-24x16.png"
+                     image="icons/large/multi-config-extension-48x32.png" localId="multi-config-extension"
+                     versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="General.">
+            <group id="multi-configConnectorGeneric" caption="Basic Settings">
+                <modeSwitch alwaysCombo="true" name="multi-config operations to execute" caption="Operation"
+                            description="Operation.">
+                    <no-operation
+                            abstractElement="http://www.mulesoft.org/schema/mule/multi-config/abstractMulti-configGeneric"
+                            connector-name="processor"/>
+                    <mode modeId="http://www.mulesoft.org/schema/mule/multi-config/config1-operation"
+                          modeLabel="Config 1 Operation"/>
+                    <mode modeId="http://www.mulesoft.org/schema/mule/multi-config/content-type-operation"
+                          modeLabel="Content Type Operation"/>
+                    <mode modeId="http://www.mulesoft.org/schema/mule/multi-config/dummy-operation"
+                          modeLabel="Dummy Operation"/>
+                </modeSwitch>
+            </group>
+        </attribute-category>
+    </cloud-connector>
+</namespace>

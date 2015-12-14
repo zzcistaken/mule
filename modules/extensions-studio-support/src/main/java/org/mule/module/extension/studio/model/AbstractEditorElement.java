@@ -10,41 +10,49 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public abstract class AbstractEditorElement implements IComponentElement {
+public abstract class AbstractEditorElement implements IComponentElement
+{
 
     private String versions;
     private String deprecatedVersions;
     private String deprecatedMessage; // TODO Solo se usa en enum, integer y String, pero me parece mejor que este a nivel de cualquier elemento
 
     @XmlAttribute
-    public String getVersions() {
+    public String getVersions()
+    {
         return versions;
     }
 
-    public void setVersions(String versions) {
+    public void setVersions(String versions)
+    {
         this.versions = versions;
     }
 
     @XmlAttribute
-    public String getDeprecatedVersions() {
+    public String getDeprecatedVersions()
+    {
         return deprecatedVersions;
     }
 
-    public void setDeprecatedVersions(String deprecatedVersions) {
+    public void setDeprecatedVersions(String deprecatedVersions)
+    {
         this.deprecatedVersions = deprecatedVersions;
     }
 
     @XmlAttribute
-    public String getDeprecatedMessage() {
+    public String getDeprecatedMessage()
+    {
         return deprecatedMessage;
     }
 
-    public void setDeprecatedMessage(String deprecatedMessage) {
+    public void setDeprecatedMessage(String deprecatedMessage)
+    {
         this.deprecatedMessage = deprecatedMessage;
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((deprecatedMessage == null) ? 0 : deprecatedMessage.hashCode());
@@ -54,29 +62,54 @@ public abstract class AbstractEditorElement implements IComponentElement {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(Object obj)
+    {
         if (this == obj)
+        {
             return true;
+        }
         if (obj == null)
+        {
             return false;
+        }
         if (getClass() != obj.getClass())
+        {
             return false;
+        }
         AbstractEditorElement other = (AbstractEditorElement) obj;
-        if (deprecatedMessage == null) {
+        if (deprecatedMessage == null)
+        {
             if (other.deprecatedMessage != null)
+            {
                 return false;
-        } else if (!deprecatedMessage.equals(other.deprecatedMessage))
+            }
+        }
+        else if (!deprecatedMessage.equals(other.deprecatedMessage))
+        {
             return false;
-        if (deprecatedVersions == null) {
+        }
+        if (deprecatedVersions == null)
+        {
             if (other.deprecatedVersions != null)
+            {
                 return false;
-        } else if (!deprecatedVersions.equals(other.deprecatedVersions))
+            }
+        }
+        else if (!deprecatedVersions.equals(other.deprecatedVersions))
+        {
             return false;
-        if (versions == null) {
+        }
+        if (versions == null)
+        {
             if (other.versions != null)
+            {
                 return false;
-        } else if (!versions.equals(other.versions))
+            }
+        }
+        else if (!versions.equals(other.versions))
+        {
             return false;
+        }
         return true;
     }
 }

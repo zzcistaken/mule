@@ -6,13 +6,14 @@
  */
 package org.mule.module.extension.studio.model.element;
 
+import org.mule.module.extension.studio.model.IEditorElementVisitor;
+
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.mule.module.extension.studio.model.IEditorElementVisitor;
-
 @XmlRootElement(name = "element-query")
-public class ElementQuery extends BaseFieldEditorElement {
+public class ElementQuery extends BaseFieldEditorElement
+{
 
     private String associatedConfig;
 
@@ -24,75 +25,91 @@ public class ElementQuery extends BaseFieldEditorElement {
     private Status limit = Status.ENABLED;
 
     @XmlAttribute
-    public Status getOrderBy() {
+    public Status getOrderBy()
+    {
         return orderBy;
     }
 
-    public void setOrderBy(Status orderBy) {
+    public void setOrderBy(Status orderBy)
+    {
         this.orderBy = orderBy;
     }
 
     @XmlAttribute
-    public Status getNativeQuery() {
+    public Status getNativeQuery()
+    {
         return nativeQuery;
     }
 
-    public void setNativeQuery(Status nativeQuery) {
+    public void setNativeQuery(Status nativeQuery)
+    {
         this.nativeQuery = nativeQuery;
     }
 
     @XmlAttribute
-    public Status getOrOperator() {
+    public Status getOrOperator()
+    {
         return orOperator;
     }
 
-    public void setOrOperator(Status orOperator) {
+    public void setOrOperator(Status orOperator)
+    {
         this.orOperator = orOperator;
     }
 
     @XmlAttribute
-    public Status getAndOperator() {
+    public Status getAndOperator()
+    {
         return andOperator;
     }
 
-    public void setAndOperator(Status andOperator) {
+    public void setAndOperator(Status andOperator)
+    {
         this.andOperator = andOperator;
     }
 
     @XmlAttribute
-    public Status getOffset() {
+    public Status getOffset()
+    {
         return offset;
     }
 
-    public void setOffset(Status offset) {
+    public void setOffset(Status offset)
+    {
         this.offset = offset;
     }
 
     @XmlAttribute
-    public Status getLimit() {
+    public Status getLimit()
+    {
         return limit;
     }
 
-    public void setLimit(Status limit) {
+    public void setLimit(Status limit)
+    {
         this.limit = limit;
     }
 
     @Override
-    public void accept(IEditorElementVisitor visitor) {
+    public void accept(IEditorElementVisitor visitor)
+    {
         visitor.visit(this);
     }
 
     @XmlAttribute
-    public String getAssociatedConfig() {
+    public String getAssociatedConfig()
+    {
         return associatedConfig;
     }
 
-    public void setAssociatedConfig(String associatedConfig) {
+    public void setAssociatedConfig(String associatedConfig)
+    {
         this.associatedConfig = associatedConfig;
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         final int prime = 31;
         int result = super.hashCode();
         result = prime * result + ((andOperator == null) ? 0 : andOperator.hashCode());
@@ -106,31 +123,56 @@ public class ElementQuery extends BaseFieldEditorElement {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(Object obj)
+    {
         if (this == obj)
+        {
             return true;
+        }
         if (!super.equals(obj))
+        {
             return false;
+        }
         if (getClass() != obj.getClass())
+        {
             return false;
+        }
         ElementQuery other = (ElementQuery) obj;
         if (andOperator != other.andOperator)
+        {
             return false;
-        if (associatedConfig == null) {
+        }
+        if (associatedConfig == null)
+        {
             if (other.associatedConfig != null)
+            {
                 return false;
-        } else if (!associatedConfig.equals(other.associatedConfig))
+            }
+        }
+        else if (!associatedConfig.equals(other.associatedConfig))
+        {
             return false;
+        }
         if (limit != other.limit)
+        {
             return false;
+        }
         if (nativeQuery != other.nativeQuery)
+        {
             return false;
+        }
         if (offset != other.offset)
+        {
             return false;
+        }
         if (orOperator != other.orOperator)
+        {
             return false;
+        }
         if (orderBy != other.orderBy)
+        {
             return false;
+        }
         return true;
     }
 }

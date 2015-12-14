@@ -15,6 +15,7 @@ import java.util.List;
  */
 public class InnerPojo
 {
+
     @Parameter
     private String childName;
 

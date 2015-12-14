@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<namespace xmlns="http://www.mulesoft.org/schema/mule/tooling.attributes"
+           xmlns:mule="http://www.mulesoft.org/schema/mule/core" prefix="first"
+           url="http://www.mulesoft.org/schema/mule/first">
+    <nested caption="First:Connection" description="" icon="icons/small/first-extension-24x16.png"
+            image="icons/large/first-extension-48x32.png" abstract="false" localId="connection"
+            versions="[3.5.0,8.0.0]">
+        <string defaultValue="5555" name="providerConfigurable" required="false" supportsExpressions="true"
+                caption="Provider Configurable" description=""/>
+    </nested>
+    <nested caption="Configure parameterGroup" description="" localId="parameter-group" xmlname="parameter-group">
+        <string name="someField" required="false" supportsExpressions="false" caption="Some Field"/>
+    </nested>
+    <nested caption="" description="" localId="child" xmlname="child">
+        <string name="childName" required="false" supportsExpressions="false" caption="Child Name"/>
+        <integer name="age" required="false" supportsExpressions="false" caption="Age"/>
+        <element-controller-list listName="friends" itemName="friend" javaType="java.util.List&lt;java.lang.String&gt;"
+                                 localName="friends" required="false" caption="Friends"/>
+    </nested>
+    <nested caption="Configure anotherSimplePojo" description="" localId="another-simple-pojo"
+            xmlname="another-simple-pojo">
+        <string name="anotherSimpleField" required="false" supportsExpressions="false" caption="Another Simple Field"/>
+        <childElement allowMultiple="false" inplace="false"
+                      javaType="org.mule.module.extension.firstextension.InnerPojo"
+                      name="http://www.mulesoft.org/schema/mule/first/child" caption="  Reference"/>
+    </nested>
+    <global-cloud-connector connectivityTesting="off" metaData="static" supportsUserDefinedMetaData="false"
+                            caption="First config" description="Default configuration"
+                            icon="icons/small/first-extension-24x16.png" image="icons/large/first-extension-48x32.png"
+                            abstract="false" localId="config" versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="Configuration Properties">
+            <group id="basicGenericProperties" caption="Basic Settings">
+                <name name="name" required="true" caption="Name"
+                      description="Give a name to this configuration so it can be later referenced by config-ref."/>
+            </group>
+            <group id="general" caption="General">
+                <childElement allowMultiple="false" inplace="true"
+                              javaType="org.mule.module.extension.firstextension.SimplePojo"
+                              name="http://www.mulesoft.org/schema/mule/first/parameter-group"
+                              caption="Parameter Group"/>
+                <boolean name="hasItems" required="true" supportsExpressions="true" caption="Has Items" description=""/>
+                <childElement allowMultiple="false" inplace="true"
+                              javaType="org.mule.module.extension.firstextension.AnotherSimplePojo"
+                              name="http://www.mulesoft.org/schema/mule/first/another-simple-pojo"
+                              caption="Another Simple Pojo"/>
+                <element-controller-list listName="sample-names" itemName="sample-name"
+                                         javaType="java.util.List&lt;java.lang.String&gt;" localName="sample-names"
+                                         required="true" caption="Sample Names" description=""/>
+                <string name="someField" required="true" supportsExpressions="true" caption="Some Field"
+                        description=""/>
+            </group>
+        </attribute-category>
+        <attribute-category caption="Connection" description="Configure the Connection Properties">
+            <group id="general" caption="General">
+                <childElement inplace="true" xmlOrder="10" indented="false"
+                              name="http://www.mulesoft.org/schema/mule/first/connection"/>
+            </group>
+        </attribute-category>
+    </global-cloud-connector>
+    <cloud-connector caption="abstractFirstGeneric" icon="icons/small/first-extension-24x16.png"
+                     image="icons/large/first-extension-48x32.png" abstract="true" localId="abstractFirstGeneric"
+                     versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="Configuration Properties">
+            <group id="abstractFirstGeneric" caption="Basic Settings">
+                <globalRef requiredType="http://www.mulesoft.org/schema/mule/first/config" name="config-ref"
+                           required="true" caption="Extension Configuration"
+                           description="Specify which configuration to use for this invocation."/>
+            </group>
+        </attribute-category>
+    </cloud-connector>
+    <cloud-connector returnType="java.util.List&lt;org.mule.module.extension.firstextension.SimplePojo&gt;"
+                     metaData="static" caption="List Parameter Group Pojo Operation" description=""
+                     extends="http://www.mulesoft.org/schema/mule/first/abstractFirstGeneric"
+                     icon="icons/small/first-extension-24x16.png" image="icons/large/first-extension-48x32.png"
+                     abstract="true" localId="list-parameter-group-pojo-operation"
+                     xmlname="list-parameter-group-pojo-operation" versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="Configuration Properties">
+            <group id="general" caption="General"/>
+        </attribute-category>
+    </cloud-connector>
+    <cloud-connector returnType="java.util.List&lt;org.mule.module.extension.firstextension.AnotherSimplePojo&gt;"
+                     metaData="static" caption="List Pojo Complex Operation" description=""
+                     extends="http://www.mulesoft.org/schema/mule/first/abstractFirstGeneric"
+                     icon="icons/small/first-extension-24x16.png" image="icons/large/first-extension-48x32.png"
+                     abstract="true" localId="list-pojo-complex-operation" xmlname="list-pojo-complex-operation"
+                     versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="Configuration Properties">
+            <group id="general" caption="General">
+                <element-controller-listOfPojo listName="my-complex-pojos" itemName="my-complex-pojo"
+                                               javaType="java.util.List&lt;org.mule.module.extension.firstextension.AnotherSimplePojo&gt;"
+                                               localName="my-complex-pojos" required="true" caption="My Complex Pojos"
+                                               description=""/>
+            </group>
+        </attribute-category>
+    </cloud-connector>
+    <cloud-connector returnType="java.util.List&lt;org.mule.module.extension.firstextension.SimplePojo&gt;"
+                     metaData="static" caption="List Pojo Operation" description=""
+                     extends="http://www.mulesoft.org/schema/mule/first/abstractFirstGeneric"
+                     icon="icons/small/first-extension-24x16.png" image="icons/large/first-extension-48x32.png"
+                     abstract="true" localId="list-pojo-operation" xmlname="list-pojo-operation"
+                     versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="Configuration Properties">
+            <group id="general" caption="General">
+                <element-controller-listOfPojo listName="pojos" itemName="pojo"
+                                               javaType="java.util.List&lt;org.mule.module.extension.firstextension.SimplePojo&gt;"
+                                               localName="pojos" required="true" caption="Pojos" description=""/>
+            </group>
+        </attribute-category>
+    </cloud-connector>
+    <cloud-connector returnType="java.util.List&lt;java.lang.String&gt;" metaData="static"
+                     caption="List String Operation" description=""
+                     extends="http://www.mulesoft.org/schema/mule/first/abstractFirstGeneric"
+                     icon="icons/small/first-extension-24x16.png" image="icons/large/first-extension-48x32.png"
+                     abstract="true" localId="list-string-operation" xmlname="list-string-operation"
+                     versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="Configuration Properties">
+            <group id="general" caption="General">
+                <element-controller-list listName="params1" itemName="params1"
+                                         javaType="java.util.List&lt;java.lang.String&gt;" localName="params1"
+                                         required="true" caption="Params 1" description=""/>
+            </group>
+        </attribute-category>
+    </cloud-connector>
+    <cloud-connector returnType="org.mule.module.extension.firstextension.SimplePojo" metaData="static"
+                     caption="Parameter Group Pojo Operation" description=""
+                     extends="http://www.mulesoft.org/schema/mule/first/abstractFirstGeneric"
+                     icon="icons/small/first-extension-24x16.png" image="icons/large/first-extension-48x32.png"
+                     abstract="true" localId="parameter-group-pojo-operation" xmlname="parameter-group-pojo-operation"
+                     versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="Configuration Properties">
+            <group id="general" caption="General">
+                <string name="someField" required="true" supportsExpressions="true" caption="Some Field"
+                        description=""/>
+            </group>
+        </attribute-category>
+    </cloud-connector>
+    <cloud-connector returnType="org.mule.module.extension.firstextension.SimplePojo" metaData="static"
+                     caption="Parameter Group Pojo Operation With Default" description=""
+                     extends="http://www.mulesoft.org/schema/mule/first/abstractFirstGeneric"
+                     icon="icons/small/first-extension-24x16.png" image="icons/large/first-extension-48x32.png"
+                     abstract="true" localId="parameter-group-pojo-operation-with-default"
+                     xmlname="parameter-group-pojo-operation-with-default" versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="Configuration Properties">
+            <group id="general" caption="General">
+                <string name="someField" required="true" supportsExpressions="true" caption="Some Field"
+                        description=""/>
+            </group>
+        </attribute-category>
+    </cloud-connector>
+    <cloud-connector returnType="org.mule.module.extension.firstextension.SimplePojo" metaData="static"
+                     caption="Parameter Group Pojo Operation With Optional" description=""
+                     extends="http://www.mulesoft.org/schema/mule/first/abstractFirstGeneric"
+                     icon="icons/small/first-extension-24x16.png" image="icons/large/first-extension-48x32.png"
+                     abstract="true" localId="parameter-group-pojo-operation-with-optional"
+                     xmlname="parameter-group-pojo-operation-with-optional" versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="Configuration Properties">
+            <group id="general" caption="General">
+                <string name="someField" required="true" supportsExpressions="true" caption="Some Field"
+                        description=""/>
+            </group>
+        </attribute-category>
+    </cloud-connector>
+    <nested caption="Configure pojo" description="" localId="pojo" xmlname="pojo">
+        <string name="someField" required="false" supportsExpressions="false" caption="Some Field"/>
+    </nested>
+    <cloud-connector returnType="org.mule.module.extension.firstextension.SimplePojo" metaData="static"
+                     caption="Pojo Operation" description=""
+                     extends="http://www.mulesoft.org/schema/mule/first/abstractFirstGeneric"
+                     icon="icons/small/first-extension-24x16.png" image="icons/large/first-extension-48x32.png"
+                     abstract="true" localId="pojo-operation" xmlname="pojo-operation" versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="Configuration Properties">
+            <group id="general" caption="General">
+                <childElement allowMultiple="false" inplace="true"
+                              javaType="org.mule.module.extension.firstextension.SimplePojo"
+                              name="http://www.mulesoft.org/schema/mule/first/pojo" caption="Pojo"/>
+            </group>
+        </attribute-category>
+    </cloud-connector>
+    <cloud-connector returnType="org.mule.module.extension.firstextension.SimplePojo" metaData="static"
+                     caption="Pojo Operation With Default" description=""
+                     extends="http://www.mulesoft.org/schema/mule/first/abstractFirstGeneric"
+                     icon="icons/small/first-extension-24x16.png" image="icons/large/first-extension-48x32.png"
+                     abstract="true" localId="pojo-operation-with-default" xmlname="pojo-operation-with-default"
+                     versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="Configuration Properties">
+            <group id="general" caption="General">
+                <childElement allowMultiple="false" inplace="true"
+                              javaType="org.mule.module.extension.firstextension.SimplePojo"
+                              name="http://www.mulesoft.org/schema/mule/first/pojo" caption="Pojo"/>
+            </group>
+        </attribute-category>
+    </cloud-connector>
+    <cloud-connector returnType="org.mule.module.extension.firstextension.SimplePojo" metaData="static"
+                     caption="Pojo Operation With Optional" description=""
+                     extends="http://www.mulesoft.org/schema/mule/first/abstractFirstGeneric"
+                     icon="icons/small/first-extension-24x16.png" image="icons/large/first-extension-48x32.png"
+                     abstract="true" localId="pojo-operation-with-optional" xmlname="pojo-operation-with-optional"
+                     versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="Configuration Properties">
+            <group id="general" caption="General">
+                <childElement allowMultiple="false" inplace="true"
+                              javaType="org.mule.module.extension.firstextension.SimplePojo"
+                              name="http://www.mulesoft.org/schema/mule/first/pojo" caption="Pojo"/>
+            </group>
+        </attribute-category>
+    </cloud-connector>
+    <cloud-connector returnType="int" metaData="static" caption="Primitive Types Operation" description=""
+                     extends="http://www.mulesoft.org/schema/mule/first/abstractFirstGeneric"
+                     icon="icons/small/first-extension-24x16.png" image="icons/large/first-extension-48x32.png"
+                     abstract="true" localId="primitive-types-operation" xmlname="primitive-types-operation"
+                     versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="Configuration Properties">
+            <group id="general" caption="General">
+                <integer name="a" required="true" supportsExpressions="true" caption="A" description=""/>
+                <integer name="b" required="true" supportsExpressions="true" caption="B" description=""/>
+            </group>
+        </attribute-category>
+    </cloud-connector>
+    <cloud-connector returnType="int" metaData="static" caption="Primitive Types Operation With Default" description=""
+                     extends="http://www.mulesoft.org/schema/mule/first/abstractFirstGeneric"
+                     icon="icons/small/first-extension-24x16.png" image="icons/large/first-extension-48x32.png"
+                     abstract="true" localId="primitive-types-operation-with-default"
+                     xmlname="primitive-types-operation-with-default" versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="Configuration Properties">
+            <group id="general" caption="General">
+                <integer name="a" required="true" supportsExpressions="true" caption="A" description=""/>
+                <integer defaultValue="3" name="b" required="false" supportsExpressions="true" caption="B"
+                         description=""/>
+            </group>
+        </attribute-category>
+    </cloud-connector>
+    <cloud-connector returnType="int" metaData="static" caption="Primitive Types Operation With Optional" description=""
+                     extends="http://www.mulesoft.org/schema/mule/first/abstractFirstGeneric"
+                     icon="icons/small/first-extension-24x16.png" image="icons/large/first-extension-48x32.png"
+                     abstract="true" localId="primitive-types-operation-with-optional"
+                     xmlname="primitive-types-operation-with-optional" versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="Configuration Properties">
+            <group id="general" caption="General">
+                <integer name="a" required="true" supportsExpressions="true" caption="A" description=""/>
+                <integer name="b" required="false" supportsExpressions="true" caption="B" description=""/>
+            </group>
+        </attribute-category>
+    </cloud-connector>
+    <cloud-connector returnType="java.lang.String" metaData="static" caption="String Operation" description=""
+                     extends="http://www.mulesoft.org/schema/mule/first/abstractFirstGeneric"
+                     icon="icons/small/first-extension-24x16.png" image="icons/large/first-extension-48x32.png"
+                     abstract="true" localId="string-operation" xmlname="string-operation" versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="Configuration Properties">
+            <group id="general" caption="General">
+                <string name="param1" required="true" supportsExpressions="true" caption="Param 1" description=""/>
+                <string name="param2" required="true" supportsExpressions="true" caption="Param 2" description=""/>
+            </group>
+        </attribute-category>
+    </cloud-connector>
+    <cloud-connector returnType="java.lang.String" metaData="static" caption="String Operation With Default"
+                     description="" extends="http://www.mulesoft.org/schema/mule/first/abstractFirstGeneric"
+                     icon="icons/small/first-extension-24x16.png" image="icons/large/first-extension-48x32.png"
+                     abstract="true" localId="string-operation-with-default" xmlname="string-operation-with-default"
+                     versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="Configuration Properties">
+            <group id="general" caption="General">
+                <string name="param1" required="true" supportsExpressions="true" caption="Param 1" description=""/>
+                <string defaultValue="fruta" name="param2" required="false" supportsExpressions="true" caption="Param 2"
+                        description=""/>
+            </group>
+        </attribute-category>
+    </cloud-connector>
+    <cloud-connector returnType="java.lang.String" metaData="static" caption="String Operation With Optional"
+                     description="" extends="http://www.mulesoft.org/schema/mule/first/abstractFirstGeneric"
+                     icon="icons/small/first-extension-24x16.png" image="icons/large/first-extension-48x32.png"
+                     abstract="true" localId="string-operation-with-optional" xmlname="string-operation-with-optional"
+                     versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="Configuration Properties">
+            <group id="general" caption="General">
+                <string name="param1" required="true" supportsExpressions="true" caption="Param 1" description=""/>
+                <string name="param2" required="false" supportsExpressions="true" caption="Param 2" description=""/>
+            </group>
+        </attribute-category>
+    </cloud-connector>
+    <cloud-connector aliasId="org.mule.tooling.ui.modules.core.pattern.first" caption="First"
+                     description="Mule First Extension"
+                     extends="http://www.mulesoft.org/schema/mule/first/abstractFirstGeneric"
+                     icon="icons/small/first-extension-24x16.png" image="icons/large/first-extension-48x32.png"
+                     localId="first-extension" versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="General.">
+            <group id="firstConnectorGeneric" caption="Basic Settings">
+                <modeSwitch alwaysCombo="true" name="first operations to execute" caption="Operation"
+                            description="Operation.">
+                    <no-operation abstractElement="http://www.mulesoft.org/schema/mule/first/abstractFirstGeneric"
+                                  connector-name="processor"/>
+                    <mode modeId="http://www.mulesoft.org/schema/mule/first/list-parameter-group-pojo-operation"
+                          modeLabel="List Parameter Group Pojo Operation"/>
+                    <mode modeId="http://www.mulesoft.org/schema/mule/first/list-pojo-complex-operation"
+                          modeLabel="List Pojo Complex Operation"/>
+                    <mode modeId="http://www.mulesoft.org/schema/mule/first/list-pojo-operation"
+                          modeLabel="List Pojo Operation"/>
+                    <mode modeId="http://www.mulesoft.org/schema/mule/first/list-string-operation"
+                          modeLabel="List String Operation"/>
+                    <mode modeId="http://www.mulesoft.org/schema/mule/first/parameter-group-pojo-operation"
+                          modeLabel="Parameter Group Pojo Operation"/>
+                    <mode modeId="http://www.mulesoft.org/schema/mule/first/parameter-group-pojo-operation-with-default"
+                          modeLabel="Parameter Group Pojo Operation With Default"/>
+                    <mode modeId="http://www.mulesoft.org/schema/mule/first/parameter-group-pojo-operation-with-optional"
+                          modeLabel="Parameter Group Pojo Operation With Optional"/>
+                    <mode modeId="http://www.mulesoft.org/schema/mule/first/pojo-operation" modeLabel="Pojo Operation"/>
+                    <mode modeId="http://www.mulesoft.org/schema/mule/first/pojo-operation-with-default"
+                          modeLabel="Pojo Operation With Default"/>
+                    <mode modeId="http://www.mulesoft.org/schema/mule/first/pojo-operation-with-optional"
+                          modeLabel="Pojo Operation With Optional"/>
+                    <mode modeId="http://www.mulesoft.org/schema/mule/first/primitive-types-operation"
+                          modeLabel="Primitive Types Operation"/>
+                    <mode modeId="http://www.mulesoft.org/schema/mule/first/primitive-types-operation-with-default"
+                          modeLabel="Primitive Types Operation With Default"/>
+                    <mode modeId="http://www.mulesoft.org/schema/mule/first/primitive-types-operation-with-optional"
+                          modeLabel="Primitive Types Operation With Optional"/>
+                    <mode modeId="http://www.mulesoft.org/schema/mule/first/string-operation"
+                          modeLabel="String Operation"/>
+                    <mode modeId="http://www.mulesoft.org/schema/mule/first/string-operation-with-default"
+                          modeLabel="String Operation With Default"/>
+                    <mode modeId="http://www.mulesoft.org/schema/mule/first/string-operation-with-optional"
+                          modeLabel="String Operation With Optional"/>
+                </modeSwitch>
+            </group>
+        </attribute-category>
+    </cloud-connector>
+</namespace>

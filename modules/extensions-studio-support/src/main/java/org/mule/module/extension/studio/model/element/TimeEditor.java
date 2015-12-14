@@ -6,84 +6,112 @@
  */
 package org.mule.module.extension.studio.model.element;
 
+import org.mule.module.extension.studio.model.IEditorElementVisitor;
+
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.mule.module.extension.studio.model.IEditorElementVisitor;
-
 @XmlRootElement(name = "time")
-public class TimeEditor extends BaseFieldEditorElement {
+public class TimeEditor extends BaseFieldEditorElement
+{
 
     private String max;
     private String min;
+    private String defaultValue;
     private String step;
 
     @Override
-    public void accept(IEditorElementVisitor visitor) {
+    public void accept(IEditorElementVisitor visitor)
+    {
         visitor.visit(this);
     }
 
     @XmlAttribute
-    public String getMax() {
+    public String getMax()
+    {
         return max;
     }
 
-    public void setMax(String max) {
+    public void setMax(String max)
+    {
         this.max = max;
     }
 
     @XmlAttribute
-    public String getMin() {
+    public String getMin()
+    {
         return min;
     }
 
-    public void setMin(String min) {
+    public void setMin(String min)
+    {
         this.min = min;
     }
 
     @XmlAttribute
-    public String getStep() {
+    public String getStep()
+    {
         return step;
     }
 
-    public void setStep(String step) {
+    public void setStep(String step)
+    {
         this.step = step;
     }
 
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = super.hashCode();
-        result = prime * result + ((max == null) ? 0 : max.hashCode());
-        result = prime * result + ((min == null) ? 0 : min.hashCode());
-        result = prime * result + ((step == null) ? 0 : step.hashCode());
-        return result;
+    @XmlAttribute
+    public String getDefaultValue()
+    {
+        return defaultValue;
+    }
+
+    public void setDefaultValue(String defaultValue)
+    {
+        this.defaultValue = defaultValue;
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
+    public boolean equals(Object o)
+    {
+        if (this == o)
+        {
             return true;
-        if (!super.equals(obj))
+        }
+        if (o == null || getClass() != o.getClass())
+        {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (!super.equals(o))
+        {
             return false;
-        TimeEditor other = (TimeEditor) obj;
-        if (max == null) {
-            if (other.max != null)
-                return false;
-        } else if (!max.equals(other.max))
+        }
+
+        TimeEditor that = (TimeEditor) o;
+
+        if (max != null ? !max.equals(that.max) : that.max != null)
+        {
             return false;
-        if (min == null) {
-            if (other.min != null)
-                return false;
-        } else if (!min.equals(other.min))
+        }
+        if (min != null ? !min.equals(that.min) : that.min != null)
+        {
             return false;
-        if (step == null) {
-            if (other.step != null)
-                return false;
-        } else if (!step.equals(other.step))
+        }
+        if (defaultValue != null ? !defaultValue.equals(that.defaultValue) : that.defaultValue != null)
+        {
             return false;
-        return true;
+        }
+        return !(step != null ? !step.equals(that.step) : that.step != null);
+
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int result = super.hashCode();
+        result = 31 * result + (max != null ? max.hashCode() : 0);
+        result = 31 * result + (min != null ? min.hashCode() : 0);
+        result = 31 * result + (defaultValue != null ? defaultValue.hashCode() : 0);
+        result = 31 * result + (step != null ? step.hashCode() : 0);
+        return result;
     }
 }

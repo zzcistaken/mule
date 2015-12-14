@@ -10,7 +10,8 @@ import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlEnumValue;
 
 @XmlEnum
-public enum ConnectivityTesting {
+public enum ConnectivityTesting
+{
     @XmlEnumValue("disabled")
     DISABLED,
     @XmlEnumValue("on")

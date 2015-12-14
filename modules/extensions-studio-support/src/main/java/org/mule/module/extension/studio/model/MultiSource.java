@@ -6,13 +6,14 @@
  */
 package org.mule.module.extension.studio.model;
 
+import org.mule.module.extension.studio.model.element.Category;
+
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.mule.module.extension.studio.model.element.Category;
-
 @XmlRootElement(name = "multi-source")
-public class MultiSource extends EditorElement {
+public class MultiSource extends AbstractPaletteComponent
+{
 
     private Boolean allowsInbound;
     private Boolean propertiesEditable;
@@ -23,95 +24,115 @@ public class MultiSource extends EditorElement {
     private Category categoryId;//TODO xq no simplement category?
     private String id;// TODO se usa para algo??
     private Boolean forcesResponse;
-    
+
     @XmlAttribute
-    public Boolean getAllowsInbound() {
+    public Boolean getAllowsInbound()
+    {
         return allowsInbound;
     }
 
-    public void setAllowsInbound(Boolean allowsInbound) {
+    public void setAllowsInbound(Boolean allowsInbound)
+    {
         this.allowsInbound = allowsInbound;
     }
 
     @XmlAttribute
-    public Boolean getPropertiesEditable() {
+    public Boolean getPropertiesEditable()
+    {
         return propertiesEditable;
     }
 
-    public void setPropertiesEditable(Boolean propertiesEditable) {
+    public void setPropertiesEditable(Boolean propertiesEditable)
+    {
         this.propertiesEditable = propertiesEditable;
     }
 
     @XmlAttribute
-    public Boolean getAllowsOutbound() {
+    public Boolean getAllowsOutbound()
+    {
         return allowsOutbound;
     }
 
-    public void setAllowsOutbound(Boolean allowsOutbound) {
+    public void setAllowsOutbound(Boolean allowsOutbound)
+    {
         this.allowsOutbound = allowsOutbound;
     }
 
     @XmlAttribute
-    public Boolean getAllowsMessageProcessors() {
+    public Boolean getAllowsMessageProcessors()
+    {
         return allowsMessageProcessors;
     }
 
-    public void setAllowsMessageProcessors(Boolean allowsMessageProcessors) {
+    public void setAllowsMessageProcessors(Boolean allowsMessageProcessors)
+    {
         this.allowsMessageProcessors = allowsMessageProcessors;
     }
 
     @XmlAttribute
-    public String getScopeLabel() {
+    public String getScopeLabel()
+    {
         return scopeLabel;
     }
 
-    public void setScopeLabel(String scopeLabel) {
+    public void setScopeLabel(String scopeLabel)
+    {
         this.scopeLabel = scopeLabel;
     }
 
     @XmlAttribute
-    public Boolean getAllowsMultipleChildren() {
+    public Boolean getAllowsMultipleChildren()
+    {
         return allowsMultipleChildren;
     }
 
-    public void setAllowsMultipleChildren(Boolean allowsMultipleChildren) {
+    public void setAllowsMultipleChildren(Boolean allowsMultipleChildren)
+    {
         this.allowsMultipleChildren = allowsMultipleChildren;
     }
 
     @XmlAttribute
-    public Category getCategoryId() {
+    public Category getCategoryId()
+    {
         return categoryId;
     }
 
-    public void setCategoryId(Category categoryId) {
+    public void setCategoryId(Category categoryId)
+    {
         this.categoryId = categoryId;
     }
 
     @Override
-    public void accept(IEditorElementVisitor visitor) {
+    public void accept(IEditorElementVisitor visitor)
+    {
         visitor.visit(this);
     }
 
     @XmlAttribute
-    public String getId() {
+    public String getId()
+    {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(String id)
+    {
         this.id = id;
     }
 
     @XmlAttribute
-    public Boolean getForcesResponse() {
+    public Boolean getForcesResponse()
+    {
         return forcesResponse;
     }
 
-    public void setForcesResponse(Boolean forcesResponse) {
+    public void setForcesResponse(Boolean forcesResponse)
+    {
         this.forcesResponse = forcesResponse;
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         final int prime = 31;
         int result = super.hashCode();
         result = prime * result + ((allowsInbound == null) ? 0 : allowsInbound.hashCode());
@@ -127,56 +148,113 @@ public class MultiSource extends EditorElement {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(Object obj)
+    {
         if (this == obj)
+        {
             return true;
+        }
         if (!super.equals(obj))
+        {
             return false;
+        }
         if (getClass() != obj.getClass())
+        {
             return false;
+        }
         MultiSource other = (MultiSource) obj;
-        if (allowsInbound == null) {
+        if (allowsInbound == null)
+        {
             if (other.allowsInbound != null)
+            {
                 return false;
-        } else if (!allowsInbound.equals(other.allowsInbound))
+            }
+        }
+        else if (!allowsInbound.equals(other.allowsInbound))
+        {
             return false;
-        if (allowsMessageProcessors == null) {
+        }
+        if (allowsMessageProcessors == null)
+        {
             if (other.allowsMessageProcessors != null)
+            {
                 return false;
-        } else if (!allowsMessageProcessors.equals(other.allowsMessageProcessors))
+            }
+        }
+        else if (!allowsMessageProcessors.equals(other.allowsMessageProcessors))
+        {
             return false;
-        if (allowsMultipleChildren == null) {
+        }
+        if (allowsMultipleChildren == null)
+        {
             if (other.allowsMultipleChildren != null)
+            {
                 return false;
-        } else if (!allowsMultipleChildren.equals(other.allowsMultipleChildren))
+            }
+        }
+        else if (!allowsMultipleChildren.equals(other.allowsMultipleChildren))
+        {
             return false;
-        if (allowsOutbound == null) {
+        }
+        if (allowsOutbound == null)
+        {
             if (other.allowsOutbound != null)
+            {
                 return false;
-        } else if (!allowsOutbound.equals(other.allowsOutbound))
+            }
+        }
+        else if (!allowsOutbound.equals(other.allowsOutbound))
+        {
             return false;
+        }
         if (categoryId != other.categoryId)
+        {
             return false;
-        if (forcesResponse == null) {
+        }
+        if (forcesResponse == null)
+        {
             if (other.forcesResponse != null)
+            {
                 return false;
-        } else if (!forcesResponse.equals(other.forcesResponse))
+            }
+        }
+        else if (!forcesResponse.equals(other.forcesResponse))
+        {
             return false;
-        if (id == null) {
+        }
+        if (id == null)
+        {
             if (other.id != null)
+            {
                 return false;
-        } else if (!id.equals(other.id))
+            }
+        }
+        else if (!id.equals(other.id))
+        {
             return false;
-        if (propertiesEditable == null) {
+        }
+        if (propertiesEditable == null)
+        {
             if (other.propertiesEditable != null)
+            {
                 return false;
-        } else if (!propertiesEditable.equals(other.propertiesEditable))
+            }
+        }
+        else if (!propertiesEditable.equals(other.propertiesEditable))
+        {
             return false;
-        if (scopeLabel == null) {
+        }
+        if (scopeLabel == null)
+        {
             if (other.scopeLabel != null)
+            {
                 return false;
-        } else if (!scopeLabel.equals(other.scopeLabel))
+            }
+        }
+        else if (!scopeLabel.equals(other.scopeLabel))
+        {
             return false;
+        }
         return true;
     }
 }

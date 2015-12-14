@@ -16,7 +16,8 @@ import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class Nested extends EditorElement {
+public class Nested extends EditorElement
+{
 
     private String additionalNamespaces;
     private Integer windowHeight;
@@ -24,144 +25,182 @@ public class Nested extends EditorElement {
     private String childPrefix;
     private String childURI;
     private Boolean required;// TODO Debe ser un editor element?
-
+    private String valuePersistence;
+    private Boolean specialValuePersistenceRequired;
     private List<BaseChildEditorElement> childElements;
 
     @XmlAttribute
-    public String getAdditionalNamespaces() {
+    public String getAdditionalNamespaces()
+    {
         return additionalNamespaces;
     }
 
-    public void setAdditionalNamespaces(String additionalNamespaces) {
+    public void setAdditionalNamespaces(String additionalNamespaces)
+    {
         this.additionalNamespaces = additionalNamespaces;
     }
 
     @XmlAttribute
-    public Integer getWindowHeight() {
+    public Integer getWindowHeight()
+    {
         return windowHeight;
     }
 
-    public void setWindowHeight(Integer windowHeight) {
+    public void setWindowHeight(Integer windowHeight)
+    {
         this.windowHeight = windowHeight;
     }
 
     @XmlAttribute
-    public Boolean getAllowAny() {
+    public Boolean getAllowAny()
+    {
         return allowAny;
     }
 
-    public void setAllowAny(Boolean allowAny) {
+    public void setAllowAny(Boolean allowAny)
+    {
         this.allowAny = allowAny;
     }
 
     @XmlAttribute
-    public String getChildPrefix() {
+    public String getChildPrefix()
+    {
         return childPrefix;
     }
 
-    public void setChildPrefix(String childPrefix) {
+    public void setChildPrefix(String childPrefix)
+    {
         this.childPrefix = childPrefix;
     }
 
     @XmlAttribute
-    public String getChildURI() {
+    public String getChildURI()
+    {
         return childURI;
     }
 
-    public void setChildURI(String childURI) {
+    public void setChildURI(String childURI)
+    {
         this.childURI = childURI;
     }
 
     @XmlElementRef
-    public List<BaseChildEditorElement> getChildElements() {
-        if (childElements == null) {
+    public List<BaseChildEditorElement> getChildElements()
+    {
+        if (childElements == null)
+        {
             childElements = new ArrayList<BaseChildEditorElement>();
         }
         return childElements;
     }
 
-    public void setChildElements(List<BaseChildEditorElement> childElements) {
+    public void setChildElements(List<BaseChildEditorElement> childElements)
+    {
         this.childElements = childElements;
     }
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         return "Nested [additionalNamespaces=" + additionalNamespaces + ", childPrefix=" + childPrefix + ", childURI=" + childURI + ", getLocalId()=" + getLocalId()
-                + ", getDescription()=" + getDescription() + ", getCaption()=" + getCaption() + "]";
+               + ", getDescription()=" + getDescription() + ", getCaption()=" + getCaption() + "]";
     }
 
     @Override
-    public void accept(IEditorElementVisitor visitor) {
+    public void accept(IEditorElementVisitor visitor)
+    {
         visitor.visit(this);
     }
 
     @XmlAttribute
-    public Boolean getRequired() {
+    public Boolean getRequired()
+    {
         return required;
     }
 
-    public void setRequired(Boolean required) {
+    public void setRequired(Boolean required)
+    {
         this.required = required;
     }
 
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = super.hashCode();
-        result = prime * result + ((additionalNamespaces == null) ? 0 : additionalNamespaces.hashCode());
-        result = prime * result + ((allowAny == null) ? 0 : allowAny.hashCode());
-        result = prime * result + ((childElements == null) ? 0 : childElements.hashCode());
-        result = prime * result + ((childPrefix == null) ? 0 : childPrefix.hashCode());
-        result = prime * result + ((childURI == null) ? 0 : childURI.hashCode());
-        result = prime * result + ((required == null) ? 0 : required.hashCode());
-        result = prime * result + ((windowHeight == null) ? 0 : windowHeight.hashCode());
-        return result;
+    @XmlAttribute
+    public Boolean getSpecialValuePersistenceRequired()
+    {
+        return specialValuePersistenceRequired;
+    }
+
+    public void setSpecialValuePersistenceRequired(Boolean specialValuePersistenceRequired)
+    {
+        this.specialValuePersistenceRequired = specialValuePersistenceRequired;
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
+    public boolean equals(Object o)
+    {
+        if (this == o)
+        {
             return true;
-        if (!super.equals(obj))
+        }
+        if (o == null || getClass() != o.getClass())
+        {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (!super.equals(o))
+        {
             return false;
-        Nested other = (Nested) obj;
-        if (additionalNamespaces == null) {
-            if (other.additionalNamespaces != null)
-                return false;
-        } else if (!additionalNamespaces.equals(other.additionalNamespaces))
+        }
+
+        Nested nested = (Nested) o;
+
+        if (additionalNamespaces != null ? !additionalNamespaces.equals(nested.additionalNamespaces) : nested.additionalNamespaces != null)
+        {
             return false;
-        if (allowAny == null) {
-            if (other.allowAny != null)
-                return false;
-        } else if (!allowAny.equals(other.allowAny))
+        }
+        if (windowHeight != null ? !windowHeight.equals(nested.windowHeight) : nested.windowHeight != null)
+        {
             return false;
-        if (childElements == null) {
-            if (other.childElements != null)
-                return false;
-        } else if (!childElements.equals(other.childElements))
+        }
+        if (allowAny != null ? !allowAny.equals(nested.allowAny) : nested.allowAny != null)
+        {
             return false;
-        if (childPrefix == null) {
-            if (other.childPrefix != null)
-                return false;
-        } else if (!childPrefix.equals(other.childPrefix))
+        }
+        if (childPrefix != null ? !childPrefix.equals(nested.childPrefix) : nested.childPrefix != null)
+        {
             return false;
-        if (childURI == null) {
-            if (other.childURI != null)
-                return false;
-        } else if (!childURI.equals(other.childURI))
+        }
+        if (childURI != null ? !childURI.equals(nested.childURI) : nested.childURI != null)
+        {
             return false;
-        if (required == null) {
-            if (other.required != null)
-                return false;
-        } else if (!required.equals(other.required))
+        }
+        if (required != null ? !required.equals(nested.required) : nested.required != null)
+        {
             return false;
-        if (windowHeight == null) {
-            if (other.windowHeight != null)
-                return false;
-        } else if (!windowHeight.equals(other.windowHeight))
+        }
+        if (valuePersistence != null ? !valuePersistence.equals(nested.valuePersistence) : nested.valuePersistence != null)
+        {
             return false;
-        return true;
+        }
+        if (specialValuePersistenceRequired != null ? !specialValuePersistenceRequired.equals(nested.specialValuePersistenceRequired) : nested.specialValuePersistenceRequired != null)
+        {
+            return false;
+        }
+        return !(childElements != null ? !childElements.equals(nested.childElements) : nested.childElements != null);
+
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int result = super.hashCode();
+        result = 31 * result + (additionalNamespaces != null ? additionalNamespaces.hashCode() : 0);
+        result = 31 * result + (windowHeight != null ? windowHeight.hashCode() : 0);
+        result = 31 * result + (allowAny != null ? allowAny.hashCode() : 0);
+        result = 31 * result + (childPrefix != null ? childPrefix.hashCode() : 0);
+        result = 31 * result + (childURI != null ? childURI.hashCode() : 0);
+        result = 31 * result + (required != null ? required.hashCode() : 0);
+        result = 31 * result + (valuePersistence != null ? valuePersistence.hashCode() : 0);
+        result = 31 * result + (specialValuePersistenceRequired != null ? specialValuePersistenceRequired.hashCode() : 0);
+        result = 31 * result + (childElements != null ? childElements.hashCode() : 0);
+        return result;
     }
 }

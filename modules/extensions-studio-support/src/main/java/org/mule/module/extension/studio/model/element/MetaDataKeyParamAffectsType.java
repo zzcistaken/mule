@@ -9,6 +9,7 @@ package org.mule.module.extension.studio.model.element;
 import javax.xml.bind.annotation.XmlEnum;
 
 @XmlEnum
-public enum MetaDataKeyParamAffectsType {
+public enum MetaDataKeyParamAffectsType
+{
     INPUT, OUTPUT, BOTH, AUTO
 }

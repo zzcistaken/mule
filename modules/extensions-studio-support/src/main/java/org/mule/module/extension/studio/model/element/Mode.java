@@ -6,47 +6,55 @@
  */
 package org.mule.module.extension.studio.model.element;
 
+import org.mule.module.extension.studio.model.IEditorElementVisitor;
+
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.mule.module.extension.studio.model.IEditorElementVisitor;
-
 @XmlRootElement
-public class Mode extends AbstractMode {
+public class Mode extends AbstractMode
+{
 
     private String id;
     private String label;
 
     @XmlAttribute(name = "modeId")
-    public String getId() {
+    public String getId()
+    {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(String id)
+    {
         this.id = id;
     }
 
     @XmlAttribute(name = "modeLabel")
-    public String getLabel() {
+    public String getLabel()
+    {
         return label;
     }
 
-    public void setLabel(String label) {
+    public void setLabel(String label)
+    {
         this.label = label;
     }
 
     @Override
-    public void accept(IEditorElementVisitor visitor) {
+    public void accept(IEditorElementVisitor visitor)
+    {
         visitor.visit(this);
     }
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         return "Mode [id=" + id + ", label=" + label + "]";
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         final int prime = 31;
         int result = super.hashCode();
         result = prime * result + ((id == null) ? 0 : id.hashCode());
@@ -55,24 +63,43 @@ public class Mode extends AbstractMode {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(Object obj)
+    {
         if (this == obj)
+        {
             return true;
+        }
         if (!super.equals(obj))
+        {
             return false;
+        }
         if (getClass() != obj.getClass())
+        {
             return false;
+        }
         Mode other = (Mode) obj;
-        if (id == null) {
+        if (id == null)
+        {
             if (other.id != null)
+            {
                 return false;
-        } else if (!id.equals(other.id))
+            }
+        }
+        else if (!id.equals(other.id))
+        {
             return false;
-        if (label == null) {
+        }
+        if (label == null)
+        {
             if (other.label != null)
+            {
                 return false;
-        } else if (!label.equals(other.label))
+            }
+        }
+        else if (!label.equals(other.label))
+        {
             return false;
+        }
         return true;
     }
 

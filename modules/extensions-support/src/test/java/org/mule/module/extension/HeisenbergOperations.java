@@ -44,6 +44,10 @@ public class HeisenbergOperations
         return config.getPersonalInfo().getName();
     }
 
+    /**
+     * Die documentation
+     * @param config the config
+     */
     @Operation
     public void die(@UseConfig HeisenbergExtension config)
     {

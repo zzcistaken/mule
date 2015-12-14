@@ -12,36 +12,43 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.mule.module.extension.studio.model.IEditorElementVisitor;
 
 @XmlRootElement
-public class SoapInterceptor extends BaseFieldEditorElement {
+public class SoapInterceptor extends BaseFieldEditorElement
+{
 
     private Boolean allowMultiple;
     private Boolean inplace;
 
     @XmlAttribute
-    public Boolean getAllowMultiple() {
+    public Boolean getAllowMultiple()
+    {
         return allowMultiple;
     }
 
-    public void setAllowMultiple(Boolean allowMultiple) {
+    public void setAllowMultiple(Boolean allowMultiple)
+    {
         this.allowMultiple = allowMultiple;
     }
 
     @XmlAttribute
-    public Boolean getInplace() {
+    public Boolean getInplace()
+    {
         return inplace;
     }
 
-    public void setInplace(Boolean inplace) {
+    public void setInplace(Boolean inplace)
+    {
         this.inplace = inplace;
     }
 
     @Override
-    public void accept(IEditorElementVisitor visitor) {
+    public void accept(IEditorElementVisitor visitor)
+    {
         visitor.visit(this);
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         final int prime = 31;
         int result = super.hashCode();
         result = prime * result + ((allowMultiple == null) ? 0 : allowMultiple.hashCode());
@@ -50,24 +57,43 @@ public class SoapInterceptor extends BaseFieldEditorElement {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(Object obj)
+    {
         if (this == obj)
+        {
             return true;
+        }
         if (!super.equals(obj))
+        {
             return false;
+        }
         if (getClass() != obj.getClass())
+        {
             return false;
+        }
         SoapInterceptor other = (SoapInterceptor) obj;
-        if (allowMultiple == null) {
+        if (allowMultiple == null)
+        {
             if (other.allowMultiple != null)
+            {
                 return false;
-        } else if (!allowMultiple.equals(other.allowMultiple))
+            }
+        }
+        else if (!allowMultiple.equals(other.allowMultiple))
+        {
             return false;
-        if (inplace == null) {
+        }
+        if (inplace == null)
+        {
             if (other.inplace != null)
+            {
                 return false;
-        } else if (!inplace.equals(other.inplace))
+            }
+        }
+        else if (!inplace.equals(other.inplace))
+        {
             return false;
+        }
         return true;
     }
 }

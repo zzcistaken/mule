@@ -7,6 +7,8 @@
 package org.mule.module.extension.studio.model;
 
 
-public interface IComponentElement {
+public interface IComponentElement
+{
+
     void accept(IEditorElementVisitor visitor);
 }

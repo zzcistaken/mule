@@ -11,6 +11,7 @@ package org.mule.module.extension.multiconfig;
  */
 public class MultiConfigConnection
 {
+
     private boolean connected = true;
 
     public void disconnect()

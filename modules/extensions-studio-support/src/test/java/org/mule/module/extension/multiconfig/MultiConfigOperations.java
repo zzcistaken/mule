@@ -19,23 +19,28 @@ import java.util.List;
  */
 public class MultiConfigOperations
 {
+
     @Operation
-    public void dummyOperation(){
+    public void dummyOperation()
+    {
 
     }
 
     @Operation
-    public void config1Operation(@UseConfig AbstractConfig configuration){
+    public void config1Operation(@UseConfig AbstractConfig configuration)
+    {
 
     }
 
     @Operation
-    public void nestedSingle(NestedProcessor firstProcessor){
+    public void nestedSingle(NestedProcessor firstProcessor)
+    {
 
     }
 
     @Operation
-    public void nestedMultiple(List<NestedProcessor> processors){
+    public void nestedMultiple(List<NestedProcessor> processors)
+    {
 
     }
 

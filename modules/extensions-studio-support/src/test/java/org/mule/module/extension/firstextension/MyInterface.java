@@ -11,5 +11,6 @@ package org.mule.module.extension.firstextension;
  */
 public interface MyInterface
 {
+
     String getSomeMessage(String orignal);
 }

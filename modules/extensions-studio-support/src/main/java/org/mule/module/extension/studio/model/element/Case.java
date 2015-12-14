@@ -17,39 +17,47 @@ import org.mule.module.extension.studio.model.AbstractEditorElement;
 import org.mule.module.extension.studio.model.IEditorElementVisitor;
 
 @XmlRootElement
-public class Case extends AbstractEditorElement {
+public class Case extends AbstractEditorElement
+{
 
     private String id;
     private List<BaseChildEditorElement> childElements;
 
     @XmlElementRef
-    public List<BaseChildEditorElement> getChildElements() {
-        if (childElements == null) {
+    public List<BaseChildEditorElement> getChildElements()
+    {
+        if (childElements == null)
+        {
             childElements = new ArrayList<BaseChildEditorElement>();
         }
         return childElements;
     }
 
-    public void setChildElements(List<BaseChildEditorElement> childElements) {
+    public void setChildElements(List<BaseChildEditorElement> childElements)
+    {
         this.childElements = childElements;
     }
 
     @XmlAttribute
-    public String getId() {
+    public String getId()
+    {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(String id)
+    {
         this.id = id;
     }
 
     @Override
-    public void accept(IEditorElementVisitor visitor) {
+    public void accept(IEditorElementVisitor visitor)
+    {
         visitor.visit(this);
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         final int prime = 31;
         int result = super.hashCode();
         result = prime * result + ((childElements == null) ? 0 : childElements.hashCode());
@@ -58,24 +66,43 @@ public class Case extends AbstractEditorElement {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(Object obj)
+    {
         if (this == obj)
+        {
             return true;
+        }
         if (!super.equals(obj))
+        {
             return false;
+        }
         if (getClass() != obj.getClass())
+        {
             return false;
+        }
         Case other = (Case) obj;
-        if (childElements == null) {
+        if (childElements == null)
+        {
             if (other.childElements != null)
+            {
                 return false;
-        } else if (!childElements.equals(other.childElements))
+            }
+        }
+        else if (!childElements.equals(other.childElements))
+        {
             return false;
-        if (id == null) {
+        }
+        if (id == null)
+        {
             if (other.id != null)
+            {
                 return false;
-        } else if (!id.equals(other.id))
+            }
+        }
+        else if (!id.equals(other.id))
+        {
             return false;
+        }
         return true;
     }
 }

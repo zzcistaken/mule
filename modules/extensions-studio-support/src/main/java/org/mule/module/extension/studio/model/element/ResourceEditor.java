@@ -12,51 +12,61 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.mule.module.extension.studio.model.IEditorElementVisitor;
 
 @XmlRootElement(name = "resource")
-public class ResourceEditor extends BaseFieldEditorElement {
+public class ResourceEditor extends BaseFieldEditorElement
+{
 
     private String containerLevel;// TODO Solo existe un valor y es project...es un ENUM?
     private String initialPattern;
     private String resourceTypes;
 
     @Override
-    public void accept(IEditorElementVisitor visitor) {
+    public void accept(IEditorElementVisitor visitor)
+    {
         visitor.visit(this);
     }
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         return "ResourceEditor [getName()=" + getName() + ", getCaption()=" + getCaption() + "]";
     }
 
     @XmlAttribute
-    public String getContainerLevel() {
+    public String getContainerLevel()
+    {
         return containerLevel;
     }
 
-    public void setContainerLevel(String containerLevel) {
+    public void setContainerLevel(String containerLevel)
+    {
         this.containerLevel = containerLevel;
     }
 
     @XmlAttribute
-    public String getInitialPattern() {
+    public String getInitialPattern()
+    {
         return initialPattern;
     }
 
-    public void setInitialPattern(String initialPattern) {
+    public void setInitialPattern(String initialPattern)
+    {
         this.initialPattern = initialPattern;
     }
 
     @XmlAttribute
-    public String getResourceTypes() {
+    public String getResourceTypes()
+    {
         return resourceTypes;
     }
 
-    public void setResourceTypes(String resourceTypes) {
+    public void setResourceTypes(String resourceTypes)
+    {
         this.resourceTypes = resourceTypes;
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         final int prime = 31;
         int result = super.hashCode();
         result = prime * result + ((containerLevel == null) ? 0 : containerLevel.hashCode());
@@ -66,29 +76,54 @@ public class ResourceEditor extends BaseFieldEditorElement {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(Object obj)
+    {
         if (this == obj)
+        {
             return true;
+        }
         if (!super.equals(obj))
+        {
             return false;
+        }
         if (getClass() != obj.getClass())
+        {
             return false;
+        }
         ResourceEditor other = (ResourceEditor) obj;
-        if (containerLevel == null) {
+        if (containerLevel == null)
+        {
             if (other.containerLevel != null)
+            {
                 return false;
-        } else if (!containerLevel.equals(other.containerLevel))
+            }
+        }
+        else if (!containerLevel.equals(other.containerLevel))
+        {
             return false;
-        if (initialPattern == null) {
+        }
+        if (initialPattern == null)
+        {
             if (other.initialPattern != null)
+            {
                 return false;
-        } else if (!initialPattern.equals(other.initialPattern))
+            }
+        }
+        else if (!initialPattern.equals(other.initialPattern))
+        {
             return false;
-        if (resourceTypes == null) {
+        }
+        if (resourceTypes == null)
+        {
             if (other.resourceTypes != null)
+            {
                 return false;
-        } else if (!resourceTypes.equals(other.resourceTypes))
+            }
+        }
+        else if (!resourceTypes.equals(other.resourceTypes))
+        {
             return false;
+        }
         return true;
     }
 

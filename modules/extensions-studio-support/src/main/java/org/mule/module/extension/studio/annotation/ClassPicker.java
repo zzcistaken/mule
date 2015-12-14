@@ -13,7 +13,8 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface ClassPicker {
+public @interface ClassPicker
+{
 
     Class<?>[] mustExtend() default {};
 

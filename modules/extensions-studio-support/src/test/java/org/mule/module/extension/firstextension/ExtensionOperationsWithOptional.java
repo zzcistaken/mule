@@ -13,25 +13,29 @@ import org.mule.extension.annotation.api.param.Optional;
 public class ExtensionOperationsWithOptional
 {
 
-	@Operation
-	public String stringOperationWithOptional(String param1, @Optional String param2) {
-		return param1 + " & " + param2;
-	}
+    @Operation
+    public String stringOperationWithOptional(String param1, @Optional String param2)
+    {
+        return param1 + " & " + param2;
+    }
 
-	//TODO error should be shown
-	@Operation
-	public int primitiveTypesOperationWithOptional(int a, @Optional int b) {
-		return a+b;
-	}
+    //TODO error should be shown
+    @Operation
+    public int primitiveTypesOperationWithOptional(int a, @Optional int b)
+    {
+        return a + b;
+    }
 
-	//TODO This doesn't make sense
-	@Operation
-	public SimplePojo parameterGroupPojoOperationWithOptional( @ParameterGroup SimplePojo pojo) {
-		return pojo;
-	}
+    //TODO This doesn't make sense
+    @Operation
+    public SimplePojo parameterGroupPojoOperationWithOptional(@ParameterGroup SimplePojo pojo)
+    {
+        return pojo;
+    }
 
-	@Operation
-	public SimplePojo pojoOperationWithOptional( @Optional SimplePojo pojo) {
-		return pojo;
-	}
+    @Operation
+    public SimplePojo pojoOperationWithOptional(@Optional SimplePojo pojo)
+    {
+        return pojo;
+    }
 }

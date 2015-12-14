@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<namespace xmlns="http://www.mulesoft.org/schema/mule/tooling.attributes"
+           xmlns:mule="http://www.mulesoft.org/schema/mule/core" prefix="basic"
+           url="http://www.mulesoft.org/schema/mule/basic">
+    <nested caption="Configure myComplexObjectConfigurable" description="" localId="my-complex-object-configurable"
+            xmlname="my-complex-object-configurable">
+        <string name="value" required="false" supportsExpressions="false" caption="Value"/>
+    </nested>
+    <global-cloud-connector connectivityTesting="off" metaData="static" supportsUserDefinedMetaData="false"
+                            caption="Basic config" description="" icon="icons/small/basic-extension-24x16.png"
+                            image="icons/large/basic-extension-48x32.png" abstract="false" localId="config"
+                            versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="Configuration Properties">
+            <group id="basicGenericProperties" caption="Basic Settings">
+                <name name="name" required="true" caption="Name"
+                      description="Give a name to this configuration so it can be later referenced by config-ref."/>
+            </group>
+            <group id="general" caption="General">
+                <childElement allowMultiple="false" inplace="true"
+                              javaType="org.mule.module.extension.basic.MyComplexObject"
+                              name="http://www.mulesoft.org/schema/mule/basic/my-complex-object-configurable"
+                              caption="My Complex Object Configurable"/>
+                <globalRef requiredType="http://www.mulesoft.org/schema/mule/http/request-config"
+                           name="requesterConfigOptional" required="false" supportsExpressions="true"
+                           caption="Requester Config Optional" description=""/>
+                <globalRef requiredType="http://www.mulesoft.org/schema/mule/http/request-config" name="requesterConfig"
+                           required="true" supportsExpressions="true" caption="Requester Config" description=""/>
+            </group>
+        </attribute-category>
+    </global-cloud-connector>
+    <cloud-connector caption="abstractBasicGeneric" icon="icons/small/basic-extension-24x16.png"
+                     image="icons/large/basic-extension-48x32.png" abstract="true" localId="abstractBasicGeneric"
+                     versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="Configuration Properties">
+            <group id="abstractBasicGeneric" caption="Basic Settings">
+                <globalRef requiredType="http://www.mulesoft.org/schema/mule/basic/config" name="config-ref"
+                           required="true" caption="Extension Configuration"
+                           description="Specify which configuration to use for this invocation."/>
+            </group>
+        </attribute-category>
+    </cloud-connector>
+    <cloud-connector returnType="boolean" metaData="static" caption="Passthru Boolean" description=""
+                     extends="http://www.mulesoft.org/schema/mule/basic/abstractBasicGeneric"
+                     icon="icons/small/basic-extension-24x16.png" image="icons/large/basic-extension-48x32.png"
+                     abstract="true" localId="passthru-boolean" xmlname="passthru-boolean" versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="Configuration Properties">
+            <group id="general" caption="General">
+                <boolean name="value" required="true" supportsExpressions="true" caption="Value" description=""/>
+            </group>
+        </attribute-category>
+    </cloud-connector>
+    <cloud-connector returnType="java.util.Calendar" metaData="static" caption="Passthru Calendar" description=""
+                     extends="http://www.mulesoft.org/schema/mule/basic/abstractBasicGeneric"
+                     icon="icons/small/basic-extension-24x16.png" image="icons/large/basic-extension-48x32.png"
+                     abstract="true" localId="passthru-calendar" xmlname="passthru-calendar" versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="Configuration Properties">
+            <group id="general" caption="General">
+                <string javaType="java.util.Calendar" name="calendar" required="true" supportsExpressions="true"
+                        caption="Calendar" description=""/>
+            </group>
+        </attribute-category>
+    </cloud-connector>
+    <cloud-connector returnType="char" metaData="static" caption="Passthru Char" description=""
+                     extends="http://www.mulesoft.org/schema/mule/basic/abstractBasicGeneric"
+                     icon="icons/small/basic-extension-24x16.png" image="icons/large/basic-extension-48x32.png"
+                     abstract="true" localId="passthru-char" xmlname="passthru-char" versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="Configuration Properties">
+            <group id="general" caption="General">
+                <string name="value" required="true" supportsExpressions="true" caption="Value" description=""/>
+            </group>
+        </attribute-category>
+    </cloud-connector>
+    <cloud-connector returnType="java.lang.Boolean" metaData="static" caption="Passthru Complex Boolean" description=""
+                     extends="http://www.mulesoft.org/schema/mule/basic/abstractBasicGeneric"
+                     icon="icons/small/basic-extension-24x16.png" image="icons/large/basic-extension-48x32.png"
+                     abstract="true" localId="passthru-complex-boolean" xmlname="passthru-complex-boolean"
+                     versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="Configuration Properties">
+            <group id="general" caption="General">
+                <boolean name="value" required="true" supportsExpressions="true" caption="Value" description=""/>
+            </group>
+        </attribute-category>
+    </cloud-connector>
+    <cloud-connector returnType="java.lang.Float" metaData="static" caption="Passthru Complex Float" description=""
+                     extends="http://www.mulesoft.org/schema/mule/basic/abstractBasicGeneric"
+                     icon="icons/small/basic-extension-24x16.png" image="icons/large/basic-extension-48x32.png"
+                     abstract="true" localId="passthru-complex-float" xmlname="passthru-complex-float"
+                     versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="Configuration Properties">
+            <group id="general" caption="General">
+                <string javaType="java.lang.Float" name="value" required="true" supportsExpressions="true"
+                        caption="Value" description=""/>
+            </group>
+        </attribute-category>
+    </cloud-connector>
+    <cloud-connector returnType="java.lang.Integer" metaData="static" caption="Passthru Complex Integer" description=""
+                     extends="http://www.mulesoft.org/schema/mule/basic/abstractBasicGeneric"
+                     icon="icons/small/basic-extension-24x16.png" image="icons/large/basic-extension-48x32.png"
+                     abstract="true" localId="passthru-complex-integer" xmlname="passthru-complex-integer"
+                     versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="Configuration Properties">
+            <group id="general" caption="General">
+                <integer name="value" required="true" supportsExpressions="true" caption="Value" description=""/>
+            </group>
+        </attribute-category>
+    </cloud-connector>
+    <cloud-connector returnType="java.lang.Long" metaData="static" caption="Passthru Complex Long" description=""
+                     extends="http://www.mulesoft.org/schema/mule/basic/abstractBasicGeneric"
+                     icon="icons/small/basic-extension-24x16.png" image="icons/large/basic-extension-48x32.png"
+                     abstract="true" localId="passthru-complex-long" xmlname="passthru-complex-long"
+                     versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="Configuration Properties">
+            <group id="general" caption="General">
+                <long name="value" required="true" supportsExpressions="true" caption="Value" description=""/>
+            </group>
+        </attribute-category>
+    </cloud-connector>
+    <nested caption="Configure myComplexObject" description="" localId="my-complex-object" xmlname="my-complex-object">
+        <string name="value" required="false" supportsExpressions="false" caption="Value"/>
+    </nested>
+    <cloud-connector returnType="java.lang.String" metaData="static" caption="Passthru Complex Ref" description=""
+                     extends="http://www.mulesoft.org/schema/mule/basic/abstractBasicGeneric"
+                     icon="icons/small/basic-extension-24x16.png" image="icons/large/basic-extension-48x32.png"
+                     abstract="true" localId="passthru-complex-ref" xmlname="passthru-complex-ref"
+                     versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="Configuration Properties">
+            <group id="general" caption="General">
+                <childElement allowMultiple="false" inplace="true"
+                              javaType="org.mule.module.extension.basic.MyComplexObject"
+                              name="http://www.mulesoft.org/schema/mule/basic/my-complex-object"
+                              caption="My Complex Object"/>
+            </group>
+        </attribute-category>
+    </cloud-connector>
+    <cloud-connector returnType="java.lang.String" metaData="static" caption="Passthru Enum" description=""
+                     extends="http://www.mulesoft.org/schema/mule/basic/abstractBasicGeneric"
+                     icon="icons/small/basic-extension-24x16.png" image="icons/large/basic-extension-48x32.png"
+                     abstract="true" localId="passthru-enum" xmlname="passthru-enum" versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="Configuration Properties">
+            <group id="general" caption="General">
+                <enum javaType="org.mule.module.extension.basic.BasicOperations$Mode" name="mode" required="true"
+                      supportsExpressions="true" caption="Mode" description="">
+                    <option value="In"/>
+                    <option value="Out"/>
+                </enum>
+            </group>
+        </attribute-category>
+    </cloud-connector>
+    <cloud-connector returnType="float" metaData="static" caption="Passthru Float" description=""
+                     extends="http://www.mulesoft.org/schema/mule/basic/abstractBasicGeneric"
+                     icon="icons/small/basic-extension-24x16.png" image="icons/large/basic-extension-48x32.png"
+                     abstract="true" localId="passthru-float" xmlname="passthru-float" versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="Configuration Properties">
+            <group id="general" caption="General">
+                <string javaType="float" name="value" required="true" supportsExpressions="true" caption="Value"
+                        description=""/>
+            </group>
+        </attribute-category>
+    </cloud-connector>
+    <cloud-connector returnType="int" metaData="static" caption="Passthru Integer" description=""
+                     extends="http://www.mulesoft.org/schema/mule/basic/abstractBasicGeneric"
+                     icon="icons/small/basic-extension-24x16.png" image="icons/large/basic-extension-48x32.png"
+                     abstract="true" localId="passthru-integer" xmlname="passthru-integer" versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="Configuration Properties">
+            <group id="general" caption="General">
+                <integer name="value" required="true" supportsExpressions="true" caption="Value" description=""/>
+            </group>
+        </attribute-category>
+    </cloud-connector>
+    <cloud-connector returnType="long" metaData="static" caption="Passthru Long" description=""
+                     extends="http://www.mulesoft.org/schema/mule/basic/abstractBasicGeneric"
+                     icon="icons/small/basic-extension-24x16.png" image="icons/large/basic-extension-48x32.png"
+                     abstract="true" localId="passthru-long" xmlname="passthru-long" versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="Configuration Properties">
+            <group id="general" caption="General">
+                <long name="value" required="true" supportsExpressions="true" caption="Value" description=""/>
+            </group>
+        </attribute-category>
+    </cloud-connector>
+    <cloud-connector returnType="java.lang.String" metaData="static" caption="Passthru String" description=""
+                     extends="http://www.mulesoft.org/schema/mule/basic/abstractBasicGeneric"
+                     icon="icons/small/basic-extension-24x16.png" image="icons/large/basic-extension-48x32.png"
+                     abstract="true" localId="passthru-string" xmlname="passthru-string" versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="Configuration Properties">
+            <group id="general" caption="General">
+                <string name="value" required="true" supportsExpressions="true" caption="Value" description=""/>
+            </group>
+        </attribute-category>
+    </cloud-connector>
+    <cloud-connector aliasId="org.mule.tooling.ui.modules.core.pattern.basic" caption="Basic" description="Basic"
+                     extends="http://www.mulesoft.org/schema/mule/basic/abstractBasicGeneric"
+                     icon="icons/small/basic-extension-24x16.png" image="icons/large/basic-extension-48x32.png"
+                     localId="basic-extension" versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="General.">
+            <group id="basicConnectorGeneric" caption="Basic Settings">
+                <modeSwitch alwaysCombo="true" name="basic operations to execute" caption="Operation"
+                            description="Operation.">
+                    <no-operation abstractElement="http://www.mulesoft.org/schema/mule/basic/abstractBasicGeneric"
+                                  connector-name="processor"/>
+                    <mode modeId="http://www.mulesoft.org/schema/mule/basic/passthru-boolean"
+                          modeLabel="Passthru Boolean"/>
+                    <mode modeId="http://www.mulesoft.org/schema/mule/basic/passthru-calendar"
+                          modeLabel="Passthru Calendar"/>
+                    <mode modeId="http://www.mulesoft.org/schema/mule/basic/passthru-char" modeLabel="Passthru Char"/>
+                    <mode modeId="http://www.mulesoft.org/schema/mule/basic/passthru-complex-boolean"
+                          modeLabel="Passthru Complex Boolean"/>
+                    <mode modeId="http://www.mulesoft.org/schema/mule/basic/passthru-complex-float"
+                          modeLabel="Passthru Complex Float"/>
+                    <mode modeId="http://www.mulesoft.org/schema/mule/basic/passthru-complex-integer"
+                          modeLabel="Passthru Complex Integer"/>
+                    <mode modeId="http://www.mulesoft.org/schema/mule/basic/passthru-complex-long"
+                          modeLabel="Passthru Complex Long"/>
+                    <mode modeId="http://www.mulesoft.org/schema/mule/basic/passthru-complex-ref"
+                          modeLabel="Passthru Complex Ref"/>
+                    <mode modeId="http://www.mulesoft.org/schema/mule/basic/passthru-enum" modeLabel="Passthru Enum"/>
+                    <mode modeId="http://www.mulesoft.org/schema/mule/basic/passthru-float" modeLabel="Passthru Float"/>
+                    <mode modeId="http://www.mulesoft.org/schema/mule/basic/passthru-integer"
+                          modeLabel="Passthru Integer"/>
+                    <mode modeId="http://www.mulesoft.org/schema/mule/basic/passthru-long" modeLabel="Passthru Long"/>
+                    <mode modeId="http://www.mulesoft.org/schema/mule/basic/passthru-string"
+                          modeLabel="Passthru String"/>
+                </modeSwitch>
+            </group>
+        </attribute-category>
+    </cloud-connector>
+</namespace>

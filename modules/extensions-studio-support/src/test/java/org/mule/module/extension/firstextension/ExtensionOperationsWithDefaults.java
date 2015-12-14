@@ -13,24 +13,28 @@ import org.mule.extension.annotation.api.param.Optional;
 public class ExtensionOperationsWithDefaults
 {
 
-	@Operation
-	public String stringOperationWithDefault(String param1, @Optional(defaultValue="fruta") String param2) {
-		return param1 + " & " + param2;
-	}
+    @Operation
+    public String stringOperationWithDefault(String param1, @Optional(defaultValue = "fruta") String param2)
+    {
+        return param1 + " & " + param2;
+    }
 
-	@Operation
-	public int primitiveTypesOperationWithDefault(int a, @Optional(defaultValue = "3") int b) {
-		return a+b;
-	}
+    @Operation
+    public int primitiveTypesOperationWithDefault(int a, @Optional(defaultValue = "3") int b)
+    {
+        return a + b;
+    }
 
-	//TODO This doesn't make sense
-	@Operation
-	public SimplePojo parameterGroupPojoOperationWithDefault( @ParameterGroup SimplePojo pojo) {
-		return pojo;
-	}
+    //TODO This doesn't make sense
+    @Operation
+    public SimplePojo parameterGroupPojoOperationWithDefault(@ParameterGroup SimplePojo pojo)
+    {
+        return pojo;
+    }
 
-	@Operation
-	public SimplePojo pojoOperationWithDefault( @Optional(defaultValue = "#[payload]") SimplePojo pojo) {
-		return pojo;
-	}
+    @Operation
+    public SimplePojo pojoOperationWithDefault(@Optional(defaultValue = "#[payload]") SimplePojo pojo)
+    {
+        return pojo;
+    }
 }

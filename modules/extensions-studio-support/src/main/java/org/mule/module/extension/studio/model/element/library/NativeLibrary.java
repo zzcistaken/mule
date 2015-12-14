@@ -6,21 +6,24 @@
  */
 package org.mule.module.extension.studio.model.element.library;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
 import org.mule.module.extension.studio.model.IEditorElementVisitor;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 @XmlRootElement(name = "nativeLib")
-public class NativeLibrary extends AbstractBaseLibrary {
+public class NativeLibrary extends AbstractBaseLibrary
+{
 
     @Override
-    public void accept(IEditorElementVisitor visitor) {
+    public void accept(IEditorElementVisitor visitor)
+    {
         visitor.visit(this);
     }
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         return "NativeLibrary [getName()=" + getName() + "]";
     }
-    
+
 }

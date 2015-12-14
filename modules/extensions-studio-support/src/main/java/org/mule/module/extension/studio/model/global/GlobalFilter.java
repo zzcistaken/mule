@@ -11,10 +11,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.mule.module.extension.studio.model.IEditorElementVisitor;
 
 @XmlRootElement(name = "global-filter")
-public class GlobalFilter extends AbstractGlobalElement {
+public class GlobalFilter extends AbstractGlobalElement
+{
 
     @Override
-    public void accept(IEditorElementVisitor visitor) {
+    public void accept(IEditorElementVisitor visitor)
+    {
         visitor.visit(this);
     }
 }

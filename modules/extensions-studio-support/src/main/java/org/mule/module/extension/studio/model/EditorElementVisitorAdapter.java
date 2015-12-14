@@ -6,54 +6,7 @@
  */
 package org.mule.module.extension.studio.model;
 
-import org.mule.module.extension.studio.model.element.AttributeCategory;
-import org.mule.module.extension.studio.model.element.BooleanEditor;
-import org.mule.module.extension.studio.model.element.Button;
-import org.mule.module.extension.studio.model.element.Case;
-import org.mule.module.extension.studio.model.element.ChildElement;
-import org.mule.module.extension.studio.model.element.ClassNameEditor;
-import org.mule.module.extension.studio.model.element.Custom;
-import org.mule.module.extension.studio.model.element.DateTimeEditor;
-import org.mule.module.extension.studio.model.element.Dummy;
-import org.mule.module.extension.studio.model.element.DynamicEditor;
-import org.mule.module.extension.studio.model.element.EditorRef;
-import org.mule.module.extension.studio.model.element.ElementControllerList;
-import org.mule.module.extension.studio.model.element.ElementControllerListNoExpression;
-import org.mule.module.extension.studio.model.element.ElementControllerListOfMap;
-import org.mule.module.extension.studio.model.element.ElementControllerListOfPojo;
-import org.mule.module.extension.studio.model.element.ElementControllerMap;
-import org.mule.module.extension.studio.model.element.ElementControllerMapNoExpression;
-import org.mule.module.extension.studio.model.element.ElementQuery;
-import org.mule.module.extension.studio.model.element.EncodingEditor;
-import org.mule.module.extension.studio.model.element.EnumEditor;
-import org.mule.module.extension.studio.model.element.FileEditor;
-import org.mule.module.extension.studio.model.element.FixedAttribute;
-import org.mule.module.extension.studio.model.element.Group;
-import org.mule.module.extension.studio.model.element.Horizontal;
-import org.mule.module.extension.studio.model.element.IntegerEditor;
-import org.mule.module.extension.studio.model.element.LabelElement;
-import org.mule.module.extension.studio.model.element.ListEditor;
-import org.mule.module.extension.studio.model.element.LongEditor;
-import org.mule.module.extension.studio.model.element.Mode;
-import org.mule.module.extension.studio.model.element.ModeSwitch;
-import org.mule.module.extension.studio.model.element.NameEditor;
-import org.mule.module.extension.studio.model.element.NoOperation;
-import org.mule.module.extension.studio.model.element.Option;
-import org.mule.module.extension.studio.model.element.PasswordEditor;
-import org.mule.module.extension.studio.model.element.PathEditor;
-import org.mule.module.extension.studio.model.element.RadioBoolean;
-import org.mule.module.extension.studio.model.element.Regexp;
-import org.mule.module.extension.studio.model.element.RequiredLibraries;
-import org.mule.module.extension.studio.model.element.ResourceEditor;
-import org.mule.module.extension.studio.model.element.SoapInterceptor;
-import org.mule.module.extension.studio.model.element.StringEditor;
-import org.mule.module.extension.studio.model.element.StringMap;
-import org.mule.module.extension.studio.model.element.SwitchCase;
-import org.mule.module.extension.studio.model.element.TextEditor;
-import org.mule.module.extension.studio.model.element.TimeEditor;
-import org.mule.module.extension.studio.model.element.TypeChooser;
-import org.mule.module.extension.studio.model.element.UrlEditor;
-import org.mule.module.extension.studio.model.element.UseMetaData;
+import org.mule.module.extension.studio.model.element.*;
 import org.mule.module.extension.studio.model.element.library.Jar;
 import org.mule.module.extension.studio.model.element.library.LibrarySet;
 import org.mule.module.extension.studio.model.element.library.NativeLibrary;
@@ -73,7 +26,9 @@ import org.mule.module.extension.studio.model.reference.ReverseGlobalRef;
  */
 public class EditorElementVisitorAdapter implements IEditorElementVisitor
 {
-    protected void defaultOperation(AbstractEditorElement element){
+
+    protected void defaultOperation(AbstractEditorElement element)
+    {
 
     }
 
@@ -153,6 +108,12 @@ public class EditorElementVisitorAdapter implements IEditorElementVisitor
     public void visit(Custom custom)
     {
         defaultOperation(custom);
+    }
+
+    @Override
+    public void visit(DoubleEditor doubleEditor)
+    {
+        defaultOperation(doubleEditor);
     }
 
     @Override
@@ -525,6 +486,12 @@ public class EditorElementVisitorAdapter implements IEditorElementVisitor
     public void visit(Namespace namespace)
     {
         defaultOperation(namespace);
+    }
+
+    @Override
+    public void visit(MultiTypeChooser multiTypeChooser)
+    {
+        defaultOperation(multiTypeChooser);
     }
 
     @Override

@@ -12,7 +12,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.mule.module.extension.studio.model.IEditorElementVisitor;
 
 @XmlRootElement(name = "boolean")
-public class BooleanEditor extends BaseFieldEditorElement {
+public class BooleanEditor extends BaseFieldEditorElement
+{
 
     private Boolean value;// TODO para que? si el defaultValue sobra
     private Boolean defaultAttribute;// TODO para que? si el defaultValue sobra
@@ -20,48 +21,58 @@ public class BooleanEditor extends BaseFieldEditorElement {
     private Boolean negative;
 
     @XmlAttribute
-    public Boolean getDefaultValue() {
+    public Boolean getDefaultValue()
+    {
         return defaultValue;
     }
 
-    public void setDefaultValue(Boolean defaultValue) {
+    public void setDefaultValue(Boolean defaultValue)
+    {
         this.defaultValue = defaultValue;
     }
 
     @Override
-    public void accept(IEditorElementVisitor visitor) {
+    public void accept(IEditorElementVisitor visitor)
+    {
         visitor.visit(this);
     }
 
     @XmlAttribute
-    public Boolean getNegative() {
+    public Boolean getNegative()
+    {
         return negative;
     }
 
-    public void setNegative(Boolean negative) {
+    public void setNegative(Boolean negative)
+    {
         this.negative = negative;
     }
 
     @XmlAttribute(name = "default")
-    public Boolean getDefaultAttribute() {
+    public Boolean getDefaultAttribute()
+    {
         return defaultAttribute;
     }
 
-    public void setDefaultAttribute(Boolean defaultAttribute) {
+    public void setDefaultAttribute(Boolean defaultAttribute)
+    {
         this.defaultAttribute = defaultAttribute;
     }
 
     @XmlAttribute
-    public Boolean getValue() {
+    public Boolean getValue()
+    {
         return value;
     }
 
-    public void setValue(Boolean value) {
+    public void setValue(Boolean value)
+    {
         this.value = value;
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         final int prime = 31;
         int result = super.hashCode();
         result = prime * result + ((defaultAttribute == null) ? 0 : defaultAttribute.hashCode());
@@ -72,34 +83,65 @@ public class BooleanEditor extends BaseFieldEditorElement {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(Object obj)
+    {
         if (this == obj)
+        {
             return true;
+        }
         if (!super.equals(obj))
+        {
             return false;
+        }
         if (getClass() != obj.getClass())
+        {
             return false;
+        }
         BooleanEditor other = (BooleanEditor) obj;
-        if (defaultAttribute == null) {
+        if (defaultAttribute == null)
+        {
             if (other.defaultAttribute != null)
+            {
                 return false;
-        } else if (!defaultAttribute.equals(other.defaultAttribute))
+            }
+        }
+        else if (!defaultAttribute.equals(other.defaultAttribute))
+        {
             return false;
-        if (defaultValue == null) {
+        }
+        if (defaultValue == null)
+        {
             if (other.defaultValue != null)
+            {
                 return false;
-        } else if (!defaultValue.equals(other.defaultValue))
+            }
+        }
+        else if (!defaultValue.equals(other.defaultValue))
+        {
             return false;
-        if (negative == null) {
+        }
+        if (negative == null)
+        {
             if (other.negative != null)
+            {
                 return false;
-        } else if (!negative.equals(other.negative))
+            }
+        }
+        else if (!negative.equals(other.negative))
+        {
             return false;
-        if (value == null) {
+        }
+        if (value == null)
+        {
             if (other.value != null)
+            {
                 return false;
-        } else if (!value.equals(other.value))
+            }
+        }
+        else if (!value.equals(other.value))
+        {
             return false;
+        }
         return true;
     }
 }

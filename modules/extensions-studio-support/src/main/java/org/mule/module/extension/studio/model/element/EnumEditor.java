@@ -16,7 +16,8 @@ import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "enum")
-public class EnumEditor extends BaseFieldEditorElement {
+public class EnumEditor extends BaseFieldEditorElement
+{
 
     //@ClassPicker(mustImplement = org.mule.tooling.ui.modules.core.widgets.IModelUpdater.class)
     private String modelUpdater;
@@ -38,148 +39,180 @@ public class EnumEditor extends BaseFieldEditorElement {
     private String classAttribute;
 
     @XmlAttribute(name = "default")
-    public String getDefaultAttr() {
+    public String getDefaultAttr()
+    {
         return defaultAttr;
     }
 
-    public void setDefaultAttr(String defaultAttr) {
+    public void setDefaultAttr(String defaultAttr)
+    {
         this.defaultAttr = defaultAttr;
     }
 
     @XmlAttribute
-    public String getDefaultValue() {
+    public String getDefaultValue()
+    {
         return defaultValue;
     }
 
-    public void setDefaultValue(String defaultValue) {
+    public void setDefaultValue(String defaultValue)
+    {
         this.defaultValue = defaultValue;
     }
 
     @XmlAttribute
-    public String getModelUpdater() {
+    public String getModelUpdater()
+    {
         return modelUpdater;
     }
 
-    public void setModelUpdater(String modelUpdater) {
+    public void setModelUpdater(String modelUpdater)
+    {
         this.modelUpdater = modelUpdater;
     }
 
     @XmlAttribute
-    public String getValueCalculator() {
+    public String getValueCalculator()
+    {
         return valueCalculator;
     }
 
-    public void setValueCalculator(String valueCalculator) {
+    public void setValueCalculator(String valueCalculator)
+    {
         this.valueCalculator = valueCalculator;
     }
 
     @XmlAttribute
-    public Boolean getAutoSort() {
+    public Boolean getAutoSort()
+    {
         return autoSort;
     }
 
-    public void setAutoSort(Boolean autoSort) {
+    public void setAutoSort(Boolean autoSort)
+    {
         this.autoSort = autoSort;
     }
 
     @XmlAttribute
-    public String getTransformer() {
+    public String getTransformer()
+    {
         return transformer;
     }
 
-    public void setTransformer(String transformer) {
+    public void setTransformer(String transformer)
+    {
         this.transformer = transformer;
     }
 
     @XmlAttribute
-    public String getOptionsProvider() {
+    public String getOptionsProvider()
+    {
         return optionsProvider;
     }
 
-    public void setOptionsProvider(String optionsProvider) {
+    public void setOptionsProvider(String optionsProvider)
+    {
         this.optionsProvider = optionsProvider;
     }
 
     @XmlAttribute
-    public Boolean getIsChildElementChooser() {
+    public Boolean getIsChildElementChooser()
+    {
         return isChildElementChooser;
     }
 
-    public void setIsChildElementChooser(Boolean isChildElementChooser) {
+    public void setIsChildElementChooser(Boolean isChildElementChooser)
+    {
         this.isChildElementChooser = isChildElementChooser;
     }
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         return "EnumEditor [modelUpdater=" + modelUpdater + ", valueCalculator=" + valueCalculator + ", autoSort=" + autoSort + ", transformer=" + transformer
-                + ", optionsProvider=" + optionsProvider + ", isChildElementChooser=" + isChildElementChooser + ", getName()=" + getName() + ", getCaption()=" + getCaption()
-                + ", getDescription()=" + getDescription() + "]";
+               + ", optionsProvider=" + optionsProvider + ", isChildElementChooser=" + isChildElementChooser + ", getName()=" + getName() + ", getCaption()=" + getCaption()
+               + ", getDescription()=" + getDescription() + "]";
     }
 
     @XmlElementRef
-    public List<Option> getOptions() {
-        if (options == null) {
+    public List<Option> getOptions()
+    {
+        if (options == null)
+        {
             options = new ArrayList<Option>();
         }
         return options;
     }
 
-    public void setOptions(List<Option> options) {
+    public void setOptions(List<Option> options)
+    {
         this.options = options;
     }
 
     @Override
-    public void accept(IEditorElementVisitor visitor) {
+    public void accept(IEditorElementVisitor visitor)
+    {
         visitor.visit(this);
     }
 
     @XmlAttribute
-    public Boolean getRemoveEmptyOption() {
+    public Boolean getRemoveEmptyOption()
+    {
         return removeEmptyOption;
     }
 
-    public void setRemoveEmptyOption(Boolean removeEmptyOption) {
+    public void setRemoveEmptyOption(Boolean removeEmptyOption)
+    {
         this.removeEmptyOption = removeEmptyOption;
     }
 
     @XmlAttribute
-    public Boolean getAsRadioGroup() {
+    public Boolean getAsRadioGroup()
+    {
         return asRadioGroup;
     }
 
-    public void setAsRadioGroup(Boolean asRadioGroup) {
+    public void setAsRadioGroup(Boolean asRadioGroup)
+    {
         this.asRadioGroup = asRadioGroup;
     }
 
     @XmlAttribute
-    public Boolean getAllowsCustom() {
+    public Boolean getAllowsCustom()
+    {
         return allowsCustom;
     }
 
-    public void setAllowsCustom(Boolean allowsCustom) {
+    public void setAllowsCustom(Boolean allowsCustom)
+    {
         this.allowsCustom = allowsCustom;
     }
 
     @XmlAttribute(name = "class")
-    public String getClassAttribute() {
+    public String getClassAttribute()
+    {
         return classAttribute;
     }
 
-    public void setClassAttribute(String classAttribute) {
+    public void setClassAttribute(String classAttribute)
+    {
         this.classAttribute = classAttribute;
     }
 
     @XmlAttribute
-    public Boolean getHorizontal() {
+    public Boolean getHorizontal()
+    {
         return horizontal;
     }
 
-    public void setHorizontal(Boolean horizontal) {
+    public void setHorizontal(Boolean horizontal)
+    {
         this.horizontal = horizontal;
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         final int prime = 31;
         int result = super.hashCode();
         result = prime * result + ((allowsCustom == null) ? 0 : allowsCustom.hashCode());
@@ -200,84 +233,175 @@ public class EnumEditor extends BaseFieldEditorElement {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(Object obj)
+    {
         if (this == obj)
+        {
             return true;
+        }
         if (!super.equals(obj))
+        {
             return false;
+        }
         if (getClass() != obj.getClass())
+        {
             return false;
+        }
         EnumEditor other = (EnumEditor) obj;
-        if (allowsCustom == null) {
+        if (allowsCustom == null)
+        {
             if (other.allowsCustom != null)
+            {
                 return false;
-        } else if (!allowsCustom.equals(other.allowsCustom))
+            }
+        }
+        else if (!allowsCustom.equals(other.allowsCustom))
+        {
             return false;
-        if (asRadioGroup == null) {
+        }
+        if (asRadioGroup == null)
+        {
             if (other.asRadioGroup != null)
+            {
                 return false;
-        } else if (!asRadioGroup.equals(other.asRadioGroup))
+            }
+        }
+        else if (!asRadioGroup.equals(other.asRadioGroup))
+        {
             return false;
-        if (autoSort == null) {
+        }
+        if (autoSort == null)
+        {
             if (other.autoSort != null)
+            {
                 return false;
-        } else if (!autoSort.equals(other.autoSort))
+            }
+        }
+        else if (!autoSort.equals(other.autoSort))
+        {
             return false;
-        if (classAttribute == null) {
+        }
+        if (classAttribute == null)
+        {
             if (other.classAttribute != null)
+            {
                 return false;
-        } else if (!classAttribute.equals(other.classAttribute))
+            }
+        }
+        else if (!classAttribute.equals(other.classAttribute))
+        {
             return false;
-        if (defaultAttr == null) {
+        }
+        if (defaultAttr == null)
+        {
             if (other.defaultAttr != null)
+            {
                 return false;
-        } else if (!defaultAttr.equals(other.defaultAttr))
+            }
+        }
+        else if (!defaultAttr.equals(other.defaultAttr))
+        {
             return false;
-        if (defaultValue == null) {
+        }
+        if (defaultValue == null)
+        {
             if (other.defaultValue != null)
+            {
                 return false;
-        } else if (!defaultValue.equals(other.defaultValue))
+            }
+        }
+        else if (!defaultValue.equals(other.defaultValue))
+        {
             return false;
-        if (horizontal == null) {
+        }
+        if (horizontal == null)
+        {
             if (other.horizontal != null)
+            {
                 return false;
-        } else if (!horizontal.equals(other.horizontal))
+            }
+        }
+        else if (!horizontal.equals(other.horizontal))
+        {
             return false;
-        if (isChildElementChooser == null) {
+        }
+        if (isChildElementChooser == null)
+        {
             if (other.isChildElementChooser != null)
+            {
                 return false;
-        } else if (!isChildElementChooser.equals(other.isChildElementChooser))
+            }
+        }
+        else if (!isChildElementChooser.equals(other.isChildElementChooser))
+        {
             return false;
-        if (modelUpdater == null) {
+        }
+        if (modelUpdater == null)
+        {
             if (other.modelUpdater != null)
+            {
                 return false;
-        } else if (!modelUpdater.equals(other.modelUpdater))
+            }
+        }
+        else if (!modelUpdater.equals(other.modelUpdater))
+        {
             return false;
-        if (options == null) {
+        }
+        if (options == null)
+        {
             if (other.options != null)
+            {
                 return false;
-        } else if (!options.equals(other.options))
+            }
+        }
+        else if (!options.equals(other.options))
+        {
             return false;
-        if (optionsProvider == null) {
+        }
+        if (optionsProvider == null)
+        {
             if (other.optionsProvider != null)
+            {
                 return false;
-        } else if (!optionsProvider.equals(other.optionsProvider))
+            }
+        }
+        else if (!optionsProvider.equals(other.optionsProvider))
+        {
             return false;
-        if (removeEmptyOption == null) {
+        }
+        if (removeEmptyOption == null)
+        {
             if (other.removeEmptyOption != null)
+            {
                 return false;
-        } else if (!removeEmptyOption.equals(other.removeEmptyOption))
+            }
+        }
+        else if (!removeEmptyOption.equals(other.removeEmptyOption))
+        {
             return false;
-        if (transformer == null) {
+        }
+        if (transformer == null)
+        {
             if (other.transformer != null)
+            {
                 return false;
-        } else if (!transformer.equals(other.transformer))
+            }
+        }
+        else if (!transformer.equals(other.transformer))
+        {
             return false;
-        if (valueCalculator == null) {
+        }
+        if (valueCalculator == null)
+        {
             if (other.valueCalculator != null)
+            {
                 return false;
-        } else if (!valueCalculator.equals(other.valueCalculator))
+            }
+        }
+        else if (!valueCalculator.equals(other.valueCalculator))
+        {
             return false;
+        }
         return true;
     }
 

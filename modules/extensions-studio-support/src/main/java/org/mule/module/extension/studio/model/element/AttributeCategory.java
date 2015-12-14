@@ -16,7 +16,8 @@ import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "attribute-category")
-public class AttributeCategory extends BaseChildEditorElement {
+public class AttributeCategory extends BaseChildEditorElement
+{
 
     private String versions;
     private String id;
@@ -25,56 +26,68 @@ public class AttributeCategory extends BaseChildEditorElement {
     private List<BaseChildEditorElement> childs;
 
     @XmlElementRef
-    public List<BaseChildEditorElement> getChilds() {
-        if (childs == null) {
+    public List<BaseChildEditorElement> getChilds()
+    {
+        if (childs == null)
+        {
             childs = new ArrayList<BaseChildEditorElement>();
         }
         return childs;
     }
 
-    public void setChilds(List<BaseChildEditorElement> childs) {
+    public void setChilds(List<BaseChildEditorElement> childs)
+    {
         this.childs = childs;
     }
 
     @XmlAttribute
-    public String getVersions() {
+    public String getVersions()
+    {
         return versions;
     }
 
-    public void setVersions(String versions) {
+    public void setVersions(String versions)
+    {
         this.versions = versions;
     }
 
     @XmlAttribute
-    public String getId() {
+    public String getId()
+    {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(String id)
+    {
         this.id = id;
     }
 
     @XmlAttribute
-    public String getTopAnchor() {
+    public String getTopAnchor()
+    {
         return topAnchor;
     }
 
-    public void setTopAnchor(String topAnchor) {
+    public void setTopAnchor(String topAnchor)
+    {
         this.topAnchor = topAnchor;
     }
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         return "AttributeCategory (" + super.toString() + ")";
     }
 
     @Override
-    public void accept(IEditorElementVisitor visitor) {
+    public void accept(IEditorElementVisitor visitor)
+    {
         visitor.visit(this);
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         final int prime = 31;
         int result = super.hashCode();
         result = prime * result + ((childs == null) ? 0 : childs.hashCode());
@@ -85,34 +98,65 @@ public class AttributeCategory extends BaseChildEditorElement {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(Object obj)
+    {
         if (this == obj)
+        {
             return true;
+        }
         if (!super.equals(obj))
+        {
             return false;
+        }
         if (getClass() != obj.getClass())
+        {
             return false;
+        }
         AttributeCategory other = (AttributeCategory) obj;
-        if (childs == null) {
+        if (childs == null)
+        {
             if (other.childs != null)
+            {
                 return false;
-        } else if (!childs.equals(other.childs))
+            }
+        }
+        else if (!childs.equals(other.childs))
+        {
             return false;
-        if (id == null) {
+        }
+        if (id == null)
+        {
             if (other.id != null)
+            {
                 return false;
-        } else if (!id.equals(other.id))
+            }
+        }
+        else if (!id.equals(other.id))
+        {
             return false;
-        if (topAnchor == null) {
+        }
+        if (topAnchor == null)
+        {
             if (other.topAnchor != null)
+            {
                 return false;
-        } else if (!topAnchor.equals(other.topAnchor))
+            }
+        }
+        else if (!topAnchor.equals(other.topAnchor))
+        {
             return false;
-        if (versions == null) {
+        }
+        if (versions == null)
+        {
             if (other.versions != null)
+            {
                 return false;
-        } else if (!versions.equals(other.versions))
+            }
+        }
+        else if (!versions.equals(other.versions))
+        {
             return false;
+        }
         return true;
     }
 }

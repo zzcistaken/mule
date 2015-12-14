@@ -35,7 +35,6 @@ import org.mule.module.extension.studio.model.element.BaseChildEditorElement;
 import org.mule.module.extension.studio.model.element.BaseFieldEditorElement;
 import org.mule.module.extension.studio.model.element.BooleanEditor;
 import org.mule.module.extension.studio.model.element.ChildElement;
-import org.mule.module.extension.studio.model.element.DateTimeEditor;
 import org.mule.module.extension.studio.model.element.DynamicEditor;
 import org.mule.module.extension.studio.model.element.EditorRef;
 import org.mule.module.extension.studio.model.element.ElementControllerList;
@@ -45,9 +44,7 @@ import org.mule.module.extension.studio.model.element.EncodingEditor;
 import org.mule.module.extension.studio.model.element.EnumEditor;
 import org.mule.module.extension.studio.model.element.FileEditor;
 import org.mule.module.extension.studio.model.element.Group;
-import org.mule.module.extension.studio.model.element.InputType;
 import org.mule.module.extension.studio.model.element.IntegerEditor;
-import org.mule.module.extension.studio.model.element.LabelElement;
 import org.mule.module.extension.studio.model.element.LongEditor;
 import org.mule.module.extension.studio.model.element.Mode;
 import org.mule.module.extension.studio.model.element.ModeSwitch;
@@ -178,7 +175,7 @@ public final class StudioEditorGenerator
 
     private String getAbstractOperationParentValue(ExtensionModel extensionModel)
     {
-        return String.format("abstract%sGeneric",StringUtils.capitalize(extensionModel.getName()));
+        return String.format("abstract%sGeneric", StringUtils.capitalize(extensionModel.getName()));
     }
 
     private void addOperationPicker(ExtensionModel extensionModel)
@@ -220,10 +217,6 @@ public final class StudioEditorGenerator
 
     private void addConnectionProvider(ConnectionProviderModel connectionProviderModel)
     {
-        if (connectionProviderModel.getParameterModels().isEmpty())
-        {
-            return;
-        }
         Nested globalConfig = new Nested();
         setIcons(globalConfig);
         globalConfig.setIsAbstract(false);
@@ -401,7 +394,7 @@ public final class StudioEditorGenerator
         globalConfig.setConnectivityTesting(ConnectivityTesting.OFF);
         globalConfig.setMetaData(MetaDataBehaviour.STATIC);
         globalConfig.setSupportsUserDefinedMetaData(false);
-        globalConfig.setCaption(StringUtils.capitalize(extensionModel.getName()) + ":" + configurationModel.getName());
+        globalConfig.setCaption(StringUtils.capitalize(extensionModel.getName()) + " " + configurationModel.getName());
         AttributeCategory attributeCategory = new AttributeCategory();
         attributeCategory.setCaption("General");
         attributeCategory.setDescription("Configuration Properties");
@@ -535,7 +528,8 @@ public final class StudioEditorGenerator
             public void onDouble()
             {
                 StringEditor editor = new StringEditor();
-                editor.setJavaType(Double.class.getName());
+                Class<?> javaType = parameterModel.getType().getRawType();
+                editor.setJavaType(javaType.getTypeName());
                 setCommonAttributes(editor, parameterModel);
                 container.add(editor);
             }
@@ -545,6 +539,8 @@ public final class StudioEditorGenerator
             {
                 StringEditor editor = new StringEditor();
                 setCommonAttributes(editor, parameterModel);
+                Class<?> javaType = parameterModel.getType().getRawType();
+                editor.setJavaType(javaType.getTypeName());
                 container.add(editor);
             }
 
@@ -598,7 +594,8 @@ public final class StudioEditorGenerator
                 setCommonAttributes(editor, parameterModel);
                 Class<?> javaType = parameterModel.getType().getRawType();
                 editor.setJavaType(javaType.getTypeName());
-                for(Object obj:javaType.getEnumConstants()){
+                for (Object obj : javaType.getEnumConstants())
+                {
                     Option option = new Option();
                     option.setValue(obj.toString());
                     editor.getOptions().add(option);
@@ -609,28 +606,24 @@ public final class StudioEditorGenerator
             @Override
             public void onDateTime()
             {
-                LabelElement label = new LabelElement();
-                setCommonAttributes(label, parameterModel);
-                label.setName(label.getName() + "Label");
-                label.setSpan(1);
-                container.add(label);
-                DateTimeEditor editor = new DateTimeEditor();
-                editor.setSpan(2);
-                editor.setInputType(InputType.DATETIME);
-                editor.setOutputFormat("EEE, dd MMM yyyy HH:mm:ss 'GMT'");
+                StringEditor editor = new StringEditor();
                 setCommonAttributes(editor, parameterModel);
+                Class<?> javaType = parameterModel.getType().getRawType();
+                editor.setJavaType(javaType.getTypeName());
                 container.add(editor);
             }
 
             @Override
             public void onPojo()
             {
-                if(parameterModel.getType().getRawType().equals(HttpRequesterConfig.class)){
+                if (parameterModel.getType().getRawType().equals(HttpRequesterConfig.class))
+                {
                     GlobalRef editorRef = new GlobalRef();
-                    setCommonAttributes(editorRef,parameterModel);
+                    setCommonAttributes(editorRef, parameterModel);
                     editorRef.setRequiredType("http://www.mulesoft.org/schema/mule/http/request-config");
                     container.add(editorRef);
-                }else
+                }
+                else
                 {
                     Nested nestedElement = getOrCreateNestedElement(parameterModel);
                     ChildElement childElement = new ChildElement();
@@ -723,7 +716,7 @@ public final class StudioEditorGenerator
         Nested nestedElement = new Nested();
         nestedElement.setLocalId(fieldName);
         nestedElement.setXmlname(fieldName);
-        nestedElement.setCaption("Configure "+parameterModel.getName());
+        nestedElement.setCaption("Configure " + parameterModel.getName());
         nestedElement.setDescription(parameterModel.getDescription());
 
         Group nestedGroup = new Group();
@@ -787,7 +780,7 @@ public final class StudioEditorGenerator
             public void onDouble()
             {
                 StringEditor editor = new StringEditor();
-                editor.setJavaType(Double.class.getName());
+                editor.setJavaType(dataType.getRawType().getTypeName());
                 setCommonAttributesFromDataType(field, editor, dataType);
                 childElements.add(editor);
             }
@@ -796,6 +789,7 @@ public final class StudioEditorGenerator
             public void onDecimal()
             {
                 StringEditor editor = new StringEditor();
+                editor.setJavaType(dataType.getRawType().getTypeName());
                 setCommonAttributesFromDataType(field, editor, dataType);
                 childElements.add(editor);
             }
@@ -828,18 +822,8 @@ public final class StudioEditorGenerator
             @Override
             public void onDateTime()
             {
-                //<label alignCenter="true" name="expiryDateLabel" caption="Expire Date:"
-                //span="1"
-                //description="Indicates the exact date/time when the cookie expires. It must be specified in the form 'Wdy, DD Mon YYYY HH:MM:SS GMT'." />
-                LabelElement label = new LabelElement();
-                label.setSpan(1);
-                setCommonAttributesFromDataType(field, label, dataType);
-                label.setName(label.getName() + "Label");
-                childElements.add(label);
-                DateTimeEditor editor = new DateTimeEditor();
-                editor.setInputType(InputType.DATETIME);
-                editor.setOutputFormat("EEE, dd MMM yyyy HH:mm:ss 'GMT'");
-                editor.setSpan(2);
+                StringEditor editor = new StringEditor();
+                editor.setJavaType(dataType.getRawType().getTypeName());
                 setCommonAttributesFromDataType(field, editor, dataType);
                 childElements.add(editor);
             }
@@ -847,12 +831,11 @@ public final class StudioEditorGenerator
             @Override
             public void onPojo()
             {
-                System.out.println(dataType.getRawType().isInterface());
                 Nested nested = getOrCreateNestedElement(field);
                 ChildElement childElement = new ChildElement();
                 childElement.setInplace(false);
                 childElement.setAllowMultiple(false);
-                childElement.setCaption(getCaption(nested.getCaption()+" Reference"));
+                childElement.setCaption(getCaption(nested.getCaption() + " Reference"));
                 childElement.setName(namespace.getUrl() + "/" + nested.getLocalId());
                 childElement.setJavaType(dataType.getRawType().getTypeName());
                 childElements.add(childElement);

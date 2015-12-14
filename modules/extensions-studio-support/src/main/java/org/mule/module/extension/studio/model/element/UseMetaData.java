@@ -12,40 +12,48 @@ import org.mule.module.extension.studio.model.AbstractEditorElement;
 import org.mule.module.extension.studio.model.IEditorElementVisitor;
 
 @XmlRootElement
-public class UseMetaData extends AbstractEditorElement {
+public class UseMetaData extends AbstractEditorElement
+{
 
     private String name;
     private String caption;
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         return "UseMetaData [getName()=" + getName() + ", getCaption()=" + getCaption() + "]";
     }
 
     // TODO: Review how this is used. Maybe it doesn't need to extend this class.
     @Override
-    public void accept(IEditorElementVisitor visitor) {
+    public void accept(IEditorElementVisitor visitor)
+    {
         visitor.visit(this);
     }
 
-    public String getName() {
+    public String getName()
+    {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(String name)
+    {
         this.name = name;
     }
 
-    public String getCaption() {
+    public String getCaption()
+    {
         return caption;
     }
 
-    public void setCaption(String caption) {
+    public void setCaption(String caption)
+    {
         this.caption = caption;
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         final int prime = 31;
         int result = super.hashCode();
         result = prime * result + ((caption == null) ? 0 : caption.hashCode());
@@ -54,24 +62,43 @@ public class UseMetaData extends AbstractEditorElement {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(Object obj)
+    {
         if (this == obj)
+        {
             return true;
+        }
         if (!super.equals(obj))
+        {
             return false;
+        }
         if (getClass() != obj.getClass())
+        {
             return false;
+        }
         UseMetaData other = (UseMetaData) obj;
-        if (caption == null) {
+        if (caption == null)
+        {
             if (other.caption != null)
+            {
                 return false;
-        } else if (!caption.equals(other.caption))
+            }
+        }
+        else if (!caption.equals(other.caption))
+        {
             return false;
-        if (name == null) {
+        }
+        if (name == null)
+        {
             if (other.name != null)
+            {
                 return false;
-        } else if (!name.equals(other.name))
+            }
+        }
+        else if (!name.equals(other.name))
+        {
             return false;
+        }
         return true;
     }
 }

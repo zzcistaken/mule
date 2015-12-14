@@ -12,7 +12,8 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "text")
-public class TextEditor extends BaseFieldEditorElement {
+public class TextEditor extends BaseFieldEditorElement
+{
 
     private Boolean wrapWithCDATA;
     private Integer textAreaHeight;
@@ -22,138 +23,170 @@ public class TextEditor extends BaseFieldEditorElement {
     //@ClassPicker(mustImplement = org.mule.tooling.ui.modules.core.widgets.editors.TextViewerCreator.class)
     private String customTextViewerCreator;
     private String nestedName;
+    //It is never used, but might be helpful
+    private String defaultValue;
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         return "TextEditor [getName()=" + getName() + ", getCaption()=" + getCaption() + ", getDescription()=" + getDescription() + "]";
     }
 
     @Override
-    public void accept(IEditorElementVisitor visitor) {
+    public void accept(IEditorElementVisitor visitor)
+    {
         visitor.visit(this);
     }
 
     @XmlAttribute
-    public Boolean getWrapWithCDATA() {
+    public Boolean getWrapWithCDATA()
+    {
         return wrapWithCDATA;
     }
 
-    public void setWrapWithCDATA(Boolean wrapWithCDATA) {
+    public void setWrapWithCDATA(Boolean wrapWithCDATA)
+    {
         this.wrapWithCDATA = wrapWithCDATA;
     }
 
     @XmlAttribute(name = "textAreaHeight")
-    public Integer getTextAreaHeight() {
+    public Integer getTextAreaHeight()
+    {
         return textAreaHeight;
     }
 
-    public void setTextAreaHeight(Integer textAreaHeight) {
+    public void setTextAreaHeight(Integer textAreaHeight)
+    {
         this.textAreaHeight = textAreaHeight;
     }
 
     @XmlAttribute(name = "textAreaWidth")
-    public Integer getTextAreaWidth() {
+    public Integer getTextAreaWidth()
+    {
         return textAreaWidth;
     }
 
-    public void setTextAreaWidth(Integer textAreaWidth) {
+    public void setTextAreaWidth(Integer textAreaWidth)
+    {
         this.textAreaWidth = textAreaWidth;
     }
 
     @XmlAttribute
-    public String getLanguage() {
+    public String getLanguage()
+    {
         return language;
     }
 
-    public void setLanguage(String language) {
+    public void setLanguage(String language)
+    {
         this.language = language;
     }
 
     @XmlAttribute
-    public Boolean getIsToElement() {
+    public Boolean getIsToElement()
+    {
         return isToElement;
     }
 
-    public void setIsToElement(Boolean isToElement) {
+    public void setIsToElement(Boolean isToElement)
+    {
         this.isToElement = isToElement;
     }
 
-    public String getCustomTextViewerCreator() {
+    public String getCustomTextViewerCreator()
+    {
         return customTextViewerCreator;
     }
 
-    public void setCustomTextViewerCreator(String customTextViewerCreator) {
+    public void setCustomTextViewerCreator(String customTextViewerCreator)
+    {
         this.customTextViewerCreator = customTextViewerCreator;
     }
 
     @XmlAttribute
-    public String getNestedName() {
+    public String getNestedName()
+    {
         return nestedName;
     }
 
-    public void setNestedName(String nestedName) {
+    public void setNestedName(String nestedName)
+    {
         this.nestedName = nestedName;
     }
 
+    @XmlAttribute
+    public String getDefaultValue()
+    {
+        return defaultValue;
+    }
+
+    public void setDefaultValue(String defaultValue)
+    {
+        this.defaultValue = defaultValue;
+    }
+
     @Override
-    public int hashCode() {
-        final int prime = 31;
+    public boolean equals(Object o)
+    {
+        if (this == o)
+        {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass())
+        {
+            return false;
+        }
+        if (!super.equals(o))
+        {
+            return false;
+        }
+
+        TextEditor that = (TextEditor) o;
+
+        if (wrapWithCDATA != null ? !wrapWithCDATA.equals(that.wrapWithCDATA) : that.wrapWithCDATA != null)
+        {
+            return false;
+        }
+        if (textAreaHeight != null ? !textAreaHeight.equals(that.textAreaHeight) : that.textAreaHeight != null)
+        {
+            return false;
+        }
+        if (textAreaWidth != null ? !textAreaWidth.equals(that.textAreaWidth) : that.textAreaWidth != null)
+        {
+            return false;
+        }
+        if (language != null ? !language.equals(that.language) : that.language != null)
+        {
+            return false;
+        }
+        if (isToElement != null ? !isToElement.equals(that.isToElement) : that.isToElement != null)
+        {
+            return false;
+        }
+        if (customTextViewerCreator != null ? !customTextViewerCreator.equals(that.customTextViewerCreator) : that.customTextViewerCreator != null)
+        {
+            return false;
+        }
+        if (nestedName != null ? !nestedName.equals(that.nestedName) : that.nestedName != null)
+        {
+            return false;
+        }
+        return !(defaultValue != null ? !defaultValue.equals(that.defaultValue) : that.defaultValue != null);
+
+    }
+
+    @Override
+    public int hashCode()
+    {
         int result = super.hashCode();
-        result = prime * result + ((customTextViewerCreator == null) ? 0 : customTextViewerCreator.hashCode());
-        result = prime * result + ((isToElement == null) ? 0 : isToElement.hashCode());
-        result = prime * result + ((language == null) ? 0 : language.hashCode());
-        result = prime * result + ((nestedName == null) ? 0 : nestedName.hashCode());
-        result = prime * result + ((textAreaHeight == null) ? 0 : textAreaHeight.hashCode());
-        result = prime * result + ((textAreaWidth == null) ? 0 : textAreaWidth.hashCode());
-        result = prime * result + ((wrapWithCDATA == null) ? 0 : wrapWithCDATA.hashCode());
+        result = 31 * result + (wrapWithCDATA != null ? wrapWithCDATA.hashCode() : 0);
+        result = 31 * result + (textAreaHeight != null ? textAreaHeight.hashCode() : 0);
+        result = 31 * result + (textAreaWidth != null ? textAreaWidth.hashCode() : 0);
+        result = 31 * result + (language != null ? language.hashCode() : 0);
+        result = 31 * result + (isToElement != null ? isToElement.hashCode() : 0);
+        result = 31 * result + (customTextViewerCreator != null ? customTextViewerCreator.hashCode() : 0);
+        result = 31 * result + (nestedName != null ? nestedName.hashCode() : 0);
+        result = 31 * result + (defaultValue != null ? defaultValue.hashCode() : 0);
         return result;
     }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (!super.equals(obj))
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        TextEditor other = (TextEditor) obj;
-        if (customTextViewerCreator == null) {
-            if (other.customTextViewerCreator != null)
-                return false;
-        } else if (!customTextViewerCreator.equals(other.customTextViewerCreator))
-            return false;
-        if (isToElement == null) {
-            if (other.isToElement != null)
-                return false;
-        } else if (!isToElement.equals(other.isToElement))
-            return false;
-        if (language == null) {
-            if (other.language != null)
-                return false;
-        } else if (!language.equals(other.language))
-            return false;
-        if (nestedName == null) {
-            if (other.nestedName != null)
-                return false;
-        } else if (!nestedName.equals(other.nestedName))
-            return false;
-        if (textAreaHeight == null) {
-            if (other.textAreaHeight != null)
-                return false;
-        } else if (!textAreaHeight.equals(other.textAreaHeight))
-            return false;
-        if (textAreaWidth == null) {
-            if (other.textAreaWidth != null)
-                return false;
-        } else if (!textAreaWidth.equals(other.textAreaWidth))
-            return false;
-        if (wrapWithCDATA == null) {
-            if (other.wrapWithCDATA != null)
-                return false;
-        } else if (!wrapWithCDATA.equals(other.wrapWithCDATA))
-            return false;
-        return true;
-    }
-
 }

@@ -15,6 +15,7 @@ import org.mule.extension.annotation.api.Parameter;
 @Configuration(name = "config1")
 public class BaseConfig1 extends AbstractConfig
 {
+
     @Parameter
     private String hash;
 

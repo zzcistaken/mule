@@ -13,6 +13,7 @@ import org.mule.extension.annotation.api.Parameter;
  */
 public class AnotherSimplePojo
 {
+
     @Parameter
     private String anotherSimpleField;
 

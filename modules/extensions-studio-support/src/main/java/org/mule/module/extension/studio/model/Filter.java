@@ -9,9 +9,12 @@ package org.mule.module.extension.studio.model;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class Filter extends AbstractPaletteComponent {
+public class Filter extends AbstractPaletteComponent
+{
+
     @Override
-    public void accept(IEditorElementVisitor visitor) {
+    public void accept(IEditorElementVisitor visitor)
+    {
         visitor.visit(this);
     }
 }

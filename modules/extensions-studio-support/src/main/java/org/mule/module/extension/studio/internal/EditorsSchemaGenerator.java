@@ -20,10 +20,14 @@ import javax.xml.transform.stream.StreamResult;
 public class EditorsSchemaGenerator
 {
 
-    public void saveSchemaToFile(final File baseDir) throws JAXBException, IOException {
-        class MySchemaOutputResolver extends SchemaOutputResolver {
-            public Result createOutput( String namespaceUri, String suggestedFileName ) throws IOException {
-                return new StreamResult(new File(baseDir,suggestedFileName));
+    public void saveSchemaToFile(final File baseDir) throws JAXBException, IOException
+    {
+        class MySchemaOutputResolver extends SchemaOutputResolver
+        {
+
+            public Result createOutput(String namespaceUri, String suggestedFileName) throws IOException
+            {
+                return new StreamResult(new File(baseDir, suggestedFileName));
             }
         }
 

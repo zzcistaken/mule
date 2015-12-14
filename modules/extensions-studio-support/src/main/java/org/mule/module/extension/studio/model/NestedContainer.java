@@ -9,15 +9,18 @@ package org.mule.module.extension.studio.model;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "nested-container")
-public class NestedContainer extends AbstractContainer {
+public class NestedContainer extends AbstractContainer
+{
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         return "NestedContainer [getLocalId()=" + getLocalId() + "]";
     }
 
     @Override
-    public void accept(IEditorElementVisitor visitor) {
+    public void accept(IEditorElementVisitor visitor)
+    {
         visitor.visit(this);
     }
 }

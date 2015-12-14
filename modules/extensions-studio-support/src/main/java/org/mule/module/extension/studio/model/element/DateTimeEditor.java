@@ -17,6 +17,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "datetime")
 public class DateTimeEditor extends BaseFieldEditorElement
 {
+
     private InputType inputType;
     private String outputFormat;
 

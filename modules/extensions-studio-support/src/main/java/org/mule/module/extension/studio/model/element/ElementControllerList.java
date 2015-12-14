@@ -12,26 +12,31 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "element-controller-list")
-public class ElementControllerList extends AbstractElementController {
+public class ElementControllerList extends AbstractElementController
+{
 
     private String listName;
 
     @Override
-    public void accept(IEditorElementVisitor visitor) {
+    public void accept(IEditorElementVisitor visitor)
+    {
         visitor.visit(this);
     }
 
     @XmlAttribute
-    public String getListName() {
+    public String getListName()
+    {
         return listName;
     }
 
-    public void setListName(String listName) {
+    public void setListName(String listName)
+    {
         this.listName = listName;
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         final int prime = 31;
         int result = super.hashCode();
         result = prime * result + ((listName == null) ? 0 : listName.hashCode());
@@ -39,19 +44,32 @@ public class ElementControllerList extends AbstractElementController {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(Object obj)
+    {
         if (this == obj)
+        {
             return true;
+        }
         if (!super.equals(obj))
+        {
             return false;
+        }
         if (getClass() != obj.getClass())
+        {
             return false;
+        }
         ElementControllerList other = (ElementControllerList) obj;
-        if (listName == null) {
+        if (listName == null)
+        {
             if (other.listName != null)
+            {
                 return false;
-        } else if (!listName.equals(other.listName))
+            }
+        }
+        else if (!listName.equals(other.listName))
+        {
             return false;
+        }
         return true;
     }
 }

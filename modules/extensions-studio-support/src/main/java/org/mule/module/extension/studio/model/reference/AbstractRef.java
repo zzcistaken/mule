@@ -6,50 +6,58 @@
  */
 package org.mule.module.extension.studio.model.reference;
 
+import org.mule.module.extension.studio.model.LocalRef;
+import org.mule.module.extension.studio.model.element.BaseFieldEditorElement;
+
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 
-import org.mule.module.extension.studio.model.LocalRef;
-import org.mule.module.extension.studio.model.element.BaseFieldEditorElement;
-
 @XmlRootElement
-@XmlSeeAlso({ ContainerRef.class, FlowRef.class, GlobalRef.class, LocalRef.class, ReverseGlobalRef.class })
-public abstract class AbstractRef extends BaseFieldEditorElement {
+@XmlSeeAlso({ContainerRef.class, FlowRef.class, GlobalRef.class, LocalRef.class, ReverseGlobalRef.class})
+public abstract class AbstractRef extends BaseFieldEditorElement
+{
 
     private Boolean removeEmptyOption;
     private String defaultValue;
     private Boolean allowsCustom;// TODO Solo se usa en GLobalRef...pero puede tener sentido aca
 
     @XmlAttribute
-    public Boolean getRemoveEmptyOption() {
+    public Boolean getRemoveEmptyOption()
+    {
         return removeEmptyOption;
     }
 
-    public void setRemoveEmptyOption(Boolean removeEmptyOption) {
+    public void setRemoveEmptyOption(Boolean removeEmptyOption)
+    {
         this.removeEmptyOption = removeEmptyOption;
     }
 
     @XmlAttribute
-    public String getDefaultValue() {
+    public String getDefaultValue()
+    {
         return defaultValue;
     }
 
-    public void setDefaultValue(String defaultValue) {
+    public void setDefaultValue(String defaultValue)
+    {
         this.defaultValue = defaultValue;
     }
 
     @XmlAttribute
-    public Boolean getAllowsCustom() {
+    public Boolean getAllowsCustom()
+    {
         return allowsCustom;
     }
 
-    public void setAllowsCustom(Boolean allowsCustom) {
+    public void setAllowsCustom(Boolean allowsCustom)
+    {
         this.allowsCustom = allowsCustom;
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         final int prime = 31;
         int result = super.hashCode();
         result = prime * result + ((allowsCustom == null) ? 0 : allowsCustom.hashCode());
@@ -59,29 +67,54 @@ public abstract class AbstractRef extends BaseFieldEditorElement {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(Object obj)
+    {
         if (this == obj)
+        {
             return true;
+        }
         if (!super.equals(obj))
+        {
             return false;
+        }
         if (getClass() != obj.getClass())
+        {
             return false;
+        }
         AbstractRef other = (AbstractRef) obj;
-        if (allowsCustom == null) {
+        if (allowsCustom == null)
+        {
             if (other.allowsCustom != null)
+            {
                 return false;
-        } else if (!allowsCustom.equals(other.allowsCustom))
+            }
+        }
+        else if (!allowsCustom.equals(other.allowsCustom))
+        {
             return false;
-        if (defaultValue == null) {
+        }
+        if (defaultValue == null)
+        {
             if (other.defaultValue != null)
+            {
                 return false;
-        } else if (!defaultValue.equals(other.defaultValue))
+            }
+        }
+        else if (!defaultValue.equals(other.defaultValue))
+        {
             return false;
-        if (removeEmptyOption == null) {
+        }
+        if (removeEmptyOption == null)
+        {
             if (other.removeEmptyOption != null)
+            {
                 return false;
-        } else if (!removeEmptyOption.equals(other.removeEmptyOption))
+            }
+        }
+        else if (!removeEmptyOption.equals(other.removeEmptyOption))
+        {
             return false;
+        }
         return true;
     }
 

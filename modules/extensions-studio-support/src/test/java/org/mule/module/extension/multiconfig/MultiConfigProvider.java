@@ -10,12 +10,16 @@ import org.mule.api.connection.ConnectionException;
 import org.mule.api.connection.ConnectionHandlingStrategy;
 import org.mule.api.connection.ConnectionHandlingStrategyFactory;
 import org.mule.api.connection.ConnectionProvider;
+import org.mule.extension.annotation.api.Parameter;
 
 /**
  * Created by pablocabrera on 11/26/15.
  */
-public class MultiConfigProvider implements ConnectionProvider<AbstractConfig,MultiConfigConnection>
+public class MultiConfigProvider implements ConnectionProvider<AbstractConfig, MultiConfigConnection>
 {
+
+    @Parameter
+    private String hashCode;
 
     @Override
     public MultiConfigConnection connect(AbstractConfig abstractConfig) throws ConnectionException
@@ -33,5 +37,15 @@ public class MultiConfigProvider implements ConnectionProvider<AbstractConfig,Mu
     public ConnectionHandlingStrategy<MultiConfigConnection> getHandlingStrategy(ConnectionHandlingStrategyFactory connectionHandlingStrategyFactory)
     {
         return null;
+    }
+
+    public String getHashCode()
+    {
+        return hashCode;
+    }
+
+    public void setHashCode(String hashCode)
+    {
+        this.hashCode = hashCode;
     }
 }

@@ -7,69 +7,96 @@
 package org.mule.module.extension.studio.model.element;
 
 import org.mule.module.extension.studio.model.AbstractEditorElement;
+import org.mule.module.extension.studio.model.ModeType;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlSeeAlso;
 
-@XmlSeeAlso({ AbstractElementController.class, AttributeCategory.class, BaseFieldEditorElement.class, Button.class, Group.class, Horizontal.class, SwitchCase.class })
-public abstract class BaseChildEditorElement extends AbstractEditorElement {
+@XmlSeeAlso({AbstractElementController.class, AttributeCategory.class, BaseFieldEditorElement.class, Button.class, Group.class, Horizontal.class, SwitchCase.class})
+public abstract class BaseChildEditorElement extends AbstractEditorElement
+{
 
     private String caption;
     // TODO: See if description can be removed from Button.class
     private String description;
+    private ModeType mode;
 
     @XmlAttribute
-    public String getCaption() {
+    public ModeType getMode()
+    {
+        return mode;
+    }
+
+    public void setMode(ModeType mode)
+    {
+        this.mode = mode;
+    }
+
+    @XmlAttribute
+    public String getCaption()
+    {
         return caption;
     }
 
-    public void setCaption(String caption) {
+    public void setCaption(String caption)
+    {
         this.caption = caption;
     }
 
     @XmlAttribute
-    public String getDescription() {
+    public String getDescription()
+    {
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(String description)
+    {
         this.description = description;
     }
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         return "BaseEditorElement [caption=" + caption + ", description=" + description + "]";
     }
 
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = super.hashCode();
-        result = prime * result + ((caption == null) ? 0 : caption.hashCode());
-        result = prime * result + ((description == null) ? 0 : description.hashCode());
-        return result;
+    public boolean equals(Object o)
+    {
+        if (this == o)
+        {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass())
+        {
+            return false;
+        }
+        if (!super.equals(o))
+        {
+            return false;
+        }
+
+        BaseChildEditorElement that = (BaseChildEditorElement) o;
+
+        if (caption != null ? !caption.equals(that.caption) : that.caption != null)
+        {
+            return false;
+        }
+        if (description != null ? !description.equals(that.description) : that.description != null)
+        {
+            return false;
+        }
+        return mode == that.mode;
+
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (!super.equals(obj))
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        BaseChildEditorElement other = (BaseChildEditorElement) obj;
-        if (caption == null) {
-            if (other.caption != null)
-                return false;
-        } else if (!caption.equals(other.caption))
-            return false;
-        if (description == null) {
-            if (other.description != null)
-                return false;
-        } else if (!description.equals(other.description))
-            return false;
-        return true;
+    public int hashCode()
+    {
+        int result = super.hashCode();
+        result = 31 * result + (caption != null ? caption.hashCode() : 0);
+        result = 31 * result + (description != null ? description.hashCode() : 0);
+        result = 31 * result + (mode != null ? mode.hashCode() : 0);
+        return result;
     }
-
 }

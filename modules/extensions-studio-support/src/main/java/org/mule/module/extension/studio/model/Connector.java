@@ -10,26 +10,31 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class Connector extends AbstractPaletteComponent {
+public class Connector extends AbstractPaletteComponent
+{
 
     private ConnectivityTesting connectivityTesting;
 
     @XmlAttribute
-    public ConnectivityTesting getConnectivityTesting() {
+    public ConnectivityTesting getConnectivityTesting()
+    {
         return connectivityTesting;
     }
 
-    public void setConnectivityTesting(ConnectivityTesting connectivityTesting) {
+    public void setConnectivityTesting(ConnectivityTesting connectivityTesting)
+    {
         this.connectivityTesting = connectivityTesting;
     }
 
     @Override
-    public void accept(IEditorElementVisitor visitor) {
+    public void accept(IEditorElementVisitor visitor)
+    {
         visitor.visit(this);
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         final int prime = 31;
         int result = super.hashCode();
         result = prime * result + ((connectivityTesting == null) ? 0 : connectivityTesting.hashCode());
@@ -37,16 +42,25 @@ public class Connector extends AbstractPaletteComponent {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(Object obj)
+    {
         if (this == obj)
+        {
             return true;
+        }
         if (!super.equals(obj))
+        {
             return false;
+        }
         if (getClass() != obj.getClass())
+        {
             return false;
+        }
         Connector other = (Connector) obj;
         if (connectivityTesting != other.connectivityTesting)
+        {
             return false;
+        }
         return true;
     }
 }

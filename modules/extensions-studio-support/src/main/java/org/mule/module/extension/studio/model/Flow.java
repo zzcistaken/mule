@@ -10,7 +10,8 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class Flow extends AbstractPaletteComponent {
+public class Flow extends AbstractPaletteComponent
+{
 
     private String modelGenerator;
     private Boolean causesSplit;
@@ -18,48 +19,58 @@ public class Flow extends AbstractPaletteComponent {
     private Boolean processesResponse;
 
     @XmlAttribute
-    public String getReturnType() {
+    public String getReturnType()
+    {
         return returnType;
     }
 
-    public void setReturnType(String returnType) {
+    public void setReturnType(String returnType)
+    {
         this.returnType = returnType;
     }
 
     @XmlAttribute
-    public String getModelGenerator() {
+    public String getModelGenerator()
+    {
         return modelGenerator;
     }
 
-    public void setModelGenerator(String modelGenerator) {
+    public void setModelGenerator(String modelGenerator)
+    {
         this.modelGenerator = modelGenerator;
     }
 
     @XmlAttribute
-    public Boolean getCausesSplit() {
+    public Boolean getCausesSplit()
+    {
         return causesSplit;
     }
 
-    public void setCausesSplit(Boolean causesSplit) {
+    public void setCausesSplit(Boolean causesSplit)
+    {
         this.causesSplit = causesSplit;
     }
 
     @Override
-    public void accept(IEditorElementVisitor visitor) {
+    public void accept(IEditorElementVisitor visitor)
+    {
         visitor.visit(this);
     }
 
     @XmlAttribute
-    public Boolean getProcessesResponse() {
+    public Boolean getProcessesResponse()
+    {
         return processesResponse;
     }
 
-    public void setProcessesResponse(Boolean processesResponse) {
+    public void setProcessesResponse(Boolean processesResponse)
+    {
         this.processesResponse = processesResponse;
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         final int prime = 31;
         int result = super.hashCode();
         result = prime * result + ((causesSplit == null) ? 0 : causesSplit.hashCode());
@@ -70,34 +81,65 @@ public class Flow extends AbstractPaletteComponent {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(Object obj)
+    {
         if (this == obj)
+        {
             return true;
+        }
         if (!super.equals(obj))
+        {
             return false;
+        }
         if (getClass() != obj.getClass())
+        {
             return false;
+        }
         Flow other = (Flow) obj;
-        if (causesSplit == null) {
+        if (causesSplit == null)
+        {
             if (other.causesSplit != null)
+            {
                 return false;
-        } else if (!causesSplit.equals(other.causesSplit))
+            }
+        }
+        else if (!causesSplit.equals(other.causesSplit))
+        {
             return false;
-        if (modelGenerator == null) {
+        }
+        if (modelGenerator == null)
+        {
             if (other.modelGenerator != null)
+            {
                 return false;
-        } else if (!modelGenerator.equals(other.modelGenerator))
+            }
+        }
+        else if (!modelGenerator.equals(other.modelGenerator))
+        {
             return false;
-        if (processesResponse == null) {
+        }
+        if (processesResponse == null)
+        {
             if (other.processesResponse != null)
+            {
                 return false;
-        } else if (!processesResponse.equals(other.processesResponse))
+            }
+        }
+        else if (!processesResponse.equals(other.processesResponse))
+        {
             return false;
-        if (returnType == null) {
+        }
+        if (returnType == null)
+        {
             if (other.returnType != null)
+            {
                 return false;
-        } else if (!returnType.equals(other.returnType))
+            }
+        }
+        else if (!returnType.equals(other.returnType))
+        {
             return false;
+        }
         return true;
     }
 }

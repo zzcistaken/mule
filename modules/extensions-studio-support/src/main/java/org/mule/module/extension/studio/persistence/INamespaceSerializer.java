@@ -8,7 +8,8 @@ package org.mule.module.extension.studio.persistence;
 
 import org.mule.module.extension.studio.model.Namespace;
 
-public interface INamespaceSerializer<T> {
+public interface INamespaceSerializer<T>
+{
 
     void serialize(Namespace namespace, T ouput);
 }

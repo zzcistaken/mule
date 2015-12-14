@@ -10,61 +10,102 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 
-@XmlSeeAlso({ Jar.class, NativeLibrary.class })
+@XmlSeeAlso({Jar.class, NativeLibrary.class})
 @XmlRootElement
-public abstract class AbstractBaseLibrary extends AbstractLibrary {
-
+public abstract class AbstractBaseLibrary extends AbstractLibrary
+{
+    private String emptyLocationLabel;
     private boolean externalPluginDependency;
     private String name;
+    private String targetRuntimeFolder;
 
-    public AbstractBaseLibrary() {
-        super();
+    @XmlAttribute
+    public String getTargetRuntimeFolder()
+    {
+        return targetRuntimeFolder;
+    }
+
+    public void setTargetRuntimeFolder(String targetRuntimeFolder)
+    {
+        this.targetRuntimeFolder = targetRuntimeFolder;
     }
 
     @XmlAttribute
-    public boolean isExternalPluginDependency() {
+    public String getEmptyLocationLabel()
+    {
+        return emptyLocationLabel;
+    }
+
+    public void setEmptyLocationLabel(String emptyLocationLabel)
+    {
+        this.emptyLocationLabel = emptyLocationLabel;
+    }
+
+    @XmlAttribute
+    public boolean isExternalPluginDependency()
+    {
         return externalPluginDependency;
     }
 
-    public void setExternalPluginDependency(boolean externalPluginDependency) {
+    public void setExternalPluginDependency(boolean externalPluginDependency)
+    {
         this.externalPluginDependency = externalPluginDependency;
     }
 
     @XmlAttribute
-    public String getName() {
+    public String getName()
+    {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(String name)
+    {
         this.name = name;
     }
 
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = super.hashCode();
-        result = prime * result + (externalPluginDependency ? 1231 : 1237);
-        result = prime * result + ((name == null) ? 0 : name.hashCode());
-        return result;
+    public boolean equals(Object o)
+    {
+        if (this == o)
+        {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass())
+        {
+            return false;
+        }
+        if (!super.equals(o))
+        {
+            return false;
+        }
+
+        AbstractBaseLibrary that = (AbstractBaseLibrary) o;
+
+        if (externalPluginDependency != that.externalPluginDependency)
+        {
+            return false;
+        }
+        if (emptyLocationLabel != null ? !emptyLocationLabel.equals(that.emptyLocationLabel) : that.emptyLocationLabel != null)
+        {
+            return false;
+        }
+        if (name != null ? !name.equals(that.name) : that.name != null)
+        {
+            return false;
+        }
+
+        return !(targetRuntimeFolder != null ? !targetRuntimeFolder.equals(that.targetRuntimeFolder) : that.targetRuntimeFolder != null);
+
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (!super.equals(obj))
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        AbstractBaseLibrary other = (AbstractBaseLibrary) obj;
-        if (externalPluginDependency != other.externalPluginDependency)
-            return false;
-        if (name == null) {
-            if (other.name != null)
-                return false;
-        } else if (!name.equals(other.name))
-            return false;
-        return true;
+    public int hashCode()
+    {
+        int result = super.hashCode();
+        result = 31 * result + (emptyLocationLabel != null ? emptyLocationLabel.hashCode() : 0);
+        result = 31 * result + (externalPluginDependency ? 1 : 0);
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (targetRuntimeFolder != null ? targetRuntimeFolder.hashCode() : 0);
+        return result;
     }
-
 }

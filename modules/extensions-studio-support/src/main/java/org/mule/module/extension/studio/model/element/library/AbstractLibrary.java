@@ -6,47 +6,72 @@
  */
 package org.mule.module.extension.studio.model.element.library;
 
+import org.mule.module.extension.studio.model.AbstractEditorElement;
+
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlSeeAlso;
 
-import org.mule.module.extension.studio.model.AbstractEditorElement;
+@XmlSeeAlso({AbstractBaseLibrary.class, LibrarySet.class})
+public abstract class AbstractLibrary extends AbstractEditorElement
+{
 
-@XmlSeeAlso({ AbstractBaseLibrary.class, LibrarySet.class })
-public abstract class AbstractLibrary extends AbstractEditorElement{
-
+    private String targetFolder;
     private String name;
 
     @XmlAttribute
-    public String getName() {
+    public String getTargetFolder()
+    {
+        return targetFolder;
+    }
+
+    public void setTargetFolder(String targetFolder)
+    {
+        this.targetFolder = targetFolder;
+    }
+
+    @XmlAttribute
+    public String getName()
+    {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(String name)
+    {
         this.name = name;
     }
 
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = super.hashCode();
-        result = prime * result + ((name == null) ? 0 : name.hashCode());
-        return result;
+    public boolean equals(Object o)
+    {
+        if (this == o)
+        {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass())
+        {
+            return false;
+        }
+        if (!super.equals(o))
+        {
+            return false;
+        }
+
+        AbstractLibrary that = (AbstractLibrary) o;
+
+        if (targetFolder != null ? !targetFolder.equals(that.targetFolder) : that.targetFolder != null)
+        {
+            return false;
+        }
+        return !(name != null ? !name.equals(that.name) : that.name != null);
+
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (!super.equals(obj))
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        AbstractLibrary other = (AbstractLibrary) obj;
-        if (name == null) {
-            if (other.name != null)
-                return false;
-        } else if (!name.equals(other.name))
-            return false;
-        return true;
+    public int hashCode()
+    {
+        int result = super.hashCode();
+        result = 31 * result + (targetFolder != null ? targetFolder.hashCode() : 0);
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        return result;
     }
 }

@@ -6,32 +6,36 @@
  */
 package org.mule.module.extension.studio.model.element;
 
+import org.mule.module.extension.studio.model.IEditorElementVisitor;
+
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.mule.module.extension.studio.model.IEditorElementVisitor;
-
 @XmlRootElement
-public class FixedAttribute extends BaseFieldEditorElement {
-
+public class FixedAttribute extends BaseFieldEditorElement
+{
     private String value;
 
     @XmlAttribute
-    public String getValue() {
+    public String getValue()
+    {
         return value;
     }
 
-    public void setValue(String value) {
+    public void setValue(String value)
+    {
         this.value = value;
     }
 
     @Override
-    public void accept(IEditorElementVisitor visitor) {
+    public void accept(IEditorElementVisitor visitor)
+    {
         visitor.visit(this);
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         final int prime = 31;
         int result = super.hashCode();
         result = prime * result + ((value == null) ? 0 : value.hashCode());
@@ -39,19 +43,32 @@ public class FixedAttribute extends BaseFieldEditorElement {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(Object obj)
+    {
         if (this == obj)
+        {
             return true;
+        }
         if (!super.equals(obj))
+        {
             return false;
+        }
         if (getClass() != obj.getClass())
+        {
             return false;
+        }
         FixedAttribute other = (FixedAttribute) obj;
-        if (value == null) {
+        if (value == null)
+        {
             if (other.value != null)
+            {
                 return false;
-        } else if (!value.equals(other.value))
+            }
+        }
+        else if (!value.equals(other.value))
+        {
             return false;
+        }
         return true;
-    }    
+    }
 }

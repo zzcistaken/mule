@@ -19,7 +19,7 @@ import org.mule.extension.annotation.api.connector.Providers;
 @Extension(name = "multi-config")
 @Xml(schemaLocation = "http://www.mulesoft.org/schema/mule/multi-config", namespace = "multi-config", schemaVersion = "3.7")
 @Operations(MultiConfigOperations.class)
-@Configurations({BaseConfig1.class,BaseConfig2.class})
+@Configurations({BaseConfig1.class, BaseConfig2.class})
 @Providers({MultiConfigProvider.class})
 @StudioEditor
 public class MultiConfigExtension

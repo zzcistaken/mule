@@ -9,8 +9,9 @@ package org.mule.module.extension.studio.model;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlSeeAlso;
 
-@XmlSeeAlso({ NestedContainer.class, GraphicalContainer.class })
-public abstract class AbstractContainer extends EditorElement {
+@XmlSeeAlso({NestedContainer.class, GraphicalContainer.class})
+public abstract class AbstractContainer extends EditorElement
+{
 
     private String acceptsElements;
     private Boolean showsResponse;
@@ -19,52 +20,63 @@ public abstract class AbstractContainer extends EditorElement {
     private Integer rowNumber;
 
     @XmlAttribute
-    public Boolean getShowsResponse() {
+    public Boolean getShowsResponse()
+    {
         return showsResponse;
     }
 
-    public void setShowsResponse(Boolean showsResponse) {
+    public void setShowsResponse(Boolean showsResponse)
+    {
         this.showsResponse = showsResponse;
     }
 
     @XmlAttribute
-    public Boolean getCollapsable() {
+    public Boolean getCollapsable()
+    {
         return collapsable;
     }
 
-    public void setCollapsable(Boolean collapsable) {
+    public void setCollapsable(Boolean collapsable)
+    {
         this.collapsable = collapsable;
     }
 
     @XmlAttribute
-    public Integer getXmlOrder() {
+    public Integer getXmlOrder()
+    {
         return xmlOrder;
     }
 
-    public void setXmlOrder(Integer xmlOrder) {
+    public void setXmlOrder(Integer xmlOrder)
+    {
         this.xmlOrder = xmlOrder;
     }
 
     @XmlAttribute
-    public String getAcceptsElements() {
+    public String getAcceptsElements()
+    {
         return acceptsElements;
     }
 
-    public void setAcceptsElements(String acceptsElements) {
+    public void setAcceptsElements(String acceptsElements)
+    {
         this.acceptsElements = acceptsElements;
     }
 
     @XmlAttribute
-    public Integer getRowNumber() {
+    public Integer getRowNumber()
+    {
         return rowNumber;
     }
 
-    public void setRowNumber(Integer rowNumber) {
+    public void setRowNumber(Integer rowNumber)
+    {
         this.rowNumber = rowNumber;
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         final int prime = 31;
         int result = super.hashCode();
         result = prime * result + ((acceptsElements == null) ? 0 : acceptsElements.hashCode());
@@ -76,39 +88,76 @@ public abstract class AbstractContainer extends EditorElement {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(Object obj)
+    {
         if (this == obj)
+        {
             return true;
+        }
         if (!super.equals(obj))
+        {
             return false;
+        }
         if (getClass() != obj.getClass())
+        {
             return false;
+        }
         AbstractContainer other = (AbstractContainer) obj;
-        if (acceptsElements == null) {
+        if (acceptsElements == null)
+        {
             if (other.acceptsElements != null)
+            {
                 return false;
-        } else if (!acceptsElements.equals(other.acceptsElements))
+            }
+        }
+        else if (!acceptsElements.equals(other.acceptsElements))
+        {
             return false;
-        if (collapsable == null) {
+        }
+        if (collapsable == null)
+        {
             if (other.collapsable != null)
+            {
                 return false;
-        } else if (!collapsable.equals(other.collapsable))
+            }
+        }
+        else if (!collapsable.equals(other.collapsable))
+        {
             return false;
-        if (rowNumber == null) {
+        }
+        if (rowNumber == null)
+        {
             if (other.rowNumber != null)
+            {
                 return false;
-        } else if (!rowNumber.equals(other.rowNumber))
+            }
+        }
+        else if (!rowNumber.equals(other.rowNumber))
+        {
             return false;
-        if (showsResponse == null) {
+        }
+        if (showsResponse == null)
+        {
             if (other.showsResponse != null)
+            {
                 return false;
-        } else if (!showsResponse.equals(other.showsResponse))
+            }
+        }
+        else if (!showsResponse.equals(other.showsResponse))
+        {
             return false;
-        if (xmlOrder == null) {
+        }
+        if (xmlOrder == null)
+        {
             if (other.xmlOrder != null)
+            {
                 return false;
-        } else if (!xmlOrder.equals(other.xmlOrder))
+            }
+        }
+        else if (!xmlOrder.equals(other.xmlOrder))
+        {
             return false;
+        }
         return true;
     }
 

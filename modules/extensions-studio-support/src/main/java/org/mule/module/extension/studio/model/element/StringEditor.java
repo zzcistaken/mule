@@ -12,7 +12,8 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "string")
-public class StringEditor extends BaseStringEditor {
+public class StringEditor extends BaseStringEditor
+{
 
     // This 3 fields are only because of CXF editor
     private String max;
@@ -29,90 +30,109 @@ public class StringEditor extends BaseStringEditor {
     private String classAttribute;
 
     @XmlAttribute
-    public Boolean getSingeLineForExpressions() {
+    public Boolean getSingeLineForExpressions()
+    {
         return singeLineForExpressions;
     }
 
-    public void setSingeLineForExpressions(Boolean singeLineForExpressions) {
+    public void setSingeLineForExpressions(Boolean singeLineForExpressions)
+    {
         this.singeLineForExpressions = singeLineForExpressions;
     }
 
     @XmlAttribute
-    public String getPrompt() {
+    public String getPrompt()
+    {
         return prompt;
     }
 
-    public void setPrompt(String prompt) {
+    public void setPrompt(String prompt)
+    {
         this.prompt = prompt;
     }
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         return "StringEditor [defaultValue=" + getDefaultValue() + ", prompt=" + prompt + ", singeLineForExpressions=" + singeLineForExpressions + ", getName()=" + getName()
-                + ", getCaption()=" + getCaption() + "]";
+               + ", getCaption()=" + getCaption() + "]";
     }
 
     @Override
-    public void accept(IEditorElementVisitor visitor) {
+    public void accept(IEditorElementVisitor visitor)
+    {
         visitor.visit(this);
     }
 
     @XmlAttribute
-    public String getMax() {
+    public String getMax()
+    {
         return max;
     }
 
-    public void setMax(String max) {
+    public void setMax(String max)
+    {
         this.max = max;
     }
 
     @XmlAttribute
-    public String getMin() {
+    public String getMin()
+    {
         return min;
     }
 
-    public void setMin(String min) {
+    public void setMin(String min)
+    {
         this.min = min;
     }
 
     @XmlAttribute
-    public String getStep() {
+    public String getStep()
+    {
         return step;
     }
 
-    public void setStep(String step) {
+    public void setStep(String step)
+    {
         this.step = step;
     }
 
     @XmlAttribute
-    public Boolean getAcceptsEmptyValue() {
+    public Boolean getAcceptsEmptyValue()
+    {
         return acceptsEmptyValue;
     }
 
-    public void setAcceptsEmptyValue(Boolean acceptsEmptyValue) {
+    public void setAcceptsEmptyValue(Boolean acceptsEmptyValue)
+    {
         this.acceptsEmptyValue = acceptsEmptyValue;
     }
 
     @XmlAttribute(name = "class")
-    public String getClassAttribute() {
+    public String getClassAttribute()
+    {
         return classAttribute;
     }
 
-    public void setClassAttribute(String classAttribute) {
+    public void setClassAttribute(String classAttribute)
+    {
         this.classAttribute = classAttribute;
     }
 
     @XmlAttribute
-    public Integer getSetHeight() {
+    public Integer getSetHeight()
+    {
         return setHeight;
     }
 
-    public void setSetHeight(Integer setHeight) {
+    public void setSetHeight(Integer setHeight)
+    {
         this.setHeight = setHeight;
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         final int prime = 31;
         int result = super.hashCode();
         result = prime * result + ((acceptsEmptyValue == null) ? 0 : acceptsEmptyValue.hashCode());
@@ -127,54 +147,109 @@ public class StringEditor extends BaseStringEditor {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(Object obj)
+    {
         if (this == obj)
+        {
             return true;
+        }
         if (!super.equals(obj))
+        {
             return false;
+        }
         if (getClass() != obj.getClass())
+        {
             return false;
+        }
         StringEditor other = (StringEditor) obj;
-        if (acceptsEmptyValue == null) {
+        if (acceptsEmptyValue == null)
+        {
             if (other.acceptsEmptyValue != null)
+            {
                 return false;
-        } else if (!acceptsEmptyValue.equals(other.acceptsEmptyValue))
+            }
+        }
+        else if (!acceptsEmptyValue.equals(other.acceptsEmptyValue))
+        {
             return false;
-        if (classAttribute == null) {
+        }
+        if (classAttribute == null)
+        {
             if (other.classAttribute != null)
+            {
                 return false;
-        } else if (!classAttribute.equals(other.classAttribute))
+            }
+        }
+        else if (!classAttribute.equals(other.classAttribute))
+        {
             return false;
-        if (max == null) {
+        }
+        if (max == null)
+        {
             if (other.max != null)
+            {
                 return false;
-        } else if (!max.equals(other.max))
+            }
+        }
+        else if (!max.equals(other.max))
+        {
             return false;
-        if (min == null) {
+        }
+        if (min == null)
+        {
             if (other.min != null)
+            {
                 return false;
-        } else if (!min.equals(other.min))
+            }
+        }
+        else if (!min.equals(other.min))
+        {
             return false;
-        if (prompt == null) {
+        }
+        if (prompt == null)
+        {
             if (other.prompt != null)
+            {
                 return false;
-        } else if (!prompt.equals(other.prompt))
+            }
+        }
+        else if (!prompt.equals(other.prompt))
+        {
             return false;
-        if (setHeight == null) {
+        }
+        if (setHeight == null)
+        {
             if (other.setHeight != null)
+            {
                 return false;
-        } else if (!setHeight.equals(other.setHeight))
+            }
+        }
+        else if (!setHeight.equals(other.setHeight))
+        {
             return false;
-        if (singeLineForExpressions == null) {
+        }
+        if (singeLineForExpressions == null)
+        {
             if (other.singeLineForExpressions != null)
+            {
                 return false;
-        } else if (!singeLineForExpressions.equals(other.singeLineForExpressions))
+            }
+        }
+        else if (!singeLineForExpressions.equals(other.singeLineForExpressions))
+        {
             return false;
-        if (step == null) {
+        }
+        if (step == null)
+        {
             if (other.step != null)
+            {
                 return false;
-        } else if (!step.equals(other.step))
+            }
+        }
+        else if (!step.equals(other.step))
+        {
             return false;
+        }
         return true;
     }
 }

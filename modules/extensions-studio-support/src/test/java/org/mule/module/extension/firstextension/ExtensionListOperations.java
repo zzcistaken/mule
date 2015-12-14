@@ -14,28 +14,32 @@ import java.util.List;
 public class ExtensionListOperations
 {
 
-	@Operation
-	public List<String> listStringOperation(List<String> params1) {
-		return params1;
-	}
+    @Operation
+    public List<String> listStringOperation(List<String> params1)
+    {
+        return params1;
+    }
 
-	@Operation
-	public List<SimplePojo> listParameterGroupPojoOperation( @ParameterGroup List<SimplePojo> pojos) {
-		return pojos;
-	}
+    @Operation
+    public List<SimplePojo> listParameterGroupPojoOperation(@ParameterGroup List<SimplePojo> pojos)
+    {
+        return pojos;
+    }
 
-	@Operation
-	public List<SimplePojo> listPojoOperation(List<SimplePojo> pojos) {
-		return pojos;
-	}
+    @Operation
+    public List<SimplePojo> listPojoOperation(List<SimplePojo> pojos)
+    {
+        return pojos;
+    }
 
-	@Operation
-	public List<AnotherSimplePojo> listPojoComplexOperation(List<AnotherSimplePojo> myComplexPojos){
-		return null;
-	}
+    @Operation
+    public List<AnotherSimplePojo> listPojoComplexOperation(List<AnotherSimplePojo> myComplexPojos)
+    {
+        return null;
+    }
 
-	//@Operation
-	//public void interfaceOperation(MyInterface callback){
+    //@Operation
+    //public void interfaceOperation(MyInterface callback){
     //
-	//}
+    //}
 }

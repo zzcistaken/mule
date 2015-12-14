@@ -9,9 +9,10 @@ package org.mule.module.extension.studio.model.element;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlSeeAlso;
 
-@XmlSeeAlso({ ElementControllerList.class, ElementControllerListNoExpression.class, ElementControllerMap.class, ElementControllerMapNoExpression.class,
-        ElementControllerListOfMap.class,ElementControllerListOfPojo.class, StringMap.class, })
-public abstract class AbstractElementController extends BaseChildEditorElement {
+@XmlSeeAlso({ElementControllerList.class, ElementControllerListNoExpression.class, ElementControllerMap.class, ElementControllerMapNoExpression.class,
+        ElementControllerListOfMap.class, ElementControllerListOfPojo.class, StringMap.class,})
+public abstract class AbstractElementController extends BaseChildEditorElement
+{
 
     // TODO: ver si puede ir en el padre.
     private Boolean required;
@@ -21,43 +22,52 @@ public abstract class AbstractElementController extends BaseChildEditorElement {
     private String javaType;
 
     @XmlAttribute
-    public String getJavaType() {
+    public String getJavaType()
+    {
         return javaType;
     }
 
-    public void setJavaType(String javaType) {
+    public void setJavaType(String javaType)
+    {
         this.javaType = javaType;
     }
 
     @XmlAttribute
-    public Boolean getRequired() {
+    public Boolean getRequired()
+    {
         return required;
     }
 
-    public void setRequired(Boolean required) {
+    public void setRequired(Boolean required)
+    {
         this.required = required;
     }
 
     @XmlAttribute
-    public String getItemName() {
+    public String getItemName()
+    {
         return itemName;
     }
 
-    public void setItemName(String itemName) {
+    public void setItemName(String itemName)
+    {
         this.itemName = itemName;
     }
 
     @XmlAttribute
-    public String getLocalName() {
+    public String getLocalName()
+    {
         return localName;
     }
 
-    public void setLocalName(String localName) {
+    public void setLocalName(String localName)
+    {
         this.localName = localName;
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         final int prime = 31;
         int result = super.hashCode();
         result = prime * result + ((itemName == null) ? 0 : itemName.hashCode());
@@ -68,34 +78,65 @@ public abstract class AbstractElementController extends BaseChildEditorElement {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(Object obj)
+    {
         if (this == obj)
+        {
             return true;
+        }
         if (!super.equals(obj))
+        {
             return false;
+        }
         if (getClass() != obj.getClass())
+        {
             return false;
+        }
         AbstractElementController other = (AbstractElementController) obj;
-        if (itemName == null) {
+        if (itemName == null)
+        {
             if (other.itemName != null)
+            {
                 return false;
-        } else if (!itemName.equals(other.itemName))
+            }
+        }
+        else if (!itemName.equals(other.itemName))
+        {
             return false;
-        if (javaType == null) {
+        }
+        if (javaType == null)
+        {
             if (other.javaType != null)
+            {
                 return false;
-        } else if (!javaType.equals(other.javaType))
+            }
+        }
+        else if (!javaType.equals(other.javaType))
+        {
             return false;
-        if (localName == null) {
+        }
+        if (localName == null)
+        {
             if (other.localName != null)
+            {
                 return false;
-        } else if (!localName.equals(other.localName))
+            }
+        }
+        else if (!localName.equals(other.localName))
+        {
             return false;
-        if (required == null) {
+        }
+        if (required == null)
+        {
             if (other.required != null)
+            {
                 return false;
-        } else if (!required.equals(other.required))
+            }
+        }
+        else if (!required.equals(other.required))
+        {
             return false;
+        }
         return true;
     }
 }

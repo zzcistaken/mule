@@ -6,15 +6,17 @@
  */
 package org.mule.module.extension.studio.model.element;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
 import org.mule.module.extension.studio.model.IEditorElementVisitor;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 @XmlRootElement
-public class Regexp extends BaseFieldEditorElement {
+public class Regexp extends BaseFieldEditorElement
+{
 
     @Override
-    public void accept(IEditorElementVisitor visitor) {
+    public void accept(IEditorElementVisitor visitor)
+    {
         visitor.visit(this);
     }
 }

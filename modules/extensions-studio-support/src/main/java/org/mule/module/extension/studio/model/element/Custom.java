@@ -12,51 +12,61 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.mule.module.extension.studio.model.IEditorElementVisitor;
 
 @XmlRootElement
-public class Custom extends BaseFieldEditorElement {
+public class Custom extends BaseFieldEditorElement
+{
 
     private String className;
     private String javaType;
     private String bottomAnchor;
 
     @XmlAttribute(name = "class")
-    public String getClassName() {
+    public String getClassName()
+    {
         return className;
     }
 
-    public void setClassName(String className) {
+    public void setClassName(String className)
+    {
         this.className = className;
     }
 
     @XmlAttribute
-    public String getBottomAnchor() {
+    public String getBottomAnchor()
+    {
         return bottomAnchor;
     }
 
-    public void setBottomAnchor(String bottomAnchor) {
+    public void setBottomAnchor(String bottomAnchor)
+    {
         this.bottomAnchor = bottomAnchor;
     }
 
     @XmlAttribute
-    public String getJavaType() {
+    public String getJavaType()
+    {
         return javaType;
     }
 
-    public void setJavaType(String javaType) {
+    public void setJavaType(String javaType)
+    {
         this.javaType = javaType;
     }
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         return "Custom [className=" + className + ", getName()=" + getName() + ", getCaption()=" + getCaption() + "]";
     }
 
     @Override
-    public void accept(IEditorElementVisitor visitor) {
+    public void accept(IEditorElementVisitor visitor)
+    {
         visitor.visit(this);
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         final int prime = 31;
         int result = super.hashCode();
         result = prime * result + ((bottomAnchor == null) ? 0 : bottomAnchor.hashCode());
@@ -66,29 +76,54 @@ public class Custom extends BaseFieldEditorElement {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(Object obj)
+    {
         if (this == obj)
+        {
             return true;
+        }
         if (!super.equals(obj))
+        {
             return false;
+        }
         if (getClass() != obj.getClass())
+        {
             return false;
+        }
         Custom other = (Custom) obj;
-        if (bottomAnchor == null) {
+        if (bottomAnchor == null)
+        {
             if (other.bottomAnchor != null)
+            {
                 return false;
-        } else if (!bottomAnchor.equals(other.bottomAnchor))
+            }
+        }
+        else if (!bottomAnchor.equals(other.bottomAnchor))
+        {
             return false;
-        if (className == null) {
+        }
+        if (className == null)
+        {
             if (other.className != null)
+            {
                 return false;
-        } else if (!className.equals(other.className))
+            }
+        }
+        else if (!className.equals(other.className))
+        {
             return false;
-        if (javaType == null) {
+        }
+        if (javaType == null)
+        {
             if (other.javaType != null)
+            {
                 return false;
-        } else if (!javaType.equals(other.javaType))
+            }
+        }
+        else if (!javaType.equals(other.javaType))
+        {
             return false;
+        }
         return true;
     }
 }

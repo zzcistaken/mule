@@ -9,35 +9,40 @@ package org.mule.module.extension.firstextension;
 import org.mule.extension.annotation.api.Operation;
 import org.mule.extension.annotation.api.ParameterGroup;
 
-public class ExtensionOperations {
+public class ExtensionOperations
+{
 
-	@Operation
-	public String stringOperation(String param1,String param2) {
-		return param1 + " & " + param2;
-	}
+    @Operation
+    public String stringOperation(String param1, String param2)
+    {
+        return param1 + " & " + param2;
+    }
 
-	@Operation
-	public int primitiveTypesOperation(int a, int b) {
-		return a+b;
-	}
+    @Operation
+    public int primitiveTypesOperation(int a, int b)
+    {
+        return a + b;
+    }
 
-	@Operation
-	public SimplePojo parameterGroupPojoOperation( @ParameterGroup SimplePojo pojo) {
-		return pojo;
-	}
+    @Operation
+    public SimplePojo parameterGroupPojoOperation(@ParameterGroup SimplePojo pojo)
+    {
+        return pojo;
+    }
 
-	@Operation
-	public SimplePojo pojoOperation(SimplePojo pojo) {
-		return pojo;
-	}
+    @Operation
+    public SimplePojo pojoOperation(SimplePojo pojo)
+    {
+        return pojo;
+    }
 
-	//@Operation
-	//public AnotherSimplePojo pojoComplexOperation(AnotherSimplePojo myComplexPojo){
-	//	return null;
-	//}
-	//TODO Add when interfaces are supported
-	//@Operation
-	//public void interfaceOperation(MyInterface callback){
+    //@Operation
+    //public AnotherSimplePojo pojoComplexOperation(AnotherSimplePojo myComplexPojo){
+    //	return null;
+    //}
+    //TODO Add when interfaces are supported
+    //@Operation
+    //public void interfaceOperation(MyInterface callback){
     //
-	//}
+    //}
 }

@@ -12,41 +12,49 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.mule.module.extension.studio.model.IEditorElementVisitor;
 
 @XmlRootElement(name = "no-operation")
-public class NoOperation extends AbstractMode {
+public class NoOperation extends AbstractMode
+{
 
     private String abstractElement;
     private String connectorName;
 
     @XmlAttribute
-    public String getAbstractElement() {
+    public String getAbstractElement()
+    {
         return abstractElement;
     }
 
-    public void setAbstractElement(String abstractElement) {
+    public void setAbstractElement(String abstractElement)
+    {
         this.abstractElement = abstractElement;
     }
 
     @XmlAttribute(name = "connector-name")
-    public String getConnectorName() {
+    public String getConnectorName()
+    {
         return connectorName;
     }
 
-    public void setConnectorName(String connectorName) {
+    public void setConnectorName(String connectorName)
+    {
         this.connectorName = connectorName;
     }
 
     @Override
-    public void accept(IEditorElementVisitor visitor) {
+    public void accept(IEditorElementVisitor visitor)
+    {
         visitor.visit(this);
     }
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         return "NoOperation [abstractElement=" + abstractElement + ", connectorName=" + connectorName + "]";
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         final int prime = 31;
         int result = super.hashCode();
         result = prime * result + ((abstractElement == null) ? 0 : abstractElement.hashCode());
@@ -55,24 +63,43 @@ public class NoOperation extends AbstractMode {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(Object obj)
+    {
         if (this == obj)
+        {
             return true;
+        }
         if (!super.equals(obj))
+        {
             return false;
+        }
         if (getClass() != obj.getClass())
+        {
             return false;
+        }
         NoOperation other = (NoOperation) obj;
-        if (abstractElement == null) {
+        if (abstractElement == null)
+        {
             if (other.abstractElement != null)
+            {
                 return false;
-        } else if (!abstractElement.equals(other.abstractElement))
+            }
+        }
+        else if (!abstractElement.equals(other.abstractElement))
+        {
             return false;
-        if (connectorName == null) {
+        }
+        if (connectorName == null)
+        {
             if (other.connectorName != null)
+            {
                 return false;
-        } else if (!connectorName.equals(other.connectorName))
+            }
+        }
+        else if (!connectorName.equals(other.connectorName))
+        {
             return false;
+        }
         return true;
     }
 

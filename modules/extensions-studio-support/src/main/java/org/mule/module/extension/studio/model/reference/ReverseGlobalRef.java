@@ -12,7 +12,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.mule.module.extension.studio.model.IEditorElementVisitor;
 
 @XmlRootElement
-public class ReverseGlobalRef extends AbstractRef {
+public class ReverseGlobalRef extends AbstractRef
+{
 
     private String cells;
     private String fieldWithLink;
@@ -21,62 +22,75 @@ public class ReverseGlobalRef extends AbstractRef {
     private String parentType;
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         return "ReverseGlobalRef [getName()=" + getName() + ", getCaption()=" + getCaption() + "]";
     }
 
     @Override
-    public void accept(IEditorElementVisitor visitor) {
+    public void accept(IEditorElementVisitor visitor)
+    {
         visitor.visit(this);
     }
 
     @XmlAttribute
-    public String getCells() {
+    public String getCells()
+    {
         return cells;
     }
 
-    public void setCells(String cells) {
+    public void setCells(String cells)
+    {
         this.cells = cells;
     }
 
     @XmlAttribute
-    public String getFieldWithLink() {
+    public String getFieldWithLink()
+    {
         return fieldWithLink;
     }
 
-    public void setFieldWithLink(String fieldWithLink) {
+    public void setFieldWithLink(String fieldWithLink)
+    {
         this.fieldWithLink = fieldWithLink;
     }
 
     @XmlAttribute
-    public String getFieldWithParentName() {
+    public String getFieldWithParentName()
+    {
         return fieldWithParentName;
     }
 
-    public void setFieldWithParentName(String fieldWithParentName) {
+    public void setFieldWithParentName(String fieldWithParentName)
+    {
         this.fieldWithParentName = fieldWithParentName;
     }
 
     @XmlAttribute
-    public String getChildrenType() {
+    public String getChildrenType()
+    {
         return childrenType;
     }
 
-    public void setChildrenType(String childrenType) {
+    public void setChildrenType(String childrenType)
+    {
         this.childrenType = childrenType;
     }
 
     @XmlAttribute
-    public String getParentType() {
+    public String getParentType()
+    {
         return parentType;
     }
 
-    public void setParentType(String parentType) {
+    public void setParentType(String parentType)
+    {
         this.parentType = parentType;
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         final int prime = 31;
         int result = super.hashCode();
         result = prime * result + ((cells == null) ? 0 : cells.hashCode());
@@ -88,39 +102,76 @@ public class ReverseGlobalRef extends AbstractRef {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(Object obj)
+    {
         if (this == obj)
+        {
             return true;
+        }
         if (!super.equals(obj))
+        {
             return false;
+        }
         if (getClass() != obj.getClass())
+        {
             return false;
+        }
         ReverseGlobalRef other = (ReverseGlobalRef) obj;
-        if (cells == null) {
+        if (cells == null)
+        {
             if (other.cells != null)
+            {
                 return false;
-        } else if (!cells.equals(other.cells))
+            }
+        }
+        else if (!cells.equals(other.cells))
+        {
             return false;
-        if (childrenType == null) {
+        }
+        if (childrenType == null)
+        {
             if (other.childrenType != null)
+            {
                 return false;
-        } else if (!childrenType.equals(other.childrenType))
+            }
+        }
+        else if (!childrenType.equals(other.childrenType))
+        {
             return false;
-        if (fieldWithLink == null) {
+        }
+        if (fieldWithLink == null)
+        {
             if (other.fieldWithLink != null)
+            {
                 return false;
-        } else if (!fieldWithLink.equals(other.fieldWithLink))
+            }
+        }
+        else if (!fieldWithLink.equals(other.fieldWithLink))
+        {
             return false;
-        if (fieldWithParentName == null) {
+        }
+        if (fieldWithParentName == null)
+        {
             if (other.fieldWithParentName != null)
+            {
                 return false;
-        } else if (!fieldWithParentName.equals(other.fieldWithParentName))
+            }
+        }
+        else if (!fieldWithParentName.equals(other.fieldWithParentName))
+        {
             return false;
-        if (parentType == null) {
+        }
+        if (parentType == null)
+        {
             if (other.parentType != null)
+            {
                 return false;
-        } else if (!parentType.equals(other.parentType))
+            }
+        }
+        else if (!parentType.equals(other.parentType))
+        {
             return false;
+        }
         return true;
     }
 }

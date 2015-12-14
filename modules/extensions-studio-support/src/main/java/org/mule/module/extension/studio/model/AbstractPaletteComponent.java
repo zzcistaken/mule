@@ -6,12 +6,15 @@
  */
 package org.mule.module.extension.studio.model;
 
+import org.mule.module.extension.studio.model.element.RequiredLibraries;
+
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 
-@XmlSeeAlso({ CloudConnector.class, Connector.class, Container.class, Endpoint.class, Flow.class, Filter.class, Pattern.class, Transformer.class, Wizard.class })
-public abstract class AbstractPaletteComponent extends EditorElement {
+@XmlSeeAlso({CloudConnector.class, Connector.class, Container.class, Endpoint.class, Flow.class, Filter.class, MultiSource.class, Pattern.class, Transformer.class, Wizard.class})
+public abstract class AbstractPaletteComponent extends EditorElement
+{
 
     private String completionProposalDocName;
     private MetaDataBehaviour metaData;
@@ -19,110 +22,142 @@ public abstract class AbstractPaletteComponent extends EditorElement {
     private RequiredSetAlternatives requiredSetAlternatives;
     private String category;// TODO Potential Enum;
     private String paletteCategory;// TODO Potential Enum;
+    private RequiredLibraries required;
+
+    @XmlElement
+    public RequiredLibraries getRequired()
+    {
+        return required;
+    }
+
+    public void setRequired(RequiredLibraries required)
+    {
+        this.required = required;
+    }
 
     @XmlAttribute
-    public String getCategory() {
+    public String getCategory()
+    {
         return category;
     }
 
-    public void setCategory(String category) {
+    public void setCategory(String category)
+    {
         this.category = category;
     }
 
     @XmlElement(name = "required-set-alternatives")
-    public RequiredSetAlternatives getRequiredSetAlternatives() {
+    public RequiredSetAlternatives getRequiredSetAlternatives()
+    {
         return requiredSetAlternatives;
     }
 
-    public void setRequiredSetAlternatives(RequiredSetAlternatives requiredSetAlternatives) {
+    public void setRequiredSetAlternatives(RequiredSetAlternatives requiredSetAlternatives)
+    {
         this.requiredSetAlternatives = requiredSetAlternatives;
     }
 
     @XmlElement
-    public KeywordSet getKeywords() {
+    public KeywordSet getKeywords()
+    {
         return keywords;
     }
 
-    public void setKeywords(KeywordSet keywords) {
+    public void setKeywords(KeywordSet keywords)
+    {
         this.keywords = keywords;
     }
 
     @XmlAttribute
-    public MetaDataBehaviour getMetaData() {
+    public MetaDataBehaviour getMetaData()
+    {
         return metaData;
     }
 
-    public void setMetaData(MetaDataBehaviour metaData) {
+    public void setMetaData(MetaDataBehaviour metaData)
+    {
         this.metaData = metaData;
     }
 
     @XmlAttribute
-    public String getCompletionProposalDocName() {
+    public String getCompletionProposalDocName()
+    {
         return completionProposalDocName;
     }
 
-    public void setCompletionProposalDocName(String completionProposalDocName) {
+    public void setCompletionProposalDocName(String completionProposalDocName)
+    {
         this.completionProposalDocName = completionProposalDocName;
     }
 
     @XmlAttribute
-    public String getPaletteCategory() {
+    public String getPaletteCategory()
+    {
         return paletteCategory;
     }
 
-    public void setPaletteCategory(String paletteCategory) {
+    public void setPaletteCategory(String paletteCategory)
+    {
         this.paletteCategory = paletteCategory;
     }
 
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = super.hashCode();
-        result = prime * result + ((category == null) ? 0 : category.hashCode());
-        result = prime * result + ((completionProposalDocName == null) ? 0 : completionProposalDocName.hashCode());
-        result = prime * result + ((keywords == null) ? 0 : keywords.hashCode());
-        result = prime * result + ((metaData == null) ? 0 : metaData.hashCode());
-        result = prime * result + ((paletteCategory == null) ? 0 : paletteCategory.hashCode());
-        result = prime * result + ((requiredSetAlternatives == null) ? 0 : requiredSetAlternatives.hashCode());
-        return result;
+    public boolean equals(Object o)
+    {
+        if (this == o)
+        {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass())
+        {
+            return false;
+        }
+        if (!super.equals(o))
+        {
+            return false;
+        }
+
+        AbstractPaletteComponent that = (AbstractPaletteComponent) o;
+
+        if (completionProposalDocName != null ? !completionProposalDocName.equals(that.completionProposalDocName) : that.completionProposalDocName != null)
+        {
+            return false;
+        }
+        if (metaData != that.metaData)
+        {
+            return false;
+        }
+        if (keywords != null ? !keywords.equals(that.keywords) : that.keywords != null)
+        {
+            return false;
+        }
+        if (requiredSetAlternatives != null ? !requiredSetAlternatives.equals(that.requiredSetAlternatives) : that.requiredSetAlternatives != null)
+        {
+            return false;
+        }
+        if (category != null ? !category.equals(that.category) : that.category != null)
+        {
+            return false;
+        }
+        if (paletteCategory != null ? !paletteCategory.equals(that.paletteCategory) : that.paletteCategory != null)
+        {
+            return false;
+        }
+        return !(required != null ? !required.equals(that.required) : that.required != null);
+
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (!super.equals(obj))
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        AbstractPaletteComponent other = (AbstractPaletteComponent) obj;
-        if (category == null) {
-            if (other.category != null)
-                return false;
-        } else if (!category.equals(other.category))
-            return false;
-        if (completionProposalDocName == null) {
-            if (other.completionProposalDocName != null)
-                return false;
-        } else if (!completionProposalDocName.equals(other.completionProposalDocName))
-            return false;
-        if (keywords == null) {
-            if (other.keywords != null)
-                return false;
-        } else if (!keywords.equals(other.keywords))
-            return false;
-        if (metaData != other.metaData)
-            return false;
-        if (paletteCategory == null) {
-            if (other.paletteCategory != null)
-                return false;
-        } else if (!paletteCategory.equals(other.paletteCategory))
-            return false;
-        if (requiredSetAlternatives == null) {
-            if (other.requiredSetAlternatives != null)
-                return false;
-        } else if (!requiredSetAlternatives.equals(other.requiredSetAlternatives))
-            return false;
-        return true;
+    public int hashCode()
+    {
+        int result = super.hashCode();
+        result = 31 * result + (completionProposalDocName != null ? completionProposalDocName.hashCode() : 0);
+        result = 31 * result + (metaData != null ? metaData.hashCode() : 0);
+        result = 31 * result + (keywords != null ? keywords.hashCode() : 0);
+        result = 31 * result + (requiredSetAlternatives != null ? requiredSetAlternatives.hashCode() : 0);
+        result = 31 * result + (category != null ? category.hashCode() : 0);
+        result = 31 * result + (paletteCategory != null ? paletteCategory.hashCode() : 0);
+        result = 31 * result + (required != null ? required.hashCode() : 0);
+        return result;
     }
 }

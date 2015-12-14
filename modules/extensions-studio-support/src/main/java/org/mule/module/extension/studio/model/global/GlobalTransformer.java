@@ -11,10 +11,12 @@ import org.mule.module.extension.studio.model.IEditorElementVisitor;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "global-transformer")
-public class GlobalTransformer extends AbstractGlobalElement {
+public class GlobalTransformer extends AbstractGlobalElement
+{
 
     @Override
-    public void accept(IEditorElementVisitor visitor) {
+    public void accept(IEditorElementVisitor visitor)
+    {
         visitor.visit(this);
     }
 }

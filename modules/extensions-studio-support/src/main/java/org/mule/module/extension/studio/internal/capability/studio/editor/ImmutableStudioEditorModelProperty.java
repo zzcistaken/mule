@@ -13,6 +13,7 @@ import org.mule.extension.api.introspection.property.StudioEditorModelProperty;
  */
 public class ImmutableStudioEditorModelProperty implements StudioEditorModelProperty
 {
+
     private final String fileName;
 
     public ImmutableStudioEditorModelProperty(String fileName)

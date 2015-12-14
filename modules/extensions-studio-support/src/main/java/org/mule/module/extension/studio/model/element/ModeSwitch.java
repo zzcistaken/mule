@@ -16,7 +16,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.mule.module.extension.studio.model.IEditorElementVisitor;
 
 @XmlRootElement(name = "modeSwitch")
-public class ModeSwitch extends BaseFieldEditorElement {
+public class ModeSwitch extends BaseFieldEditorElement
+{
 
     private Boolean alwaysCombo;
     private Boolean changesVisibility;
@@ -27,74 +28,90 @@ public class ModeSwitch extends BaseFieldEditorElement {
     private List<AbstractMode> modes;
 
     @XmlElementRef
-    public List<AbstractMode> getModes() {
-        if (modes == null) {
+    public List<AbstractMode> getModes()
+    {
+        if (modes == null)
+        {
             modes = new ArrayList<AbstractMode>();
         }
         return modes;
     }
 
-    public void setModes(List<AbstractMode> modes) {
+    public void setModes(List<AbstractMode> modes)
+    {
         this.modes = modes;
     }
 
     @XmlAttribute
-    public Boolean getAlwaysCombo() {
+    public Boolean getAlwaysCombo()
+    {
         return alwaysCombo;
     }
 
-    public void setAlwaysCombo(Boolean alwaysCombo) {
+    public void setAlwaysCombo(Boolean alwaysCombo)
+    {
         this.alwaysCombo = alwaysCombo;
     }
 
     @XmlAttribute
-    public String getSort() {
+    public String getSort()
+    {
         return sort;
     }
 
-    public void setSort(String sort) {
+    public void setSort(String sort)
+    {
         this.sort = sort;
     }
 
     @XmlAttribute
-    public Boolean getChangesVisibility() {
+    public Boolean getChangesVisibility()
+    {
         return changesVisibility;
     }
 
-    public void setChangesVisibility(Boolean changesVisibility) {
+    public void setChangesVisibility(Boolean changesVisibility)
+    {
         this.changesVisibility = changesVisibility;
     }
 
     @Override
-    public void accept(IEditorElementVisitor visitor) {
+    public void accept(IEditorElementVisitor visitor)
+    {
         visitor.visit(this);
     }
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         return "ModeSwitch [getName()=" + getName() + ", getCaption()=" + getCaption() + "]";
     }
 
     @XmlAttribute
-    public String getDefaultValue() {
+    public String getDefaultValue()
+    {
         return defaultValue;
     }
 
-    public void setDefaultValue(String defaultValue) {
+    public void setDefaultValue(String defaultValue)
+    {
         this.defaultValue = defaultValue;
     }
 
     @XmlAttribute
-    public Boolean getAsRadioGroup() {
+    public Boolean getAsRadioGroup()
+    {
         return asRadioGroup;
     }
 
-    public void setAsRadioGroup(Boolean asRadioGroup) {
+    public void setAsRadioGroup(Boolean asRadioGroup)
+    {
         this.asRadioGroup = asRadioGroup;
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         final int prime = 31;
         int result = super.hashCode();
         result = prime * result + ((alwaysCombo == null) ? 0 : alwaysCombo.hashCode());
@@ -107,44 +124,87 @@ public class ModeSwitch extends BaseFieldEditorElement {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(Object obj)
+    {
         if (this == obj)
+        {
             return true;
+        }
         if (!super.equals(obj))
+        {
             return false;
+        }
         if (getClass() != obj.getClass())
+        {
             return false;
+        }
         ModeSwitch other = (ModeSwitch) obj;
-        if (alwaysCombo == null) {
+        if (alwaysCombo == null)
+        {
             if (other.alwaysCombo != null)
+            {
                 return false;
-        } else if (!alwaysCombo.equals(other.alwaysCombo))
+            }
+        }
+        else if (!alwaysCombo.equals(other.alwaysCombo))
+        {
             return false;
-        if (asRadioGroup == null) {
+        }
+        if (asRadioGroup == null)
+        {
             if (other.asRadioGroup != null)
+            {
                 return false;
-        } else if (!asRadioGroup.equals(other.asRadioGroup))
+            }
+        }
+        else if (!asRadioGroup.equals(other.asRadioGroup))
+        {
             return false;
-        if (changesVisibility == null) {
+        }
+        if (changesVisibility == null)
+        {
             if (other.changesVisibility != null)
+            {
                 return false;
-        } else if (!changesVisibility.equals(other.changesVisibility))
+            }
+        }
+        else if (!changesVisibility.equals(other.changesVisibility))
+        {
             return false;
-        if (defaultValue == null) {
+        }
+        if (defaultValue == null)
+        {
             if (other.defaultValue != null)
+            {
                 return false;
-        } else if (!defaultValue.equals(other.defaultValue))
+            }
+        }
+        else if (!defaultValue.equals(other.defaultValue))
+        {
             return false;
-        if (modes == null) {
+        }
+        if (modes == null)
+        {
             if (other.modes != null)
+            {
                 return false;
-        } else if (!modes.equals(other.modes))
+            }
+        }
+        else if (!modes.equals(other.modes))
+        {
             return false;
-        if (sort == null) {
+        }
+        if (sort == null)
+        {
             if (other.sort != null)
+            {
                 return false;
-        } else if (!sort.equals(other.sort))
+            }
+        }
+        else if (!sort.equals(other.sort))
+        {
             return false;
+        }
         return true;
     }
 

@@ -14,7 +14,8 @@ import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "namespace")
-public class Namespace extends AbstractEditorElement {
+public class Namespace extends AbstractEditorElement
+{
 
     private String prefix;
 
@@ -23,47 +24,57 @@ public class Namespace extends AbstractEditorElement {
     private List<EditorElement> components;
 
     @XmlAttribute
-    public String getPrefix() {
+    public String getPrefix()
+    {
         return prefix;
     }
 
-    public void setPrefix(String prefix) {
+    public void setPrefix(String prefix)
+    {
         this.prefix = prefix;
     }
 
     @XmlAttribute
-    public String getUrl() {
+    public String getUrl()
+    {
         return url;
     }
 
-    public void setUrl(String url) {
+    public void setUrl(String url)
+    {
         this.url = url;
     }
 
     @XmlElementRef
-    public List<EditorElement> getComponents() {
-        if (components == null) {
+    public List<EditorElement> getComponents()
+    {
+        if (components == null)
+        {
             components = new ArrayList<EditorElement>();
         }
         return components;
     }
 
-    public void setComponents(List<EditorElement> components) {
+    public void setComponents(List<EditorElement> components)
+    {
         this.components = components;
     }
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         return "Namespace [prefix=" + prefix + ", url=" + url + "]";
     }
 
     @Override
-    public void accept(IEditorElementVisitor visitor) {
+    public void accept(IEditorElementVisitor visitor)
+    {
         visitor.visit(this);
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         final int prime = 31;
         int result = super.hashCode();
         result = prime * result + ((components == null) ? 0 : components.hashCode());
@@ -73,29 +84,54 @@ public class Namespace extends AbstractEditorElement {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(Object obj)
+    {
         if (this == obj)
+        {
             return true;
+        }
         if (!super.equals(obj))
+        {
             return false;
+        }
         if (getClass() != obj.getClass())
+        {
             return false;
+        }
         Namespace other = (Namespace) obj;
-        if (components == null) {
+        if (components == null)
+        {
             if (other.components != null)
+            {
                 return false;
-        } else if (!components.equals(other.components))
+            }
+        }
+        else if (!components.equals(other.components))
+        {
             return false;
-        if (prefix == null) {
+        }
+        if (prefix == null)
+        {
             if (other.prefix != null)
+            {
                 return false;
-        } else if (!prefix.equals(other.prefix))
+            }
+        }
+        else if (!prefix.equals(other.prefix))
+        {
             return false;
-        if (url == null) {
+        }
+        if (url == null)
+        {
             if (other.url != null)
+            {
                 return false;
-        } else if (!url.equals(other.url))
+            }
+        }
+        else if (!url.equals(other.url))
+        {
             return false;
+        }
         return true;
     }
 

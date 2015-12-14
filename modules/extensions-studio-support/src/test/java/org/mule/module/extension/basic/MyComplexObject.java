@@ -9,19 +9,22 @@ package org.mule.module.extension.basic;
 
 import org.mule.extension.annotation.api.Parameter;
 
-public class MyComplexObject {
+public class MyComplexObject
+{
 
     /**
      * My value
      */
-	@Parameter	//TODO I should not need to specify this to get a parameter
+    @Parameter    //TODO I should not need to specify this to get a parameter
     private String value;
 
-    public String getValue() {
+    public String getValue()
+    {
         return value;
     }
 
-    public void setValue(String value) {
+    public void setValue(String value)
+    {
         this.value = value;
     }
 }

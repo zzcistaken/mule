@@ -12,7 +12,8 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "classname")
-public class ClassNameEditor extends BaseFieldEditorElement {
+public class ClassNameEditor extends BaseFieldEditorElement
+{
 
     //@ClassPicker
     private String implementsClass;
@@ -22,44 +23,53 @@ public class ClassNameEditor extends BaseFieldEditorElement {
     private String extendsClass;
 
     @XmlAttribute(name = "implements")
-    public String getImplementsClass() {
+    public String getImplementsClass()
+    {
         return implementsClass;
     }
 
-    public void setImplementsClass(String implementsClass) {
+    public void setImplementsClass(String implementsClass)
+    {
         this.implementsClass = implementsClass;
     }
 
     @XmlAttribute(name = "extends")
-    public String getExtendsClass() {
+    public String getExtendsClass()
+    {
         return extendsClass;
     }
 
-    public void setExtendsClass(String extendsClass) {
+    public void setExtendsClass(String extendsClass)
+    {
         this.extendsClass = extendsClass;
     }
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         return "ClassNameEditor [ getName()=" + getName() + ", getDescription()=" + getDescription() + "]";
     }
 
     @Override
-    public void accept(IEditorElementVisitor visitor) {
+    public void accept(IEditorElementVisitor visitor)
+    {
         visitor.visit(this);
     }
 
     @XmlAttribute
-    public Boolean getIsSupportsImport() {
+    public Boolean getIsSupportsImport()
+    {
         return isSupportsImport;
     }
 
-    public void setIsSupportsImport(Boolean isSupportsImport) {
+    public void setIsSupportsImport(Boolean isSupportsImport)
+    {
         this.isSupportsImport = isSupportsImport;
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         final int prime = 31;
         int result = super.hashCode();
         result = prime * result + ((extendsClass == null) ? 0 : extendsClass.hashCode());
@@ -69,29 +79,54 @@ public class ClassNameEditor extends BaseFieldEditorElement {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(Object obj)
+    {
         if (this == obj)
+        {
             return true;
+        }
         if (!super.equals(obj))
+        {
             return false;
+        }
         if (getClass() != obj.getClass())
+        {
             return false;
+        }
         ClassNameEditor other = (ClassNameEditor) obj;
-        if (extendsClass == null) {
+        if (extendsClass == null)
+        {
             if (other.extendsClass != null)
+            {
                 return false;
-        } else if (!extendsClass.equals(other.extendsClass))
+            }
+        }
+        else if (!extendsClass.equals(other.extendsClass))
+        {
             return false;
-        if (implementsClass == null) {
+        }
+        if (implementsClass == null)
+        {
             if (other.implementsClass != null)
+            {
                 return false;
-        } else if (!implementsClass.equals(other.implementsClass))
+            }
+        }
+        else if (!implementsClass.equals(other.implementsClass))
+        {
             return false;
-        if (isSupportsImport == null) {
+        }
+        if (isSupportsImport == null)
+        {
             if (other.isSupportsImport != null)
+            {
                 return false;
-        } else if (!isSupportsImport.equals(other.isSupportsImport))
+            }
+        }
+        else if (!isSupportsImport.equals(other.isSupportsImport))
+        {
             return false;
+        }
         return true;
     }
 }

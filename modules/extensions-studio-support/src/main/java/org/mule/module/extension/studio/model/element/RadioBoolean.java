@@ -12,100 +12,130 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class RadioBoolean extends BaseFieldEditorElement {
+public class RadioBoolean extends BaseFieldEditorElement
+{
 
     private String group;
     private Boolean defaultValue;
     private Integer margin;
     //@ClassPicker(mustImplement = org.mule.tooling.ui.modules.core.widgets.editors.ILoadedValueModifier.class)
     private String loadedValueModifier;
+    private String labelledWith;
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         return "RadioBoolean [getName()=" + getName() + ", getCaption()=" + getCaption() + "]";
     }
 
     @Override
-    public void accept(IEditorElementVisitor visitor) {
+    public void accept(IEditorElementVisitor visitor)
+    {
         visitor.visit(this);
     }
 
     @XmlAttribute
-    public String getGroup() {
+    public String getGroup()
+    {
         return group;
     }
 
-    public void setGroup(String group) {
+    public void setGroup(String group)
+    {
         this.group = group;
     }
 
     @XmlAttribute
-    public Boolean getDefaultValue() {
+    public Boolean getDefaultValue()
+    {
         return defaultValue;
     }
 
-    public void setDefaultValue(Boolean defaultValue) {
+    public void setDefaultValue(Boolean defaultValue)
+    {
         this.defaultValue = defaultValue;
     }
 
     @XmlAttribute
-    public Integer getMargin() {
+    public Integer getMargin()
+    {
         return margin;
     }
 
-    public void setMargin(Integer margin) {
+    public void setMargin(Integer margin)
+    {
         this.margin = margin;
     }
 
     @XmlAttribute
-    public String getLoadedValueModifier() {
+    public String getLoadedValueModifier()
+    {
         return loadedValueModifier;
     }
 
-    public void setLoadedValueModifier(String loadedValueModifier) {
+    public void setLoadedValueModifier(String loadedValueModifier)
+    {
         this.loadedValueModifier = loadedValueModifier;
     }
 
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = super.hashCode();
-        result = prime * result + ((defaultValue == null) ? 0 : defaultValue.hashCode());
-        result = prime * result + ((group == null) ? 0 : group.hashCode());
-        result = prime * result + ((loadedValueModifier == null) ? 0 : loadedValueModifier.hashCode());
-        result = prime * result + ((margin == null) ? 0 : margin.hashCode());
-        return result;
+    @XmlAttribute
+    public String getLabelledWith()
+    {
+        return labelledWith;
+    }
+
+    public void setLabelledWith(String labelledWith)
+    {
+        this.labelledWith = labelledWith;
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
+    public boolean equals(Object o)
+    {
+        if (this == o)
+        {
             return true;
-        if (!super.equals(obj))
+        }
+        if (o == null || getClass() != o.getClass())
+        {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (!super.equals(o))
+        {
             return false;
-        RadioBoolean other = (RadioBoolean) obj;
-        if (defaultValue == null) {
-            if (other.defaultValue != null)
-                return false;
-        } else if (!defaultValue.equals(other.defaultValue))
+        }
+
+        RadioBoolean that = (RadioBoolean) o;
+
+        if (group != null ? !group.equals(that.group) : that.group != null)
+        {
             return false;
-        if (group == null) {
-            if (other.group != null)
-                return false;
-        } else if (!group.equals(other.group))
+        }
+        if (defaultValue != null ? !defaultValue.equals(that.defaultValue) : that.defaultValue != null)
+        {
             return false;
-        if (loadedValueModifier == null) {
-            if (other.loadedValueModifier != null)
-                return false;
-        } else if (!loadedValueModifier.equals(other.loadedValueModifier))
+        }
+        if (margin != null ? !margin.equals(that.margin) : that.margin != null)
+        {
             return false;
-        if (margin == null) {
-            if (other.margin != null)
-                return false;
-        } else if (!margin.equals(other.margin))
+        }
+        if (loadedValueModifier != null ? !loadedValueModifier.equals(that.loadedValueModifier) : that.loadedValueModifier != null)
+        {
             return false;
-        return true;
+        }
+        return !(labelledWith != null ? !labelledWith.equals(that.labelledWith) : that.labelledWith != null);
+
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int result = super.hashCode();
+        result = 31 * result + (group != null ? group.hashCode() : 0);
+        result = 31 * result + (defaultValue != null ? defaultValue.hashCode() : 0);
+        result = 31 * result + (margin != null ? margin.hashCode() : 0);
+        result = 31 * result + (loadedValueModifier != null ? loadedValueModifier.hashCode() : 0);
+        result = 31 * result + (labelledWith != null ? labelledWith.hashCode() : 0);
+        return result;
     }
 }

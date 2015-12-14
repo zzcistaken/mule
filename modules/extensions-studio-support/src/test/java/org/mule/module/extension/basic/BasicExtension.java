@@ -12,7 +12,7 @@ import org.mule.extension.annotation.api.Operations;
 import org.mule.extension.annotation.api.capability.StudioEditor;
 import org.mule.extension.annotation.api.capability.Xml;
 
-@Extension(name = "basic", description="Basic")
+@Extension(name = "basic", description = "Basic")
 @Xml(schemaLocation = "http://www.mulesoft.org/schema/mule/basic", namespace = "basic", schemaVersion = "1.0")
 @Operations({BasicOperations.class})
 @Configurations({BasicConfig.class})

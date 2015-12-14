@@ -6,37 +6,43 @@
  */
 package org.mule.module.extension.studio.model.reference;
 
+import org.mule.module.extension.studio.model.IEditorElementVisitor;
+
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.mule.module.extension.studio.model.IEditorElementVisitor;
-
 @XmlRootElement
-public class FlowRef extends AbstractRef {
+public class FlowRef extends AbstractRef
+{
 
     private Boolean supportFlow;
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         return "FlowRef [getName()=" + getName() + ", getCaption()=" + getCaption() + "]";
     }
 
     @Override
-    public void accept(IEditorElementVisitor visitor) {
+    public void accept(IEditorElementVisitor visitor)
+    {
         visitor.visit(this);
     }
 
     @XmlAttribute
-    public Boolean getSupportFlow() {
+    public Boolean getSupportFlow()
+    {
         return supportFlow;
     }
 
-    public void setSupportFlow(Boolean supportFlow) {
+    public void setSupportFlow(Boolean supportFlow)
+    {
         this.supportFlow = supportFlow;
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         final int prime = 31;
         int result = super.hashCode();
         result = prime * result + ((supportFlow == null) ? 0 : supportFlow.hashCode());
@@ -44,19 +50,32 @@ public class FlowRef extends AbstractRef {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(Object obj)
+    {
         if (this == obj)
+        {
             return true;
+        }
         if (!super.equals(obj))
+        {
             return false;
+        }
         if (getClass() != obj.getClass())
+        {
             return false;
+        }
         FlowRef other = (FlowRef) obj;
-        if (supportFlow == null) {
+        if (supportFlow == null)
+        {
             if (other.supportFlow != null)
+            {
                 return false;
-        } else if (!supportFlow.equals(other.supportFlow))
+            }
+        }
+        else if (!supportFlow.equals(other.supportFlow))
+        {
             return false;
+        }
         return true;
     }
 }

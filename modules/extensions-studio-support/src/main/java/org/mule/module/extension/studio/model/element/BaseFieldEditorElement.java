@@ -6,17 +6,16 @@
  */
 package org.mule.module.extension.studio.model.element;
 
-import org.mule.module.extension.studio.model.ModeType;
-import org.mule.module.extension.studio.model.Radio;
 import org.mule.module.extension.studio.model.reference.AbstractRef;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlSeeAlso;
 
-@XmlSeeAlso({ AbstractRef.class, BaseStringEditor.class, BooleanEditor.class, ChildElement.class, ClassNameEditor.class, Custom.class, DateTimeEditor.class, Dummy.class, DynamicEditor.class, EncodingEditor.class,
-        EnumEditor.class, FixedAttribute.class, IntegerEditor.class, LabelElement.class, ListEditor.class, LongEditor.class, ModeSwitch.class, NameEditor.class,
-        ElementQuery.class, Radio.class, RadioBoolean.class, Regexp.class, ResourceEditor.class, SoapInterceptor.class, TextEditor.class, TypeChooser.class })
-public abstract class BaseFieldEditorElement extends BaseChildEditorElement {
+@XmlSeeAlso({AbstractRef.class, BaseStringEditor.class, BooleanEditor.class, ChildElement.class, ClassNameEditor.class, Custom.class, DateTimeEditor.class, Dummy.class, DoubleEditor.class, DynamicEditor.class, EncodingEditor.class,
+        EnumEditor.class, FixedAttribute.class, IntegerEditor.class, LabelElement.class, ListEditor.class, LongEditor.class, ModeSwitch.class, MultiTypeChooser.class, NameEditor.class,
+        ElementQuery.class, Radio.class, RadioBoolean.class, Regexp.class, ResourceEditor.class, SoapInterceptor.class, TextEditor.class, TypeChooser.class})
+public abstract class BaseFieldEditorElement extends BaseChildEditorElement
+{
 
     private String name;
     private Boolean required;
@@ -33,7 +32,6 @@ public abstract class BaseFieldEditorElement extends BaseChildEditorElement {
     private String javaType;
     private Boolean requiredForDataSense;
     private String saveAs;// TODO es lo mismo que xmlname, pero a nivel de attributo
-    private ModeType mode;
     private String controlled;
     private String groupIn;
     private Boolean transientField;
@@ -63,322 +61,382 @@ public abstract class BaseFieldEditorElement extends BaseChildEditorElement {
     private String actionListener;
 
     @XmlAttribute
-    public String getName() {
+    public String getName()
+    {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(String name)
+    {
         this.name = name;
     }
 
     @XmlAttribute
-    public Boolean getRequired() {
+    public Boolean getRequired()
+    {
         return required;
     }
 
-    public void setRequired(Boolean required) {
+    public void setRequired(Boolean required)
+    {
         this.required = required;
     }
 
     @XmlAttribute
-    public String getCustomValidator() {
+    public String getCustomValidator()
+    {
         return customValidator;
     }
 
-    public void setCustomValidator(String customValidator) {
+    public void setCustomValidator(String customValidator)
+    {
         this.customValidator = customValidator;
     }
 
     @XmlAttribute
-    public String getRecalcWhen() {
+    public String getRecalcWhen()
+    {
         return recalcWhen;
     }
 
-    public void setRecalcWhen(String recalcWhen) {
+    public void setRecalcWhen(String recalcWhen)
+    {
         this.recalcWhen = recalcWhen;
     }
 
     @XmlAttribute
-    public Boolean getAlwaysFill() {
+    public Boolean getAlwaysFill()
+    {
         return alwaysFill;
     }
 
-    public void setAlwaysFill(Boolean alwaysFill) {
+    public void setAlwaysFill(Boolean alwaysFill)
+    {
         this.alwaysFill = alwaysFill;
     }
 
     @XmlAttribute
-    public Boolean getVisibleInDialog() {
+    public Boolean getVisibleInDialog()
+    {
         return visibleInDialog;
     }
 
-    public void setVisibleInDialog(Boolean visibleInDialog) {
+    public void setVisibleInDialog(Boolean visibleInDialog)
+    {
         this.visibleInDialog = visibleInDialog;
     }
 
     @XmlAttribute
-    public String getAlternativeTo() {
+    public String getAlternativeTo()
+    {
         return alternativeTo;
     }
 
-    public void setAlternativeTo(String alternativeTo) {
+    public void setAlternativeTo(String alternativeTo)
+    {
         this.alternativeTo = alternativeTo;
     }
 
     @XmlAttribute
-    public Boolean getUnchangeable() {
+    public Boolean getUnchangeable()
+    {
         return unchangeable;
     }
 
-    public void setUnchangeable(Boolean unchangeable) {
+    public void setUnchangeable(Boolean unchangeable)
+    {
         this.unchangeable = unchangeable;
     }
 
     @XmlAttribute
-    public Boolean getHiddenForUser() {
+    public Boolean getHiddenForUser()
+    {
         return hiddenForUser;
     }
 
-    public void setHiddenForUser(Boolean hiddenForUser) {
+    public void setHiddenForUser(Boolean hiddenForUser)
+    {
         this.hiddenForUser = hiddenForUser;
     }
 
     @XmlAttribute
-    public String getPersistenceTransformer() {
+    public String getPersistenceTransformer()
+    {
         return persistenceTransformer;
     }
 
-    public void setPersistenceTransformer(String persistenceTransformer) {
+    public void setPersistenceTransformer(String persistenceTransformer)
+    {
         this.persistenceTransformer = persistenceTransformer;
     }
 
     @XmlAttribute
-    public String getValuePersistence() {
+    public String getValuePersistence()
+    {
         return valuePersistence;
     }
 
-    public void setValuePersistence(String valuePersistence) {
+    public void setValuePersistence(String valuePersistence)
+    {
         this.valuePersistence = valuePersistence;
     }
 
     @XmlAttribute
-    public String getValuePersistenceRequires() {
+    public String getValuePersistenceRequires()
+    {
         return valuePersistenceRequires;
     }
 
-    public void setValuePersistenceRequires(String valuePersistenceRequires) {
+    public void setValuePersistenceRequires(String valuePersistenceRequires)
+    {
         this.valuePersistenceRequires = valuePersistenceRequires;
     }
 
     @XmlAttribute
-    public Boolean getEditable() {
+    public Boolean getEditable()
+    {
         return editable;
     }
 
-    public void setEditable(Boolean editable) {
+    public void setEditable(Boolean editable)
+    {
         this.editable = editable;
     }
 
     @XmlAttribute
-    public Boolean getTiny() {
+    public Boolean getTiny()
+    {
         return tiny;
     }
 
-    public void setTiny(Boolean tiny) {
+    public void setTiny(Boolean tiny)
+    {
         this.tiny = tiny;
     }
 
     @XmlAttribute
-    public Integer getSpan() {
+    public Integer getSpan()
+    {
         return span;
     }
 
-    public void setSpan(Integer span) {
+    public void setSpan(Integer span)
+    {
         this.span = span;
     }
 
     @XmlAttribute
-    public String getXsdType() {
+    public String getXsdType()
+    {
         return xsdType;
     }
 
-    public void setXsdType(String xsdType) {
+    public void setXsdType(String xsdType)
+    {
         this.xsdType = xsdType;
     }
 
     @XmlAttribute
-    public String getJavaType() {
+    public String getJavaType()
+    {
         return javaType;
     }
 
-    public void setJavaType(String javaType) {
+    public void setJavaType(String javaType)
+    {
         this.javaType = javaType;
     }
 
     @XmlAttribute
-    public Boolean getRequiredForDataSense() {
+    public Boolean getRequiredForDataSense()
+    {
         return requiredForDataSense;
     }
 
-    public void setRequiredForDataSense(Boolean requiredForDataSense) {
+    public void setRequiredForDataSense(Boolean requiredForDataSense)
+    {
         this.requiredForDataSense = requiredForDataSense;
     }
 
     @XmlAttribute
-    public String getSaveAs() {
+    public String getSaveAs()
+    {
         return saveAs;
     }
 
-    public void setSaveAs(String saveAs) {
+    public void setSaveAs(String saveAs)
+    {
         this.saveAs = saveAs;
     }
 
     @XmlAttribute
-    public ModeType getMode() {
-        return mode;
-    }
-
-    public void setMode(ModeType mode) {
-        this.mode = mode;
-    }
-
-    @XmlAttribute
-    public String getControlled() {
+    public String getControlled()
+    {
         return controlled;
     }
 
-    public void setControlled(String controlled) {
+    public void setControlled(String controlled)
+    {
         this.controlled = controlled;
     }
 
     @XmlAttribute
-    public String getGroupIn() {
+    public String getGroupIn()
+    {
         return groupIn;
     }
 
-    public void setGroupIn(String groupIn) {
+    public void setGroupIn(String groupIn)
+    {
         this.groupIn = groupIn;
     }
 
     @XmlAttribute(name = "transient")
-    public Boolean getTransientField() {
+    public Boolean getTransientField()
+    {
         return transientField;
     }
 
-    public void setTransientField(Boolean transientField) {
+    public void setTransientField(Boolean transientField)
+    {
         this.transientField = transientField;
     }
 
     @XmlAttribute
-    public Boolean getIndented() {
+    public Boolean getIndented()
+    {
         return indented;
     }
 
-    public void setIndented(Boolean indented) {
+    public void setIndented(Boolean indented)
+    {
         this.indented = indented;
     }
 
     @XmlAttribute
-    public Boolean getSupportsExpressions() {
+    public Boolean getSupportsExpressions()
+    {
         return supportsExpressions;
     }
 
-    public void setSupportsExpressions(Boolean supportsExpressions) {
+    public void setSupportsExpressions(Boolean supportsExpressions)
+    {
         this.supportsExpressions = supportsExpressions;
     }
 
     @XmlAttribute
-    public String getTopAnchor() {
+    public String getTopAnchor()
+    {
         return topAnchor;
     }
 
-    public void setTopAnchor(String topAnchor) {
+    public void setTopAnchor(String topAnchor)
+    {
         this.topAnchor = topAnchor;
     }
 
     @XmlAttribute
-    public String getBottomAnchor() {
+    public String getBottomAnchor()
+    {
         return bottomAnchor;
     }
 
-    public void setBottomAnchor(String bottomAnchor) {
+    public void setBottomAnchor(String bottomAnchor)
+    {
         this.bottomAnchor = bottomAnchor;
     }
 
     @XmlAttribute
-    public String getActionListener() {
+    public String getActionListener()
+    {
         return actionListener;
     }
 
-    public void setActionListener(String actionListener) {
+    public void setActionListener(String actionListener)
+    {
         this.actionListener = actionListener;
     }
 
     @XmlAttribute
-    public Boolean getLoadLater() {
+    public Boolean getLoadLater()
+    {
         return loadLater;
     }
 
-    public void setLoadLater(Boolean loadLater) {
+    public void setLoadLater(Boolean loadLater)
+    {
         this.loadLater = loadLater;
     }
 
     @XmlAttribute
-    public Boolean getFillWhenNotEmpty() {
+    public Boolean getFillWhenNotEmpty()
+    {
         return fillWhenNotEmpty;
     }
 
-    public void setFillWhenNotEmpty(Boolean fillWhenNotEmpty) {
+    public void setFillWhenNotEmpty(Boolean fillWhenNotEmpty)
+    {
         this.fillWhenNotEmpty = fillWhenNotEmpty;
     }
 
     @XmlAttribute
-    public Boolean getFillLine() {
+    public Boolean getFillLine()
+    {
         return fillLine;
     }
 
-    public void setFillLine(Boolean fillLine) {
+    public void setFillLine(Boolean fillLine)
+    {
         this.fillLine = fillLine;
     }
 
     @XmlAttribute
-    public Boolean getHideDisabled() {
+    public Boolean getHideDisabled()
+    {
         return hideDisabled;
     }
 
-    public void setHideDisabled(Boolean hideDisabled) {
+    public void setHideDisabled(Boolean hideDisabled)
+    {
         this.hideDisabled = hideDisabled;
     }
 
     @XmlAttribute
-    public Boolean getHideInChild() {
+    public Boolean getHideInChild()
+    {
         return hideInChild;
     }
 
-    public void setHideInChild(Boolean hideInChild) {
+    public void setHideInChild(Boolean hideInChild)
+    {
         this.hideInChild = hideInChild;
     }
 
     @XmlAttribute
-    public Integer getPriority() {
+    public Integer getPriority()
+    {
         return priority;
     }
 
-    public void setPriority(Integer priority) {
+    public void setPriority(Integer priority)
+    {
         this.priority = priority;
     }
 
     @XmlAttribute
-    public Boolean getStoreIndependently() {
+    public Boolean getStoreIndependently()
+    {
         return storeIndependently;
     }
 
-    public void setStoreIndependently(Boolean storeIndependently) {
+    public void setStoreIndependently(Boolean storeIndependently)
+    {
         this.storeIndependently = storeIndependently;
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         final int prime = 31;
         int result = super.hashCode();
         result = prime * result + ((actionListener == null) ? 0 : actionListener.hashCode());
@@ -397,7 +455,6 @@ public abstract class BaseFieldEditorElement extends BaseChildEditorElement {
         result = prime * result + ((indented == null) ? 0 : indented.hashCode());
         result = prime * result + ((javaType == null) ? 0 : javaType.hashCode());
         result = prime * result + ((loadLater == null) ? 0 : loadLater.hashCode());
-        result = prime * result + ((mode == null) ? 0 : mode.hashCode());
         result = prime * result + ((name == null) ? 0 : name.hashCode());
         result = prime * result + ((persistenceTransformer == null) ? 0 : persistenceTransformer.hashCode());
         result = prime * result + ((priority == null) ? 0 : priority.hashCode());
@@ -420,186 +477,395 @@ public abstract class BaseFieldEditorElement extends BaseChildEditorElement {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(Object obj)
+    {
         if (this == obj)
+        {
             return true;
+        }
         if (!super.equals(obj))
+        {
             return false;
+        }
         if (getClass() != obj.getClass())
+        {
             return false;
+        }
         BaseFieldEditorElement other = (BaseFieldEditorElement) obj;
-        if (actionListener == null) {
+        if (actionListener == null)
+        {
             if (other.actionListener != null)
+            {
                 return false;
-        } else if (!actionListener.equals(other.actionListener))
+            }
+        }
+        else if (!actionListener.equals(other.actionListener))
+        {
             return false;
-        if (alternativeTo == null) {
+        }
+        if (alternativeTo == null)
+        {
             if (other.alternativeTo != null)
+            {
                 return false;
-        } else if (!alternativeTo.equals(other.alternativeTo))
+            }
+        }
+        else if (!alternativeTo.equals(other.alternativeTo))
+        {
             return false;
-        if (alwaysFill == null) {
+        }
+        if (alwaysFill == null)
+        {
             if (other.alwaysFill != null)
+            {
                 return false;
-        } else if (!alwaysFill.equals(other.alwaysFill))
+            }
+        }
+        else if (!alwaysFill.equals(other.alwaysFill))
+        {
             return false;
-        if (bottomAnchor == null) {
+        }
+        if (bottomAnchor == null)
+        {
             if (other.bottomAnchor != null)
+            {
                 return false;
-        } else if (!bottomAnchor.equals(other.bottomAnchor))
+            }
+        }
+        else if (!bottomAnchor.equals(other.bottomAnchor))
+        {
             return false;
-        if (controlled == null) {
+        }
+        if (controlled == null)
+        {
             if (other.controlled != null)
+            {
                 return false;
-        } else if (!controlled.equals(other.controlled))
+            }
+        }
+        else if (!controlled.equals(other.controlled))
+        {
             return false;
-        if (customValidator == null) {
+        }
+        if (customValidator == null)
+        {
             if (other.customValidator != null)
+            {
                 return false;
-        } else if (!customValidator.equals(other.customValidator))
+            }
+        }
+        else if (!customValidator.equals(other.customValidator))
+        {
             return false;
-        if (editable == null) {
+        }
+        if (editable == null)
+        {
             if (other.editable != null)
+            {
                 return false;
-        } else if (!editable.equals(other.editable))
+            }
+        }
+        else if (!editable.equals(other.editable))
+        {
             return false;
-        if (fillLine == null) {
+        }
+        if (fillLine == null)
+        {
             if (other.fillLine != null)
+            {
                 return false;
-        } else if (!fillLine.equals(other.fillLine))
+            }
+        }
+        else if (!fillLine.equals(other.fillLine))
+        {
             return false;
-        if (fillWhenNotEmpty == null) {
+        }
+        if (fillWhenNotEmpty == null)
+        {
             if (other.fillWhenNotEmpty != null)
+            {
                 return false;
-        } else if (!fillWhenNotEmpty.equals(other.fillWhenNotEmpty))
+            }
+        }
+        else if (!fillWhenNotEmpty.equals(other.fillWhenNotEmpty))
+        {
             return false;
-        if (groupIn == null) {
+        }
+        if (groupIn == null)
+        {
             if (other.groupIn != null)
+            {
                 return false;
-        } else if (!groupIn.equals(other.groupIn))
+            }
+        }
+        else if (!groupIn.equals(other.groupIn))
+        {
             return false;
-        if (hiddenForUser == null) {
+        }
+        if (hiddenForUser == null)
+        {
             if (other.hiddenForUser != null)
+            {
                 return false;
-        } else if (!hiddenForUser.equals(other.hiddenForUser))
+            }
+        }
+        else if (!hiddenForUser.equals(other.hiddenForUser))
+        {
             return false;
-        if (hideDisabled == null) {
+        }
+        if (hideDisabled == null)
+        {
             if (other.hideDisabled != null)
+            {
                 return false;
-        } else if (!hideDisabled.equals(other.hideDisabled))
+            }
+        }
+        else if (!hideDisabled.equals(other.hideDisabled))
+        {
             return false;
-        if (hideInChild == null) {
+        }
+        if (hideInChild == null)
+        {
             if (other.hideInChild != null)
+            {
                 return false;
-        } else if (!hideInChild.equals(other.hideInChild))
+            }
+        }
+        else if (!hideInChild.equals(other.hideInChild))
+        {
             return false;
-        if (indented == null) {
+        }
+        if (indented == null)
+        {
             if (other.indented != null)
+            {
                 return false;
-        } else if (!indented.equals(other.indented))
+            }
+        }
+        else if (!indented.equals(other.indented))
+        {
             return false;
-        if (javaType == null) {
+        }
+        if (javaType == null)
+        {
             if (other.javaType != null)
+            {
                 return false;
-        } else if (!javaType.equals(other.javaType))
+            }
+        }
+        else if (!javaType.equals(other.javaType))
+        {
             return false;
-        if (loadLater == null) {
+        }
+        if (loadLater == null)
+        {
             if (other.loadLater != null)
+            {
                 return false;
-        } else if (!loadLater.equals(other.loadLater))
+            }
+        }
+        else if (!loadLater.equals(other.loadLater))
+        {
             return false;
-        if (mode != other.mode)
-            return false;
-        if (name == null) {
+        }
+        if (name == null)
+        {
             if (other.name != null)
+            {
                 return false;
-        } else if (!name.equals(other.name))
+            }
+        }
+        else if (!name.equals(other.name))
+        {
             return false;
-        if (persistenceTransformer == null) {
+        }
+        if (persistenceTransformer == null)
+        {
             if (other.persistenceTransformer != null)
+            {
                 return false;
-        } else if (!persistenceTransformer.equals(other.persistenceTransformer))
+            }
+        }
+        else if (!persistenceTransformer.equals(other.persistenceTransformer))
+        {
             return false;
-        if (priority == null) {
+        }
+        if (priority == null)
+        {
             if (other.priority != null)
+            {
                 return false;
-        } else if (!priority.equals(other.priority))
+            }
+        }
+        else if (!priority.equals(other.priority))
+        {
             return false;
-        if (recalcWhen == null) {
+        }
+        if (recalcWhen == null)
+        {
             if (other.recalcWhen != null)
+            {
                 return false;
-        } else if (!recalcWhen.equals(other.recalcWhen))
+            }
+        }
+        else if (!recalcWhen.equals(other.recalcWhen))
+        {
             return false;
-        if (required == null) {
+        }
+        if (required == null)
+        {
             if (other.required != null)
+            {
                 return false;
-        } else if (!required.equals(other.required))
+            }
+        }
+        else if (!required.equals(other.required))
+        {
             return false;
-        if (requiredForDataSense == null) {
+        }
+        if (requiredForDataSense == null)
+        {
             if (other.requiredForDataSense != null)
+            {
                 return false;
-        } else if (!requiredForDataSense.equals(other.requiredForDataSense))
+            }
+        }
+        else if (!requiredForDataSense.equals(other.requiredForDataSense))
+        {
             return false;
-        if (saveAs == null) {
+        }
+        if (saveAs == null)
+        {
             if (other.saveAs != null)
+            {
                 return false;
-        } else if (!saveAs.equals(other.saveAs))
+            }
+        }
+        else if (!saveAs.equals(other.saveAs))
+        {
             return false;
-        if (span == null) {
+        }
+        if (span == null)
+        {
             if (other.span != null)
+            {
                 return false;
-        } else if (!span.equals(other.span))
+            }
+        }
+        else if (!span.equals(other.span))
+        {
             return false;
-        if (storeIndependently == null) {
+        }
+        if (storeIndependently == null)
+        {
             if (other.storeIndependently != null)
+            {
                 return false;
-        } else if (!storeIndependently.equals(other.storeIndependently))
+            }
+        }
+        else if (!storeIndependently.equals(other.storeIndependently))
+        {
             return false;
-        if (supportsExpressions == null) {
+        }
+        if (supportsExpressions == null)
+        {
             if (other.supportsExpressions != null)
+            {
                 return false;
-        } else if (!supportsExpressions.equals(other.supportsExpressions))
+            }
+        }
+        else if (!supportsExpressions.equals(other.supportsExpressions))
+        {
             return false;
-        if (tiny == null) {
+        }
+        if (tiny == null)
+        {
             if (other.tiny != null)
+            {
                 return false;
-        } else if (!tiny.equals(other.tiny))
+            }
+        }
+        else if (!tiny.equals(other.tiny))
+        {
             return false;
-        if (topAnchor == null) {
+        }
+        if (topAnchor == null)
+        {
             if (other.topAnchor != null)
+            {
                 return false;
-        } else if (!topAnchor.equals(other.topAnchor))
+            }
+        }
+        else if (!topAnchor.equals(other.topAnchor))
+        {
             return false;
-        if (transientField == null) {
+        }
+        if (transientField == null)
+        {
             if (other.transientField != null)
+            {
                 return false;
-        } else if (!transientField.equals(other.transientField))
+            }
+        }
+        else if (!transientField.equals(other.transientField))
+        {
             return false;
-        if (unchangeable == null) {
+        }
+        if (unchangeable == null)
+        {
             if (other.unchangeable != null)
+            {
                 return false;
-        } else if (!unchangeable.equals(other.unchangeable))
+            }
+        }
+        else if (!unchangeable.equals(other.unchangeable))
+        {
             return false;
-        if (valuePersistence == null) {
+        }
+        if (valuePersistence == null)
+        {
             if (other.valuePersistence != null)
+            {
                 return false;
-        } else if (!valuePersistence.equals(other.valuePersistence))
+            }
+        }
+        else if (!valuePersistence.equals(other.valuePersistence))
+        {
             return false;
-        if (valuePersistenceRequires == null) {
+        }
+        if (valuePersistenceRequires == null)
+        {
             if (other.valuePersistenceRequires != null)
+            {
                 return false;
-        } else if (!valuePersistenceRequires.equals(other.valuePersistenceRequires))
+            }
+        }
+        else if (!valuePersistenceRequires.equals(other.valuePersistenceRequires))
+        {
             return false;
-        if (visibleInDialog == null) {
+        }
+        if (visibleInDialog == null)
+        {
             if (other.visibleInDialog != null)
+            {
                 return false;
-        } else if (!visibleInDialog.equals(other.visibleInDialog))
+            }
+        }
+        else if (!visibleInDialog.equals(other.visibleInDialog))
+        {
             return false;
-        if (xsdType == null) {
+        }
+        if (xsdType == null)
+        {
             if (other.xsdType != null)
+            {
                 return false;
-        } else if (!xsdType.equals(other.xsdType))
+            }
+        }
+        else if (!xsdType.equals(other.xsdType))
+        {
             return false;
+        }
         return true;
     }
 

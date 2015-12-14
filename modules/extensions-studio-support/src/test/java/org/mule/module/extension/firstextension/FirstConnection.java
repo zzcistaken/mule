@@ -11,6 +11,7 @@ package org.mule.module.extension.firstextension;
  */
 public class FirstConnection
 {
+
     private boolean connected = true;
 
     public void disconnect()

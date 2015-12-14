@@ -13,7 +13,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "required-set-alternatives")
-public class RequiredSetAlternatives extends AbstractEditorElement {
+public class RequiredSetAlternatives extends AbstractEditorElement
+{
 
     private Boolean requiredForDataSense;
     private Boolean exclusive;
@@ -22,59 +23,71 @@ public class RequiredSetAlternatives extends AbstractEditorElement {
     private String messageProvider;
 
     @XmlAttribute
-    public Boolean getRequiredForDataSense() {
+    public Boolean getRequiredForDataSense()
+    {
         return requiredForDataSense;
     }
 
-    public void setRequiredForDataSense(Boolean requiredForDataSense) {
+    public void setRequiredForDataSense(Boolean requiredForDataSense)
+    {
         this.requiredForDataSense = requiredForDataSense;
     }
 
     @XmlAttribute
-    public Boolean getExclusive() {
+    public Boolean getExclusive()
+    {
         return exclusive;
     }
 
-    public void setExclusive(Boolean exclusive) {
+    public void setExclusive(Boolean exclusive)
+    {
         this.exclusive = exclusive;
     }
 
     @XmlAttribute
-    public String getMessage() {
+    public String getMessage()
+    {
         return message;
     }
 
-    public void setMessage(String message) {
+    public void setMessage(String message)
+    {
         this.message = message;
     }
 
     @XmlAttribute
-    public String getMessageProvider() {
+    public String getMessageProvider()
+    {
         return messageProvider;
     }
 
-    public void setMessageProvider(String messageProvider) {
+    public void setMessageProvider(String messageProvider)
+    {
         this.messageProvider = messageProvider;
     }
 
     private List<Alternative> alternatives;
 
     @XmlElement(name = "alternative")
-    public List<Alternative> getAlternatives() {
+    public List<Alternative> getAlternatives()
+    {
         return alternatives;
     }
 
-    public void setAlternatives(List<Alternative> alternatives) {
+    public void setAlternatives(List<Alternative> alternatives)
+    {
         this.alternatives = alternatives;
     }
 
     @Override
-    public void accept(IEditorElementVisitor visitor) {
+    public void accept(IEditorElementVisitor visitor)
+    {
         visitor.visit(this);
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         final int prime = 31;
         int result = super.hashCode();
         result = prime * result + ((alternatives == null) ? 0 : alternatives.hashCode());
@@ -86,39 +99,76 @@ public class RequiredSetAlternatives extends AbstractEditorElement {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(Object obj)
+    {
         if (this == obj)
+        {
             return true;
+        }
         if (!super.equals(obj))
+        {
             return false;
+        }
         if (getClass() != obj.getClass())
+        {
             return false;
+        }
         RequiredSetAlternatives other = (RequiredSetAlternatives) obj;
-        if (alternatives == null) {
+        if (alternatives == null)
+        {
             if (other.alternatives != null)
+            {
                 return false;
-        } else if (!alternatives.equals(other.alternatives))
+            }
+        }
+        else if (!alternatives.equals(other.alternatives))
+        {
             return false;
-        if (exclusive == null) {
+        }
+        if (exclusive == null)
+        {
             if (other.exclusive != null)
+            {
                 return false;
-        } else if (!exclusive.equals(other.exclusive))
+            }
+        }
+        else if (!exclusive.equals(other.exclusive))
+        {
             return false;
-        if (message == null) {
+        }
+        if (message == null)
+        {
             if (other.message != null)
+            {
                 return false;
-        } else if (!message.equals(other.message))
+            }
+        }
+        else if (!message.equals(other.message))
+        {
             return false;
-        if (messageProvider == null) {
+        }
+        if (messageProvider == null)
+        {
             if (other.messageProvider != null)
+            {
                 return false;
-        } else if (!messageProvider.equals(other.messageProvider))
+            }
+        }
+        else if (!messageProvider.equals(other.messageProvider))
+        {
             return false;
-        if (requiredForDataSense == null) {
+        }
+        if (requiredForDataSense == null)
+        {
             if (other.requiredForDataSense != null)
+            {
                 return false;
-        } else if (!requiredForDataSense.equals(other.requiredForDataSense))
+            }
+        }
+        else if (!requiredForDataSense.equals(other.requiredForDataSense))
+        {
             return false;
+        }
         return true;
     }
 }

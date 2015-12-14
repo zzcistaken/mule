@@ -10,7 +10,8 @@ import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlEnumValue;
 
 @XmlEnum
-public enum Status {
+public enum Status
+{
     @XmlEnumValue("enabled")
     ENABLED,
     @XmlEnumValue("disabled")

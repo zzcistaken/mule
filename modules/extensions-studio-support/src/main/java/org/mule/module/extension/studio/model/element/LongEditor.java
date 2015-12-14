@@ -12,7 +12,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.mule.module.extension.studio.model.IEditorElementVisitor;
 
 @XmlRootElement(name = "long")
-public class LongEditor extends BaseFieldEditorElement {
+public class LongEditor extends BaseFieldEditorElement
+{
 
     private Long min;
     private Long max;
@@ -20,54 +21,65 @@ public class LongEditor extends BaseFieldEditorElement {
     private Long defaultValue;
 
     @XmlAttribute
-    public Long getMin() {
+    public Long getMin()
+    {
         return min;
     }
 
-    public void setMin(Long min) {
+    public void setMin(Long min)
+    {
         this.min = min;
     }
 
     @XmlAttribute
-    public Long getMax() {
+    public Long getMax()
+    {
         return max;
     }
 
-    public void setMax(Long max) {
+    public void setMax(Long max)
+    {
         this.max = max;
     }
 
     @XmlAttribute
-    public Long getStep() {
+    public Long getStep()
+    {
         return step;
     }
 
-    public void setStep(Long step) {
+    public void setStep(Long step)
+    {
         this.step = step;
     }
 
     @XmlAttribute
-    public Long getDefaultValue() {
+    public Long getDefaultValue()
+    {
         return defaultValue;
     }
 
-    public void setDefaultValue(Long defaultValue) {
+    public void setDefaultValue(Long defaultValue)
+    {
         this.defaultValue = defaultValue;
     }
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         return "LongEditor [min=" + min + ", max=" + max + ", step=" + step + ", defaultValue=" + defaultValue + ", getName()=" + getName() + ", getCaption()=" + getCaption()
-                + "]";
+               + "]";
     }
 
     @Override
-    public void accept(IEditorElementVisitor visitor) {
+    public void accept(IEditorElementVisitor visitor)
+    {
         visitor.visit(this);
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         final int prime = 31;
         int result = super.hashCode();
         result = prime * result + ((defaultValue == null) ? 0 : defaultValue.hashCode());
@@ -78,34 +90,65 @@ public class LongEditor extends BaseFieldEditorElement {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(Object obj)
+    {
         if (this == obj)
+        {
             return true;
+        }
         if (!super.equals(obj))
+        {
             return false;
+        }
         if (getClass() != obj.getClass())
+        {
             return false;
+        }
         LongEditor other = (LongEditor) obj;
-        if (defaultValue == null) {
+        if (defaultValue == null)
+        {
             if (other.defaultValue != null)
+            {
                 return false;
-        } else if (!defaultValue.equals(other.defaultValue))
+            }
+        }
+        else if (!defaultValue.equals(other.defaultValue))
+        {
             return false;
-        if (max == null) {
+        }
+        if (max == null)
+        {
             if (other.max != null)
+            {
                 return false;
-        } else if (!max.equals(other.max))
+            }
+        }
+        else if (!max.equals(other.max))
+        {
             return false;
-        if (min == null) {
+        }
+        if (min == null)
+        {
             if (other.min != null)
+            {
                 return false;
-        } else if (!min.equals(other.min))
+            }
+        }
+        else if (!min.equals(other.min))
+        {
             return false;
-        if (step == null) {
+        }
+        if (step == null)
+        {
             if (other.step != null)
+            {
                 return false;
-        } else if (!step.equals(other.step))
+            }
+        }
+        else if (!step.equals(other.step))
+        {
             return false;
+        }
         return true;
     }
 }

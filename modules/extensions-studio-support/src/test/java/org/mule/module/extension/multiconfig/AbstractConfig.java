@@ -13,6 +13,7 @@ import org.mule.extension.annotation.api.Parameter;
  */
 public abstract class AbstractConfig
 {
+
     @Parameter
     private String parentField;
 

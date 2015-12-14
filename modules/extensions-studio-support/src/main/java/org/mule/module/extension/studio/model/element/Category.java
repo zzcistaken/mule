@@ -10,7 +10,8 @@ import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlEnumValue;
 
 @XmlEnum
-public enum Category {
+public enum Category
+{
     @XmlEnumValue("org.mule.tooling.category.scopes")
     SCOPES,
     @XmlEnumValue("org.mule.tooling.category.cloudconnectors")

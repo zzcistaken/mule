@@ -6,63 +6,91 @@
  */
 package org.mule.module.extension.studio.model.global;
 
+import org.mule.module.extension.studio.model.EditorElement;
+import org.mule.module.extension.studio.model.element.RequiredLibraries;
+
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 
-import org.mule.module.extension.studio.model.EditorElement;
-
-@XmlSeeAlso({ Global.class, GlobalCloudConnector.class, CloudConnectorMessageSource.class, GlobalEndpoint.class, GlobalFilter.class, GlobalTransformer.class })
-public abstract class AbstractGlobalElement extends EditorElement {
+@XmlSeeAlso({Global.class, GlobalCloudConnector.class, CloudConnectorMessageSource.class, GlobalEndpoint.class, GlobalFilter.class, GlobalTransformer.class})
+public abstract class AbstractGlobalElement extends EditorElement
+{
 
     private String category;// TODO Potential Enum;
     private String paletteCategory;// TODO Potential Enum;
+    private RequiredLibraries required;
+
+    @XmlElement
+    public RequiredLibraries getRequired()
+    {
+        return required;
+    }
+
+    public void setRequired(RequiredLibraries required)
+    {
+        this.required = required;
+    }
 
     @XmlAttribute
-    public String getPaletteCategory() {
+    public String getPaletteCategory()
+    {
         return paletteCategory;
     }
 
-    public void setPaletteCategory(String paletteCategory) {
+    public void setPaletteCategory(String paletteCategory)
+    {
         this.paletteCategory = paletteCategory;
     }
 
     @XmlAttribute
-    public String getCategory() {
+    public String getCategory()
+    {
         return category;
     }
 
-    public void setCategory(String category) {
+    public void setCategory(String category)
+    {
         this.category = category;
     }
 
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = super.hashCode();
-        result = prime * result + ((category == null) ? 0 : category.hashCode());
-        result = prime * result + ((paletteCategory == null) ? 0 : paletteCategory.hashCode());
-        return result;
+    public boolean equals(Object o)
+    {
+        if (this == o)
+        {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass())
+        {
+            return false;
+        }
+        if (!super.equals(o))
+        {
+            return false;
+        }
+
+        AbstractGlobalElement that = (AbstractGlobalElement) o;
+
+        if (category != null ? !category.equals(that.category) : that.category != null)
+        {
+            return false;
+        }
+        if (paletteCategory != null ? !paletteCategory.equals(that.paletteCategory) : that.paletteCategory != null)
+        {
+            return false;
+        }
+        return !(required != null ? !required.equals(that.required) : that.required != null);
+
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (!super.equals(obj))
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        AbstractGlobalElement other = (AbstractGlobalElement) obj;
-        if (category == null) {
-            if (other.category != null)
-                return false;
-        } else if (!category.equals(other.category))
-            return false;
-        if (paletteCategory == null) {
-            if (other.paletteCategory != null)
-                return false;
-        } else if (!paletteCategory.equals(other.paletteCategory))
-            return false;
-        return true;
+    public int hashCode()
+    {
+        int result = super.hashCode();
+        result = 31 * result + (category != null ? category.hashCode() : 0);
+        result = 31 * result + (paletteCategory != null ? paletteCategory.hashCode() : 0);
+        result = 31 * result + (required != null ? required.hashCode() : 0);
+        return result;
     }
 }

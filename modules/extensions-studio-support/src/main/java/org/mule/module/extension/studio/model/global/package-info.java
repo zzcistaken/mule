@@ -6,8 +6,7 @@
  */
 @XmlSchema(namespace = "http://www.mulesoft.org/schema/mule/tooling.attributes", xmlns = {
         @XmlNs(prefix = "", namespaceURI = "http://www.mulesoft.org/schema/mule/tooling.attributes"),
-        @XmlNs(prefix = "mule", namespaceURI = "http://www.mulesoft.org/schema/mule/core") }, elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
-package org.mule.module.extension.studio.model.global;
+        @XmlNs(prefix = "mule", namespaceURI = "http://www.mulesoft.org/schema/mule/core")}, elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED) package org.mule.module.extension.studio.model.global;
 
 import javax.xml.bind.annotation.XmlNs;
 import javax.xml.bind.annotation.XmlSchema;

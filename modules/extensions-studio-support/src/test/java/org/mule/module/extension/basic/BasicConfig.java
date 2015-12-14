@@ -11,40 +11,48 @@ import org.mule.extension.annotation.api.Parameter;
 import org.mule.extension.annotation.api.param.Optional;
 import org.mule.module.http.api.requester.HttpRequesterConfig;
 
-@Configuration(name="config")
-public class BasicConfig {
-	@Parameter
-	private MyComplexObject myComplexObjectConfigurable;
+@Configuration(name = "config")
+public class BasicConfig
+{
 
-	@Parameter
-	private HttpRequesterConfig requesterConfig;
+    @Parameter
+    private MyComplexObject myComplexObjectConfigurable;
 
-	@Parameter
-	@Optional
-	private HttpRequesterConfig requesterConfigOptional;
+    @Parameter
+    private HttpRequesterConfig requesterConfig;
 
-	public MyComplexObject getMyComplexObjectConfigurable() {
-		return myComplexObjectConfigurable;
-	}
+    @Parameter
+    @Optional
+    private HttpRequesterConfig requesterConfigOptional;
 
-	public void setMyComplexObjectConfigurable(MyComplexObject myComplexObjectConfigurable) {
-		this.myComplexObjectConfigurable = myComplexObjectConfigurable;
-	}
+    public MyComplexObject getMyComplexObjectConfigurable()
+    {
+        return myComplexObjectConfigurable;
+    }
 
-	public HttpRequesterConfig getRequesterConfig() {
-		return requesterConfig;
-	}
+    public void setMyComplexObjectConfigurable(MyComplexObject myComplexObjectConfigurable)
+    {
+        this.myComplexObjectConfigurable = myComplexObjectConfigurable;
+    }
 
-	public void setRequesterConfig(HttpRequesterConfig requesterConfig) {
-		this.requesterConfig = requesterConfig;
-	}
+    public HttpRequesterConfig getRequesterConfig()
+    {
+        return requesterConfig;
+    }
 
-	public HttpRequesterConfig getRequesterConfigOptional() {
-		return requesterConfigOptional;
-	}
+    public void setRequesterConfig(HttpRequesterConfig requesterConfig)
+    {
+        this.requesterConfig = requesterConfig;
+    }
 
-	public void setRequesterConfigOptional(HttpRequesterConfig requesterConfigOptional) {
-		this.requesterConfigOptional = requesterConfigOptional;
-	}
+    public HttpRequesterConfig getRequesterConfigOptional()
+    {
+        return requesterConfigOptional;
+    }
+
+    public void setRequesterConfigOptional(HttpRequesterConfig requesterConfigOptional)
+    {
+        this.requesterConfigOptional = requesterConfigOptional;
+    }
 
 }

@@ -29,8 +29,9 @@ public class StudioEditorResourceContributor implements GenerableResourceContrib
     public void contribute(ExtensionModel extensionModel, ResourcesGenerator resourcesGenerator)
     {
         StudioEditorModelProperty studioEditorModelProperty = extensionModel.getModelProperty(StudioEditorModelProperty.KEY);
-        if(studioEditorModelProperty!=null){
-            generateEditorFile(extensionModel,studioEditorModelProperty,resourcesGenerator);
+        if (studioEditorModelProperty != null)
+        {
+            generateEditorFile(extensionModel, studioEditorModelProperty, resourcesGenerator);
         }
     }
 
@@ -38,7 +39,7 @@ public class StudioEditorResourceContributor implements GenerableResourceContrib
     {
         Namespace extensionEditorModel = getEditorModelFrom(extensionModel);
 
-        try(ByteArrayOutputStream outputStream = new ByteArrayOutputStream())
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream())
         {
             JAXBContext jaxbContext = JAXBContext.newInstance(Namespace.class);
             Marshaller m = jaxbContext.createMarshaller();

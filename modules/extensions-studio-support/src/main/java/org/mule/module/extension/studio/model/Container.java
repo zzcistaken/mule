@@ -14,7 +14,8 @@ import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class Container extends AbstractPaletteComponent {
+public class Container extends AbstractPaletteComponent
+{
 
     private Boolean allowsAllExceptInbounds;
     private String location;
@@ -34,150 +35,182 @@ public class Container extends AbstractPaletteComponent {
     private List<AbstractContainer> innerContainers;
 
     @XmlAttribute
-    public String getReturnType() {
+    public String getReturnType()
+    {
         return returnType;
     }
 
-    public void setReturnType(String returnType) {
+    public void setReturnType(String returnType)
+    {
         this.returnType = returnType;
     }
 
     @XmlAttribute
-    public String getLocation() {
+    public String getLocation()
+    {
         return location;
     }
 
-    public void setLocation(String location) {
+    public void setLocation(String location)
+    {
         this.location = location;
     }
 
     @XmlAttribute
-    public String getAcceptedByElements() {
+    public String getAcceptedByElements()
+    {
         return acceptedByElements;
     }
 
-    public void setAcceptedByElements(String acceptedByElements) {
+    public void setAcceptedByElements(String acceptedByElements)
+    {
         this.acceptedByElements = acceptedByElements;
     }
 
     @XmlAttribute
-    public String getAcceptsElements() {
+    public String getAcceptsElements()
+    {
         return acceptsElements;
     }
 
-    public void setAcceptsElements(String acceptsElements) {
+    public void setAcceptsElements(String acceptsElements)
+    {
         this.acceptsElements = acceptsElements;
     }
 
     @XmlAttribute
-    public Boolean getInbound() {
+    public Boolean getInbound()
+    {
         return inbound;
     }
 
-    public void setInbound(Boolean inbound) {
+    public void setInbound(Boolean inbound)
+    {
         this.inbound = inbound;
     }
 
     @XmlAttribute
-    public String getElementMatcher() {
+    public String getElementMatcher()
+    {
         return elementMatcher;
     }
 
-    public void setElementMatcher(String elementMatcher) {
+    public void setElementMatcher(String elementMatcher)
+    {
         this.elementMatcher = elementMatcher;
     }
 
     @XmlAttribute
-    public String getDefaultNestedContainer() {
+    public String getDefaultNestedContainer()
+    {
         return defaultNestedContainer;
     }
 
-    public void setDefaultNestedContainer(String defaultNestedContainer) {
+    public void setDefaultNestedContainer(String defaultNestedContainer)
+    {
         this.defaultNestedContainer = defaultNestedContainer;
     }
 
     @XmlAttribute
-    public Boolean getAllowMulipleChildren() {
+    public Boolean getAllowMulipleChildren()
+    {
         return allowMulipleChildren;
     }
 
-    public void setAllowMulipleChildren(Boolean allowMulipleChildren) {
+    public void setAllowMulipleChildren(Boolean allowMulipleChildren)
+    {
         this.allowMulipleChildren = allowMulipleChildren;
     }
 
     @XmlAttribute
-    public String getContainerBehavior() {
+    public String getContainerBehavior()
+    {
         return containerBehavior;
     }
 
-    public void setContainerBehavior(String containerBehavior) {
+    public void setContainerBehavior(String containerBehavior)
+    {
         this.containerBehavior = containerBehavior;
     }
 
     @XmlAttribute
-    public Boolean getVisibleInPalette() {
+    public Boolean getVisibleInPalette()
+    {
         return visibleInPalette;
     }
 
-    public void setVisibleInPalette(Boolean visibleInPalette) {
+    public void setVisibleInPalette(Boolean visibleInPalette)
+    {
         this.visibleInPalette = visibleInPalette;
     }
 
     @XmlAttribute
-    public String getDisplayNameAttribute() {
+    public String getDisplayNameAttribute()
+    {
         return displayNameAttribute;
     }
 
-    public void setDisplayNameAttribute(String displayNameAttribute) {
+    public void setDisplayNameAttribute(String displayNameAttribute)
+    {
         this.displayNameAttribute = displayNameAttribute;
     }
 
     @XmlAttribute
-    public String getTitleColor() {
+    public String getTitleColor()
+    {
         return titleColor;
     }
 
-    public void setTitleColor(String titleColor) {
+    public void setTitleColor(String titleColor)
+    {
         this.titleColor = titleColor;
     }
 
     @XmlAttribute
-    public Boolean getAllowsAllExceptInbounds() {
+    public Boolean getAllowsAllExceptInbounds()
+    {
         return allowsAllExceptInbounds;
     }
 
-    public void setAllowsAllExceptInbounds(Boolean allowsAllExceptInbounds) {
+    public void setAllowsAllExceptInbounds(Boolean allowsAllExceptInbounds)
+    {
         this.allowsAllExceptInbounds = allowsAllExceptInbounds;
     }
 
     @Override
-    public void accept(IEditorElementVisitor visitor) {
+    public void accept(IEditorElementVisitor visitor)
+    {
         visitor.visit(this);
     }
 
     @XmlAttribute
-    public String getPathExpression() {
+    public String getPathExpression()
+    {
         return pathExpression;
     }
 
-    public void setPathExpression(String pathExpression) {
+    public void setPathExpression(String pathExpression)
+    {
         this.pathExpression = pathExpression;
     }
-    
+
 
     @XmlAttribute
-    public Boolean getForcesResponse() {
+    public Boolean getForcesResponse()
+    {
         return forcesResponse;
     }
 
-    public void setForcesResponse(Boolean forcesResponse) {
+    public void setForcesResponse(Boolean forcesResponse)
+    {
         this.forcesResponse = forcesResponse;
     }
 
     @XmlElementRef
     public List<AbstractContainer> getInnerContainers()
     {
-        if(innerContainers==null){
+        if (innerContainers == null)
+        {
             innerContainers = new ArrayList<AbstractContainer>();
         }
         return innerContainers;
