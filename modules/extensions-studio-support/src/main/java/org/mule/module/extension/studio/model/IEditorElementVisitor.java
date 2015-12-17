@@ -6,19 +6,42 @@
  */
 package org.mule.module.extension.studio.model;
 
+import org.mule.module.extension.studio.model.contribution.CloudConnector;
+import org.mule.module.extension.studio.model.contribution.Component;
+import org.mule.module.extension.studio.model.contribution.Connector;
+import org.mule.module.extension.studio.model.contribution.Container;
+import org.mule.module.extension.studio.model.contribution.Endpoint;
+import org.mule.module.extension.studio.model.contribution.Filter;
+import org.mule.module.extension.studio.model.contribution.Flow;
+import org.mule.module.extension.studio.model.contribution.GraphicalContainer;
+import org.mule.module.extension.studio.model.contribution.MultiSource;
+import org.mule.module.extension.studio.model.contribution.Nested;
+import org.mule.module.extension.studio.model.contribution.NestedContainer;
+import org.mule.module.extension.studio.model.contribution.Pattern;
+import org.mule.module.extension.studio.model.contribution.Transformer;
+import org.mule.module.extension.studio.model.contribution.Wizard;
 import org.mule.module.extension.studio.model.element.*;
 import org.mule.module.extension.studio.model.element.library.Jar;
 import org.mule.module.extension.studio.model.element.library.LibrarySet;
 import org.mule.module.extension.studio.model.element.library.NativeLibrary;
-import org.mule.module.extension.studio.model.global.CloudConnectorMessageSource;
-import org.mule.module.extension.studio.model.global.Global;
-import org.mule.module.extension.studio.model.global.GlobalCloudConnector;
-import org.mule.module.extension.studio.model.global.GlobalEndpoint;
-import org.mule.module.extension.studio.model.global.GlobalFilter;
-import org.mule.module.extension.studio.model.global.GlobalTransformer;
+import org.mule.module.extension.studio.model.contribution.CloudConnectorMessageSource;
+import org.mule.module.extension.studio.model.contribution.global.Global;
+import org.mule.module.extension.studio.model.contribution.global.GlobalCloudConnector;
+import org.mule.module.extension.studio.model.contribution.global.GlobalEndpoint;
+import org.mule.module.extension.studio.model.contribution.global.GlobalFilter;
+import org.mule.module.extension.studio.model.contribution.global.GlobalTransformer;
+import org.mule.module.extension.studio.model.element.library.RequiredLibraries;
+import org.mule.module.extension.studio.model.element.macro.ElementControllerList;
+import org.mule.module.extension.studio.model.element.macro.ElementControllerListNoExpression;
+import org.mule.module.extension.studio.model.element.macro.ElementControllerListOfMap;
+import org.mule.module.extension.studio.model.element.macro.ElementControllerListOfPojo;
+import org.mule.module.extension.studio.model.element.macro.ElementControllerMap;
+import org.mule.module.extension.studio.model.element.macro.ElementControllerMapNoExpression;
+import org.mule.module.extension.studio.model.element.macro.ElementQuery;
 import org.mule.module.extension.studio.model.reference.ContainerRef;
 import org.mule.module.extension.studio.model.reference.FlowRef;
 import org.mule.module.extension.studio.model.reference.GlobalRef;
+import org.mule.module.extension.studio.model.reference.LocalRef;
 import org.mule.module.extension.studio.model.reference.ReverseGlobalRef;
 
 public interface IEditorElementVisitor

@@ -12,6 +12,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import org.mule.api.registry.ServiceRegistry;
+import org.mule.extension.annotation.api.Extension;
 import org.mule.extension.api.introspection.ExtensionFactory;
 import org.mule.extension.api.introspection.ExtensionModel;
 import org.mule.extension.api.introspection.declaration.fluent.Descriptor;
@@ -23,8 +24,10 @@ import org.mule.module.extension.internal.DefaultDescribingContext;
 import org.mule.module.extension.internal.capability.xml.XmlModelEnricher;
 import org.mule.module.extension.internal.introspection.AnnotationsBasedDescriber;
 import org.mule.module.extension.internal.introspection.DefaultExtensionFactory;
+import org.mule.module.extension.internal.introspection.VersionResolver;
 import org.mule.module.extension.multiconfig.MultiConfigExtension;
 import org.mule.module.extension.multiprovider.MultiProviderExtension;
+import org.mule.module.extension.noconfig.NoConfigExtension;
 import org.mule.module.extension.studio.model.Namespace;
 import org.mule.registry.SpiServiceRegistry;
 import org.mule.util.IOUtils;
@@ -75,8 +78,9 @@ public class EditorGeneratorTest
         Object[][] data = {{"basic-editor.xml", BasicExtension.class},
                 {"heisenberg-editor.xml", HeisenbergExtension.class},
                 {"multi-config-editor.xml", MultiConfigExtension.class},
+                {"multi-provider-editor.xml", MultiProviderExtension.class},
                 {"first-editor.xml", FirstExtension.class},
-                {"multi-provider-editor.xml", MultiProviderExtension.class}
+                {"no-config-editor.xml", NoConfigExtension.class}
         };
         return Arrays.asList(data);
     }
@@ -95,7 +99,13 @@ public class EditorGeneratorTest
     @Test
     public void testGeneration() throws IOException, SAXException, JAXBException
     {
-        Descriptor descriptor = new AnnotationsBasedDescriber(getExtensionUnderTest()).describe(new DefaultDescribingContext()).getRootDeclaration();
+        Descriptor descriptor = new AnnotationsBasedDescriber(getExtensionUnderTest(), new VersionResolver(){
+            @Override
+            public String resolveVersion(Extension extension)
+            {
+                return "1.0";
+            }
+        }).describe(new DefaultDescribingContext()).getRootDeclaration();
         ExtensionModel extensionModel = extensionFactory.createFrom(descriptor);
         generator = StudioEditorGenerator.newStudioEditorGenerator(extensionModel);
         Namespace editor = generator.build();

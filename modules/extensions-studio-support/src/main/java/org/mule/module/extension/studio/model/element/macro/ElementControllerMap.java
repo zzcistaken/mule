@@ -4,31 +4,21 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.module.extension.studio.model.element;
-
-import org.mule.module.extension.studio.model.IEditorElementVisitor;
+package org.mule.module.extension.studio.model.element.macro;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name = "boolean")
-public class BooleanEditor extends BaseFieldEditorElement
+import org.mule.module.extension.studio.model.IEditorElementVisitor;
+import org.mule.module.extension.studio.model.element.AbstractElementController;
+
+@XmlRootElement(name = "element-controller-map")
+public class ElementControllerMap extends AbstractElementController
 {
 
-    private Boolean value;// TODO para que? si el defaultValue sobra
-    private Boolean defaultValue;
-    private Boolean negative;
-
-    @XmlAttribute
-    public Boolean getDefaultValue()
-    {
-        return defaultValue;
-    }
-
-    public void setDefaultValue(Boolean defaultValue)
-    {
-        this.defaultValue = defaultValue;
-    }
+    private String metaDataStaticKey;
+    private String mapName;
+    private String defaultValue;
 
     @Override
     public void accept(IEditorElementVisitor visitor)
@@ -37,25 +27,36 @@ public class BooleanEditor extends BaseFieldEditorElement
     }
 
     @XmlAttribute
-    public Boolean getNegative()
+    public String getMetaDataStaticKey()
     {
-        return negative;
+        return metaDataStaticKey;
     }
 
-    public void setNegative(Boolean negative)
+    public void setMetaDataStaticKey(String metaDataStaticKey)
     {
-        this.negative = negative;
+        this.metaDataStaticKey = metaDataStaticKey;
     }
 
     @XmlAttribute
-    public Boolean getValue()
+    public String getMapName()
     {
-        return value;
+        return mapName;
     }
 
-    public void setValue(Boolean value)
+    public void setMapName(String mapName)
     {
-        this.value = value;
+        this.mapName = mapName;
+    }
+
+    @XmlAttribute
+    public String getDefaultValue()
+    {
+        return defaultValue;
+    }
+
+    public void setDefaultValue(String defaultValue)
+    {
+        this.defaultValue = defaultValue;
     }
 
     @Override
@@ -64,8 +65,8 @@ public class BooleanEditor extends BaseFieldEditorElement
         final int prime = 31;
         int result = super.hashCode();
         result = prime * result + ((defaultValue == null) ? 0 : defaultValue.hashCode());
-        result = prime * result + ((negative == null) ? 0 : negative.hashCode());
-        result = prime * result + ((value == null) ? 0 : value.hashCode());
+        result = prime * result + ((mapName == null) ? 0 : mapName.hashCode());
+        result = prime * result + ((metaDataStaticKey == null) ? 0 : metaDataStaticKey.hashCode());
         return result;
     }
 
@@ -84,7 +85,7 @@ public class BooleanEditor extends BaseFieldEditorElement
         {
             return false;
         }
-        BooleanEditor other = (BooleanEditor) obj;
+        ElementControllerMap other = (ElementControllerMap) obj;
         if (defaultValue == null)
         {
             if (other.defaultValue != null)
@@ -96,25 +97,25 @@ public class BooleanEditor extends BaseFieldEditorElement
         {
             return false;
         }
-        if (negative == null)
+        if (mapName == null)
         {
-            if (other.negative != null)
+            if (other.mapName != null)
             {
                 return false;
             }
         }
-        else if (!negative.equals(other.negative))
+        else if (!mapName.equals(other.mapName))
         {
             return false;
         }
-        if (value == null)
+        if (metaDataStaticKey == null)
         {
-            if (other.value != null)
+            if (other.metaDataStaticKey != null)
             {
                 return false;
             }
         }
-        else if (!value.equals(other.value))
+        else if (!metaDataStaticKey.equals(other.metaDataStaticKey))
         {
             return false;
         }

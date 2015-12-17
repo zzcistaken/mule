@@ -19,16 +19,16 @@ import org.mule.module.extension.internal.ExtensionProperties;
 import org.mule.module.extension.internal.introspection.AbstractDataQualifierVisitor;
 import org.mule.module.extension.internal.util.IntrospectionUtils;
 import org.mule.module.extension.internal.util.NameUtils;
-import org.mule.module.extension.studio.model.AbstractPaletteComponent;
-import org.mule.module.extension.studio.model.CloudConnector;
+import org.mule.module.extension.studio.model.contribution.AbstractContributionEditorElement;
+import org.mule.module.extension.studio.model.contribution.CloudConnector;
 import org.mule.module.extension.studio.model.ConnectivityTesting;
-import org.mule.module.extension.studio.model.Container;
-import org.mule.module.extension.studio.model.EditorElement;
+import org.mule.module.extension.studio.model.contribution.Container;
+import org.mule.module.extension.studio.model.AbstractBaseEditorElement;
 import org.mule.module.extension.studio.model.EditorElementVisitorAdapter;
-import org.mule.module.extension.studio.model.Flow;
+import org.mule.module.extension.studio.model.contribution.Flow;
 import org.mule.module.extension.studio.model.MetaDataBehaviour;
 import org.mule.module.extension.studio.model.Namespace;
-import org.mule.module.extension.studio.model.Nested;
+import org.mule.module.extension.studio.model.contribution.Nested;
 import org.mule.module.extension.studio.model.element.AbstractElementController;
 import org.mule.module.extension.studio.model.element.AttributeCategory;
 import org.mule.module.extension.studio.model.element.BaseChildEditorElement;
@@ -37,9 +37,9 @@ import org.mule.module.extension.studio.model.element.BooleanEditor;
 import org.mule.module.extension.studio.model.element.ChildElement;
 import org.mule.module.extension.studio.model.element.DynamicEditor;
 import org.mule.module.extension.studio.model.element.EditorRef;
-import org.mule.module.extension.studio.model.element.ElementControllerList;
-import org.mule.module.extension.studio.model.element.ElementControllerListOfMap;
-import org.mule.module.extension.studio.model.element.ElementControllerListOfPojo;
+import org.mule.module.extension.studio.model.element.macro.ElementControllerList;
+import org.mule.module.extension.studio.model.element.macro.ElementControllerListOfMap;
+import org.mule.module.extension.studio.model.element.macro.ElementControllerListOfPojo;
 import org.mule.module.extension.studio.model.element.EncodingEditor;
 import org.mule.module.extension.studio.model.element.EnumEditor;
 import org.mule.module.extension.studio.model.element.FileEditor;
@@ -54,8 +54,8 @@ import org.mule.module.extension.studio.model.element.Option;
 import org.mule.module.extension.studio.model.element.PathEditor;
 import org.mule.module.extension.studio.model.element.StringEditor;
 import org.mule.module.extension.studio.model.element.UrlEditor;
-import org.mule.module.extension.studio.model.global.AbstractGlobalElement;
-import org.mule.module.extension.studio.model.global.GlobalCloudConnector;
+import org.mule.module.extension.studio.model.contribution.global.AbstractGlobalElement;
+import org.mule.module.extension.studio.model.contribution.global.GlobalCloudConnector;
 import org.mule.module.extension.studio.model.reference.GlobalRef;
 import org.mule.module.http.api.requester.HttpRequesterConfig;
 
@@ -86,7 +86,7 @@ public final class StudioEditorGenerator
     public static final String CONNECTION_TAB_CAPTION = "Connection";
     public static final String CONNECTION_TAB_DESCRIPTION = "Configure the Connection Properties";
 
-    private Map<OperationModel, AbstractPaletteComponent> operations;
+    private Map<OperationModel, AbstractContributionEditorElement> operations;
     private Map<String, Nested> nestedElements;
     private Map<ConfigurationModel, AbstractGlobalElement> configurations;
     private Map<ConnectionProviderModel, Nested> conectionProviders;
@@ -436,7 +436,8 @@ public final class StudioEditorGenerator
         ChildElement connectionProviderPicker = new ChildElement();
         connectionProviderPicker.setIndented(false);
         connectionProviderPicker.setInplace(true);
-        connectionProviderPicker.setXmlOrder(10);
+        int xmlOder = 10;
+        connectionProviderPicker.setXmlOrder(xmlOder);
         if (conectionProviders.size() == 1)
         {
             connectionProviderPicker.setName(namespace.getUrl() + "/" + conectionProviders.values().iterator().next().getLocalId());
@@ -445,12 +446,25 @@ public final class StudioEditorGenerator
         {
             connectionProviderPicker.setName(namespace.getUrl() + "/connection-provider");
             connectionProviderPicker.setValuePersistence("org.mule.tooling.ui.modules.core.widgets.editors.dynamic.DynamicEditorValuesPreProcessor");
+            connectionProviderPicker.setPersistenceTransformer("DefaultDynamicEditorPersistenceTransformer");
+            Optional<String> values = conectionProviders.values().stream().map(x -> namespace.getUrl() + '/' + x.getLocalId()).reduce((x, y) -> x + "," + y);
+            connectionProviderPicker.setEditorsIds(values.get());
         }
 
         Group generalGroup = new Group();
         generalGroup.setId("general");
         generalGroup.setCaption("General");
         generalGroup.getChilds().add(connectionProviderPicker);
+        if (conectionProviders.size() > 1)
+        {
+            conectionProviders.values().stream().forEach( item->{
+                ChildElement child = new ChildElement();
+                child.setXmlOrder(xmlOder);
+                child.setVisibleInDialog(false);
+                child.setName(namespace.getUrl() + '/' + item.getLocalId());
+                generalGroup.getChilds().add(child);
+            });
+        }
         attributeCategory.getChilds().add(generalGroup);
         globalConfig.getAttributeCategories().add(attributeCategory);
     }
@@ -1054,10 +1068,10 @@ public final class StudioEditorGenerator
         editor.setRequired(false);
     }
 
-    private void setIcons(EditorElement editorElement)
+    private void setIcons(AbstractBaseEditorElement abstractBaseEditorElement)
     {
-        editorElement.setIcon(getSmallIconPath());
-        editorElement.setImage(getLargeIconPath());
+        abstractBaseEditorElement.setIcon(getSmallIconPath());
+        abstractBaseEditorElement.setImage(getLargeIconPath());
     }
 
     private String getSmallIconPath()

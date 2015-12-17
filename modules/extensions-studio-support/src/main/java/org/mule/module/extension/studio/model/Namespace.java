@@ -21,7 +21,7 @@ public class Namespace extends AbstractEditorElement
 
     private String url;
 
-    private List<EditorElement> components;
+    private List<AbstractBaseEditorElement> components;
 
     @XmlAttribute
     public String getPrefix()
@@ -46,16 +46,16 @@ public class Namespace extends AbstractEditorElement
     }
 
     @XmlElementRef
-    public List<EditorElement> getComponents()
+    public List<AbstractBaseEditorElement> getComponents()
     {
         if (components == null)
         {
-            components = new ArrayList<EditorElement>();
+            components = new ArrayList<AbstractBaseEditorElement>();
         }
         return components;
     }
 
-    public void setComponents(List<EditorElement> components)
+    public void setComponents(List<AbstractBaseEditorElement> components)
     {
         this.components = components;
     }

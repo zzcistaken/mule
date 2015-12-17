@@ -6,6 +6,13 @@
  */
 package org.mule.module.extension.studio.model.element;
 
+import org.mule.module.extension.studio.model.element.macro.ElementControllerList;
+import org.mule.module.extension.studio.model.element.macro.ElementControllerListNoExpression;
+import org.mule.module.extension.studio.model.element.macro.ElementControllerListOfMap;
+import org.mule.module.extension.studio.model.element.macro.ElementControllerListOfPojo;
+import org.mule.module.extension.studio.model.element.macro.ElementControllerMap;
+import org.mule.module.extension.studio.model.element.macro.ElementControllerMapNoExpression;
+
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlSeeAlso;
 

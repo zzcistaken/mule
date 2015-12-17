@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<namespace xmlns="http://www.mulesoft.org/schema/mule/tooling.attributes" xmlns:mule="http://www.mulesoft.org/schema/mule/core" prefix="no-config" url="http://www.mulesoft.org/schema/mule/no-config">
+    <nested caption="No-config:Connection" description="" icon="icons/small/no-config-extension-24x16.png" image="icons/large/no-config-extension-48x32.png" abstract="false" localId="connection" versions="[3.5.0,8.0.0]">
+        <string name="hashCode" required="true" supportsExpressions="true" caption="Hash Code" description=""/>
+    </nested>
+    <global-cloud-connector connectivityTesting="off" metaData="static" supportsUserDefinedMetaData="false" caption="No-config config" description="Default configuration" icon="icons/small/no-config-extension-24x16.png" image="icons/large/no-config-extension-48x32.png" abstract="false" localId="config" versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="Configuration Properties">
+            <group id="basicGenericProperties" caption="Basic Settings">
+                <name name="name" required="true" caption="Name" description="Give a name to this configuration so it can be later referenced by config-ref."/>
+            </group>
+            <group id="general" caption="General"/>
+        </attribute-category>
+        <attribute-category caption="Connection" description="Configure the Connection Properties">
+            <group id="general" caption="General">
+                <childElement inplace="true" xmlOrder="10" indented="false" name="http://www.mulesoft.org/schema/mule/no-config/connection"/>
+            </group>
+        </attribute-category>
+    </global-cloud-connector>
+    <cloud-connector caption="abstractNo-configGeneric" icon="icons/small/no-config-extension-24x16.png" image="icons/large/no-config-extension-48x32.png" abstract="true" localId="abstractNo-configGeneric" versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="Configuration Properties">
+            <group id="abstractNo-configGeneric" caption="Basic Settings">
+                <globalRef requiredType="http://www.mulesoft.org/schema/mule/no-config/config" name="config-ref" required="true" caption="Extension Configuration" description="Specify which configuration to use for this invocation."/>
+            </group>
+        </attribute-category>
+    </cloud-connector>
+    <cloud-connector returnType="void" metaData="static" caption="Dummy Operation" description="" extends="http://www.mulesoft.org/schema/mule/no-config/abstractNo-configGeneric" icon="icons/small/no-config-extension-24x16.png" image="icons/large/no-config-extension-48x32.png" abstract="true" localId="dummy-operation" xmlname="dummy-operation" versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="Configuration Properties">
+            <group id="general" caption="General"/>
+        </attribute-category>
+    </cloud-connector>
+    <cloud-connector aliasId="org.mule.tooling.ui.modules.core.pattern.no-config" caption="No-config" description="" extends="http://www.mulesoft.org/schema/mule/no-config/abstractNo-configGeneric" icon="icons/small/no-config-extension-24x16.png" image="icons/large/no-config-extension-48x32.png" localId="no-config-extension" versions="[3.5.0,8.0.0]">
+        <attribute-category caption="General" description="General.">
+            <group id="no-configConnectorGeneric" caption="Basic Settings">
+                <modeSwitch alwaysCombo="true" name="no-config operations to execute" caption="Operation" description="Operation.">
+                    <no-operation abstractElement="http://www.mulesoft.org/schema/mule/no-config/abstractNo-configGeneric" connector-name="processor"/>
+                    <mode modeId="http://www.mulesoft.org/schema/mule/no-config/dummy-operation" modeLabel="Dummy Operation"/>
+                </modeSwitch>
+            </group>
+        </attribute-category>
+    </cloud-connector>
+</namespace>

@@ -25,9 +25,9 @@ public class ChildElement extends BaseFieldEditorElement
     private Integer xmlOrder;
     private Boolean inplace;
     private Boolean positional;
-
-    private String allowedSubTypes;// TODO WTF?
-    private Boolean allowSubTypes;// TODO WTF?
+    private String editorsIds;
+    private String allowedSubTypes;
+    private Boolean allowSubTypes;
 
     @Override
     public String toString()
@@ -162,162 +162,99 @@ public class ChildElement extends BaseFieldEditorElement
         this.positional = positional;
     }
 
-    @Override
-    public int hashCode()
+    @XmlAttribute
+    public String getEditorsIds()
     {
-        final int prime = 31;
-        int result = super.hashCode();
-        result = prime * result + ((additionalPriorities == null) ? 0 : additionalPriorities.hashCode());
-        result = prime * result + ((allowMultiple == null) ? 0 : allowMultiple.hashCode());
-        result = prime * result + ((allowSubTypes == null) ? 0 : allowSubTypes.hashCode());
-        result = prime * result + ((allowedSubTypes == null) ? 0 : allowedSubTypes.hashCode());
-        result = prime * result + ((groupLabel == null) ? 0 : groupLabel.hashCode());
-        result = prime * result + ((inplace == null) ? 0 : inplace.hashCode());
-        result = prime * result + ((localId == null) ? 0 : localId.hashCode());
-        result = prime * result + ((positional == null) ? 0 : positional.hashCode());
-        result = prime * result + ((removeBorder == null) ? 0 : removeBorder.hashCode());
-        result = prime * result + ((tableUI == null) ? 0 : tableUI.hashCode());
-        result = prime * result + ((xmlOrder == null) ? 0 : xmlOrder.hashCode());
-        return result;
+        return editorsIds;
+    }
+
+    public void setEditorsIds(String editorsIds)
+    {
+        this.editorsIds = editorsIds;
     }
 
     @Override
-    public boolean equals(Object obj)
+    public boolean equals(Object o)
     {
-        if (this == obj)
+        if (this == o)
         {
             return true;
         }
-        if (!super.equals(obj))
+        if (o == null || getClass() != o.getClass())
         {
             return false;
         }
-        if (getClass() != obj.getClass())
+        if (!super.equals(o))
         {
             return false;
         }
-        ChildElement other = (ChildElement) obj;
-        if (additionalPriorities == null)
-        {
-            if (other.additionalPriorities != null)
-            {
-                return false;
-            }
-        }
-        else if (!additionalPriorities.equals(other.additionalPriorities))
+
+        ChildElement that = (ChildElement) o;
+
+        if (allowMultiple != null ? !allowMultiple.equals(that.allowMultiple) : that.allowMultiple != null)
         {
             return false;
         }
-        if (allowMultiple == null)
-        {
-            if (other.allowMultiple != null)
-            {
-                return false;
-            }
-        }
-        else if (!allowMultiple.equals(other.allowMultiple))
+        if (additionalPriorities != null ? !additionalPriorities.equals(that.additionalPriorities) : that.additionalPriorities != null)
         {
             return false;
         }
-        if (allowSubTypes == null)
-        {
-            if (other.allowSubTypes != null)
-            {
-                return false;
-            }
-        }
-        else if (!allowSubTypes.equals(other.allowSubTypes))
+        if (localId != null ? !localId.equals(that.localId) : that.localId != null)
         {
             return false;
         }
-        if (allowedSubTypes == null)
-        {
-            if (other.allowedSubTypes != null)
-            {
-                return false;
-            }
-        }
-        else if (!allowedSubTypes.equals(other.allowedSubTypes))
+        if (tableUI != null ? !tableUI.equals(that.tableUI) : that.tableUI != null)
         {
             return false;
         }
-        if (groupLabel == null)
-        {
-            if (other.groupLabel != null)
-            {
-                return false;
-            }
-        }
-        else if (!groupLabel.equals(other.groupLabel))
+        if (removeBorder != null ? !removeBorder.equals(that.removeBorder) : that.removeBorder != null)
         {
             return false;
         }
-        if (inplace == null)
-        {
-            if (other.inplace != null)
-            {
-                return false;
-            }
-        }
-        else if (!inplace.equals(other.inplace))
+        if (groupLabel != null ? !groupLabel.equals(that.groupLabel) : that.groupLabel != null)
         {
             return false;
         }
-        if (localId == null)
-        {
-            if (other.localId != null)
-            {
-                return false;
-            }
-        }
-        else if (!localId.equals(other.localId))
+        if (xmlOrder != null ? !xmlOrder.equals(that.xmlOrder) : that.xmlOrder != null)
         {
             return false;
         }
-        if (positional == null)
-        {
-            if (other.positional != null)
-            {
-                return false;
-            }
-        }
-        else if (!positional.equals(other.positional))
+        if (inplace != null ? !inplace.equals(that.inplace) : that.inplace != null)
         {
             return false;
         }
-        if (removeBorder == null)
-        {
-            if (other.removeBorder != null)
-            {
-                return false;
-            }
-        }
-        else if (!removeBorder.equals(other.removeBorder))
+        if (positional != null ? !positional.equals(that.positional) : that.positional != null)
         {
             return false;
         }
-        if (tableUI == null)
-        {
-            if (other.tableUI != null)
-            {
-                return false;
-            }
-        }
-        else if (!tableUI.equals(other.tableUI))
+        if (editorsIds != null ? !editorsIds.equals(that.editorsIds) : that.editorsIds != null)
         {
             return false;
         }
-        if (xmlOrder == null)
-        {
-            if (other.xmlOrder != null)
-            {
-                return false;
-            }
-        }
-        else if (!xmlOrder.equals(other.xmlOrder))
+        if (allowedSubTypes != null ? !allowedSubTypes.equals(that.allowedSubTypes) : that.allowedSubTypes != null)
         {
             return false;
         }
-        return true;
+        return allowSubTypes != null ? allowSubTypes.equals(that.allowSubTypes) : that.allowSubTypes == null;
+
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int result = super.hashCode();
+        result = 31 * result + (allowMultiple != null ? allowMultiple.hashCode() : 0);
+        result = 31 * result + (additionalPriorities != null ? additionalPriorities.hashCode() : 0);
+        result = 31 * result + (localId != null ? localId.hashCode() : 0);
+        result = 31 * result + (tableUI != null ? tableUI.hashCode() : 0);
+        result = 31 * result + (removeBorder != null ? removeBorder.hashCode() : 0);
+        result = 31 * result + (groupLabel != null ? groupLabel.hashCode() : 0);
+        result = 31 * result + (xmlOrder != null ? xmlOrder.hashCode() : 0);
+        result = 31 * result + (inplace != null ? inplace.hashCode() : 0);
+        result = 31 * result + (positional != null ? positional.hashCode() : 0);
+        result = 31 * result + (editorsIds != null ? editorsIds.hashCode() : 0);
+        result = 31 * result + (allowedSubTypes != null ? allowedSubTypes.hashCode() : 0);
+        result = 31 * result + (allowSubTypes != null ? allowSubTypes.hashCode() : 0);
+        return result;
     }
 }

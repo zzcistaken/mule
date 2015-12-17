@@ -9,14 +9,14 @@ package org.mule.module.extension.basic;
 import org.mule.extension.annotation.api.Configurations;
 import org.mule.extension.annotation.api.Extension;
 import org.mule.extension.annotation.api.Operations;
-import org.mule.extension.annotation.api.capability.StudioEditor;
+import org.mule.extension.annotation.api.capability.Editor;
 import org.mule.extension.annotation.api.capability.Xml;
 
 @Extension(name = "basic", description = "Basic")
 @Xml(schemaLocation = "http://www.mulesoft.org/schema/mule/basic", namespace = "basic", schemaVersion = "1.0")
 @Operations({BasicOperations.class})
 @Configurations({BasicConfig.class})
-@StudioEditor
+@Editor
 public class BasicExtension
 {
 

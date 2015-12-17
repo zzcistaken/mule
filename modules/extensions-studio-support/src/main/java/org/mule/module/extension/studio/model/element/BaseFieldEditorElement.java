@@ -6,6 +6,7 @@
  */
 package org.mule.module.extension.studio.model.element;
 
+import org.mule.module.extension.studio.model.element.macro.ElementQuery;
 import org.mule.module.extension.studio.model.reference.AbstractRef;
 
 import javax.xml.bind.annotation.XmlAttribute;

@@ -6,7 +6,7 @@
  */
 package org.mule.module.extension.studio.internal.capability.studio.editor;
 
-import org.mule.extension.annotation.api.capability.StudioEditor;
+import org.mule.extension.annotation.api.capability.Editor;
 import org.mule.extension.api.introspection.declaration.DescribingContext;
 import org.mule.extension.api.introspection.declaration.fluent.DeclarationDescriptor;
 import org.mule.extension.api.introspection.property.StudioEditorModelProperty;
@@ -21,7 +21,7 @@ public final class StudioEditorModelEnricher extends AbstractAnnotatedModelEnric
     @Override
     public void enrich(DescribingContext describingContext)
     {
-        StudioEditor studioEditor = extractAnnotation(describingContext.getDeclarationDescriptor().getDeclaration(), StudioEditor.class);
+        Editor studioEditor = extractAnnotation(describingContext.getDeclarationDescriptor().getDeclaration(), Editor.class);
         if (studioEditor != null)
         {
             DeclarationDescriptor descriptor = describingContext.getDeclarationDescriptor();
@@ -29,7 +29,7 @@ public final class StudioEditorModelEnricher extends AbstractAnnotatedModelEnric
         }
     }
 
-    private StudioEditorModelProperty createStudioEditorModelProperty(StudioEditor studioEditor, DeclarationDescriptor descriptor)
+    private StudioEditorModelProperty createStudioEditorModelProperty(Editor studioEditor, DeclarationDescriptor descriptor)
     {
 
         return new ImmutableStudioEditorModelProperty(studioEditor.fileName());

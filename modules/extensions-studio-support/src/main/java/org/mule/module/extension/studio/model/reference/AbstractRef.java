@@ -6,7 +6,6 @@
  */
 package org.mule.module.extension.studio.model.reference;
 
-import org.mule.module.extension.studio.model.LocalRef;
 import org.mule.module.extension.studio.model.element.BaseFieldEditorElement;
 
 import javax.xml.bind.annotation.XmlAttribute;

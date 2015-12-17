@@ -10,7 +10,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public abstract class AbstractEditorElement implements IComponentElement
+public abstract class AbstractEditorElement implements IEditorElement
 {
 
     private String versions;

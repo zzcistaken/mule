@@ -9,7 +9,7 @@ package org.mule.module.extension.multiprovider;
 import org.mule.extension.annotation.api.Configurations;
 import org.mule.extension.annotation.api.Extension;
 import org.mule.extension.annotation.api.Operations;
-import org.mule.extension.annotation.api.capability.StudioEditor;
+import org.mule.extension.annotation.api.capability.Editor;
 import org.mule.extension.annotation.api.capability.Xml;
 import org.mule.extension.annotation.api.connector.Providers;
 import org.mule.module.extension.multiconfig.BaseConfig1;
@@ -23,7 +23,7 @@ import org.mule.module.extension.multiconfig.BaseConfig2;
 @Operations(MultiProviderOperations.class)
 @Configurations({BaseConfig1.class, BaseConfig2.class})
 @Providers({MultiProviderConnectionProvider.class, AnotherMultiProviderConnectionProvider.class})
-@StudioEditor
+@Editor
 public class MultiProviderExtension
 {
 
