@@ -11,8 +11,8 @@
     <nested localId="connection-provider">
         <group id="connectionProvider" caption="Connection">
             <dynamicEditors name="Provider">
-                <editor-ref id="http://www.mulesoft.org/schema/mule/multi-provider/another-connection" name="Multi-provider:Another-connection"/>
-                <editor-ref id="http://www.mulesoft.org/schema/mule/multi-provider/connection" name="Multi-provider:Connection"/>
+                <studio-ref id="http://www.mulesoft.org/schema/mule/multi-provider/another-connection" name="Multi-provider:Another-connection"/>
+                <studio-ref id="http://www.mulesoft.org/schema/mule/multi-provider/connection" name="Multi-provider:Connection"/>
             </dynamicEditors>
         </group>
     </nested>

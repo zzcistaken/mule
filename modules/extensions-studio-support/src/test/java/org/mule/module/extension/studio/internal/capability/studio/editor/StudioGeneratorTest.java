@@ -56,16 +56,16 @@ import org.xml.sax.SAXException;
  * Created by pablocabrera on 12/1/15.
  */
 @RunWith(value = Parameterized.class)
-public class EditorGeneratorTest
+public class StudioGeneratorTest
 {
 
     private ExtensionFactory extensionFactory;
-    private StudioEditorGenerator generator;
+    private StudioGenerator generator;
 
     private String expectedContentFileName;
     private Class<?> extensionUnderTest;
 
-    public EditorGeneratorTest(String expectedContentFileName, Class<?> extensionUnderTest)
+    public StudioGeneratorTest(String expectedContentFileName, Class<?> extensionUnderTest)
     {
         super();
         this.expectedContentFileName = expectedContentFileName;
@@ -90,7 +90,7 @@ public class EditorGeneratorTest
     {
         ClassLoader classLoader = getClass().getClassLoader();
         ServiceRegistry serviceRegistry = mock(ServiceRegistry.class);
-        when(serviceRegistry.lookupProviders(ModelEnricher.class, classLoader)).thenReturn(asList(new XmlModelEnricher(), new StudioEditorModelEnricher()));
+        when(serviceRegistry.lookupProviders(ModelEnricher.class, classLoader)).thenReturn(asList(new XmlModelEnricher(), new StudioModelEnricher()));
 
         extensionFactory = new DefaultExtensionFactory(new SpiServiceRegistry(), getClass().getClassLoader());
 
@@ -107,7 +107,7 @@ public class EditorGeneratorTest
             }
         }).describe(new DefaultDescribingContext()).getRootDeclaration();
         ExtensionModel extensionModel = extensionFactory.createFrom(descriptor);
-        generator = StudioEditorGenerator.newStudioEditorGenerator(extensionModel);
+        generator = StudioGenerator.newStudioEditorGenerator(extensionModel);
         Namespace editor = generator.build();
         String actualEditor = "";
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream())
@@ -125,6 +125,7 @@ public class EditorGeneratorTest
         XMLUnit.setNormalizeWhitespace(Boolean.TRUE);
         XMLUnit.setIgnoreWhitespace(Boolean.TRUE);
         XMLUnit.setIgnoreComments(Boolean.TRUE);
+        XMLUnit.setIgnoreAttributeOrder(Boolean.TRUE);
 
         Diff diff = new Diff(expectedEditor, actualEditor);
         if (!(diff.similar() && diff.identical()))

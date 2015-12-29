@@ -19,16 +19,18 @@ import org.mule.module.extension.internal.ExtensionProperties;
 import org.mule.module.extension.internal.introspection.AbstractDataQualifierVisitor;
 import org.mule.module.extension.internal.util.IntrospectionUtils;
 import org.mule.module.extension.internal.util.NameUtils;
-import org.mule.module.extension.studio.model.contribution.AbstractContributionEditorElement;
-import org.mule.module.extension.studio.model.contribution.CloudConnector;
-import org.mule.module.extension.studio.model.ConnectivityTesting;
-import org.mule.module.extension.studio.model.contribution.Container;
 import org.mule.module.extension.studio.model.AbstractBaseEditorElement;
+import org.mule.module.extension.studio.model.ConnectivityTesting;
 import org.mule.module.extension.studio.model.EditorElementVisitorAdapter;
-import org.mule.module.extension.studio.model.contribution.Flow;
 import org.mule.module.extension.studio.model.MetaDataBehaviour;
 import org.mule.module.extension.studio.model.Namespace;
+import org.mule.module.extension.studio.model.contribution.AbstractContributionEditorElement;
+import org.mule.module.extension.studio.model.contribution.CloudConnector;
+import org.mule.module.extension.studio.model.contribution.Container;
+import org.mule.module.extension.studio.model.contribution.Flow;
 import org.mule.module.extension.studio.model.contribution.Nested;
+import org.mule.module.extension.studio.model.contribution.global.AbstractGlobalElement;
+import org.mule.module.extension.studio.model.contribution.global.GlobalCloudConnector;
 import org.mule.module.extension.studio.model.element.AbstractElementController;
 import org.mule.module.extension.studio.model.element.AttributeCategory;
 import org.mule.module.extension.studio.model.element.BaseChildEditorElement;
@@ -37,9 +39,6 @@ import org.mule.module.extension.studio.model.element.BooleanEditor;
 import org.mule.module.extension.studio.model.element.ChildElement;
 import org.mule.module.extension.studio.model.element.DynamicEditor;
 import org.mule.module.extension.studio.model.element.EditorRef;
-import org.mule.module.extension.studio.model.element.macro.ElementControllerList;
-import org.mule.module.extension.studio.model.element.macro.ElementControllerListOfMap;
-import org.mule.module.extension.studio.model.element.macro.ElementControllerListOfPojo;
 import org.mule.module.extension.studio.model.element.EncodingEditor;
 import org.mule.module.extension.studio.model.element.EnumEditor;
 import org.mule.module.extension.studio.model.element.FileEditor;
@@ -54,10 +53,10 @@ import org.mule.module.extension.studio.model.element.Option;
 import org.mule.module.extension.studio.model.element.PathEditor;
 import org.mule.module.extension.studio.model.element.StringEditor;
 import org.mule.module.extension.studio.model.element.UrlEditor;
-import org.mule.module.extension.studio.model.contribution.global.AbstractGlobalElement;
-import org.mule.module.extension.studio.model.contribution.global.GlobalCloudConnector;
+import org.mule.module.extension.studio.model.element.macro.ElementControllerList;
+import org.mule.module.extension.studio.model.element.macro.ElementControllerListOfMap;
+import org.mule.module.extension.studio.model.element.macro.ElementControllerListOfPojo;
 import org.mule.module.extension.studio.model.reference.GlobalRef;
-import org.mule.module.http.api.requester.HttpRequesterConfig;
 
 import com.google.common.base.CaseFormat;
 import com.google.common.collect.Lists;
@@ -75,7 +74,7 @@ import org.apache.commons.lang.StringUtils;
 /**
  * Created by pablocabrera on 11/18/15.
  */
-public final class StudioEditorGenerator
+public final class StudioGenerator
 {
 
     public static final String ICONS_SMALL_EXTENSION_PATTERN = "icons/small/%s-extension-24x16.png";
@@ -94,7 +93,7 @@ public final class StudioEditorGenerator
     private Namespace namespace;
     private ExtensionModel extensionModel;
 
-    private StudioEditorGenerator()
+    private StudioGenerator()
     {
         operations = new HashMap<>();
         configurations = new HashMap<>();
@@ -103,9 +102,9 @@ public final class StudioEditorGenerator
     }
 
 
-    public static StudioEditorGenerator newStudioEditorGenerator(ExtensionModel extensionModel)
+    public static StudioGenerator newStudioEditorGenerator(ExtensionModel extensionModel)
     {
-        StudioEditorGenerator generator = new StudioEditorGenerator();
+        StudioGenerator generator = new StudioGenerator();
         generator.extensionModel = extensionModel;
         generator.namespace = new Namespace();
 
@@ -630,7 +629,7 @@ public final class StudioEditorGenerator
             @Override
             public void onPojo()
             {
-                if (parameterModel.getType().getRawType().equals(HttpRequesterConfig.class))
+                if (parameterModel.getType().getRawType().getName().equals("org.mule.module.http.api.requester.HttpRequesterConfig"))
                 {
                     GlobalRef editorRef = new GlobalRef();
                     setCommonAttributes(editorRef, parameterModel);

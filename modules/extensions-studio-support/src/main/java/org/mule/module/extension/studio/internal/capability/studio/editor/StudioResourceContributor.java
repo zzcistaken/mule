@@ -7,7 +7,7 @@
 package org.mule.module.extension.studio.internal.capability.studio.editor;
 
 import org.mule.extension.api.introspection.ExtensionModel;
-import org.mule.extension.api.introspection.property.StudioEditorModelProperty;
+import org.mule.extension.api.introspection.property.StudioModelProperty;
 import org.mule.extension.api.resources.ResourcesGenerator;
 import org.mule.extension.api.resources.spi.GenerableResourceContributor;
 import org.mule.module.extension.studio.model.Namespace;
@@ -22,20 +22,20 @@ import javax.xml.bind.Marshaller;
 /**
  * Created by pablocabrera on 11/18/15.
  */
-public class StudioEditorResourceContributor implements GenerableResourceContributor
+public class StudioResourceContributor implements GenerableResourceContributor
 {
 
     @Override
     public void contribute(ExtensionModel extensionModel, ResourcesGenerator resourcesGenerator)
     {
-        StudioEditorModelProperty studioEditorModelProperty = extensionModel.getModelProperty(StudioEditorModelProperty.KEY);
-        if (studioEditorModelProperty != null)
+        StudioModelProperty studioModelProperty = extensionModel.getModelProperty(StudioModelProperty.KEY);
+        if (studioModelProperty != null)
         {
-            generateEditorFile(extensionModel, studioEditorModelProperty, resourcesGenerator);
+            generateEditorFile(extensionModel, studioModelProperty, resourcesGenerator);
         }
     }
 
-    private void generateEditorFile(ExtensionModel extensionModel, StudioEditorModelProperty studioEditorModelProperty, ResourcesGenerator resourcesGenerator)
+    private void generateEditorFile(ExtensionModel extensionModel, StudioModelProperty studioModelProperty, ResourcesGenerator resourcesGenerator)
     {
         Namespace extensionEditorModel = getEditorModelFrom(extensionModel);
 
@@ -45,7 +45,7 @@ public class StudioEditorResourceContributor implements GenerableResourceContrib
             Marshaller m = jaxbContext.createMarshaller();
             m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
             m.marshal(extensionEditorModel, outputStream);
-            resourcesGenerator.get(studioEditorModelProperty.getFileName()).getContentBuilder().append(outputStream.toString());
+            resourcesGenerator.get(studioModelProperty.getEditorFileName()).getContentBuilder().append(outputStream.toString());
         }
         catch (JAXBException e)
         {
@@ -60,7 +60,7 @@ public class StudioEditorResourceContributor implements GenerableResourceContrib
 
     private Namespace getEditorModelFrom(ExtensionModel extensionModel)
     {
-        StudioEditorGenerator studioEditorGenerator = StudioEditorGenerator.newStudioEditorGenerator(extensionModel);
-        return studioEditorGenerator.build();
+        StudioGenerator studioGenerator = StudioGenerator.newStudioEditorGenerator(extensionModel);
+        return studioGenerator.build();
     }
 }

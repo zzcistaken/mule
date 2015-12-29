@@ -8,7 +8,7 @@ package org.mule.module.extension.noconfig;
 
 import org.mule.extension.annotation.api.Extension;
 import org.mule.extension.annotation.api.Operations;
-import org.mule.extension.annotation.api.capability.Editor;
+import org.mule.extension.annotation.api.capability.Studio;
 import org.mule.extension.annotation.api.capability.Xml;
 import org.mule.extension.annotation.api.connector.Providers;
 
@@ -19,7 +19,7 @@ import org.mule.extension.annotation.api.connector.Providers;
 @Xml(schemaLocation = "http://www.mulesoft.org/schema/mule/no-config", namespace = "no-config", schemaVersion = "3.7")
 @Operations(NoConfigOperations.class)
 @Providers({NoConfigProvider.class})
-@Editor
+@Studio
 public class NoConfigExtension
 {
 

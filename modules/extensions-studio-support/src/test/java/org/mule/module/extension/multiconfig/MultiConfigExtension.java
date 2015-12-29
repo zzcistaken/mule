@@ -9,7 +9,7 @@ package org.mule.module.extension.multiconfig;
 import org.mule.extension.annotation.api.Configurations;
 import org.mule.extension.annotation.api.Extension;
 import org.mule.extension.annotation.api.Operations;
-import org.mule.extension.annotation.api.capability.Editor;
+import org.mule.extension.annotation.api.capability.Studio;
 import org.mule.extension.annotation.api.capability.Xml;
 import org.mule.extension.annotation.api.connector.Providers;
 
@@ -21,7 +21,7 @@ import org.mule.extension.annotation.api.connector.Providers;
 @Operations(MultiConfigOperations.class)
 @Configurations({BaseConfig1.class, BaseConfig2.class})
 @Providers({MultiConfigProvider.class})
-@Editor
+@Studio
 public class MultiConfigExtension
 {
 

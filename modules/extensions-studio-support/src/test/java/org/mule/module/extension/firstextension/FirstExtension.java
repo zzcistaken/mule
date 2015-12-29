@@ -12,7 +12,7 @@ import org.mule.extension.annotation.api.Extension;
 import org.mule.extension.annotation.api.Operations;
 import org.mule.extension.annotation.api.Parameter;
 import org.mule.extension.annotation.api.ParameterGroup;
-import org.mule.extension.annotation.api.capability.Editor;
+import org.mule.extension.annotation.api.capability.Studio;
 import org.mule.extension.annotation.api.capability.Xml;
 import org.mule.extension.annotation.api.connector.Providers;
 
@@ -22,7 +22,7 @@ import java.util.List;
 @Operations({ExtensionOperations.class, ExtensionOperationsWithDefaults.class, ExtensionOperationsWithOptional.class, ExtensionListOperations.class})
 @Providers(FirstExtensionConnectionProvider.class)
 @Xml(schemaLocation = "http://www.mulesoft.org/schema/mule/first", namespace = "first", schemaVersion = "3.7")
-@Editor
+@Studio
 public class FirstExtension implements Initialisable
 {
 
