@@ -14,8 +14,8 @@ import static org.mule.context.notification.BaseConnectorMessageNotification.MES
 import static org.mule.module.http.functional.TestConnectorMessageNotificationListener.register;
 import org.mule.api.context.MuleContextBuilder;
 import org.mule.context.DefaultMuleContextBuilder;
+import org.mule.module.http.functional.AbstractHttpOsgiFunctionalTestCase;
 import org.mule.module.http.functional.TestConnectorMessageNotificationListener;
-import org.mule.functional.junit4.FunctionalTestCase;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
 
@@ -26,7 +26,7 @@ import org.apache.http.client.fluent.Request;
 import org.junit.Rule;
 import org.junit.Test;
 
-public class HttpListenerNotificationsTestCase extends FunctionalTestCase
+public class HttpListenerNotificationsTestCase extends AbstractHttpOsgiFunctionalTestCase
 {
 
     @Rule

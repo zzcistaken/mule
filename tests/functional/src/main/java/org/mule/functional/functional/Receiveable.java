@@ -7,7 +7,7 @@
 package org.mule.functional.functional;
 
 /**
- * Interface only to be used by the {@link FunctionalTestComponent}.
+ * Interface only to be used by the {@link org.mule.functional.functional.FunctionalTestComponent}.
  */
 public interface Receiveable
 {

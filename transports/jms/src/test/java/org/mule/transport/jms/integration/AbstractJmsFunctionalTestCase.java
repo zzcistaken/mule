@@ -143,7 +143,7 @@ public abstract class AbstractJmsFunctionalTestCase extends FunctionalTestCase
     public static Collection<?> jmsProviderConfigs()
     {
         JmsVendorConfiguration[][] configs;
-        URL url = ClassUtils.getResource("jms-vendor-configs.txt", AbstractJmsFunctionalTestCase.class);
+        URL url = ClassUtils.getResource("jms-vendor-configs.txt", AbstractJmsFunctionalTestCase.class.getClassLoader());
 
         if (url == null)
         {
@@ -254,7 +254,7 @@ public abstract class AbstractJmsFunctionalTestCase extends FunctionalTestCase
                                       getJmsConfig().getName(), resources);
 
             String[] configFiles = new String[] { resources, configFile };
-            SpringXmlConfigurationBuilder builder = new SpringXmlConfigurationBuilder(configFiles);
+            SpringXmlConfigurationBuilder builder = new SpringXmlConfigurationBuilder(configFiles, null);
             return builder;
         }
         else

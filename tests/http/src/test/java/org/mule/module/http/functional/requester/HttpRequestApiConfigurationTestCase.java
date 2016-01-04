@@ -10,11 +10,11 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import org.mule.module.http.internal.request.DefaultHttpRequesterConfig;
-import org.mule.functional.junit4.FunctionalTestCase;
+import org.mule.module.http.functional.AbstractHttpOsgiFunctionalTestCase;
 
 import org.junit.Test;
 
-public class HttpRequestApiConfigurationTestCase extends FunctionalTestCase
+public class HttpRequestApiConfigurationTestCase extends AbstractHttpOsgiFunctionalTestCase
 {
 
     @Override

@@ -11,13 +11,13 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import org.mule.api.MuleEvent;
 import org.mule.construct.Flow;
-import org.mule.functional.junit4.FunctionalTestCase;
+import org.mule.module.http.functional.AbstractHttpOsgiFunctionalTestCase;
 import org.mule.tck.junit4.rule.DynamicPort;
 
 import org.junit.Rule;
 import org.junit.Test;
 
-public class HttpListenerCustomTlsConfigTestCase extends FunctionalTestCase
+public class HttpListenerCustomTlsConfigTestCase extends AbstractHttpOsgiFunctionalTestCase
 {
 
     @Rule

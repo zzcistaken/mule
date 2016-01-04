@@ -10,7 +10,6 @@ package org.mule.module.http.functional.requester;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-
 import org.mule.api.MuleEvent;
 import org.mule.construct.Flow;
 

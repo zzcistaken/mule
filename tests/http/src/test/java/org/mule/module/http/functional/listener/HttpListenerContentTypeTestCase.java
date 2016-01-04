@@ -18,7 +18,7 @@ import static org.mule.module.http.api.HttpHeaders.Names.CONTENT_TYPE;
 import org.mule.api.MuleMessage;
 import org.mule.api.client.LocalMuleClient;
 import org.mule.api.config.MuleProperties;
-import org.mule.functional.junit4.FunctionalTestCase;
+import org.mule.module.http.functional.AbstractHttpOsgiFunctionalTestCase;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.util.IOUtils;
 
@@ -31,7 +31,7 @@ import org.apache.http.entity.StringEntity;
 import org.junit.Rule;
 import org.junit.Test;
 
-public class HttpListenerContentTypeTestCase extends FunctionalTestCase
+public class HttpListenerContentTypeTestCase extends AbstractHttpOsgiFunctionalTestCase
 {
 
     private static final String EXPECTED_CONTENT_TYPE = "application/json; charset=UTF-8";

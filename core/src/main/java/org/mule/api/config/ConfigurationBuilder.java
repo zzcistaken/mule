@@ -30,7 +30,7 @@ public interface ConfigurationBuilder
      * {@link org.mule.api.config.ConfigurationBuilder} implementation as bean properties before this method
      * has been called.
      *
-     * @param muleContext The current {@link org.mule.api.MuleContext}
+     * @param muleContext The current {@link MuleContext}
      * @throws ConfigurationException if the configuration fails i.e. an object cannot be created or
      * initialised properly
      */

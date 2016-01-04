@@ -74,11 +74,12 @@
             <version>${commonsDbUtilsVersion}</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-beans</artifactId>
-            <version>${springVersion}</version>
-        </dependency>
+        <!--//TODO(pablo.kraan): OSGi - check this removed dependency if DB fails -->
+        <!--<dependency>-->
+            <!--<groupId>org.springframework</groupId>-->
+            <!--<artifactId>spring-beans</artifactId>-->
+            <!--<version>${springVersion}</version>-->
+        <!--</dependency>-->
 
         <dependency>
             <groupId>org.mule.common</groupId>

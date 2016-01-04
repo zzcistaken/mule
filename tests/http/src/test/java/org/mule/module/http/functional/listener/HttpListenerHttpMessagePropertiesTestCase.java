@@ -13,13 +13,12 @@ import static org.hamcrest.Matchers.startsWith;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.mule.module.http.api.HttpConstants.RequestProperties.HTTP_REMOTE_ADDRESS;
-
 import org.mule.api.MuleMessage;
 import org.mule.module.http.api.HttpConstants;
 import org.mule.module.http.api.HttpHeaders;
 import org.mule.module.http.internal.ParameterMap;
 import org.mule.module.http.internal.domain.HttpProtocol;
-import org.mule.functional.junit4.FunctionalTestCase;
+import org.mule.module.http.functional.AbstractHttpOsgiFunctionalTestCase;
 import org.mule.tck.junit4.rule.DynamicPort;
 
 import com.google.common.base.Charsets;
@@ -40,7 +39,7 @@ import org.hamcrest.core.IsNull;
 import org.junit.Rule;
 import org.junit.Test;
 
-public class HttpListenerHttpMessagePropertiesTestCase extends FunctionalTestCase
+public class HttpListenerHttpMessagePropertiesTestCase extends AbstractHttpOsgiFunctionalTestCase
 {
 
     public static final String QUERY_PARAM_NAME = "queryParam";

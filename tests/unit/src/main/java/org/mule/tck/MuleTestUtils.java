@@ -9,6 +9,7 @@ package org.mule.tck;
 import static org.mockito.Mockito.spy;
 import org.mule.DefaultMuleContext;
 import org.mule.DefaultMuleEvent;
+import org.mule.DefaultMuleMessage;
 import org.mule.MessageExchangePattern;
 import org.mule.RequestContext;
 import org.mule.api.Injector;
@@ -313,8 +314,9 @@ public final class MuleTestUtils
         {
             // need to build endpoint this way to avoid depenency to any endpoint
             // jars
-            connector = (Connector) ClassUtils.loadClass("org.mule.tck.testmodels.mule.TestConnector",
-                                                         AbstractMuleTestCase.class).getConstructor(MuleContext.class).newInstance(context);
+            final Class aClass = ClassUtils.loadClass("org.mule.tck.testmodels.mule.TestConnector",
+                                                      AbstractMuleTestCase.class);
+            connector = (Connector) aClass.getConstructor(MuleContext.class).newInstance(context);
         }
 
         connector.setName("testConnector");
@@ -470,7 +472,9 @@ public final class MuleTestUtils
                                          MessageExchangePattern mep,
                                          MuleContext context) throws Exception
     {
-        return getTestEvent(data, flowConstruct, getTestInboundEndpoint("test1", mep, context, null), context);
+        final MuleSession session = getTestSession(flowConstruct, context);
+
+        return new DefaultMuleEvent(new DefaultMuleMessage(data, context), mep, flowConstruct, session);
     }
 
     //    public static MuleEvent getTestInboundEvent(Object data, Service service, MuleContext context)
@@ -504,10 +508,10 @@ public final class MuleTestUtils
     {
         final MuleSession session = getTestSession(flowConstruct, context);
 
-        final MuleMessageFactory factory = endpoint.getConnector().createMuleMessageFactory();
-        final MuleMessage message = factory.create(data, endpoint.getEncoding(), context);
+        //final MuleMessageFactory factory = endpoint.getConnector().createMuleMessageFactory();
+        //final MuleMessage message = factory.create(data, endpoint.getEncoding(), context);
 
-        return new DefaultMuleEvent(message, endpoint, flowConstruct, session);
+        return new DefaultMuleEvent(new DefaultMuleMessage(data, context), endpoint, flowConstruct, session);
     }
 
     public static MuleEvent getTestEvent(Object data, MuleSession session, MuleContext context)

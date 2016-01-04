@@ -9,7 +9,7 @@ package org.mule.module.http.functional.listener;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import org.mule.api.security.tls.TlsConfiguration;
-import org.mule.functional.junit4.FunctionalTestCase;
+import org.mule.module.http.functional.AbstractHttpOsgiFunctionalTestCase;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.transport.ssl.DefaultTlsContextFactory;
 import org.mule.util.ClassUtils;
@@ -28,10 +28,12 @@ import javax.net.ssl.SSLSocketFactory;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
-public class HttpListenerTlsRestrictedProtocolsAndCiphersTestCase extends FunctionalTestCase
+@Ignore("OSGi - local/tls-default.conf")
+public class HttpListenerTlsRestrictedProtocolsAndCiphersTestCase extends AbstractHttpOsgiFunctionalTestCase
 {
 
     @Rule

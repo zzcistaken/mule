@@ -94,6 +94,8 @@ public class DefaultMuleContextBuilder implements MuleContextBuilder
 
     protected BootstrapServiceDiscoverer bootstrapDiscoverer;
 
+    protected ClassLoader executionClassLoader;
+
     /**
      * {@inheritDoc}
      */
@@ -116,7 +118,7 @@ public class DefaultMuleContextBuilder implements MuleContextBuilder
 
         muleContext.setLocalMuleClient(new DefaultLocalMuleClient(muleContext));
         muleContext.setExceptionListener(new DefaultSystemExceptionStrategy(muleContext));
-        muleContext.setExecutionClassLoader(Thread.currentThread().getContextClassLoader());
+        muleContext.setExecutionClassLoader(getExecutionClassLoader());
         muleContext.setBootstrapServiceDiscoverer(injectMuleContextIfRequired(getBootstrapPropertiesServiceDiscoverer(), muleContext));
 
         JavaObjectSerializer defaultObjectSerializer = new JavaObjectSerializer();
@@ -136,6 +138,12 @@ public class DefaultMuleContextBuilder implements MuleContextBuilder
         this.config = config;
     }
 
+    @Override
+    public void setBootstrapServiceDiscoverer(BootstrapServiceDiscoverer bootstrapDiscoverer)
+    {
+        this.bootstrapDiscoverer = bootstrapDiscoverer;
+    }
+
     public void setWorkManager(WorkManager workManager)
     {
         this.workManager = workManager;
@@ -149,6 +157,11 @@ public class DefaultMuleContextBuilder implements MuleContextBuilder
     public void setNotificationManager(ServerNotificationManager notificationManager)
     {
         this.notificationManager = notificationManager;
+    }
+
+    public void setExecutionClassLoader(ClassLoader executionClassLoader)
+    {
+        this.executionClassLoader = executionClassLoader;
     }
 
     protected MuleConfiguration getMuleConfiguration()
@@ -252,11 +265,6 @@ public class DefaultMuleContextBuilder implements MuleContextBuilder
         this.shutdownScreen = shutdownScreen;
     }
 
-    public void setBootstrapPropertiesServiceDiscoverer(BootstrapServiceDiscoverer bootstrapDiscoverer)
-    {
-        this.bootstrapDiscoverer = bootstrapDiscoverer;
-    }
-
     public BootstrapServiceDiscoverer getBootstrapPropertiesServiceDiscoverer()
     {
         if (bootstrapDiscoverer != null)
@@ -358,5 +366,17 @@ public class DefaultMuleContextBuilder implements MuleContextBuilder
                ", workManager=" + workManager +
                ", workListener=" + workListener +
                ", notificationManager=" + notificationManager + "}";
+    }
+
+    protected ClassLoader getExecutionClassLoader()
+    {
+        if (executionClassLoader != null)
+        {
+            return executionClassLoader;
+        }
+        else
+        {
+            return getClass().getClassLoader();
+        }
     }
 }

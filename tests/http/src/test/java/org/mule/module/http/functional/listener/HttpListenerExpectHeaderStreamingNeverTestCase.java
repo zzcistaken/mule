@@ -15,7 +15,7 @@ import static org.mule.module.http.api.HttpHeaders.Names.CONTENT_LENGTH;
 import static org.mule.module.http.api.HttpHeaders.Names.EXPECT;
 import static org.mule.module.http.api.HttpHeaders.Names.HOST;
 import static org.mule.module.http.api.HttpHeaders.Values.CONTINUE;
-import org.mule.functional.junit4.FunctionalTestCase;
+import org.mule.module.http.functional.AbstractHttpOsgiFunctionalTestCase;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.util.IOUtils;
@@ -32,13 +32,16 @@ import java.util.Collection;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.ops4j.pax.exam.junit.PaxExamParameterized;
 
-@RunWith(Parameterized.class)
-public class HttpListenerExpectHeaderStreamingNeverTestCase extends FunctionalTestCase
+@RunWith(PaxExamParameterized.class)
+@Ignore("OSGi - PaxExamParameterized needs static configuration")
+public class HttpListenerExpectHeaderStreamingNeverTestCase extends AbstractHttpOsgiFunctionalTestCase
 {
 
     private static final String HTTP_11 = "HTTP/1.1";

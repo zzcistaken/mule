@@ -6,10 +6,10 @@
  */
 package org.mule.module.http.functional.requester;
 
-import org.mule.functional.junit4.FunctionalTestCase;
+import org.mule.module.http.functional.AbstractHttpOsgiFunctionalTestCase;
 import org.mule.tck.junit4.rule.DynamicPort;
-import org.mule.util.FileUtils;
 import org.mule.util.CaseInsensitiveMapWrapper;
+import org.mule.util.FileUtils;
 import org.mule.util.IOUtils;
 
 import com.google.common.base.Supplier;
@@ -37,7 +37,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 
-public class AbstractHttpRequestTestCase extends FunctionalTestCase
+public class AbstractHttpRequestTestCase extends AbstractHttpOsgiFunctionalTestCase
 {
 
     @Rule

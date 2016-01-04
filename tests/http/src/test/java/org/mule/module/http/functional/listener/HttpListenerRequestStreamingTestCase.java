@@ -13,8 +13,8 @@ import static org.mule.module.http.api.HttpConstants.Methods.POST;
 import static org.mule.module.http.api.client.HttpRequestOptionsBuilder.newOptions;
 import org.mule.api.MuleEventContext;
 import org.mule.module.http.api.client.HttpRequestOptions;
+import org.mule.module.http.functional.AbstractHttpOsgiFunctionalTestCase;
 import org.mule.functional.functional.EventCallback;
-import org.mule.functional.junit4.FunctionalTestCase;
 import org.mule.tck.junit4.rule.DynamicPort;
 
 import java.io.ByteArrayInputStream;
@@ -23,7 +23,7 @@ import org.apache.commons.lang.RandomStringUtils;
 import org.junit.Rule;
 import org.junit.Test;
 
-public class HttpListenerRequestStreamingTestCase extends FunctionalTestCase
+public class HttpListenerRequestStreamingTestCase extends AbstractHttpOsgiFunctionalTestCase
 {
 
     private static final String LARGE_MESSAGE = RandomStringUtils.randomAlphanumeric(100 * 1024);

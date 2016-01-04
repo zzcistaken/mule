@@ -21,13 +21,18 @@ import com.google.common.collect.ImmutableList;
 import java.util.Collection;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Default implementation of {@link ExtensionDiscoverer}
  *
  * @since 3.7.0
  */
-final class DefaultExtensionDiscoverer implements ExtensionDiscoverer
+public final class DefaultExtensionDiscoverer implements ExtensionDiscoverer
 {
+
+    private static final transient Logger LOGGER = LoggerFactory.getLogger(DefaultExtensionDiscoverer.class);
 
     private final ExtensionFactory extensionFactory;
     private final ServiceRegistry serviceRegistry;
@@ -49,10 +54,12 @@ final class DefaultExtensionDiscoverer implements ExtensionDiscoverer
         Collection<Describer> describers = serviceRegistry.lookupProviders(Describer.class, classLoader);
         if (describers.isEmpty())
         {
+            LOGGER.warn("No mule extensions found");
             return ImmutableList.of();
         }
 
         return describers.stream().map(describer -> {
+            LOGGER.info("Discovered extension: " + describer.getClass().getName());
             Descriptor descriptor = describer.describe(new DefaultDescribingContext());
             return extensionFactory.createFrom(descriptor);
         }).collect(new ImmutableListCollector<>());

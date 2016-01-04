@@ -16,8 +16,8 @@ import static org.mule.module.http.api.client.HttpRequestOptionsBuilder.newOptio
 
 import org.mule.api.MuleMessage;
 import org.mule.api.client.MuleClient;
-import org.mule.module.http.api.client.HttpRequestOptions;
 import org.mule.functional.junit4.FunctionalTestCase;
+import org.mule.module.http.api.client.HttpRequestOptions;
 import org.mule.tck.junit4.rule.DynamicPort;
 
 import java.io.InputStream;
@@ -100,7 +100,7 @@ public class XmlSendTestCase extends FunctionalTestCase
         MuleClient client = muleContext.getClient();
 
         // this will submit the xml via a POST request
-        MuleMessage message = client.send("http://localhost:" + dynamicPort.getNumber() + "/extract", getTestMuleMessage(xml), httpOptions);
+        MuleMessage message = client.send("http://localhost:" + dynamicPort.getNumber() + "/extract", getTestMuleMessage(xml));
         assertThat(getPayloadAsString(message), equalTo("some"));
     }
 }

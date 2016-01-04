@@ -117,6 +117,7 @@
         <module>transports</module>
         <module>tests</module>
         <module>extensions</module>
+        <module>osgi</module>
     </modules>
 
     <properties>
@@ -188,6 +189,7 @@
         <cxfVersion>2.7.15</cxfVersion>
         <derbyVersion>10.11.1.1</derbyVersion>
         <dom4jVersion>1.6.1</dom4jVersion>
+        <felix.version>4.4.1</felix.version>
         <flatpackVersion>3.1.1</flatpackVersion>
         <geronimoSpecsJ2eeVersion>2.0.0</geronimoSpecsJ2eeVersion>
         <geronimoSpecsJmsVersion>1.1.1</geronimoSpecsJmsVersion>
@@ -201,7 +203,8 @@
         <hibernateVersion>3.6.0.Final</hibernateVersion>
         <jacksonVersion>1.9.11</jacksonVersion>
         <jackson2Version>2.4.3</jackson2Version>
-        <javax.inject.version>1</javax.inject.version>
+        <!--<javax.inject.version>1</javax.inject.version>-->
+        <javax.inject.version>1_2</javax.inject.version>
         <jerseyVersion>2.11</jerseyVersion>
         <jaxbApiVersion>2.1</jaxbApiVersion>
         <javassistVersion>3.7.ga</javassistVersion>
@@ -218,7 +221,7 @@
         <jodaTimeVersion>2.5</jodaTimeVersion>
         <jschVersion>0.1.53</jschVersion>
         <junitVersion>4.11</junitVersion>
-        <log4jVersion>2.1</log4jVersion>
+        <log4jVersion>2.2</log4jVersion>
         <disruptorVersion>3.3.0</disruptorVersion>
         <maven.buildnumber.plugin.version>1.1</maven.buildnumber.plugin.version>
         <maven.surefire.plugin.version>2.18.1</maven.surefire.plugin.version>
@@ -241,7 +244,9 @@
         <saxonVersion>9.6.0-1</saxonVersion>
         <slf4jVersion>1.7.7</slf4jVersion>
         <springOsgiVersion>1.0.2</springOsgiVersion>
-        <springVersion>4.1.6.RELEASE</springVersion>
+        <!--//TODO(pablo.kraan): OSGi - repalced with servicemix bundles -->
+        <springVersion>4.1.2.RELEASE_1</springVersion>
+        <!--<springVersion>4.1.6.RELEASE</springVersion>-->
         <springSecurityVersion>4.0.1.RELEASE</springSecurityVersion>
         <sshCoreVersion>0.6.0</sshCoreVersion>
         <staxUtilsVersion>20080702</staxUtilsVersion>
@@ -280,15 +285,166 @@
                 <groupId>org.mule.common</groupId>
                 <artifactId>mule-common</artifactId>
                 <version>${muleCommonVersion}</version>
+                <exclusions>
+                    <exclusion>
+                        <!--//TODO(pablo.kraan): OSGi - replaced with servicemix version-->
+                        <groupId>org.apache.xmlbeans</groupId>
+                        <artifactId>xmlbeans</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
+
             <dependency>
                 <groupId>javax.annotation</groupId>
                 <artifactId>javax.annotation-api</artifactId>
                 <version>1.2</version>
             </dependency>
+
+
+            <!--//TODO(pablo.kraan): OSGi - spring was replaced with servicemix bundles-->
+            <!--<dependency>-->
+                <!--<groupId>org.springframework</groupId>-->
+                <!--<artifactId>spring-beans</artifactId>-->
+                <!--<version>${springVersion}</version>-->
+                <!--<exclusions>-->
+                    <!--<exclusion>-->
+                        <!--<artifactId>commons-logging</artifactId>-->
+                        <!--<groupId>commons-logging</groupId>-->
+                    <!--</exclusion>-->
+                <!--</exclusions>-->
+            <!--</dependency>-->
+            <!--<dependency>-->
+                <!--<groupId>org.springframework</groupId>-->
+                <!--<artifactId>spring-context</artifactId>-->
+                <!--<version>${springVersion}</version>-->
+                <!--<exclusions>-->
+                    <!--<exclusion>-->
+                        <!--<groupId>aopalliance</groupId>-->
+                        <!--<artifactId>aopalliance</artifactId>-->
+                    <!--</exclusion>-->
+                    <!--<exclusion>-->
+                        <!--<groupId>org.aopalliance</groupId>-->
+                        <!--<artifactId>com.springsource.org.aopalliance</artifactId>-->
+                    <!--</exclusion>-->
+                    <!--<exclusion>-->
+                        <!--<artifactId>commons-logging</artifactId>-->
+                        <!--<groupId>commons-logging</groupId>-->
+                    <!--</exclusion>-->
+                <!--</exclusions>-->
+            <!--</dependency>-->
+            <!--<dependency>-->
+                <!--<groupId>org.springframework</groupId>-->
+                <!--<artifactId>spring-core</artifactId>-->
+                <!--<version>${springVersion}</version>-->
+                <!--<exclusions>-->
+                    <!--<exclusion>-->
+                        <!--<groupId>aopalliance</groupId>-->
+                        <!--<artifactId>aopalliance</artifactId>-->
+                    <!--</exclusion>-->
+                    <!--<exclusion>-->
+                        <!--<groupId>org.aopalliance</groupId>-->
+                        <!--<artifactId>com.springsource.org.aopalliance</artifactId>-->
+                    <!--</exclusion>-->
+                    <!--<exclusion>-->
+                        <!--<artifactId>commons-logging</artifactId>-->
+                        <!--<groupId>commons-logging</groupId>-->
+                    <!--</exclusion>-->
+                <!--</exclusions>-->
+            <!--</dependency>-->
+            <!--<dependency>-->
+                <!--<groupId>org.springframework</groupId>-->
+                <!--<artifactId>spring-jdbc</artifactId>-->
+                <!--<version>${springVersion}</version>-->
+                <!--<exclusions>-->
+                    <!--<exclusion>-->
+                        <!--<groupId>aopalliance</groupId>-->
+                        <!--<artifactId>aopalliance</artifactId>-->
+                    <!--</exclusion>-->
+                    <!--<exclusion>-->
+                        <!--<groupId>org.aopalliance</groupId>-->
+                        <!--<artifactId>com.springsource.org.aopalliance</artifactId>-->
+                    <!--</exclusion>-->
+                    <!--<exclusion>-->
+                        <!--<artifactId>commons-logging</artifactId>-->
+                        <!--<groupId>commons-logging</groupId>-->
+                    <!--</exclusion>-->
+                    <!--<exclusion>-->
+                        <!--<groupId>org.springframework</groupId>-->
+                        <!--<artifactId>spring-support</artifactId>-->
+                    <!--</exclusion>-->
+                <!--</exclusions>-->
+            <!--</dependency>-->
+            <!--<dependency>-->
+                <!--<groupId>org.springframework</groupId>-->
+                <!--<artifactId>spring-jms</artifactId>-->
+                <!--<version>${springVersion}</version>-->
+                <!--<exclusions>-->
+                    <!--<exclusion>-->
+                        <!--<groupId>aopalliance</groupId>-->
+                        <!--<artifactId>aopalliance</artifactId>-->
+                    <!--</exclusion>-->
+                    <!--<exclusion>-->
+                        <!--<groupId>org.aopalliance</groupId>-->
+                        <!--<artifactId>com.springsource.org.aopalliance</artifactId>-->
+                    <!--</exclusion>-->
+                    <!--<exclusion>-->
+                        <!--<artifactId>commons-logging</artifactId>-->
+                        <!--<groupId>commons-logging</groupId>-->
+                    <!--</exclusion>-->
+                    <!--<exclusion>-->
+                        <!--<artifactId>commons-pool</artifactId>-->
+                        <!--<groupId>commons-pool</groupId>-->
+                    <!--</exclusion>-->
+                    <!--<exclusion>-->
+                        <!--<groupId>org.springframework</groupId>-->
+                        <!--<artifactId>spring-support</artifactId>-->
+                    <!--</exclusion>-->
+                <!--</exclusions>-->
+            <!--</dependency>-->
+            <!--<dependency>-->
+                <!--<groupId>org.springframework</groupId>-->
+                <!--<artifactId>spring-orm</artifactId>-->
+                <!--<version>${springVersion}</version>-->
+                <!--<exclusions>-->
+                    <!--<exclusion>-->
+                        <!--<groupId>aopalliance</groupId>-->
+                        <!--<artifactId>aopalliance</artifactId>-->
+                    <!--</exclusion>-->
+                    <!--<exclusion>-->
+                        <!--<groupId>org.aopalliance</groupId>-->
+                        <!--<artifactId>com.springsource.org.aopalliance</artifactId>-->
+                    <!--</exclusion>-->
+                    <!--<exclusion>-->
+                        <!--<artifactId>commons-logging</artifactId>-->
+                        <!--<groupId>commons-logging</groupId>-->
+                    <!--</exclusion>-->
+                <!--</exclusions>-->
+            <!--</dependency>-->
+            <!--<dependency>-->
+                <!--<groupId>org.springframework</groupId>-->
+                <!--<artifactId>spring-aop</artifactId>-->
+                <!--<version>${springVersion}</version>-->
+                <!--<exclusions>-->
+                    <!--<exclusion>-->
+                        <!--<artifactId>commons-logging</artifactId>-->
+                        <!--<groupId>commons-logging</groupId>-->
+                    <!--</exclusion>-->
+                <!--</exclusions>-->
+            <!--</dependency>-->
+            <!--<dependency>-->
+                <!--<groupId>org.springframework</groupId>-->
+                <!--<artifactId>spring-web</artifactId>-->
+                <!--<version>${springVersion}</version>-->
+                <!--<exclusions>-->
+                    <!--<exclusion>-->
+                        <!--<groupId>commons-logging</groupId>-->
+                        <!--<artifactId>commons-logging</artifactId>-->
+                    <!--</exclusion>-->
+                <!--</exclusions>-->
+            <!--</dependency>-->
             <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-beans</artifactId>
+                <groupId>org.apache.servicemix.bundles</groupId>
+                <artifactId>org.apache.servicemix.bundles.spring-beans</artifactId>
                 <version>${springVersion}</version>
                 <exclusions>
                     <exclusion>
@@ -298,8 +454,8 @@
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-context</artifactId>
+                <groupId>org.apache.servicemix.bundles</groupId>
+                <artifactId>org.apache.servicemix.bundles.spring-context</artifactId>
                 <version>${springVersion}</version>
                 <exclusions>
                     <exclusion>
@@ -317,8 +473,8 @@
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-core</artifactId>
+                <groupId>org.apache.servicemix.bundles</groupId>
+                <artifactId>org.apache.servicemix.bundles.spring-context-support</artifactId>
                 <version>${springVersion}</version>
                 <exclusions>
                     <exclusion>
@@ -336,58 +492,8 @@
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-jdbc</artifactId>
-                <version>${springVersion}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>aopalliance</groupId>
-                        <artifactId>aopalliance</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.aopalliance</groupId>
-                        <artifactId>com.springsource.org.aopalliance</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>commons-logging</artifactId>
-                        <groupId>commons-logging</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.springframework</groupId>
-                        <artifactId>spring-support</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-jms</artifactId>
-                <version>${springVersion}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>aopalliance</groupId>
-                        <artifactId>aopalliance</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.aopalliance</groupId>
-                        <artifactId>com.springsource.org.aopalliance</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>commons-logging</artifactId>
-                        <groupId>commons-logging</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>commons-pool</artifactId>
-                        <groupId>commons-pool</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.springframework</groupId>
-                        <artifactId>spring-support</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-orm</artifactId>
+                <groupId>org.apache.servicemix.bundles</groupId>
+                <artifactId>org.apache.servicemix.bundles.spring-core</artifactId>
                 <version>${springVersion}</version>
                 <exclusions>
                     <exclusion>
@@ -405,8 +511,8 @@
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-aop</artifactId>
+                <groupId>org.apache.servicemix.bundles</groupId>
+                <artifactId>org.apache.servicemix.bundles.spring-aop</artifactId>
                 <version>${springVersion}</version>
                 <exclusions>
                     <exclusion>
@@ -416,16 +522,20 @@
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-web</artifactId>
+                <groupId>org.apache.servicemix.bundles</groupId>
+                <artifactId>org.apache.servicemix.bundles.spring-expression</artifactId>
                 <version>${springVersion}</version>
                 <exclusions>
                     <exclusion>
-                        <groupId>commons-logging</groupId>
                         <artifactId>commons-logging</artifactId>
+                        <groupId>commons-logging</groupId>
                     </exclusion>
                 </exclusions>
             </dependency>
+
+
+
+
             <dependency>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-server</artifactId>
@@ -1395,6 +1505,11 @@
             </dependency>
             <dependency>
                 <groupId>org.glassfish.grizzly</groupId>
+                <artifactId>grizzly-http-servlet</artifactId>
+                <version>${grizzlyVersion}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.grizzly</groupId>
                 <artifactId>connection-pool</artifactId>
                 <version>${grizzlyVersion}</version>
             </dependency>
@@ -1430,9 +1545,15 @@
                 </exclusions>
             </dependency>
 
+            <!--//TODO(pablo.kraan): OSGi - replaced with servicemix bundle-->
+            <!--<dependency>-->
+                <!--<groupId>javax.inject</groupId>-->
+                <!--<artifactId>javax.inject</artifactId>-->
+                <!--<version>${javax.inject.version}</version>-->
+            <!--</dependency>-->
             <dependency>
-                <groupId>javax.inject</groupId>
-                <artifactId>javax.inject</artifactId>
+                <groupId>org.apache.servicemix.bundles</groupId>
+                <artifactId>org.apache.servicemix.bundles.javax-inject</artifactId>
                 <version>${javax.inject.version}</version>
             </dependency>
 
@@ -1978,6 +2099,13 @@
                             </configuration>
                         </reportPlugin>
                     </reportPlugins>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <useDefaultManifestFile>true</useDefaultManifestFile>
                 </configuration>
             </plugin>
         </plugins>

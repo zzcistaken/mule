@@ -28,7 +28,7 @@ import org.apache.commons.logging.LogFactory;
  * Note that although this implements the full StreamingService interface, nothing is
  * written to the output stream - this is intended as a final sink.
  *
- * @see EventCallback
+ * @see org.mule.functional.functional.EventCallback
  */
 
 public class FunctionalStreamingTestComponent implements Callable

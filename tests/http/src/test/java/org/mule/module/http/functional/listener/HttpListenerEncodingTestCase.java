@@ -9,7 +9,7 @@ package org.mule.module.http.functional.listener;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import org.mule.api.MuleMessage;
-import org.mule.functional.junit4.FunctionalTestCase;
+import org.mule.module.http.functional.AbstractHttpOsgiFunctionalTestCase;
 import org.mule.tck.junit4.rule.DynamicPort;
 
 import java.nio.charset.Charset;
@@ -18,13 +18,16 @@ import java.util.Collection;
 
 import org.apache.http.client.fluent.Request;
 import org.apache.http.entity.ContentType;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.ops4j.pax.exam.junit.PaxExamParameterized;
 
-@RunWith(Parameterized.class)
-public class HttpListenerEncodingTestCase extends FunctionalTestCase
+@RunWith(PaxExamParameterized.class)
+@Ignore("OSGi - @Parameterized.Parameter")
+public class HttpListenerEncodingTestCase extends AbstractHttpOsgiFunctionalTestCase
 {
     @Rule
     public DynamicPort port = new DynamicPort("port");

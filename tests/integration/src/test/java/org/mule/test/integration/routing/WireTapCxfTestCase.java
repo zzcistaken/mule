@@ -9,9 +9,6 @@ package org.mule.test.integration.routing;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mule.module.http.api.HttpConstants.Methods.POST;
-import static org.mule.module.http.api.client.HttpRequestOptionsBuilder.newOptions;
-
 import org.mule.api.MuleMessage;
 import org.mule.api.client.MuleClient;
 import org.mule.api.context.notification.ServerNotification;
@@ -61,7 +58,7 @@ public class WireTapCxfTestCase extends FunctionalTestCase
                      + "<soap:Body><echo><text>foo</text></echo></soap:Body></soap:Envelope>";
 
         MuleClient client = muleContext.getClient();
-        MuleMessage response = client.send(url, getTestMuleMessage(msg), newOptions().method(POST.name()).build());
+        MuleMessage response = client.send(url, getTestMuleMessage(msg));
         assertNotNull(response);
 
         String responseString = getPayloadAsString(response);

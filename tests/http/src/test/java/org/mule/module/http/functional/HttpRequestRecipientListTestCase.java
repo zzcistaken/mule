@@ -9,12 +9,11 @@ package org.mule.module.http.functional;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
-
 import org.mule.api.MuleEvent;
 import org.mule.api.MuleMessage;
 import org.mule.api.transport.PropertyScope;
 import org.mule.construct.Flow;
-import org.mule.functional.junit4.FunctionalTestCase;
+import org.mule.tck.junit4.AbstractMuleContextTestCase;
 import org.mule.tck.junit4.rule.DynamicPort;
 
 import java.util.Arrays;
@@ -26,7 +25,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 @Ignore
-public class HttpRequestRecipientListTestCase extends FunctionalTestCase
+public class HttpRequestRecipientListTestCase extends AbstractHttpOsgiFunctionalTestCase
 {
 
     @Rule
@@ -45,7 +44,7 @@ public class HttpRequestRecipientListTestCase extends FunctionalTestCase
     @Test
     public void recipientListWithHttpUrlsWithResponse() throws Exception
     {
-        final MuleEvent testEvent = getTestEvent(TEST_MESSAGE);
+        final MuleEvent testEvent = AbstractMuleContextTestCase.getTestEvent(AbstractMuleContextTestCase.TEST_MESSAGE);
         testEvent.getMessage().setProperty("urls", Arrays.asList(getUrlForPort(port1), getUrlForPort(port2), getUrlForPort(port3)), PropertyScope.INBOUND);
         final MuleEvent response = ((Flow) getFlowConstruct("recipientListFlow")).process(testEvent);
         assertThat(response, notNullValue());

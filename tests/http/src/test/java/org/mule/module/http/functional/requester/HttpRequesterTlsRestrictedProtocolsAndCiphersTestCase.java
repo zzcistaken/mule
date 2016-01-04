@@ -12,7 +12,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import org.mule.api.MessagingException;
 import org.mule.api.security.tls.TlsConfiguration;
-import org.mule.functional.junit4.FunctionalTestCase;
+import org.mule.module.http.functional.AbstractHttpOsgiFunctionalTestCase;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.util.ClassUtils;
 import org.mule.util.FileUtils;
@@ -33,11 +33,12 @@ import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
-
-public class HttpRequesterTlsRestrictedProtocolsAndCiphersTestCase extends FunctionalTestCase
+@Ignore("OSGi - local/tls-default.conf")
+public class HttpRequesterTlsRestrictedProtocolsAndCiphersTestCase extends AbstractHttpOsgiFunctionalTestCase
 {
 
     private static final String CLIENT_CIPHER_SUITE_ENABLED = "TLS_DHE_DSS_WITH_AES_128_CBC_SHA256";

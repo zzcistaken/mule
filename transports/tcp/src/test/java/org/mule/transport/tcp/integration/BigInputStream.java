@@ -44,7 +44,7 @@ public class BigInputStream extends InputStream
     }
 
     /**
-     * @return String matching {@link FunctionalStreamingTestComponent}
+     * @return String matching {@link org.mule.functional.functional.FunctionalStreamingTestComponent}
      */
     public String summary()
     {

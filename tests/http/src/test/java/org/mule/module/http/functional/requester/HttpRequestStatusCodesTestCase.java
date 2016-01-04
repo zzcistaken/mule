@@ -23,7 +23,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.server.Request;
 import org.junit.Test;
 
-
 public class HttpRequestStatusCodesTestCase extends AbstractHttpRequestTestCase
 {
 

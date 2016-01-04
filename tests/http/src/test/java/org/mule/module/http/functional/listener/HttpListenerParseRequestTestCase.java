@@ -8,9 +8,8 @@ package org.mule.module.http.functional.listener;
 
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertThat;
-
 import org.mule.api.MuleMessage;
-import org.mule.functional.junit4.FunctionalTestCase;
+import org.mule.module.http.functional.AbstractHttpOsgiFunctionalTestCase;
 import org.mule.tck.junit4.rule.DynamicPort;
 
 import java.io.IOException;
@@ -22,7 +21,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.junit.Rule;
 import org.junit.Test;
 
-public class HttpListenerParseRequestTestCase extends FunctionalTestCase
+public class HttpListenerParseRequestTestCase extends AbstractHttpOsgiFunctionalTestCase
 {
 
     @Rule

@@ -8,7 +8,7 @@ package org.mule.functional.listener;
 
 /**
  * Callback represents an operation to be executed upon notification receive by a test listener such as
- * {@link org.mule.functional.listener.ExceptionListener} or {@link org.mule.functional.listener.FlowExecutionListener}
+ * {@link ExceptionListener} or {@link FlowExecutionListener}
  *
  * @param <T> the type of the source object provided by the listened notification.
  */

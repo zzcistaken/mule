@@ -14,8 +14,8 @@ import static org.junit.Assert.fail;
 import static org.mule.module.http.api.HttpConstants.HttpStatus.OK;
 import static org.mule.module.http.internal.listener.DefaultHttpListenerConfig.DEFAULT_MAX_THREADS;
 import org.mule.api.MuleEventContext;
+import org.mule.module.http.functional.AbstractHttpOsgiFunctionalTestCase;
 import org.mule.functional.functional.EventCallback;
-import org.mule.functional.junit4.FunctionalTestCase;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.util.concurrent.Latch;
@@ -39,7 +39,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-public class HttpListenerWorkerThreadingProfileTestCase extends FunctionalTestCase
+public class HttpListenerWorkerThreadingProfileTestCase extends AbstractHttpOsgiFunctionalTestCase
 {
 
     private static final int CUSTOM_MAX_THREADS_ACTIVE = 3;

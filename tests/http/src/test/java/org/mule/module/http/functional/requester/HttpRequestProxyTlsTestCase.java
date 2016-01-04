@@ -15,7 +15,7 @@ import org.mule.api.MuleEvent;
 import org.mule.api.MuleEventContext;
 import org.mule.construct.Flow;
 import org.mule.functional.functional.EventCallback;
-import org.mule.functional.junit4.FunctionalTestCase;
+import org.mule.module.http.functional.AbstractHttpOsgiFunctionalTestCase;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.util.IOUtils;
@@ -29,14 +29,16 @@ import java.net.Socket;
 import java.util.Arrays;
 import java.util.Collection;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.ops4j.pax.exam.junit.PaxExamParameterized;
 
-
-@RunWith(Parameterized.class)
-public class HttpRequestProxyTlsTestCase extends FunctionalTestCase
+@RunWith(PaxExamParameterized.class)
+@Ignore("OSGi - PaxExamParameterized needs static configuration")
+public class HttpRequestProxyTlsTestCase extends AbstractHttpOsgiFunctionalTestCase
 {
 
     private static final String PROXY_RESPONSE = "HTTP/1.1 200 Connection established\r\n\r\n";

@@ -6,7 +6,7 @@
  */
 package org.mule.module.http.functional;
 
-import org.mule.functional.junit4.FunctionalTestCase;
+import org.mule.tck.junit4.AbstractMuleContextTestCase;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.util.IOUtils;
 import org.mule.util.concurrent.Latch;
@@ -27,7 +27,7 @@ import org.junit.Rule;
  * Abstract class for tests that require a mock HTTP server that handles the "Expect" header. Provides methods
  * for starting mock servers that accept or reject the incoming request.
  */
-public abstract class AbstractHttpExpectHeaderServerTestCase extends FunctionalTestCase
+public abstract class AbstractHttpExpectHeaderServerTestCase extends AbstractHttpOsgiFunctionalTestCase
 {
 
     private static final String CONTINUE_RESPONSE = "HTTP/1.1 100 Continue\r\n\r\n";
@@ -136,11 +136,11 @@ public abstract class AbstractHttpExpectHeaderServerTestCase extends FunctionalT
             writer.write(CONTINUE_RESPONSE);
             writer.flush();
 
-            char[] body = new char[TEST_MESSAGE.length()];
+            char[] body = new char[AbstractMuleContextTestCase.TEST_MESSAGE.length()];
             IOUtils.read(reader, body);
             requestBody = new String(body);
 
-            String response = String.format("HTTP/1.1 200 OK\nContent-Length: %d\n\n%s", TEST_MESSAGE.length(), TEST_MESSAGE);
+            String response = String.format("HTTP/1.1 200 OK\nContent-Length: %d\n\n%s", AbstractMuleContextTestCase.TEST_MESSAGE.length(), AbstractMuleContextTestCase.TEST_MESSAGE);
 
             writer.write(response);
             writer.flush();

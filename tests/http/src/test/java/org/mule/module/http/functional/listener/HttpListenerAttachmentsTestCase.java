@@ -26,7 +26,7 @@ import org.mule.module.http.api.HttpHeaders;
 import org.mule.module.http.internal.HttpParser;
 import org.mule.module.http.internal.multipart.HttpPart;
 import org.mule.module.http.internal.multipart.HttpPartDataSource;
-import org.mule.functional.junit4.FunctionalTestCase;
+import org.mule.module.http.functional.AbstractHttpOsgiFunctionalTestCase;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.transport.NullPayload;
@@ -56,7 +56,7 @@ import org.hamcrest.core.IsNull;
 import org.junit.Rule;
 import org.junit.Test;
 
-public class HttpListenerAttachmentsTestCase extends FunctionalTestCase
+public class HttpListenerAttachmentsTestCase extends AbstractHttpOsgiFunctionalTestCase
 {
 
     private static final String TEXT_BODY_FIELD_NAME = "field1";

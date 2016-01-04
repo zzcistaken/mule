@@ -15,7 +15,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mule.api.transport.PropertyScope.INBOUND;
 import static org.mule.module.http.api.HttpConstants.Protocols.HTTP;
 import static org.mule.module.http.api.HttpConstants.Protocols.HTTPS;
-
 import org.mule.api.MuleEvent;
 import org.mule.construct.Flow;
 import org.mule.module.http.api.requester.HttpRequesterConfig;
@@ -30,6 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.server.Request;
 import org.hamcrest.CoreMatchers;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -96,6 +96,7 @@ public class HttpRequestFunctionalTestCase extends AbstractHttpRequestTestCase
     public DynamicPort blockingHttpPort = new DynamicPort("blockingHttpPort");
 
     @Test
+    @Ignore("OSGi - Requires XML module")
     public void blockingResponseBodyIsMappedToPayload() throws Exception
     {
         MuleEvent event = runFlow("blockingRequestFlow", TEST_MESSAGE);

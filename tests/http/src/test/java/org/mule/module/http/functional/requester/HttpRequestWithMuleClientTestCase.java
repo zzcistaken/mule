@@ -25,7 +25,7 @@ import org.mule.module.http.api.HttpHeaders;
 import org.mule.module.http.api.client.HttpRequestOptions;
 import org.mule.module.http.api.requester.HttpRequesterConfig;
 import org.mule.module.http.api.requester.HttpRequesterConfigBuilder;
-import org.mule.functional.junit4.FunctionalTestCase;
+import org.mule.module.http.functional.AbstractHttpOsgiFunctionalTestCase;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.transport.NullPayload;
 import org.mule.transport.ssl.api.TlsContextFactory;
@@ -41,7 +41,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-public class HttpRequestWithMuleClientTestCase extends FunctionalTestCase
+public class HttpRequestWithMuleClientTestCase extends AbstractHttpOsgiFunctionalTestCase
 {
 
     public static final String PUT_HTTP_METHOD = "PUT";

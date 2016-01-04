@@ -36,9 +36,9 @@ import org.apache.commons.logging.LogFactory;
  * functional tests. This service accepts an EventCallback that can be used to
  * assert the state of the current event.
  * <p/>
- * Also, this service fires {@link FunctionalTestNotification} via Mule for every message received.
+ * Also, this service fires {@link org.mule.functional.functional.FunctionalTestNotification} via Mule for every message received.
  * Tests can register with Mule to receive these events by implementing
- * {@link FunctionalTestNotificationListener}.
+ * {@link org.mule.functional.functional.FunctionalTestNotificationListener}.
  *
  * @see EventCallback
  * @see FunctionalTestNotification
@@ -316,8 +316,8 @@ public class FunctionalTestComponent implements Callable, Initialisable, Disposa
      * Note that the FunctionalTestComponent should be made a singleton
      * when using MuleEvent callbacks
      * <p/>
-     * Another option is to register a {@link FunctionalTestNotificationListener} with Mule and this
-     * will deleiver a {@link FunctionalTestNotification} for every message received by this service
+     * Another option is to register a {@link org.mule.functional.functional.FunctionalTestNotificationListener} with Mule and this
+     * will deleiver a {@link org.mule.functional.functional.FunctionalTestNotification} for every message received by this service
      *
      * @return the callback to call when a message is received
      * @see FunctionalTestNotification
@@ -335,8 +335,8 @@ public class FunctionalTestComponent implements Callable, Initialisable, Disposa
      * Note that the FunctionalTestComponent should be made a singleton
      * when using MuleEvent callbacks
      * <p/>
-     * Another option is to register a {@link FunctionalTestNotificationListener} with Mule and this
-     * will deleiver a {@link FunctionalTestNotification} for every message received by this service
+     * Another option is to register a {@link org.mule.functional.functional.FunctionalTestNotificationListener} with Mule and this
+     * will deleiver a {@link org.mule.functional.functional.FunctionalTestNotification} for every message received by this service
      *
      * @param eventCallback the callback to call when a message is received
      * @see FunctionalTestNotification

@@ -7,10 +7,10 @@
 package org.mule.module.http.functional.listener;
 
 import static org.apache.commons.lang.StringUtils.EMPTY;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.module.http.api.HttpConstants.HttpStatus.OK;
-import org.mule.functional.junit4.FunctionalTestCase;
+import org.mule.module.http.functional.AbstractHttpOsgiFunctionalTestCase;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.util.IOUtils;
 
@@ -19,7 +19,7 @@ import org.apache.http.client.fluent.Request;
 import org.junit.Rule;
 import org.junit.Test;
 
-public class HttpListenerHeadersTestCase extends FunctionalTestCase
+public class HttpListenerHeadersTestCase extends AbstractHttpOsgiFunctionalTestCase
 {
     @Rule
     public DynamicPort listenPort = new DynamicPort("port");

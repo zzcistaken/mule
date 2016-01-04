@@ -8,7 +8,7 @@ package org.mule.module.http.functional.listener;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
-import org.mule.functional.junit4.FunctionalTestCase;
+import org.mule.module.http.functional.AbstractHttpOsgiFunctionalTestCase;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.util.IOUtils;
 
@@ -20,7 +20,7 @@ import org.apache.http.entity.StringEntity;
 import org.junit.Rule;
 import org.junit.Test;
 
-public class HttpListenerExpressionFilterTestCase extends FunctionalTestCase
+public class HttpListenerExpressionFilterTestCase extends AbstractHttpOsgiFunctionalTestCase
 {
 
     @Rule

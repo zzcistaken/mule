@@ -6,6 +6,25 @@
  */
 package org.mule.module.http.functional.requester;
 
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assume.assumeThat;
+import org.mule.api.MessagingException;
+import org.mule.api.MuleEvent;
+import org.mule.api.security.tls.TlsConfiguration;
+import org.mule.construct.Flow;
+import org.mule.module.http.functional.AbstractHttpOsgiFunctionalTestCase;
+import org.mule.tck.junit4.rule.DynamicPort;
+import org.mule.util.ClassUtils;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.InetAddress;
+import java.net.URL;
+import java.util.concurrent.atomic.AtomicReference;
+
 import org.apache.commons.lang.StringUtils;
 import org.glassfish.grizzly.Connection;
 import org.glassfish.grizzly.Grizzly;
@@ -20,28 +39,16 @@ import org.glassfish.grizzly.sni.SNIServerConfigResolver;
 import org.glassfish.grizzly.ssl.SSLBaseFilter;
 import org.glassfish.grizzly.ssl.SSLContextConfigurator;
 import org.glassfish.grizzly.ssl.SSLEngineConfigurator;
-import org.junit.*;
-import org.mule.api.MessagingException;
-import org.mule.api.MuleEvent;
-import org.mule.api.security.tls.TlsConfiguration;
-import org.mule.construct.Flow;
-import org.mule.functional.junit4.FunctionalTestCase;
-import org.mule.tck.junit4.rule.DynamicPort;
-import org.mule.util.ClassUtils;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
+import org.junit.Rule;
+import org.junit.Test;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.net.InetAddress;
-import java.net.URL;
-import java.util.concurrent.atomic.AtomicReference;
-
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assume.assumeThat;
-
-public class HttpsRequesterSniTestCase extends FunctionalTestCase
+@Ignore("OSGi - local/tls-default.conf")
+public class HttpsRequesterSniTestCase extends AbstractHttpOsgiFunctionalTestCase
 {
     private static final String FQDN = "localhost.localdomain";
 

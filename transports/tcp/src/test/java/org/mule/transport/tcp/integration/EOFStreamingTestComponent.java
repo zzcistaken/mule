@@ -6,7 +6,6 @@
  */
 package org.mule.transport.tcp.integration;
 
-import org.mule.functional.functional.EventCallback;
 import org.mule.functional.functional.FunctionalStreamingTestComponent;
 
 import java.io.IOException;
@@ -18,7 +17,7 @@ import java.net.SocketTimeoutException;
  * Extends the FunctionalStreamingTestComponent to wait for data in a non
  * blocking fashion for the StreamingProtocol.
  *
- * @see EventCallback
+ * @see org.mule.functional.functional.EventCallback
  */
 public class EOFStreamingTestComponent extends FunctionalStreamingTestComponent
 {

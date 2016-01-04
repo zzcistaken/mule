@@ -13,20 +13,23 @@ import static org.mule.module.http.api.HttpConstants.HttpStatus.OK;
 import static org.mule.module.http.api.HttpConstants.ResponseProperties.HTTP_STATUS_PROPERTY;
 import org.mule.api.MuleEvent;
 import org.mule.construct.Flow;
-import org.mule.functional.junit4.FunctionalTestCase;
+import org.mule.module.http.functional.AbstractHttpOsgiFunctionalTestCase;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
 
 import java.util.Arrays;
 import java.util.Collection;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.ops4j.pax.exam.junit.PaxExamParameterized;
 
-@RunWith(Parameterized.class)
-public class HttpListenerMethodRoutingTestCase extends FunctionalTestCase
+@RunWith(PaxExamParameterized.class)
+@Ignore("OSGi - PaxExamParameterized needs static configuration")
+public class HttpListenerMethodRoutingTestCase extends AbstractHttpOsgiFunctionalTestCase
 {
 
     @Rule

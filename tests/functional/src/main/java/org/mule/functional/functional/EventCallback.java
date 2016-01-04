@@ -14,7 +14,7 @@ import org.mule.api.MuleEventContext;
  * on the message payload, headers or attachments or to make changes required
  * for the test.
  *
- * @see FunctionalTestComponent
+ * @see org.mule.functional.functional.FunctionalTestComponent
  */
 
 public interface EventCallback

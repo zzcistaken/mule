@@ -10,7 +10,7 @@
     <groupId>org.mule.modules</groupId>
     <artifactId>mule-module-extensions-support</artifactId>
     <name>Mule Extensions Support</name>
-    <packaging>jar</packaging>
+    <packaging>bundle</packaging>
     <description>
         Default implementation of the Mule Extension API.
     </description>
@@ -34,11 +34,16 @@
             <artifactId>mule-core</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.mule.osgi</groupId>
+            <artifactId>mule-osgi-support</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <!--Other Dependencies-->
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-core</artifactId>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.spring-core</artifactId>
             <scope>provided</scope>
         </dependency>
         <!--Test Dependencies-->
@@ -91,6 +96,19 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>2.5.3</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Export-Package>org.mule.module.extension.*</Export-Package>
+                        <Import-Package>*</Import-Package>
+                    </instructions>
+                </configuration>
             </plugin>
         </plugins>
     </build>

@@ -16,10 +16,9 @@ import static org.mule.module.http.api.HttpConstants.ResponseProperties.HTTP_STA
 import static org.mule.module.http.api.client.HttpRequestOptionsBuilder.newOptions;
 import static org.mule.module.http.internal.HttpParser.appendQueryParam;
 import static org.mule.module.http.internal.listener.grizzly.GrizzlyServerManager.MAXIMUM_HEADER_SECTION_SIZE_PROPERTY_KEY;
-
 import org.mule.api.MuleException;
 import org.mule.api.MuleMessage;
-import org.mule.functional.junit4.FunctionalTestCase;
+import org.mule.module.http.functional.AbstractHttpOsgiFunctionalTestCase;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
 
@@ -27,7 +26,7 @@ import org.apache.commons.lang.RandomStringUtils;
 import org.junit.Rule;
 import org.junit.Test;
 
-public class HttpListenerHeaderSizeTestCase extends FunctionalTestCase
+public class HttpListenerHeaderSizeTestCase extends AbstractHttpOsgiFunctionalTestCase
 {
 
     private static final int SIZE_DELTA = 1000;

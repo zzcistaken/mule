@@ -6,7 +6,6 @@
  */
 package org.mule.test.usecases.routing.response;
 
-import static java.lang.String.format;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -46,7 +45,7 @@ public class ResponseAggregatorTestCase extends FunctionalTestCase
     {
         MuleClient client = muleContext.getClient();
         final HttpRequestOptions httpRequestOptions = newOptions().method(POST.name()).build();
-        MuleMessage message = client.send(format("http://localhost:%s", port.getNumber()), getTestMuleMessage("request"), httpRequestOptions);
+        MuleMessage message = client.send("http://localhost:28081", getTestMuleMessage("request"), httpRequestOptions);
         assertNotNull(message);
         assertEquals("Received: request", new String(getPayloadAsBytes(message)));
     }

@@ -72,7 +72,7 @@ public class AutoConfigurationBuilder extends AbstractResourceConfigurationBuild
         try
         {
             Properties props = new Properties();
-            props.load(ClassUtils.getResource("configuration-builders.properties", this.getClass()).openStream());
+            props.load(ClassUtils.getResource("configuration-builders.properties", this.getClass().getClassLoader()).openStream());
 
             for (Map.Entry<String, List<ConfigResource>> e : configsMap.entrySet())
             {

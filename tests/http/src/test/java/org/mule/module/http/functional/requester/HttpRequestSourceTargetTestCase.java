@@ -18,7 +18,6 @@ import java.io.InputStream;
 
 import org.junit.Test;
 
-
 public class HttpRequestSourceTargetTestCase extends AbstractHttpRequestTestCase
 {
     @Override

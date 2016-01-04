@@ -14,9 +14,9 @@ import org.mule.functional.functional.AssertionMessageProcessor;
 import org.mule.functional.functional.InvocationCountMessageProcessor;
 import org.mule.functional.functional.ResponseAssertionMessageProcessor;
 import org.mule.functional.functional.TestNonBlockingProcessor;
-import org.mule.tck.testmodels.mule.TestConnector;
 import org.mule.functional.testmodels.services.TestServiceComponent;
 import org.mule.functional.transformer.NoActionTransformer;
+import org.mule.tck.testmodels.mule.TestConnector;
 
 public class TestNamespaceHandler extends AbstractMuleNamespaceHandler
 {

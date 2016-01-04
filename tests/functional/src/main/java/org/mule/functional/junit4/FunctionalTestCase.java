@@ -16,6 +16,7 @@ import org.mule.api.MuleException;
 import org.mule.api.component.Component;
 import org.mule.api.component.JavaComponent;
 import org.mule.api.config.ConfigurationBuilder;
+import org.mule.api.config.ConfigurationException;
 import org.mule.api.construct.FlowConstruct;
 import org.mule.api.processor.MessageProcessor;
 import org.mule.api.registry.RegistrationException;
@@ -42,6 +43,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 
 /**
  * A base test case for tests that initialize Mule using a configuration file. The
@@ -76,7 +78,7 @@ public abstract class FunctionalTestCase extends AbstractMuleContextTestCase
         String configResources = getConfigResources();
         if (configResources != null)
         {
-            return new SpringXmlConfigurationBuilder(configResources);
+            return createConfigurationBuilder(configResources);
         }
         configResources = getConfigFile();
         if (configResources != null)
@@ -85,10 +87,19 @@ public abstract class FunctionalTestCase extends AbstractMuleContextTestCase
             {
                 throw new RuntimeException("Do not use this method when the config is composed of several files. Use getConfigFiles method instead.");
             }
-            return new SpringXmlConfigurationBuilder(configResources);
+            return createConfigurationBuilder(configResources);
         }
-        String[] multipleConfigResources = getConfigFiles();
-        return new SpringXmlConfigurationBuilder(multipleConfigResources);
+        return createConfigurationBuilder(getConfigFiles());
+    }
+
+    protected SpringXmlConfigurationBuilder createConfigurationBuilder(String configResources) throws ConfigurationException
+    {
+        return new SpringXmlConfigurationBuilder(configResources, null);
+    }
+
+    protected ConfigurationBuilder createConfigurationBuilder(String[] multipleConfigResources) throws ConfigurationException
+    {
+        return new SpringXmlConfigurationBuilder(multipleConfigResources, null);
     }
 
     /**
@@ -162,7 +173,7 @@ public abstract class FunctionalTestCase extends AbstractMuleContextTestCase
      * @param serviceName service name as declared in the config
      * @return test component
      * @since 2.2
-     * @see FunctionalTestComponent
+     * @see org.mule.functional.functional.FunctionalTestComponent
      */
     protected FunctionalTestComponent getFunctionalTestComponent(String serviceName) throws Exception
     {
@@ -218,7 +229,7 @@ public abstract class FunctionalTestCase extends AbstractMuleContextTestCase
     /**
      * Looks up the given flow in the registry and processes it with the given event.
      * A flow asserting is then executed by calling {@link
-     * FlowAssert.verify(String)}
+     * org.mule.functional.functional.FlowAssert.verify(String)}
      * 
      * @param flowName the name of the flow to be executed
      * @param event the event ot execute with
@@ -447,5 +458,4 @@ public abstract class FunctionalTestCase extends AbstractMuleContextTestCase
             scheduler.schedule();
         }
     }
-
 }

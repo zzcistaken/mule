@@ -29,9 +29,9 @@ public abstract class AbstractConfigurationBuilder implements ConfigurationBuild
 
     /**
      * Will configure a MuleContext object based on the builders configuration settings.
-     * This method will delegate the actual processing to {@link #doConfigure(org.mule.api.MuleContext)}
+     * This method will delegate the actual processing to {@link #doConfigure(MuleContext)}
      *
-     * @param muleContext The current {@link org.mule.api.MuleContext}
+     * @param muleContext The current {@link MuleContext}
      * @throws ConfigurationException if the configuration fails i.e. an object cannot be created or
      * initialised properly
      */
@@ -55,7 +55,7 @@ public abstract class AbstractConfigurationBuilder implements ConfigurationBuild
      * {@link org.mule.api.config.ConfigurationBuilder} implementation as bean properties before this method
      * has been called.
      *
-     * @param muleContext The current {@link org.mule.api.MuleContext}
+     * @param muleContext The current {@link MuleContext}
      * @throws ConfigurationException if the configuration fails i.e. an object cannot be created or
      * initialised properly
      */
@@ -86,7 +86,7 @@ public abstract class AbstractConfigurationBuilder implements ConfigurationBuild
 
     /**
      * Has this builder been configured already
-     * @return true if the {@link #configure(org.mule.api.MuleContext)} method has been called
+     * @return true if the {@link ConfigurationBuilder#configure(MuleContext)} method has been called
      */
     @Override
     public boolean isConfigured()

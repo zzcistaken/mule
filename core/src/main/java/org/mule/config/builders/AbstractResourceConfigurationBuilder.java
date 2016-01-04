@@ -24,6 +24,8 @@ import java.io.IOException;
  */
 public abstract class AbstractResourceConfigurationBuilder extends AbstractConfigurationBuilder
 {
+
+    private final ClassLoader classLoader;
     protected ConfigResource[] configResources;
 
     /**
@@ -33,6 +35,19 @@ public abstract class AbstractResourceConfigurationBuilder extends AbstractConfi
      */
     public AbstractResourceConfigurationBuilder(String configResources) throws ConfigurationException
     {
+        this.configResources = loadConfigResources(StringUtils.splitAndTrim(configResources, ",; "));
+        classLoader = this.getClass().getClassLoader();
+    }
+
+    /**
+     * @param configResources a comma separated list of configuration files to load,
+     *            this should be accessible on the classpath or filesystem
+     * @param classLoader
+     * @throws org.mule.api.config.ConfigurationException usually if the config resources cannot be loaded
+     */
+    public AbstractResourceConfigurationBuilder(String configResources, ClassLoader classLoader) throws ConfigurationException
+    {
+        this.classLoader = classLoader;
         this.configResources = loadConfigResources(StringUtils.splitAndTrim(configResources, ",; "));
     }
 
@@ -44,6 +59,7 @@ public abstract class AbstractResourceConfigurationBuilder extends AbstractConfi
     public AbstractResourceConfigurationBuilder(String[] configResources) throws ConfigurationException
     {
         this.configResources = loadConfigResources(configResources);
+        this.classLoader = this.getClass().getClassLoader();
     }
 
     /**
@@ -52,6 +68,7 @@ public abstract class AbstractResourceConfigurationBuilder extends AbstractConfi
     public AbstractResourceConfigurationBuilder(ConfigResource[] configResources)
     {
         this.configResources = configResources;
+        this.classLoader = this.getClass().getClassLoader();
     }
 
     /**
@@ -78,7 +95,7 @@ public abstract class AbstractResourceConfigurationBuilder extends AbstractConfi
             configResources = new ConfigResource[configs.length];
             for (int i = 0; i < configs.length; i++)
             {
-                configResources[i] = new ConfigResource(configs[i]);
+                configResources[i] = new ConfigResource(configs[i], classLoader);
             }
             return configResources;
         }

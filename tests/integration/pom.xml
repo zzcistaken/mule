@@ -230,12 +230,12 @@
 		</dependency>
 		<!-- needed for org.springframework.beans.factory.FactoryBean interface -->
 		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-beans</artifactId>
+			<groupId>org.apache.servicemix.bundles</groupId>
+			<artifactId>org.apache.servicemix.bundles.spring-beans</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-aop</artifactId>
+			<groupId>org.apache.servicemix.bundles</groupId>
+			<artifactId>org.apache.servicemix.bundles.spring-aop</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>

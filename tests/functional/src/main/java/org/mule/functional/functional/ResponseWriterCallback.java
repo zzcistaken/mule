@@ -15,7 +15,7 @@ import org.mule.api.MuleEventContext;
  * you will get duplicate messages, since both this class and the {@link FunctionalTestComponent} will write
  * a return message back to the callee.
  *
- * @see FunctionalTestComponent
+ * @see org.mule.functional.functional.FunctionalTestComponent
  */
 public class ResponseWriterCallback extends CounterCallback
 {

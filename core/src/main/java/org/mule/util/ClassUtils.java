@@ -51,6 +51,8 @@ import java.util.Set;
 // @ThreadSafe
 public class ClassUtils extends org.apache.commons.lang.ClassUtils
 {
+    public static final boolean SHOW_CLASSLOADING_EVENTS = isShowClassLoadingEvents();
+
     public static final Object[] NO_ARGS = new Object[]{};
     public static final Class<?>[] NO_ARGS_TYPE = new Class<?>[]{};
 
@@ -118,18 +120,26 @@ public class ClassUtils extends org.apache.commons.lang.ClassUtils
      * </ul>
      *
      * @param resourceName The name of the resource to load
-     * @param callingClass The Class object of the calling object
+     * @param classLoader The classlaoder to use to load the resource
      *
      * @return A URL pointing to the resource to load or null if the resource is not found
      */
-    public static URL getResource(final String resourceName, final Class<?> callingClass)
+    public static URL getResource(final String resourceName, final ClassLoader classLoader)
     {
         URL url = AccessController.doPrivileged(new PrivilegedAction<URL>()
         {
             public URL run()
             {
                 final ClassLoader cl = Thread.currentThread().getContextClassLoader();
-                return cl != null ? cl.getResource(resourceName) : null;
+                if (cl != null)
+                {
+                    logClassLoadingEvent("OSGi loading resource: " + resourceName + " classloader:" + cl);
+                    return cl.getResource(resourceName);
+                }
+                else
+                {
+                    return null;
+                }
             }
         });
 
@@ -139,7 +149,9 @@ public class ClassUtils extends org.apache.commons.lang.ClassUtils
             {
                 public URL run()
                 {
-                    return ClassUtils.class.getClassLoader().getResource(resourceName);
+                    ClassLoader classLoader = ClassUtils.class.getClassLoader();
+                    logClassLoadingEvent("OSGi loading resource: " + resourceName + " classloader:" + classLoader);
+                    return classLoader.getResource(resourceName);
                 }
             });
         }
@@ -150,7 +162,9 @@ public class ClassUtils extends org.apache.commons.lang.ClassUtils
             {
                 public URL run()
                 {
-                    return callingClass.getClassLoader().getResource(resourceName);
+                    //ClassLoader classLoader = callingClass.getClassLoader();
+                    logClassLoadingEvent("OSGi loading resource: " + resourceName + " classloader:" + classLoader);
+                    return classLoader.getResource(resourceName);
                 }
             });
         }
@@ -167,7 +181,15 @@ public class ClassUtils extends org.apache.commons.lang.ClassUtils
                 try
                 {
                     final ClassLoader cl = Thread.currentThread().getContextClassLoader();
-                    return cl != null ? cl.getResources(resourceName) : null;
+                    if (cl != null)
+                    {
+                        logClassLoadingEvent("OSGi loading resources: " + resourceName + " classloader:" + cl);
+                        return cl.getResources(resourceName);
+                    }
+                    else
+                    {
+                        return null;
+                    }
                 }
                 catch (IOException e)
                 {
@@ -184,7 +206,9 @@ public class ClassUtils extends org.apache.commons.lang.ClassUtils
                 {
                     try
                     {
-                        return ClassUtils.class.getClassLoader().getResources(resourceName);
+                        ClassLoader classLoader = ClassUtils.class.getClassLoader();
+                        logClassLoadingEvent("OSGi loading resources: " + resourceName + " classloader:" + classLoader);
+                        return classLoader.getResources(resourceName);
                     }
                     catch (IOException e)
                     {
@@ -202,7 +226,9 @@ public class ClassUtils extends org.apache.commons.lang.ClassUtils
                 {
                     try
                     {
-                        return callingClass.getClassLoader().getResources(resourceName);
+                        ClassLoader classLoader = callingClass.getClassLoader();
+                        logClassLoadingEvent("OSGi loading resources: " + resourceName + " classloader:" + classLoader + " callingClass: " + callingClass);
+                        return classLoader.getResources(resourceName);
                     }
                     catch (IOException e)
                     {
@@ -265,75 +291,21 @@ public class ClassUtils extends org.apache.commons.lang.ClassUtils
             }
         }
 
-        Class<?> clazz = AccessController.doPrivileged(new PrivilegedAction<Class<?>>()
-        {
-            public Class<?> run()
-            {
-                try
-                {
-                    final ClassLoader cl = Thread.currentThread().getContextClassLoader();
-                    return cl != null ? cl.loadClass(className) : null;
-
-                }
-                catch (ClassNotFoundException e)
-                {
-                    return null;
-                }
-            }
-        });
+        Class<?> clazz = loadClassFromThreadContextClassLoader(className);
 
         if (clazz == null)
         {
-            clazz = AccessController.doPrivileged(new PrivilegedAction<Class<?>>()
-            {
-                public Class<?> run()
-                {
-                    try
-                    {
-                        return Class.forName(className);
-                    }
-                    catch (ClassNotFoundException e)
-                    {
-                        return null;
-                    }
-                }
-            });
+            clazz = loadClassFromBaseClassLoader(className);
         }
 
         if (clazz == null)
         {
-            clazz = AccessController.doPrivileged(new PrivilegedAction<Class<?>>()
-            {
-                public Class<?> run()
-                {
-                    try
-                    {
-                        return ClassUtils.class.getClassLoader().loadClass(className);
-                    }
-                    catch (ClassNotFoundException e)
-                    {
-                        return null;
-                    }
-                }
-            });
+            clazz = loadClassFromCallingCoreClassLoader(className);
         }
 
         if (clazz == null)
         {
-            clazz = AccessController.doPrivileged(new PrivilegedAction<Class<?>>()
-            {
-                public Class<?> run()
-                {
-                    try
-                    {
-                        return callingClass.getClassLoader().loadClass(className);
-                    }
-                    catch (ClassNotFoundException e)
-                    {
-                        return null;
-                    }
-                }
-            });
+            clazz = loadClassFromCallingClassClassLoader(className, callingClass);
         }
 
         if (clazz == null)
@@ -349,6 +321,77 @@ public class ClassUtils extends org.apache.commons.lang.ClassUtils
         {
             throw new IllegalArgumentException(String.format("Loaded class '%s' is not assignable from type '%s'", clazz.getName(), type.getName()));
         }
+    }
+
+    private static Class<?> loadClassFromCallingClassClassLoader(final String className, final Class<?> callingClass)
+    {
+        return AccessController.doPrivileged((PrivilegedAction<Class<?>>) () -> {
+            try
+            {
+                ClassLoader classLoader = callingClass.getClassLoader();
+                logClassLoadingEvent("OSGi loading class from calling class's classloader: " + className+ " classloader:" + classLoader + " callingClass: " + callingClass);
+                return classLoader.loadClass(className);
+            }
+            catch (ClassNotFoundException e)
+            {
+                return null;
+            }
+        });
+    }
+
+    private static Class<?> loadClassFromCallingCoreClassLoader(final String className)
+    {
+        return AccessController.doPrivileged((PrivilegedAction<Class<?>>) () -> {
+            try
+            {
+                ClassLoader classLoader = ClassUtils.class.getClassLoader();
+                logClassLoadingEvent("OSGi loading class from core classLoader: " + className+ " classloader:" + classLoader);
+                return classLoader.loadClass(className);
+            }
+            catch (ClassNotFoundException e)
+            {
+                return null;
+            }
+        });
+    }
+
+    private static Class<?> loadClassFromBaseClassLoader(final String className)
+    {
+        return AccessController.doPrivileged((PrivilegedAction<Class<?>>) () -> {
+            try
+            {
+                logClassLoadingEvent("OSGi loading class from base classloader: " + className+ " classloader:" + Class.class.getClassLoader());
+                return Class.forName(className);
+            }
+            catch (ClassNotFoundException e)
+            {
+                return null;
+            }
+        });
+    }
+
+    private static Class<?> loadClassFromThreadContextClassLoader(final String className)
+    {
+        return AccessController.doPrivileged((PrivilegedAction<Class<?>>) () -> {
+            try
+            {
+                final ClassLoader cl = Thread.currentThread().getContextClassLoader();
+                if (cl != null)
+                {
+                    logClassLoadingEvent("OSGi loading class from context classloader: " + className+ " classloader:" + cl);
+                    return cl.loadClass(className);
+                }
+                else
+                {
+                    return null;
+                }
+
+            }
+            catch (ClassNotFoundException e)
+            {
+                return null;
+            }
+        });
     }
 
     /**
@@ -440,7 +483,10 @@ public class ClassUtils extends org.apache.commons.lang.ClassUtils
     {
         try
         {
-            return getClass(clazz.getName(), true);
+            ClassLoader classLoader = clazz.getClassLoader();
+            logClassLoadingEvent("OSGi instantiating class: " + clazz.getName() + " classloader:" + classLoader);
+
+            return getClass(classLoader, clazz.getName(), true);
         }
         catch (ClassNotFoundException e)
         {
@@ -510,6 +556,7 @@ public class ClassUtils extends org.apache.commons.lang.ClassUtils
             throws ClassNotFoundException, SecurityException, NoSuchMethodException, IllegalArgumentException,
                    InstantiationException, IllegalAccessException, InvocationTargetException
     {
+        //TODO(pablo.kraan): OSGi -  maybe this method should be removed
         Class<?> clazz = loadClass(name, callingClass);
         return instanciateClass(clazz, constructorArgs);
     }
@@ -1062,7 +1109,7 @@ public class ClassUtils extends org.apache.commons.lang.ClassUtils
         // object,
         // as this method is usually protected in those classloaders
         Class refClass = URLClassLoader.class;
-        Method methodAddUrl = refClass.getDeclaredMethod("addURL", new Class[]{URL.class});
+        Method methodAddUrl = refClass.getDeclaredMethod("addURL", new Class[] {URL.class});
         methodAddUrl.setAccessible(true);
         for (Iterator it = urls.iterator(); it.hasNext();)
         {
@@ -1188,6 +1235,21 @@ public class ClassUtils extends org.apache.commons.lang.ClassUtils
         return Primitives.isWrapperType(type);
     }
 
+
+    private static void logClassLoadingEvent(String message)
+    {
+        if (SHOW_CLASSLOADING_EVENTS)
+        {
+            System.out.println(message);
+        }
+    }
+
+    private static boolean isShowClassLoadingEvents()
+    {
+        String value = System.getProperty("mule.core.showClassLoadingEvents", "false");
+
+        return Boolean.valueOf(value);
+    }
     /**
      * Determines if the payload of this message is consumable i.e. it can't be read
      * more than once.

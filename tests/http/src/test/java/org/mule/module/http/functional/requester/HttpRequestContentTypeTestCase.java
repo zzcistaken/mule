@@ -14,13 +14,13 @@ import static org.hamcrest.Matchers.hasItem;
 import org.mule.api.MuleMessage;
 import org.mule.api.client.LocalMuleClient;
 import org.mule.api.config.MuleProperties;
-import org.mule.functional.junit4.FunctionalTestCase;
+import org.mule.module.http.functional.AbstractHttpOsgiFunctionalTestCase;
 import org.mule.tck.junit4.rule.DynamicPort;
 
 import org.junit.Rule;
 import org.junit.Test;
 
-public class HttpRequestContentTypeTestCase extends FunctionalTestCase
+public class HttpRequestContentTypeTestCase extends AbstractHttpOsgiFunctionalTestCase
 {
 
     private static final String EXPECTED_CONTENT_TYPE = "application/json; charset=UTF-8";

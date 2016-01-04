@@ -13,8 +13,7 @@ import static org.junit.Assert.assertThat;
 import static org.mule.module.http.api.HttpHeaders.Names.CONTENT_LENGTH;
 import static org.mule.module.http.api.HttpHeaders.Names.TRANSFER_ENCODING;
 import static org.mule.module.http.api.HttpHeaders.Values.CHUNKED;
-
-import org.mule.functional.junit4.FunctionalTestCase;
+import org.mule.module.http.functional.AbstractHttpOsgiFunctionalTestCase;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.util.IOUtils;
 
@@ -28,7 +27,7 @@ import org.apache.http.client.fluent.Request;
 import org.apache.http.client.fluent.Response;
 import org.junit.Rule;
 
-public abstract class HttpListenerResponseStreamingTestCase extends FunctionalTestCase
+public abstract class HttpListenerResponseStreamingTestCase extends AbstractHttpOsgiFunctionalTestCase
 {
 
     public static final String TEST_BODY = RandomStringUtils.randomAlphabetic(100*1024);

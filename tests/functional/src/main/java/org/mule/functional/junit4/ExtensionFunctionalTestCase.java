@@ -210,7 +210,7 @@ public abstract class ExtensionFunctionalTestCase extends FunctionalTestCase
 
     private File getGenerationTargetDirectory()
     {
-        URL url = getResourceAsUrl(getEffectiveConfigFile(), getClass(), true, true);
+        URL url = getResourceAsUrl(getEffectiveConfigFile(), getClass().getClassLoader(), true, true);
         File targetDirectory = new File(FileUtils.toFile(url).getParentFile(), "META-INF");
 
         if (!targetDirectory.exists() && !targetDirectory.mkdir())

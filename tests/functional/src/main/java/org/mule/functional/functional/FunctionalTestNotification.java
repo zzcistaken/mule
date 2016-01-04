@@ -12,23 +12,23 @@ import org.mule.api.transformer.TransformerException;
 import org.mule.context.notification.CustomNotification;
 
 /**
- * A <code>FunctionlTestNotification</code> is fired by the {@link FunctionalTestComponent}
- * when it receives an event. Test cases can register a {@link FunctionalTestNotificationListener}
+ * A <code>FunctionlTestNotification</code> is fired by the {@link org.mule.functional.functional.FunctionalTestComponent}
+ * when it receives an event. Test cases can register a {@link org.mule.functional.functional.FunctionalTestNotificationListener}
  * with Mule to receive these notifications and make assertions about the number of messages received or the content
  * of the message.
  * <p/>
  * This Notification contains the current MuleEventContext and reply message. The resource Identifier for this event
  * is the service name that received the message.  This means you can register to listen to Notifications from a
- * selected {@link FunctionalTestComponent}. i.e.
+ * selected {@link org.mule.functional.functional.FunctionalTestComponent}. i.e.
  * <code>
  * muleContext.registerListener(this, "*JmsTestCompoennt");
  * </code>
  * <p/>
- * This registration would only receive {@link FunctionalTestNotification} objects
+ * This registration would only receive {@link org.mule.functional.functional.FunctionalTestNotification} objects
  * from components called 'MyJmsTestComponent' and 'YourJmsTestComponent' but not 'HerFileTestComponent'.
  *
- * @see FunctionalTestComponent
- * @see FunctionalTestNotificationListener
+ * @see org.mule.functional.functional.FunctionalTestComponent
+ * @see org.mule.functional.functional.FunctionalTestNotificationListener
  * @see org.mule.api.MuleContext
  */
 public class FunctionalTestNotification extends CustomNotification

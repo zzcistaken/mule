@@ -6,14 +6,14 @@
  */
 package org.mule.module.http.functional.listener;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.arrayWithSize;
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isOneOf;
 import static org.junit.Assert.assertThat;
 import static org.mule.module.http.api.HttpConstants.RequestProperties.HTTP_RELATIVE_PATH;
 import static org.mule.module.http.api.HttpConstants.RequestProperties.HTTP_REQUEST_PATH_PROPERTY;
 import org.mule.module.http.api.HttpHeaders;
-import org.mule.functional.junit4.FunctionalTestCase;
+import org.mule.module.http.functional.AbstractHttpOsgiFunctionalTestCase;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
 
@@ -33,7 +33,7 @@ import org.hamcrest.Matchers;
 import org.junit.Rule;
 import org.junit.Test;
 
-public class HttpListenerResponseBuilderTestCase extends FunctionalTestCase
+public class HttpListenerResponseBuilderTestCase extends AbstractHttpOsgiFunctionalTestCase
 {
 
     @Rule
