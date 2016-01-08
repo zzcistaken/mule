@@ -49,6 +49,7 @@ public class MuleOsgiContainer
     //TODO(pablo.kraan): OSGi - remove this unused parameter
     public void start(boolean registerShutdownHook)
     {
+        //TODO(pablo.kraan): OSGi - show splash screen
         try
         {
             FrameworkFactory factory = getFrameworkFactory();
