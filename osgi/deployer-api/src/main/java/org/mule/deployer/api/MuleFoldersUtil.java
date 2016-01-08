@@ -5,7 +5,7 @@
  * LICENSE.txt file.
  */
 
-package org.mule.deployer;
+package org.mule.deployer.api;
 
 import java.io.File;
 

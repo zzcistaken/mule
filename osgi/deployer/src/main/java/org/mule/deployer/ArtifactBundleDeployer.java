@@ -6,7 +6,7 @@
  */
 package org.mule.deployer;
 
-import org.mule.deployer.artifact.ArtifactBundle;
+import org.mule.deployer.api.ArtifactBundle;
 
 /**
  * Deploys and Undeploys artifacts in the container.

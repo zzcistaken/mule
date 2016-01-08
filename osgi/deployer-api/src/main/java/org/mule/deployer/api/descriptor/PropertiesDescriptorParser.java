@@ -4,9 +4,9 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.deployer.descriptor;
+package org.mule.deployer.api.descriptor;
 
-import org.mule.deployer.MuleFoldersUtil;
+import org.mule.deployer.api.MuleFoldersUtil;
 import org.mule.util.PropertiesUtils;
 import org.mule.util.StringUtils;
 

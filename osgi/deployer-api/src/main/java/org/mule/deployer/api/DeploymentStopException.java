@@ -4,22 +4,22 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.deployer;
+package org.mule.deployer.api;
 
 import org.mule.config.i18n.Message;
 
 /**
  *
  */
-public class DeploymentStartException extends DeploymentException
+public class DeploymentStopException extends DeploymentException
 {
 
-    public DeploymentStartException(Message message)
+    public DeploymentStopException(Message message)
     {
         super(message);
     }
 
-    public DeploymentStartException(Message message, Throwable cause)
+    public DeploymentStopException(Message message, Throwable cause)
     {
         super(message, cause);
     }

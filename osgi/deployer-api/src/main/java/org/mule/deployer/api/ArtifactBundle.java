@@ -5,11 +5,7 @@
  * LICENSE.txt file.
  */
 
-package org.mule.deployer.artifact;
-
-import org.mule.deployer.DeploymentStartException;
-import org.mule.deployer.DeploymentStopException;
-import org.mule.deployer.InstallException;
+package org.mule.deployer.api;
 
 import java.io.File;
 

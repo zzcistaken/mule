@@ -7,7 +7,8 @@
 package org.mule.deployer;
 
 import org.mule.config.i18n.MessageFactory;
-import org.mule.deployer.artifact.ArtifactBundle;
+import org.mule.deployer.api.ArtifactBundle;
+import org.mule.deployer.api.DeploymentException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

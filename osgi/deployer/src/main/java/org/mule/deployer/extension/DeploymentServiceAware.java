@@ -6,7 +6,7 @@
  */
 package org.mule.deployer.extension;
 
-import org.mule.deployer.DeploymentService;
+import org.mule.deployer.api.DeploymentService;
 
 /**
  * Enables {@link DeploymentService} injection.

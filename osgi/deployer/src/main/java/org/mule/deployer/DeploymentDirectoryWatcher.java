@@ -8,8 +8,9 @@ package org.mule.deployer;
 
 import static org.mule.util.SplashScreen.miniSplash;
 import org.mule.config.StartupContext;
-import org.mule.deployer.application.ApplicationBundle;
-import org.mule.deployer.artifact.ArtifactBundle;
+import org.mule.deployer.api.DeploymentException;
+import org.mule.deployer.api.ApplicationBundle;
+import org.mule.deployer.api.ArtifactBundle;
 import org.mule.deployer.util.DebuggableReentrantLock;
 import org.mule.deployer.util.ElementAddedEvent;
 import org.mule.deployer.util.ElementRemovedEvent;

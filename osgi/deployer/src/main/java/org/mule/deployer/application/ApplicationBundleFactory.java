@@ -9,9 +9,10 @@ package org.mule.deployer.application;
 
 import org.mule.deployer.AppBloodhound;
 import org.mule.deployer.DefaultAppBloodhound;
-import org.mule.deployer.MuleFoldersUtil;
+import org.mule.deployer.api.MuleFoldersUtil;
+import org.mule.deployer.api.ApplicationBundle;
 import org.mule.deployer.artifact.ArtifactBundleFactory;
-import org.mule.deployer.descriptor.ApplicationDescriptor;
+import org.mule.deployer.api.descriptor.ApplicationDescriptor;
 
 import java.io.File;
 import java.io.IOException;

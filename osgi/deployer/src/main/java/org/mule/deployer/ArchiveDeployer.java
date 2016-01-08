@@ -6,7 +6,8 @@
  */
 package org.mule.deployer;
 
-import org.mule.deployer.artifact.ArtifactBundle;
+import org.mule.deployer.api.ArtifactBundle;
+import org.mule.deployer.api.DeploymentException;
 
 import java.io.File;
 import java.net.URL;

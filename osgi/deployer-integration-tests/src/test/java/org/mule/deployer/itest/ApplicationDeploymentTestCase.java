@@ -17,7 +17,7 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import org.mule.config.StartupContext;
-import org.mule.deployer.application.ApplicationBundle;
+import org.mule.deployer.api.ApplicationBundle;
 import org.mule.deployer.application.ApplicationStatus;
 
 import java.io.File;

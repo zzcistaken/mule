@@ -10,7 +10,7 @@ import org.mule.MuleCoreExtension;
 import org.mule.api.DefaultMuleException;
 import org.mule.api.MuleException;
 import org.mule.api.lifecycle.InitialisationException;
-import org.mule.deployer.DeploymentService;
+import org.mule.deployer.api.DeploymentService;
 
 import java.util.LinkedList;
 import java.util.List;

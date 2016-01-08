@@ -6,7 +6,7 @@
  */
 package org.mule.deployer;
 
-import org.mule.deployer.artifact.ArtifactBundle;
+import org.mule.deployer.api.ArtifactBundle;
 
 /**
  * Utility to hook callbacks just before and after an artifact is redeployed in Mule.

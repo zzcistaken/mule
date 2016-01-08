@@ -5,15 +5,10 @@
  * LICENSE.txt file.
  */
 
-package org.mule.deployer.application;
+package org.mule.deployer.api;
 
 import org.mule.config.i18n.MessageFactory;
-import org.mule.deployer.DeploymentStartException;
-import org.mule.deployer.DeploymentStopException;
-import org.mule.deployer.InstallException;
-import org.mule.deployer.MuleFoldersUtil;
-import org.mule.deployer.artifact.ArtifactBundle;
-import org.mule.deployer.descriptor.ApplicationDescriptor;
+import org.mule.deployer.api.descriptor.ApplicationDescriptor;
 
 import java.io.File;
 

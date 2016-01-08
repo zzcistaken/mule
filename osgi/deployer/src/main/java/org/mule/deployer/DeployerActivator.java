@@ -7,6 +7,7 @@
 
 package org.mule.deployer;
 
+import org.mule.deployer.api.DeploymentService;
 import org.mule.deployer.extension.DefaultMuleCoreExtensionManager;
 import org.mule.deployer.extension.MuleCoreExtensionManager;
 

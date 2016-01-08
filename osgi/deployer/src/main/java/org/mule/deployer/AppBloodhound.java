@@ -6,7 +6,7 @@
  */
 package org.mule.deployer;
 
-import org.mule.deployer.descriptor.ApplicationDescriptor;
+import org.mule.deployer.api.descriptor.ApplicationDescriptor;
 
 import java.io.IOException;
 

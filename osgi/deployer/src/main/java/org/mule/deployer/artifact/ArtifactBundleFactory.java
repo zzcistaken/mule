@@ -7,6 +7,8 @@
 
 package org.mule.deployer.artifact;
 
+import org.mule.deployer.api.ArtifactBundle;
+
 import java.io.File;
 import java.io.IOException;
 

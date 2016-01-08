@@ -1013,6 +1013,15 @@
 /mule-standalone-${productVersion}/repository/org/mule/osgi/mule-osgi-deployer/4.0-SNAPSHOT/mule-osgi-deployer-4.0-SNAPSHOT.pom
 /mule-standalone-${productVersion}/repository/org/mule/osgi/mule-osgi-deployer/4.0-SNAPSHOT/mule-osgi-deployer-4.0-SNAPSHOT.pom.md5
 /mule-standalone-${productVersion}/repository/org/mule/osgi/mule-osgi-deployer/4.0-SNAPSHOT/mule-osgi-deployer-4.0-SNAPSHOT.pom.sha1
+/mule-standalone-${productVersion}/lib/mule/mule-osgi-deployer-api-4.0-SNAPSHOT.jar
+/mule-standalone-${productVersion}/repository/org/mule/osgi/mule-osgi-deployer-api
+/mule-standalone-${productVersion}/repository/org/mule/osgi/mule-osgi-deployer-api/4.0-SNAPSHOT
+/mule-standalone-${productVersion}/repository/org/mule/osgi/mule-osgi-deployer-api/4.0-SNAPSHOT/mule-osgi-deployer-api-4.0-SNAPSHOT.jar
+/mule-standalone-${productVersion}/repository/org/mule/osgi/mule-osgi-deployer-api/4.0-SNAPSHOT/mule-osgi-deployer-api-4.0-SNAPSHOT.jar.md5
+/mule-standalone-${productVersion}/repository/org/mule/osgi/mule-osgi-deployer-api/4.0-SNAPSHOT/mule-osgi-deployer-api-4.0-SNAPSHOT.jar.sha1
+/mule-standalone-${productVersion}/repository/org/mule/osgi/mule-osgi-deployer-api/4.0-SNAPSHOT/mule-osgi-deployer-api-4.0-SNAPSHOT.pom
+/mule-standalone-${productVersion}/repository/org/mule/osgi/mule-osgi-deployer-api/4.0-SNAPSHOT/mule-osgi-deployer-api-4.0-SNAPSHOT.pom.md5
+/mule-standalone-${productVersion}/repository/org/mule/osgi/mule-osgi-deployer-api/4.0-SNAPSHOT/mule-osgi-deployer-api-4.0-SNAPSHOT.pom.sha1
 /mule-standalone-${productVersion}/repository/org/mule/osgi/mule-osgi-feature-deployer
 /mule-standalone-${productVersion}/repository/org/mule/osgi/mule-osgi-feature-deployer/4.0-SNAPSHOT
 /mule-standalone-${productVersion}/repository/org/mule/osgi/mule-osgi-feature-deployer/4.0-SNAPSHOT/mule-osgi-feature-deployer-4.0-SNAPSHOT.jar

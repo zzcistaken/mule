@@ -28,6 +28,7 @@
         <module>sample-app</module>
         <module>feature-model</module>
         <module>feature-deployer</module>
+        <module>deployer-api</module>
         <module>deployer</module>
         <module>deployer-integration-tests</module>
         <module>osgi-container</module>

@@ -7,6 +7,8 @@
 package org.mule.deployer;
 
 import org.mule.config.i18n.MessageFactory;
+import org.mule.deployer.api.DeploymentException;
+import org.mule.deployer.api.DeploymentInitException;
 import org.mule.util.FileUtils;
 import org.mule.util.FilenameUtils;
 
