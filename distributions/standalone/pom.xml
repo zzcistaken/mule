@@ -185,11 +185,13 @@
             <artifactId>mule-module-http</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>org.mule.osgi</groupId>-->
-            <!--<artifactId>mule-osgi-sample-app</artifactId>-->
-            <!--<version>${project.version}</version>-->
-        <!--</dependency>-->
+
+        <!--//TODO(pablo.kraan):OSGi - this must go inside EE distro!!!-->
+        <dependency>
+            <groupId>com.mulesoft.muleesb.modules</groupId>
+            <artifactId>mule-module-plugin-ee</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <!--Groovy-->
         <dependency>

@@ -132,6 +132,7 @@
                 <include>org.mule.osgi:mule-osgi-support</include>
                 <include>org.mule.osgi:mule-osgi-deployer-api</include>
                 <include>org.mule.osgi:mule-osgi-deployer</include>
+                <include>com.mulesoft.muleesb.modules:mule-module-plugin-ee</include>
             </includes>
         </dependencySet>
 

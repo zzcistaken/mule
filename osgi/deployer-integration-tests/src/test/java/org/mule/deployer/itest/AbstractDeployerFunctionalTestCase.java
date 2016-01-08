@@ -30,7 +30,7 @@ import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.CoreOptions.streamBundle;
 import static org.ops4j.pax.exam.CoreOptions.systemPackage;
 import org.mule.deployer.DeploymentDirectoryWatcher;
-import org.mule.deployer.DeploymentListener;
+import org.mule.deployer.api.DeploymentListener;
 import org.mule.deployer.MuleDeploymentService;
 import org.mule.deployer.api.ApplicationBundle;
 import org.mule.deployer.api.DeploymentService;
