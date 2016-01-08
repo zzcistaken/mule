@@ -7,6 +7,8 @@
 
 package org.mule.deployer;
 
+import org.mule.deployer.api.DeploymentListener;
+import org.mule.deployer.api.DeploymentListenerManager;
 import org.mule.osgi.support.OsgiServiceWrapper;
 
 import org.osgi.framework.BundleContext;

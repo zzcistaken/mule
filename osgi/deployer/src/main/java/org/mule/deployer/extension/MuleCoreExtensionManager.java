@@ -7,6 +7,7 @@
 package org.mule.deployer.extension;
 
 import org.mule.api.lifecycle.Lifecycle;
+import org.mule.deployer.api.DeploymentServiceAware;
 
 /**
  * Manages lifecycle and dependency injection for {@link org.mule.MuleCoreExtension}

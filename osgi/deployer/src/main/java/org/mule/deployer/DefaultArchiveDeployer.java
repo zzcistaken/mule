@@ -10,6 +10,7 @@ import static org.mule.util.SplashScreen.miniSplash;
 import org.mule.config.i18n.CoreMessages;
 import org.mule.config.i18n.MessageFactory;
 import org.mule.deployer.api.DeploymentException;
+import org.mule.deployer.api.DeploymentListener;
 import org.mule.deployer.application.NullDeploymentListener;
 import org.mule.deployer.api.ArtifactBundle;
 import org.mule.deployer.artifact.ArtifactBundleFactory;

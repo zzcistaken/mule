@@ -7,6 +7,8 @@
 package org.mule.deployer;
 
 import org.mule.api.MuleContext;
+import org.mule.deployer.api.DeploymentListener;
+import org.mule.deployer.api.DeploymentListenerManager;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;

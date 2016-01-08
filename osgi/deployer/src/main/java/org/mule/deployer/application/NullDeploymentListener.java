@@ -7,7 +7,7 @@
 package org.mule.deployer.application;
 
 import org.mule.api.MuleContext;
-import org.mule.deployer.DeploymentListener;
+import org.mule.deployer.api.DeploymentListener;
 
 /**
  * Defines a {@link DeploymentListener} that does nothing

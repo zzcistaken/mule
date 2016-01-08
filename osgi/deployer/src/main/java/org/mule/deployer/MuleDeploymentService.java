@@ -9,6 +9,7 @@ package org.mule.deployer;
 import static org.mule.deployer.ArtifactDeploymentTemplate.NOP_ARTIFACT_DEPLOYMENT_TEMPLATE;
 import static org.mule.deployer.DefaultArchiveDeployer.ZIP_FILE_SUFFIX;
 import org.mule.deployer.api.ApplicationBundle;
+import org.mule.deployer.api.DeploymentListener;
 import org.mule.deployer.api.DeploymentService;
 import org.mule.deployer.application.ApplicationBundleFactory;
 import org.mule.deployer.util.DebuggableReentrantLock;
