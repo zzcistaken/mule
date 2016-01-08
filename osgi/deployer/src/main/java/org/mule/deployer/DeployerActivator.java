@@ -7,6 +7,9 @@
 
 package org.mule.deployer;
 
+import org.mule.deployer.extension.DefaultMuleCoreExtensionManager;
+import org.mule.deployer.extension.MuleCoreExtensionManager;
+
 import java.util.Dictionary;
 import java.util.Hashtable;
 
@@ -57,6 +60,17 @@ public class DeployerActivator implements BundleActivator
 
                         Dictionary<String, String> serviceProperties = new Hashtable<>();
                         registeredDeploymentService = bundleContext.registerService(DeploymentService.class, deploymentService, serviceProperties);
+
+                        MuleCoreExtensionManager coreExtensionManager = new DefaultMuleCoreExtensionManager(bundleContext);
+                        try
+                        {
+                            coreExtensionManager.initialise();
+                            coreExtensionManager.start();
+                        }
+                        catch (Exception e)
+                        {
+                            throw new IllegalStateException("Unable to start core extension manager", e);
+                        }
 
                         deploymentService.start();
                     }
