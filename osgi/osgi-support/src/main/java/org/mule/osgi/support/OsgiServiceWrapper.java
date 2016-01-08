@@ -61,6 +61,7 @@ public abstract class OsgiServiceWrapper implements ServiceListener
 
     protected static void registerListener(BundleContext bundleContext, ServiceListener listener, Class... trackedClasses)
     {
+        //TODO(pablo.kraan): OSGi - seems to me that the registered listeners should be removed when the corresponding bundle is stopped
         try
         {
             bundleContext.addServiceListener(listener, createFilter(trackedClasses));

@@ -28,6 +28,8 @@
         <module>sample-app</module>
         <module>feature-model</module>
         <module>feature-deployer</module>
+        <module>deployer</module>
+        <module>deployer-integration-tests</module>
         <module>osgi-container</module>
         <module>integration-test-tck</module>
         <module>features</module>

@@ -24,18 +24,15 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mule.module.launcher.domain.Domain.DOMAIN_CONFIG_FILE_LOCATION;
-
 import org.mule.api.MuleContext;
 import org.mule.api.config.MuleProperties;
 import org.mule.api.lifecycle.Initialisable;
 import org.mule.api.lifecycle.InitialisationException;
 import org.mule.api.registry.MuleRegistry;
-import org.mule.config.StartupContext;
 import org.mule.module.launcher.application.Application;
 import org.mule.module.launcher.application.ApplicationStatus;
 import org.mule.module.launcher.application.MuleApplicationClassLoaderFactory;
@@ -69,7 +66,6 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -79,9 +75,6 @@ import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
-import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.mockito.verification.VerificationMode;
 
 public class DeploymentServiceTestCase extends AbstractMuleContextTestCase
@@ -177,25 +170,6 @@ public class DeploymentServiceTestCase extends AbstractMuleContextTestCase
     }
 
     @Test
-    public void deploysAppZipOnStartup() throws Exception
-    {
-        addPackedAppFromResource(dummyAppDescriptor.zipPath);
-
-        deploymentService.start();
-
-        assertApplicationDeploymentSuccess(applicationDeploymentListener, dummyAppDescriptor.id);
-        assertAppsDir(NONE, new String[] {dummyAppDescriptor.id}, true);
-        assertApplicationAnchorFileExists(dummyAppDescriptor.id);
-
-        // just assert no privileged entries were put in the registry
-        final Application app = findApp(dummyAppDescriptor.id, 1);
-        final MuleRegistry registry = getMuleRegistry(app);
-
-        // mule-app.properties from the zip archive must have loaded properly
-        assertEquals("mule-app.properties should have been loaded.", "someValue", registry.get("myCustomProp"));
-    }
-
-    @Test
     public void extensionManagerPresent() throws Exception
     {
         addPackedAppFromResource(dummyAppDescriptor.zipPath);
@@ -225,130 +199,6 @@ public class DeploymentServiceTestCase extends AbstractMuleContextTestCase
 
         String appHome = (String) appProperties.get("appHome");
         assertThat(new File(appHome).exists(), is(true));
-    }
-
-    @Test
-    public void deploysExplodedAppAndVerifyAnchorFileIsCreatedAfterDeploymentEnds() throws Exception
-    {
-        Action deployExplodedWaitAppAction = new Action()
-        {
-            @Override
-            public void perform() throws Exception
-            {
-                addExplodedAppFromResource(waitAppDescriptor.zipPath);
-            }
-        };
-        deploysAppAndVerifyAnchorFileIsCreatedAfterDeploymentEnds(deployExplodedWaitAppAction);
-    }
-
-    @Test
-    public void deploysPackagedAppAndVerifyAnchorFileIsCreatedAfterDeploymentEnds() throws Exception
-    {
-        Action deployPackagedWaitAppAction = new Action()
-        {
-            @Override
-            public void perform() throws Exception
-            {
-                addPackedAppFromResource(waitAppDescriptor.zipPath);
-            }
-        };
-        deploysAppAndVerifyAnchorFileIsCreatedAfterDeploymentEnds(deployPackagedWaitAppAction);
-    }
-
-    @Test
-    public void deploysAppZipAfterStartup() throws Exception
-    {
-        deploymentService.start();
-
-        addPackedAppFromResource(dummyAppDescriptor.zipPath);
-
-        assertApplicationDeploymentSuccess(applicationDeploymentListener, dummyAppDescriptor.id);
-        assertAppsDir(NONE, new String[] {dummyAppDescriptor.id}, true);
-        assertApplicationAnchorFileExists(dummyAppDescriptor.id);
-
-        // just assert no privileged entries were put in the registry
-        final Application app = findApp(dummyAppDescriptor.id, 1);
-        final MuleRegistry registry = getMuleRegistry(app);
-
-        // mule-app.properties from the zip archive must have loaded properly
-        assertEquals("mule-app.properties should have been loaded.", "someValue", registry.get("myCustomProp"));
-    }
-
-    @Test
-    public void deploysBrokenAppZipOnStartup() throws Exception
-    {
-        addPackedAppFromResource(brokenAppDescriptor.zipPath, brokenAppDescriptor.targetPath);
-
-        deploymentService.start();
-
-        assertDeploymentFailure(applicationDeploymentListener, "brokenApp");
-
-        assertAppsDir(new String[] {"brokenApp.zip"}, NONE, true);
-
-        assertApplicationAnchorFileDoesNotExists(brokenAppDescriptor.id);
-
-        final Map<URL, Long> zombieMap = deploymentService.getZombieApplications();
-        assertEquals("Wrong number of zombie apps registered.", 1, zombieMap.size());
-        final Map.Entry<URL, Long> zombie = zombieMap.entrySet().iterator().next();
-        assertEquals("Wrong URL tagged as zombie.", "brokenApp.zip", new File(zombie.getKey().getFile()).getName());
-        assertTrue("Invalid lastModified value for file URL.", zombie.getValue() != -1);
-    }
-
-    /**
-     * This tests deploys a broken app which name has a weird character.
-     * It verifies that after failing deploying that app, it doesn't try to do it
-     * again, which is a behavior than can be seen in some file systems due to
-     * path handling issues
-     */
-    @Test
-    public void dontRetryBrokenAppWithFunkyName() throws Exception
-    {
-        addPackedAppFromResource(brokenAppWithFunkyNameDescriptor.zipPath, brokenAppWithFunkyNameDescriptor.targetPath);
-
-        deploymentService.start();
-
-        assertDeploymentFailure(applicationDeploymentListener, "brokenApp+");
-
-        assertAppsDir(new String[] {"brokenApp+.zip"}, NONE, true);
-
-        assertApplicationAnchorFileDoesNotExists(brokenAppDescriptor.id);
-
-        final Map<URL, Long> zombieMap = deploymentService.getZombieApplications();
-        assertEquals("Wrong number of zombie apps registered.", 1, zombieMap.size());
-        final Map.Entry<URL, Long> zombie = zombieMap.entrySet().iterator().next();
-        assertEquals("Wrong URL tagged as zombie.", "brokenApp+.zip", new File(zombie.getKey().getFile()).getName());
-        assertTrue("Invalid lastModified value for file URL.", zombie.getValue() != -1);
-
-        reset(applicationDeploymentListener);
-
-        addPackedAppFromResource(dummyAppDescriptor.zipPath);
-
-        assertApplicationDeploymentSuccess(applicationDeploymentListener, dummyAppDescriptor.id);
-        assertDeploymentFailure(applicationDeploymentListener, "brokenApp+", never());
-
-        addPackedAppFromResource(emptyAppDescriptor.zipPath);
-        assertApplicationDeploymentSuccess(applicationDeploymentListener, emptyAppDescriptor.id);
-        assertDeploymentFailure(applicationDeploymentListener, "brokenApp+", never());
-    }
-
-    @Test
-    public void deploysBrokenAppZipAfterStartup() throws Exception
-    {
-        deploymentService.start();
-
-        addPackedAppFromResource(brokenAppDescriptor.zipPath, "brokenApp.zip");
-
-        assertDeploymentFailure(applicationDeploymentListener, "brokenApp");
-
-        assertAppsDir(new String[] {"brokenApp.zip"}, NONE, true);
-
-        assertApplicationAnchorFileDoesNotExists(brokenAppDescriptor.id);
-
-        final Map<URL, Long> zombieMap = deploymentService.getZombieApplications();
-        assertEquals("Wrong number of zombie apps registered.", 1, zombieMap.size());
-        final Map.Entry<URL, Long> zombie = zombieMap.entrySet().iterator().next();
-        assertEquals("Wrong URL tagged as zombie.", "brokenApp.zip", new File(zombie.getKey().getFile()).getName());
-        assertTrue("Invalid lastModified value for file URL.", zombie.getValue() != -1);
     }
 
     @Test
@@ -394,18 +244,6 @@ public class DeploymentServiceTestCase extends AbstractMuleContextTestCase
         assertApplicationDeploymentSuccess(applicationDeploymentListener, dummyAppDescriptor.id);
         assertEquals("Application has not been properly registered with Mule", 1, deploymentService.getApplications().size());
         assertAppsDir(NONE, new String[] {dummyAppDescriptor.id}, true);
-    }
-
-    @Test
-    public void deploysExplodedAppOnStartup() throws Exception
-    {
-        addExplodedAppFromResource(dummyAppDescriptor.zipPath);
-
-        deploymentService.start();
-
-        assertApplicationDeploymentSuccess(applicationDeploymentListener, dummyAppDescriptor.id);
-        assertAppsDir(NONE, new String[] {dummyAppDescriptor.id}, true);
-        assertApplicationAnchorFileExists(dummyAppDescriptor.id);
     }
 
     @Test
@@ -770,151 +608,6 @@ public class DeploymentServiceTestCase extends AbstractMuleContextTestCase
     }
 
     @Test
-    public void brokenAppArchiveWithoutArgument() throws Exception
-    {
-        doBrokenAppArchiveTest();
-    }
-
-    @Test
-    public void brokenAppArchiveAsArgument() throws Exception
-    {
-        Map<String, Object> startupOptions = new HashMap<String, Object>();
-        startupOptions.put("app", brokenAppDescriptor.id);
-        StartupContext.get().setStartupOptions(startupOptions);
-
-        doBrokenAppArchiveTest();
-    }
-
-    @Test
-    public void deploysInvalidZipAppOnStartup() throws Exception
-    {
-        addPackedAppFromResource(emptyAppDescriptor.zipPath, "app with spaces.zip");
-
-        deploymentService.start();
-        assertDeploymentFailure(applicationDeploymentListener, "app with spaces");
-
-        // zip stays intact, no app dir created
-        assertAppsDir(new String[] {"app with spaces.zip"}, NONE, true);
-        final Map<URL, Long> zombieMap = deploymentService.getZombieApplications();
-        assertEquals("Wrong number of zombie apps registered.", 1, zombieMap.size());
-        final Map.Entry<URL, Long> zombie = zombieMap.entrySet().iterator().next();
-        // Spaces are converted to %20 is returned by java file api :/
-        String appName = URLDecoder.decode(new File(zombie.getKey().getFile()).getName(), "UTF-8");
-        assertEquals("Wrong URL tagged as zombie.", "app with spaces.zip", appName);
-        assertTrue("Invalid lastModified value for file URL.", zombie.getValue() != -1);
-    }
-
-    @Test
-    public void deploysInvalidZipAppAfterStartup() throws Exception
-    {
-        deploymentService.start();
-
-        addPackedAppFromResource(emptyAppDescriptor.zipPath, "app with spaces.zip");
-
-        assertDeploymentFailure(applicationDeploymentListener, "app with spaces");
-
-        // zip stays intact, no app dir created
-        assertAppsDir(new String[] {"app with spaces.zip"}, NONE, true);
-        final Map<URL, Long> zombieMap = deploymentService.getZombieApplications();
-        assertEquals("Wrong number of zombie apps registered.", 1, zombieMap.size());
-        final Map.Entry<URL, Long> zombie = zombieMap.entrySet().iterator().next();
-        // Spaces are converted to %20 is returned by java file api :/
-        String appName = URLDecoder.decode(new File(zombie.getKey().getFile()).getName(), "UTF-8");
-        assertEquals("Wrong URL tagged as zombie.", "app with spaces.zip", appName);
-        assertTrue("Invalid lastModified value for file URL.", zombie.getValue() != -1);
-    }
-
-    @Test
-    public void deployAppNameWithZipSuffix() throws Exception
-    {
-        addPackedAppFromResource(emptyAppDescriptor.zipPath, "empty-app.zip.zip");
-
-        deploymentService.start();
-
-        assertApplicationDeploymentSuccess(applicationDeploymentListener, emptyAppDescriptor.targetPath);
-        reset(applicationDeploymentListener);
-
-        assertAppsDir(NONE, new String[] {emptyAppDescriptor.targetPath}, true);
-        assertEquals("Application has not been properly registered with Mule", 1, deploymentService.getApplications().size());
-
-        // Checks that the empty-app.zip folder is not processed as a zip file
-        assertNoDeploymentInvoked(applicationDeploymentListener);
-    }
-
-    @Test
-    public void deploysPackedAppsInOrderWhenAppArgumentIsUsed() throws Exception
-    {
-        addPackedAppFromResource(emptyAppDescriptor.zipPath, "1.zip");
-        addPackedAppFromResource(emptyAppDescriptor.zipPath, "2.zip");
-        addPackedAppFromResource(emptyAppDescriptor.zipPath, "3.zip");
-
-        Map<String, Object> startupOptions = new HashMap<String, Object>();
-        startupOptions.put("app", "3:1:2");
-        StartupContext.get().setStartupOptions(startupOptions);
-
-        deploymentService.start();
-
-        assertApplicationDeploymentSuccess(applicationDeploymentListener, "1");
-        assertApplicationDeploymentSuccess(applicationDeploymentListener, "2");
-        assertApplicationDeploymentSuccess(applicationDeploymentListener, "3");
-        assertAppsDir(NONE, new String[] {"1", "2", "3"}, true);
-
-        // When apps are passed as -app app1:app2:app3 the startup order matters
-        List<Application> applications = deploymentService.getApplications();
-        assertNotNull(applications);
-        assertEquals(3, applications.size());
-        assertEquals("3", applications.get(0).getArtifactName());
-        assertEquals("1", applications.get(1).getArtifactName());
-        assertEquals("2", applications.get(2).getArtifactName());
-    }
-
-    @Test
-    public void deploysExplodedAppsInOrderWhenAppArgumentIsUsed() throws Exception
-    {
-        addExplodedAppFromResource(emptyAppDescriptor.zipPath, "1");
-        addExplodedAppFromResource(emptyAppDescriptor.zipPath, "2");
-        addExplodedAppFromResource(emptyAppDescriptor.zipPath, "3");
-
-        Map<String, Object> startupOptions = new HashMap<String, Object>();
-        startupOptions.put("app", "3:1:2");
-        StartupContext.get().setStartupOptions(startupOptions);
-
-        deploymentService.start();
-
-        assertApplicationDeploymentSuccess(applicationDeploymentListener, "1");
-        assertApplicationDeploymentSuccess(applicationDeploymentListener, "2");
-        assertApplicationDeploymentSuccess(applicationDeploymentListener, "3");
-
-        assertAppsDir(NONE, new String[] {"1", "2", "3"}, true);
-
-        // When apps are passed as -app app1:app2:app3 the startup order matters
-        List<Application> applications = deploymentService.getApplications();
-        assertNotNull(applications);
-        assertEquals(3, applications.size());
-        assertEquals("3", applications.get(0).getArtifactName());
-        assertEquals("1", applications.get(1).getArtifactName());
-        assertEquals("2", applications.get(2).getArtifactName());
-    }
-
-    @Test
-    public void deploysAppJustOnce() throws Exception
-    {
-        addPackedAppFromResource(dummyAppDescriptor.zipPath);
-
-        Map<String, Object> startupOptions = new HashMap<String, Object>();
-        startupOptions.put("app", "dummy-app:dummy-app:dummy-app");
-        StartupContext.get().setStartupOptions(startupOptions);
-
-        deploymentService.start();
-
-        assertApplicationDeploymentSuccess(applicationDeploymentListener, dummyAppDescriptor.id);
-        assertAppsDir(NONE, new String[] {dummyAppDescriptor.id}, true);
-
-        List<Application> applications = deploymentService.getApplications();
-        assertEquals(1, applications.size());
-    }
-
-    @Test
     public void tracksAppConfigUpdateTime() throws Exception
     {
         addExplodedAppFromResource(dummyAppDescriptor.zipPath);
@@ -982,22 +675,6 @@ public class DeploymentServiceTestCase extends AbstractMuleContextTestCase
     }
 
     @Test
-    public void undeploysApplicationRemovingAnchorFile() throws Exception
-    {
-        addPackedAppFromResource(dummyAppDescriptor.zipPath);
-
-        deploymentService.start();
-
-        assertApplicationDeploymentSuccess(applicationDeploymentListener, dummyAppDescriptor.id);
-        Application app = findApp(dummyAppDescriptor.id, 1);
-
-        assertTrue("Unable to remove anchor file", removeAppAnchorFile(dummyAppDescriptor.id));
-
-        assertUndeploymentSuccess(applicationDeploymentListener, dummyAppDescriptor.id);
-        assertStatus(app, ApplicationStatus.DESTROYED);
-    }
-
-    @Test
     public void undeploysAppCompletelyEvenOnStoppingException() throws Exception
     {
         addPackedAppFromResource(emptyAppDescriptor.zipPath);
@@ -1037,66 +714,6 @@ public class DeploymentServiceTestCase extends AbstractMuleContextTestCase
         assertUndeploymentSuccess(applicationDeploymentListener, emptyAppDescriptor.id);
         assertStatus(app, ApplicationStatus.STOPPED);
         assertAppFolderIsDeleted(emptyAppDescriptor.id);
-    }
-
-    @Test
-    public void deploysIncompleteZipAppOnStartup() throws Exception
-    {
-        addPackedAppFromResource(incompleteAppDescriptor.zipPath);
-
-        deploymentService.start();
-
-        assertDeploymentFailure(applicationDeploymentListener, incompleteAppDescriptor.id);
-
-        // Deploys another app to confirm that DeploymentService has execute the updater thread
-        addPackedAppFromResource(dummyAppDescriptor.zipPath);
-
-        assertApplicationDeploymentSuccess(applicationDeploymentListener, dummyAppDescriptor.id);
-
-        // Check that the failed application folder is still there
-        assertAppFolderIsMaintained(incompleteAppDescriptor.id);
-        final Map.Entry<URL, Long> zombie = deploymentService.getZombieApplications().entrySet().iterator().next();
-        assertEquals("Wrong URL tagged as zombie.", incompleteAppDescriptor.id, new File(zombie.getKey().getFile()).getParentFile().getName());
-    }
-
-    @Test
-    public void deploysIncompleteZipAppAfterStartup() throws Exception
-    {
-        deploymentService.start();
-
-        addPackedAppFromResource(incompleteAppDescriptor.zipPath);
-
-        assertDeploymentFailure(applicationDeploymentListener, incompleteAppDescriptor.id);
-
-        // Deploys another app to confirm that DeploymentService has execute the updater thread
-        addPackedAppFromResource(dummyAppDescriptor.zipPath);
-
-        assertApplicationDeploymentSuccess(applicationDeploymentListener, dummyAppDescriptor.id);
-
-        // Check that the failed application folder is still there
-        assertAppFolderIsMaintained(incompleteAppDescriptor.id);
-        final Map.Entry<URL, Long> zombie = deploymentService.getZombieApplications().entrySet().iterator().next();
-        assertEquals("Wrong URL tagged as zombie.", incompleteAppDescriptor.id, new File(zombie.getKey().getFile()).getParentFile().getName());
-    }
-
-    @Test
-    public void mantainsAppFolderOnExplodedAppDeploymentError() throws Exception
-    {
-        deploymentService.start();
-
-        addPackedAppFromResource(incompleteAppDescriptor.zipPath);
-
-        assertDeploymentFailure(applicationDeploymentListener, incompleteAppDescriptor.id);
-
-        // Deploys another app to confirm that DeploymentService has execute the updater thread
-        addPackedAppFromResource(dummyAppDescriptor.zipPath);
-
-        assertApplicationDeploymentSuccess(applicationDeploymentListener, dummyAppDescriptor.id);
-
-        // Check that the failed application folder is still there
-        assertAppFolderIsMaintained(incompleteAppDescriptor.id);
-        final Map.Entry<URL, Long> zombie = deploymentService.getZombieApplications().entrySet().iterator().next();
-        assertEquals("Wrong URL tagged as zombie.", incompleteAppDescriptor.id, new File(zombie.getKey().getFile()).getParentFile().getName());
     }
 
     @Test
@@ -1240,70 +857,6 @@ public class DeploymentServiceTestCase extends AbstractMuleContextTestCase
         assertApplicationDeploymentSuccess(applicationDeploymentListener, sharedPluginLibAppDescriptor.id);
         assertAppsDir(NONE, new String[] {sharedPluginLibAppDescriptor.id}, true);
         assertApplicationAnchorFileExists(sharedPluginLibAppDescriptor.id);
-    }
-
-    @Test
-    public void synchronizesDeploymentOnStart() throws Exception
-    {
-        addPackedAppFromResource(emptyAppDescriptor.zipPath);
-
-        Thread deploymentServiceThread = new Thread(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                deploymentService.start();
-            }
-        });
-
-        final boolean[] lockedFromClient = new boolean[1];
-
-        Mockito.doAnswer(new Answer()
-        {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable
-            {
-
-                Thread deploymentClientThread = new Thread(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        ReentrantLock deploymentLock = deploymentService.getLock();
-
-                        try
-                        {
-                            try
-                            {
-                                lockedFromClient[0] = deploymentLock.tryLock(1000, TimeUnit.MILLISECONDS);
-                            }
-                            catch (InterruptedException e)
-                            {
-                                // Ignore
-                            }
-                        }
-                        finally
-                        {
-                            if (deploymentLock.isHeldByCurrentThread())
-                            {
-                                deploymentLock.unlock();
-                            }
-                        }
-                    }
-                });
-
-                deploymentClientThread.start();
-                deploymentClientThread.join();
-
-                return null;
-            }
-        }).when(applicationDeploymentListener).onDeploymentStart(emptyAppDescriptor.id);
-
-        deploymentServiceThread.start();
-
-        assertApplicationDeploymentSuccess(applicationDeploymentListener, emptyAppDescriptor.id);
-
-        assertFalse("Able to lock deployment service during start", lockedFromClient[0]);
     }
 
     @Test
@@ -2372,40 +1925,6 @@ public class DeploymentServiceTestCase extends AbstractMuleContextTestCase
         assertDomainFolderIsMaintained("incompleteDomain");
     }
 
-    public void doBrokenAppArchiveTest() throws Exception
-    {
-        addPackedAppFromResource(brokenAppDescriptor.zipPath);
-
-        deploymentService.start();
-
-        assertDeploymentFailure(applicationDeploymentListener, brokenAppDescriptor.id);
-        reset(applicationDeploymentListener);
-
-        // let the file system's write-behind cache commit the delete operation?
-        Thread.sleep(FILE_TIMESTAMP_PRECISION_MILLIS);
-
-        // zip stays intact, no app dir created
-        assertAppsDir(new String[] {"broken-app.zip"}, NONE, true);
-        // don't assert dir contents, we want to check internal deployer state next
-        assertAppsDir(NONE, new String[] {dummyAppDescriptor.id}, false);
-        assertEquals("No apps should have been registered with Mule.", 0, deploymentService.getApplications().size());
-        final Map<URL, Long> zombieMap = deploymentService.getZombieApplications();
-        assertEquals("Wrong number of zombie apps registered.", 1, zombieMap.size());
-        final Map.Entry<URL, Long> zombie = zombieMap.entrySet().iterator().next();
-        assertEquals("Wrong URL tagged as zombie.", "broken-app.zip", new File(zombie.getKey().getFile()).getName());
-        assertTrue("Invalid lastModified value for file URL.", zombie.getValue() != -1);
-
-        // Checks that the invalid zip was not deployed again
-        try
-        {
-            assertDeploymentFailure(applicationDeploymentListener, "broken-app.zip");
-            fail("Install was invoked again for the broken application file");
-        }
-        catch (AssertionError expected)
-        {
-        }
-    }
-
     public void doBrokenDomainArchiveTest() throws Exception
     {
         addPackedDomainFromResource(brokenDomainDescriptor.zipPath);
@@ -2438,35 +1957,6 @@ public class DeploymentServiceTestCase extends AbstractMuleContextTestCase
         catch (AssertionError expected)
         {
         }
-    }
-
-    private void deploysAppAndVerifyAnchorFileIsCreatedAfterDeploymentEnds(Action deployArtifactAction) throws Exception
-    {
-        Action verifyAnchorFileDoesNotExistsAction = new Action()
-        {
-            @Override
-            public void perform() throws Exception
-            {
-                assertApplicationAnchorFileDoesNotExists(waitAppDescriptor.id);
-            }
-        };
-        Action verifyDeploymentSuccessfulAction = new Action()
-        {
-            @Override
-            public void perform() throws Exception
-            {
-                assertApplicationDeploymentSuccess(applicationDeploymentListener, waitAppDescriptor.id);
-            }
-        };
-        Action verifyAnchorFileExistsAction = new Action()
-        {
-            @Override
-            public void perform() throws Exception
-            {
-                assertApplicationAnchorFileExists(waitAppDescriptor.id);
-            }
-        };
-        deploysArtifactAndVerifyAnchorFileCreatedWhenDeploymentEnds(deployArtifactAction, verifyAnchorFileDoesNotExistsAction, verifyDeploymentSuccessfulAction, verifyAnchorFileExistsAction);
     }
 
     private void deploysDomainAndVerifyAnchorFileIsCreatedAfterDeploymentEnds(Action deployArtifactAction) throws Exception

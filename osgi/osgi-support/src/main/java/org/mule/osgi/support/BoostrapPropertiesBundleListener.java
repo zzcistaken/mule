@@ -7,7 +7,6 @@
 
 package org.mule.osgi.support;
 
-import org.mule.api.lifecycle.InitialisationException;
 import org.mule.config.bootstrap.BootstrapService;
 import org.mule.config.bootstrap.ClassPathRegistryBootstrapDiscoverer;
 import org.mule.config.bootstrap.PropertiesBootstrapService;

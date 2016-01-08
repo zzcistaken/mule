@@ -134,6 +134,7 @@ public class MuleCoreFeature extends FeatureInfo
 
         // Sample Mule Application
         //dependencies.add(new BundleInfo("mvn:org.mule.osgi/mule-osgi-sample-app/4.0-SNAPSHOT/jar", 40));
+        dependencies.add(new BundleInfo("mvn:org.mule.osgi/mule-osgi-deployer/4.0-SNAPSHOT/jar", 40));
 
         return dependencies;
     }
