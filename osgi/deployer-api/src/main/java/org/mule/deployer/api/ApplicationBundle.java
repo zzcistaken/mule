@@ -9,19 +9,11 @@ package org.mule.deployer.api;
 
 import org.mule.config.i18n.MessageFactory;
 import org.mule.deployer.api.descriptor.ApplicationDescriptor;
-import org.mule.util.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Map;
 
-import org.eclipse.equinox.region.RegionFilter;
-import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
-import org.osgi.framework.wiring.BundleCapability;
-import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.service.subsystem.Subsystem;
 
 public class ApplicationBundle implements ArtifactBundle
@@ -93,8 +85,6 @@ public class ApplicationBundle implements ArtifactBundle
     {
         File tempBundle = File.createTempFile("appBundle", "tmp");
 
-        //FileCompressor fileCompressor = new FileCompressor();
-        //tempBundle = fileCompressor.compress(tempFolder.getAbsolutePath(), tempBundle.getAbsolutePath());
         //TODO(pablo.kraan): OSGi - use a temp folder here
         FileCompressor.zip(sourceAppFolder, tempBundle);
         if (!tempBundle.exists())
@@ -158,73 +148,4 @@ public class ApplicationBundle implements ArtifactBundle
         return descriptor.getConfigResourcesFile();
     }
 
-    private static class MuleRegionFilter implements RegionFilter
-    {
-
-        public static final boolean SHOW_REGION_FILTERING = isShowRegionFiltering();
-
-        private static boolean isShowRegionFiltering()
-        {
-            String value = System.getProperty("mule.osgi.showRegionFiltering", "false");
-
-            return Boolean.valueOf(value);
-        }
-
-        private final String region;
-
-        private MuleRegionFilter(String region)
-        {
-            this.region = region;
-        }
-
-        @Override
-        public boolean isAllowed(Bundle bundle)
-        {
-            logRegionFiltering("Region: " + region + " - isAllowed bundle: " + bundle.getSymbolicName());
-            return true;
-        }
-
-        @Override
-        public boolean isAllowed(BundleRevision bundleRevision)
-        {
-            logRegionFiltering("Region: " + region + " - isAllowed bundleRevision:: " + bundleRevision);
-            return true;
-        }
-
-        @Override
-        public boolean isAllowed(ServiceReference<?> serviceReference)
-        {
-            logRegionFiltering("Region: " + region + " - isAllowed: serviceReference: " + serviceReference);
-            return true;
-        }
-
-        @Override
-        public boolean isAllowed(BundleCapability bundleCapability)
-        {
-            logRegionFiltering("Region: " + region + " - isAllowed: bundleCapability: " + bundleCapability);
-            return true;
-        }
-
-        @Override
-        public boolean isAllowed(String s, Map<String, ?> stringMap)
-        {
-            logRegionFiltering("Region: " + region + " - isAllowed: " + s + " stringMap: " + stringMap);
-            return true;
-        }
-
-        @Override
-        public Map<String, Collection<String>> getSharingPolicy()
-        {
-            logRegionFiltering("Region: " + region + " - isAllowed: getSharingPolicy");
-            return null;
-        }
-
-        private void logRegionFiltering(String message)
-        {
-            //if (SHOW_REGION_FILTERING)
-            //{
-            System.out.println(message);
-            //}
-        }
-    }
 }
