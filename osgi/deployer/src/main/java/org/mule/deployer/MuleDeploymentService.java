@@ -28,7 +28,9 @@ import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.eclipse.equinox.region.RegionDigraph;
 import org.osgi.framework.BundleContext;
+import org.osgi.service.subsystem.Subsystem;
 
 public class MuleDeploymentService implements DeploymentService
 {
@@ -50,7 +52,7 @@ public class MuleDeploymentService implements DeploymentService
     private final DeploymentDirectoryWatcher deploymentDirectoryWatcher;
     private DefaultArchiveDeployer applicationDeployer;
 
-    public MuleDeploymentService(BundleContext bundleContext, DeploymentListener applicationDeploymentListener)
+    public MuleDeploymentService(BundleContext bundleContext, DeploymentListener applicationDeploymentListener, Subsystem rootSubsystem)
     {
         //DomainClassLoaderRepository domainClassLoaderRepository = new MuleDomainClassLoaderRepository();
         //
@@ -75,7 +77,7 @@ public class MuleDeploymentService implements DeploymentService
         ArtifactBundleDeployer<ApplicationBundle> applicationMuleDeployer = new DefaultArtifactBundleDeployer<>();
 
 
-        this.applicationDeployer = new DefaultArchiveDeployer(applicationMuleDeployer, applications, deploymentLock, NOP_ARTIFACT_DEPLOYMENT_TEMPLATE, new ApplicationBundleFactory(bundleContext));
+        this.applicationDeployer = new DefaultArchiveDeployer(applicationMuleDeployer, applications, deploymentLock, NOP_ARTIFACT_DEPLOYMENT_TEMPLATE, new ApplicationBundleFactory(bundleContext, rootSubsystem));
         this.applicationDeployer.setDeploymentListener(applicationDeploymentListener);
 
         deploymentDirectoryWatcher = new DeploymentDirectoryWatcher(applicationDeployer, applications, deploymentLock);

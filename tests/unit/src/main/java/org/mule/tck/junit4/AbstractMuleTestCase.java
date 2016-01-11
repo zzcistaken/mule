@@ -66,8 +66,9 @@ public abstract class AbstractMuleTestCase
 
         System.setProperty(TESTING_MODE_PROPERTY_NAME, StringUtils.EMPTY);
 
-        // register the custom UrlStreamHandlerFactory.
-        MuleUrlStreamHandlerFactory.installUrlStreamHandlerFactory();
+        //TODO(pablo.kraan): OSGi - removed this... is still needed?
+        //// register the custom UrlStreamHandlerFactory.
+        //MuleUrlStreamHandlerFactory.installUrlStreamHandlerFactory();
     }
 
     protected final transient Log logger = LogFactory.getLog(this.getClass());

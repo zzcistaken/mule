@@ -41,6 +41,41 @@
             <artifactId>mule-core</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.aries.subsystem</groupId>
+            <artifactId>org.apache.aries.subsystem.api</artifactId>
+            <version>2.0.6</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.subsystem</groupId>
+            <artifactId>org.apache.aries.subsystem.core</artifactId>
+            <version>2.0.6</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries</groupId>
+            <artifactId>org.apache.aries.util</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.configadmin</artifactId>
+            <version>1.8.8</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.coordinator</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.equinox</groupId>
+            <artifactId>org.eclipse.equinox.region</artifactId>
+            <version>1.2.101.v20150831-1342</version>
+        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.eclipse.equinox</groupId>-->
+            <!--<artifactId>org.eclipse.equinox.region</artifactId>-->
+            <!--<version>1.1.0.v20120522-1841</version>-->
+        <!--</dependency>-->
     </dependencies>
 </project>
 

@@ -9,24 +9,34 @@ package org.mule.deployer.api;
 
 import org.mule.config.i18n.MessageFactory;
 import org.mule.deployer.api.descriptor.ApplicationDescriptor;
+import org.mule.util.FileUtils;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Map;
 
+import org.eclipse.equinox.region.RegionFilter;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleException;
+import org.osgi.framework.ServiceReference;
+import org.osgi.framework.wiring.BundleCapability;
+import org.osgi.framework.wiring.BundleRevision;
+import org.osgi.service.subsystem.Subsystem;
 
 public class ApplicationBundle implements ArtifactBundle
 {
 
     private final BundleContext bundleContext;
     private final ApplicationDescriptor descriptor;
-    private Bundle bundle;
+    private final Subsystem rootSubsystem;
+    private Subsystem appSubsystem;
 
-    public ApplicationBundle(BundleContext bundleContext, ApplicationDescriptor descriptor)
+    public ApplicationBundle(BundleContext bundleContext, ApplicationDescriptor descriptor, Subsystem rootSubsystem)
     {
         this.bundleContext = bundleContext;
         this.descriptor = descriptor;
+        this.rootSubsystem = rootSubsystem;
     }
 
     @Override
@@ -38,15 +48,63 @@ public class ApplicationBundle implements ArtifactBundle
     @Override
     public void install() throws InstallException
     {
-        File explodedAppFolder = MuleFoldersUtil.getAppFolder(descriptor.getAppName());
+        //TODO(pablo.kraan): OSGi - this must go in the deployer module as a DefaultApplicationBundle
         try
         {
-            bundle = bundleContext.installBundle("reference:" + explodedAppFolder.toURI().toString());
+            File sourceAppFolder = MuleFoldersUtil.getAppFolder(descriptor.getAppName());
+
+            //TODO(pablo.kraan): OSGi - can't make region to deploy a reference file (to deploy exploded), so create a file from it
+            File subSystemTempFolder = File.createTempFile("subSystemBundle", "tmp");
+            subSystemTempFolder.delete();
+            subSystemTempFolder.mkdir();
+            new SubsystemManifestBuilder().build(subSystemTempFolder, descriptor.getAppName() + "-subsystem");
+
+            //FileUtils.copyFile(new File("/Users/pablokraan/devel/workspaces/muleFull-4.x2/mule/osgi/bundle1/target/mule-bundle1-4.0-SNAPSHOT.jar"), new File(subSystemTempFolder, "mule-bundle1-4.0-SNAPSHOT.jar"));
+
+            File appBundleFile = compressAppBundle(sourceAppFolder, subSystemTempFolder);
+            File subSystemBundleFile = compressSubsystemBundle(subSystemTempFolder);
+
+            appSubsystem = rootSubsystem.install(subSystemBundleFile.toURI().toString());
         }
-        catch (BundleException e)
+        catch (Exception e)
         {
             throw new InstallException(MessageFactory.createStaticMessage("Unable to install application bundle"), e);
         }
+    }
+
+    private File compressSubsystemBundle(File sourceFolder) throws IOException
+    {
+        //TODO(pablo.kraan): OSGi - refactor this code
+        File tempBundle = File.createTempFile("subSystemBundle", "tmp");
+
+        //TODO(pablo.kraan): OSGi - use a temp folder here
+        FileCompressor.zip(sourceFolder, tempBundle);
+        if (!tempBundle.exists())
+        {
+            throw new IllegalStateException("Unable to create compressed bundle");
+        }
+
+        File compressedBundle = new File(sourceFolder, descriptor.getAppName() + "-subsystem" + ".esa");
+        tempBundle.renameTo(compressedBundle);
+        return compressedBundle;
+    }
+
+    private File compressAppBundle(File sourceAppFolder, File subSystemTempFolder) throws IOException
+    {
+        File tempBundle = File.createTempFile("appBundle", "tmp");
+
+        //FileCompressor fileCompressor = new FileCompressor();
+        //tempBundle = fileCompressor.compress(tempFolder.getAbsolutePath(), tempBundle.getAbsolutePath());
+        //TODO(pablo.kraan): OSGi - use a temp folder here
+        FileCompressor.zip(sourceAppFolder, tempBundle);
+        if (!tempBundle.exists())
+        {
+            throw new IllegalStateException("Unable to create compressed bundle");
+        }
+
+        File appBundleFile = new File(subSystemTempFolder, descriptor.getAppName() + ".jar");
+        tempBundle.renameTo(appBundleFile);
+        return appBundleFile;
     }
 
     @Override
@@ -54,9 +112,9 @@ public class ApplicationBundle implements ArtifactBundle
     {
         try
         {
-            bundle.start();
+            appSubsystem.start();
         }
-        catch (BundleException e)
+        catch (Exception e)
         {
             throw new DeploymentStartException(MessageFactory.createStaticMessage("Unable to start application bundle"), e);
         }
@@ -65,26 +123,32 @@ public class ApplicationBundle implements ArtifactBundle
     @Override
     public void stop() throws DeploymentStopException
     {
-        try
+        if (appSubsystem != null)
         {
-            bundle.stop();
-        }
-        catch (BundleException e)
-        {
-            throw new DeploymentStopException(MessageFactory.createStaticMessage("Unable to stop application bundle"), e);
+            try
+            {
+                appSubsystem.stop();
+            }
+            catch (Exception e)
+            {
+                throw new DeploymentStopException(MessageFactory.createStaticMessage("Unable to stop application bundle"), e);
+            }
         }
     }
 
     @Override
     public void dispose()
     {
-        try
+        if (appSubsystem != null)
         {
-            bundle.uninstall();
-        }
-        catch (BundleException e)
-        {
-            //TODO(pablo.kraan): OSGi - log error
+            try
+            {
+                appSubsystem.uninstall();
+            }
+            catch (Exception e)
+            {
+                //TODO(pablo.kraan): OSGi - log error
+            }
         }
     }
 
@@ -92,5 +156,75 @@ public class ApplicationBundle implements ArtifactBundle
     public File[] getResourceFiles()
     {
         return descriptor.getConfigResourcesFile();
+    }
+
+    private static class MuleRegionFilter implements RegionFilter
+    {
+
+        public static final boolean SHOW_REGION_FILTERING = isShowRegionFiltering();
+
+        private static boolean isShowRegionFiltering()
+        {
+            String value = System.getProperty("mule.osgi.showRegionFiltering", "false");
+
+            return Boolean.valueOf(value);
+        }
+
+        private final String region;
+
+        private MuleRegionFilter(String region)
+        {
+            this.region = region;
+        }
+
+        @Override
+        public boolean isAllowed(Bundle bundle)
+        {
+            logRegionFiltering("Region: " + region + " - isAllowed bundle: " + bundle.getSymbolicName());
+            return true;
+        }
+
+        @Override
+        public boolean isAllowed(BundleRevision bundleRevision)
+        {
+            logRegionFiltering("Region: " + region + " - isAllowed bundleRevision:: " + bundleRevision);
+            return true;
+        }
+
+        @Override
+        public boolean isAllowed(ServiceReference<?> serviceReference)
+        {
+            logRegionFiltering("Region: " + region + " - isAllowed: serviceReference: " + serviceReference);
+            return true;
+        }
+
+        @Override
+        public boolean isAllowed(BundleCapability bundleCapability)
+        {
+            logRegionFiltering("Region: " + region + " - isAllowed: bundleCapability: " + bundleCapability);
+            return true;
+        }
+
+        @Override
+        public boolean isAllowed(String s, Map<String, ?> stringMap)
+        {
+            logRegionFiltering("Region: " + region + " - isAllowed: " + s + " stringMap: " + stringMap);
+            return true;
+        }
+
+        @Override
+        public Map<String, Collection<String>> getSharingPolicy()
+        {
+            logRegionFiltering("Region: " + region + " - isAllowed: getSharingPolicy");
+            return null;
+        }
+
+        private void logRegionFiltering(String message)
+        {
+            //if (SHOW_REGION_FILTERING)
+            //{
+            System.out.println(message);
+            //}
+        }
     }
 }

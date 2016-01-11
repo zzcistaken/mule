@@ -28,6 +28,7 @@ import org.apache.commons.logging.LogFactory;
  * <p>
  * @see java.net.URL#URL(String, String, int, String)
  */
+//TODO(pablo.kraan): OSGi - do we still need this class?
 public class MuleUrlStreamHandlerFactory extends Object implements URLStreamHandlerFactory
 {
     

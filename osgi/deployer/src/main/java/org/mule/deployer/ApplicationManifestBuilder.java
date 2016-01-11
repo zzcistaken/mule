@@ -39,7 +39,11 @@ public class ApplicationManifestBuilder
         manifestBuilder.addHeader("Bundle-SymbolicName", appName);
         manifestBuilder.addHeader("Bundle-Version", "0.0.0");
         manifestBuilder.addHeader("Created-By", this.getClass().getName());
+        //TODO(pablo.kraan): OSGi - looks like the DynamicImport-Package directive is ignored on subsystems
         manifestBuilder.addHeader("DynamicImport-Package", "*");
+        manifestBuilder.addHeader("Import-Package", "org.osgi.framework;resolution:=mandatory;version=\"[1.7\n" +
+                                                           " .0,2.0.0)\",org.mule.config;resolution:=mandatory;version=\"[4.0.0,5.0.\n" +
+                                                           " 0)\",org.mule.osgi.app;resolution:=mandatory;version=\"[4.0.0,5.0.0)\"");
         manifestBuilder.addHeader("Bundle-Activator", "org.mule.osgi.app.MuleApplicationActivator");
         File manifestFile = manifestBuilder.build();
         if (manifestFile == null || !manifestFile.exists())
