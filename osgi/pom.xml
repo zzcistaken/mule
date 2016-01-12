@@ -36,6 +36,5 @@
         <module>features</module>
         <module>karaf-distribution</module>
         <module>karaf-integration-tests</module>
-        <module>bundle1</module>
     </modules>
 </project>

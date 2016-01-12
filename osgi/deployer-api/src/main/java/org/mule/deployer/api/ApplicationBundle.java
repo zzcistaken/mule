@@ -9,6 +9,7 @@ package org.mule.deployer.api;
 
 import org.mule.config.i18n.MessageFactory;
 import org.mule.deployer.api.descriptor.ApplicationDescriptor;
+import org.mule.util.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -50,8 +51,6 @@ public class ApplicationBundle implements ArtifactBundle
             subSystemTempFolder.delete();
             subSystemTempFolder.mkdir();
             new SubsystemManifestBuilder().build(subSystemTempFolder, descriptor.getAppName() + "-subsystem");
-
-            //FileUtils.copyFile(new File("/Users/pablokraan/devel/workspaces/muleFull-4.x2/mule/osgi/bundle1/target/mule-bundle1-4.0-SNAPSHOT.jar"), new File(subSystemTempFolder, "mule-bundle1-4.0-SNAPSHOT.jar"));
 
             File appBundleFile = compressAppBundle(sourceAppFolder, subSystemTempFolder);
             File subSystemBundleFile = compressSubsystemBundle(subSystemTempFolder);

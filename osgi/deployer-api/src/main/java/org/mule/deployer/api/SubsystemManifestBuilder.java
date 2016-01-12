@@ -32,7 +32,7 @@ public class SubsystemManifestBuilder
         //TODO(pablo.kraan): OSGi - tis must be an application, but there is a problem as XSD schemas are not found
         //manifestBuilder.addHeader("Subsystem-Type", "osgi.subsystem.application;provision-policy:= acceptDependencies");
         manifestBuilder.addHeader("Subsystem-Type", "osgi.subsystem.feature");
-        manifestBuilder.addHeader("Import-Package", "org.osgi.framework;resolution:=mandatory;version=\"1.3.0\"");
+        //manifestBuilder.addHeader("Import-Package", "org.osgi.framework;resolution:=mandatory;version=\"1.3.0\"");
 
         File manifestFile = manifestBuilder.build();
         if (manifestFile == null || !manifestFile.exists())

@@ -40,11 +40,11 @@ public class ApplicationDeploymentTestCase extends AbstractDeployerFunctionalTes
     //TODO(pablo.kraan): OSGi - add a test for deployment an app with libraries
     //TODO(pablo.kraan): OSGi - add a test for deployment an app with plugins
 
-    //@Override
-    //public int getTestTimeoutSecs()
-    //{
-    //    return 120000;
-    //}
+    @Override
+    public int getTestTimeoutSecs()
+    {
+        return 120000;
+    }
 
     @Test
     public void deploysAppZipOnStartup() throws Exception
