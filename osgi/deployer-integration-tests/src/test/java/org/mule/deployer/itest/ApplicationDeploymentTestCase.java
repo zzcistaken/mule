@@ -91,6 +91,28 @@ public class ApplicationDeploymentTestCase extends AbstractDeployerFunctionalTes
     }
 
     @Test
+    public void deploysAppWithContainedLibZipOnStartup() throws Exception
+    {
+        final List<ApplicationBundle> applications = deploymentService.getApplications();
+        assertThat(applications, empty());
+        addPackedAppFromResource(containedLibAppDescriptor.zipPath);
+
+        deploymentService.start();
+
+        assertApplicationDeploymentSuccess(applicationDeploymentListener, containedLibAppDescriptor.id);
+        assertAppsDir(NONE, new String[] {containedLibAppDescriptor.id}, true);
+        assertApplicationAnchorFileExists(containedLibAppDescriptor.id);
+                          Thread.sleep(15000);
+        //TODO(pablo.kraan): OSGi - check if we still need to access app mule context and stuff
+        //// just assert no privileged entries were put in the registry
+        //final Application app = findApp(containedLibAppDescriptor.id, 1);
+        //final MuleRegistry registry = getMuleRegistry(app);
+        //
+        //// mule-app.properties from the zip archive must have loaded properly
+        //assertEquals("mule-app.properties should have been loaded.", "someValue", registry.get("myCustomProp"));
+    }
+
+    @Test
     public void mantainsAppFolderOnExplodedAppDeploymentError() throws Exception
     {
         deploymentService.start();

@@ -17,16 +17,19 @@ import org.mule.deployer.api.descriptor.ApplicationDescriptor;
 import java.io.File;
 import java.io.IOException;
 
+import org.eclipse.equinox.region.RegionDigraph;
 import org.osgi.framework.BundleContext;
 
 public class ApplicationBundleFactory implements ArtifactBundleFactory<ApplicationBundle>
 {
 
     private final BundleContext bundleContext;
+    private final RegionDigraph regions;
 
-    public ApplicationBundleFactory(BundleContext bundleContext)
+    public ApplicationBundleFactory(BundleContext bundleContext, RegionDigraph regions)
     {
         this.bundleContext = bundleContext;
+        this.regions = regions;
     }
 
     @Override
@@ -40,7 +43,7 @@ public class ApplicationBundleFactory implements ArtifactBundleFactory<Applicati
         AppBloodhound bh = new DefaultAppBloodhound();
         final ApplicationDescriptor descriptor = bh.fetch(artifactName);
 
-        return new ApplicationBundle(bundleContext, descriptor);
+        return new ApplicationBundle(bundleContext, descriptor, regions);
     }
 
     @Override

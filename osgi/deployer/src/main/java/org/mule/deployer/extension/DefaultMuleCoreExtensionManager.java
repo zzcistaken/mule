@@ -10,6 +10,7 @@ import org.mule.MuleCoreExtension;
 import org.mule.api.DefaultMuleException;
 import org.mule.api.MuleException;
 import org.mule.api.lifecycle.InitialisationException;
+import org.mule.deployer.api.BundleContextAware;
 import org.mule.deployer.api.DeploymentService;
 
 import java.util.LinkedList;
@@ -24,6 +25,7 @@ public class DefaultMuleCoreExtensionManager implements MuleCoreExtensionManager
 
     protected static final Log logger = LogFactory.getLog(DefaultMuleCoreExtensionManager.class);
 
+    private final BundleContext bundleContext;
     private final MuleCoreExtensionDiscoverer coreExtensionDiscoverer;
     private final MuleCoreExtensionDependencyResolver coreExtensionDependencyResolver;
     private List<MuleCoreExtension> coreExtensions = new LinkedList<>();
@@ -34,11 +36,12 @@ public class DefaultMuleCoreExtensionManager implements MuleCoreExtensionManager
 
     public DefaultMuleCoreExtensionManager(BundleContext bundleContext)
     {
-        this(new OsgiCoreExtensionDiscoverer(bundleContext), new ReflectionMuleCoreExtensionDependencyResolver());
+        this(bundleContext, new OsgiCoreExtensionDiscoverer(bundleContext), new ReflectionMuleCoreExtensionDependencyResolver());
     }
 
-    public DefaultMuleCoreExtensionManager(MuleCoreExtensionDiscoverer coreExtensionDiscoverer, MuleCoreExtensionDependencyResolver coreExtensionDependencyResolver)
+    public DefaultMuleCoreExtensionManager(BundleContext bundleContext, MuleCoreExtensionDiscoverer coreExtensionDiscoverer, MuleCoreExtensionDependencyResolver coreExtensionDependencyResolver)
     {
+        this.bundleContext = bundleContext;
         this.coreExtensionDiscoverer = coreExtensionDiscoverer;
         this.coreExtensionDependencyResolver = coreExtensionDependencyResolver;
     }
@@ -116,6 +119,10 @@ public class DefaultMuleCoreExtensionManager implements MuleCoreExtensionManager
 
         for (MuleCoreExtension extension : orderedCoreExtensions)
         {
+            if (extension instanceof BundleContextAware)
+            {
+                ((BundleContextAware) extension).setBundleContext(bundleContext);
+            }
             //TODO(pablo.kraan): OSGi - add core extensions dependency injection
             //if (extension instanceof DeploymentServiceAware)
             //{

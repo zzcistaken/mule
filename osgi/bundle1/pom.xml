@@ -23,7 +23,6 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-Activator>org.mule.deployer.DeployerActivator</Bundle-Activator>
                         <Package-Export>org.mule.deployer.*</Package-Export>
                     </instructions>
                 </configuration>

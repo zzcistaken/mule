@@ -139,6 +139,7 @@ public class MuleCoreFeature extends FeatureInfo
         //TODO(pablo.kraan): OSGi - WARNING - Adding this dependency here just to make development easier at the moment. This must go inside an EE feature
         dependencies.add(new BundleInfo("mvn:com.mulesoft.muleesb.modules/mule-module-plugin-ee/4.0-SNAPSHOT/jar", 40));
 
+        dependencies.add(new BundleInfo("mvn:org.mule.osgi/mule-osgi-deployer-api/4.0-SNAPSHOT/jar", 40));
         dependencies.add(new BundleInfo("mvn:org.mule.osgi/mule-osgi-deployer/4.0-SNAPSHOT/jar", 40));
         dependencies.add(new BundleInfo("mvn:org.mule.osgi/mule-bundle1/4.0-SNAPSHOT/jar", 40));
 

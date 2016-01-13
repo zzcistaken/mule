@@ -113,6 +113,7 @@ public abstract class AbstractDeployerFunctionalTestCase extends AbstractMuleTes
     protected static final ArtifactDescriptor incompleteAppDescriptor = new ArtifactDescriptor("incompleteApp", "/incompleteApp.zip", "/incompleteApp", "incompleteApp.zip", null);
     protected static final ArtifactDescriptor waitAppDescriptor = new ArtifactDescriptor("wait-app", "/wait-app.zip", "/wait-app", "wait-app.zip", "mule-config.xml");
     protected static final ArtifactDescriptor sharedPluginLibAppDescriptor = new ArtifactDescriptor("shared-plugin-lib-app", "/shared-plugin-lib-app.zip", "/shared-plugin-lib-app", "shared-plugin-lib-app.zip", "mule-config.xml");
+    protected static final ArtifactDescriptor containedLibAppDescriptor = new ArtifactDescriptor("app-contained-lib", "/app-contained-lib.zip", null, "app-contained-lib.zip", null);
     private static String originalMuleHome;
 
     protected DeploymentListener applicationDeploymentListener = mock(DeploymentListener.class);
