@@ -76,6 +76,9 @@ MULE_HOME=`echo ${MULE_HOME} | sed -e 's/\/$//'`
 export MULE_HOME
 echo "MULE_HOME is set to ${MULE_HOME}"
 
+# TODO(pablo.kraa) - OSGi - avoid removing the Felix cache
+rm -rf ${MULE_HOME}/felix-cache
+
 # If MULE_BASE is not set, set it to MULE_HOME
 if [ -z "$MULE_BASE" ] ; then
     MULE_BASE=$MULE_HOME
