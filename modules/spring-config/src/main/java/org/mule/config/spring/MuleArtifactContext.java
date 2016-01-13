@@ -14,6 +14,10 @@ import static org.springframework.context.annotation.AnnotationConfigUtils.REQUI
 import org.mule.api.MuleContext;
 import org.mule.config.ConfigResource;
 import org.mule.config.spring.editors.MulePropertyEditorRegistrar;
+import org.mule.config.spring.language.FlowConfigLineParser;
+import org.mule.config.spring.language.ConfigParserRegistry;
+import org.mule.config.spring.language.SetPayloadConfigLineParser;
+import org.mule.config.spring.language.ApplicationFilesParser;
 import org.mule.config.spring.processors.AnnotatedTransformerObjectPostProcessor;
 import org.mule.config.spring.processors.DiscardedOptionalBeanPostProcessor;
 import org.mule.config.spring.processors.ExpressionEnricherPostProcessor;
@@ -25,6 +29,8 @@ import org.mule.registry.MuleRegistryHelper;
 import org.mule.util.IOUtils;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor;
@@ -56,6 +62,7 @@ public class MuleArtifactContext extends AbstractXmlApplicationContext
     private MuleContext muleContext;
     private Resource[] springResources;
     private final OptionalObjectsController optionalObjectsController;
+    private ApplicationFilesParser xmlConfigFileParser;
 
     /**
      * Parses configuration files creating a spring ApplicationContext which is used
@@ -111,6 +118,23 @@ public class MuleArtifactContext extends AbstractXmlApplicationContext
         this.muleContext = muleContext;
         this.springResources = springResources;
         this.optionalObjectsController = optionalObjectsController;
+        //TODO verify I'm using the right app name
+        this.xmlConfigFileParser = new ApplicationFilesParser(muleContext.getConfiguration().getId(), collectFiles(springResources));
+    }
+
+    private List<String> collectFiles(Resource[] springResources) {
+        List<String> configFiles = new ArrayList<>();
+        for (Resource resource : springResources) {
+            //TODO change to just filter mule config files for artifacts
+            if (resource.getFilename().endsWith("language-config.xml")) {
+                try {
+                    configFiles.add(resource.getFile().getAbsolutePath());
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+        return configFiles;
     }
 
     @Override
@@ -130,6 +154,11 @@ public class MuleArtifactContext extends AbstractXmlApplicationContext
                               new DiscardedOptionalBeanPostProcessor(optionalObjectsController, (DefaultListableBeanFactory) beanFactory),
                               new LifecycleStatePostProcessor(muleContext.getLifecycleManager().getState())
         );
+
+        ConfigParserRegistry configParserRegistry = new ConfigParserRegistry();
+        new FlowConfigLineParser().register(configParserRegistry);
+        new SetPayloadConfigLineParser().register(configParserRegistry);
+        addBeanFactoryPostProcessor(new MuleObjectCreationBeanDefinitionRegistryPostProcessor(this.xmlConfigFileParser.parse(), configParserRegistry));
 
         beanFactory.registerSingleton(OBJECT_MULE_CONTEXT, muleContext);
     }

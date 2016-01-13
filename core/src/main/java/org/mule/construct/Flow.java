@@ -9,15 +9,12 @@ package org.mule.construct;
 import org.mule.DefaultMuleEvent;
 import org.mule.OptimizedRequestContext;
 import org.mule.VoidMuleEvent;
-import org.mule.api.DefaultMuleException;
-import org.mule.api.MessagingException;
-import org.mule.api.MuleContext;
-import org.mule.api.MuleEvent;
-import org.mule.api.MuleException;
-import org.mule.api.MuleMessage;
+import org.mule.api.*;
+import org.mule.api.context.MuleContextAware;
 import org.mule.api.context.WorkManager;
 import org.mule.api.execution.ExecutionCallback;
 import org.mule.api.execution.ExecutionTemplate;
+import org.mule.api.lifecycle.RegistableObject;
 import org.mule.api.processor.DynamicPipeline;
 import org.mule.api.processor.DynamicPipelineBuilder;
 import org.mule.api.processor.DynamicPipelineException;
@@ -40,6 +37,8 @@ import org.mule.processor.strategy.AsynchronousProcessingStrategy;
 import org.mule.processor.strategy.NonBlockingProcessingStrategy;
 import org.mule.processor.strategy.QueuedAsynchronousProcessingStrategy;
 import org.mule.routing.requestreply.AsyncReplyToPropertyRequestReplyReplier;
+
+import javax.inject.Inject;
 
 /**
  * This implementation of {@link AbstractPipeline} adds the following functionality:
