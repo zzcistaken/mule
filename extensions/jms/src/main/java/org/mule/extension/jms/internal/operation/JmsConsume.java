@@ -14,6 +14,7 @@ import org.mule.extension.annotation.api.param.Optional;
 import org.mule.extension.annotation.api.param.UseConfig;
 import org.mule.extension.jms.api.AckMode;
 import org.mule.extension.jms.api.JmsConnector;
+import org.mule.extension.jms.api.message.JmsAttributes;
 
 import java.util.function.Supplier;
 
@@ -28,8 +29,9 @@ public class JmsConsume
 {
 
     @Operation
-    MuleMessage consume(@Connection JmsConnection connection,
+    public MuleMessage<Object, JmsAttributes> consume(@Connection JmsConnection connection,
                         @UseConfig JmsConnector jmsConnector,
+                        //TODO change to use default values using defautlValoues Optional attribute
                         @Optional DestinationType destinationType,
                         @Optional AckMode ackMode,
                         @Optional String selector,
@@ -43,9 +45,10 @@ public class JmsConsume
             MessageConsumer consumer = null;
             try
             {
-                session = connection.createSession(convertAckMode(ackMode, false));
+                session = connection.createSession(convertAckMode(resolveAckMode(jmsConnector.getAckMode(), ackMode), false));
                 Destination jmsDestination = connection.getJmsSupport().createDestination(session, destination, destinationType.isTopic());
-                consumer = connection.getJmsSupport().createConsumer(session, jmsDestination, selector, jmsConnector.isNoLocal(), destinationType.isTopic() ? destinationType.getDurableSubscriptionName() : null, destinationType.isTopic());
+                java.util.Optional<String> durableName = java.util.Optional.ofNullable(destinationType.isTopic() ? destinationType.getDurableSubscriptionName() : null);
+                consumer = connection.getJmsSupport().createConsumer(session, jmsDestination, selector, jmsConnector.isNoLocal(), durableName, destinationType.isTopic());
                 Message receive = resolveConsumeMessage(maximumWaitTime, consumer).get();
                 return convertJmsMessageToMuleMessage(receive);
             }
@@ -59,6 +62,15 @@ public class JmsConsume
         {
             throw new RuntimeException(e);
         }
+    }
+
+    private AckMode resolveAckMode(AckMode configAckMode, AckMode operationAckMode)
+    {
+        if (operationAckMode != null)
+        {
+            return operationAckMode;
+        }
+        return configAckMode;
     }
 
     private Supplier<Message> resolveConsumeMessage(Long maximumWaitTime, MessageConsumer consumer)

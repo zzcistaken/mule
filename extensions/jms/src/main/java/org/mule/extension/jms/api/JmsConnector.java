@@ -53,10 +53,6 @@ public class JmsConnector implements Initialisable
     private boolean persistentDelivery;
 
     @Parameter
-    @Optional
-    private String clientId;
-
-    @Parameter
     @Optional(defaultValue = "4")
     private Integer priority;
 
@@ -101,11 +97,6 @@ public class JmsConnector implements Initialisable
     public boolean isNoLocal()
     {
         return noLocal;
-    }
-
-    public java.util.Optional<String> getClientId()
-    {
-        return java.util.Optional.ofNullable(clientId);
     }
 
     @Override

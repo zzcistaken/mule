@@ -10,6 +10,7 @@ import static org.mule.extension.jms.internal.support.LookupJndiDestination.ALWA
 import org.mule.api.endpoint.ImmutableEndpoint;
 
 import java.text.MessageFormat;
+import java.util.Optional;
 import java.util.function.Function;
 
 import javax.jms.Connection;
@@ -128,19 +129,19 @@ public class Jms102bSupport extends Jms11Support
                                           Destination destination,
                                           String messageSelector,
                                           boolean noLocal,
-                                          String durableName,
+                                          Optional<String> durableName,
                                           boolean topic) throws JMSException
     {
         if (topic && session instanceof TopicSession)
         {
-            if (durableName == null)
+            if (!durableName.isPresent())
             {
                 return ((TopicSession) session).createSubscriber((Topic) destination, messageSelector, noLocal);
             }
             else
             {
                 // DO NOT REMOVE THE CAST, breaks Weblogic
-                return ((TopicSession) session).createDurableSubscriber((Topic) destination, durableName, messageSelector, noLocal);
+                return ((TopicSession) session).createDurableSubscriber((Topic) destination, durableName.get(), messageSelector, noLocal);
             }
         }
         else if (session instanceof QueueSession)

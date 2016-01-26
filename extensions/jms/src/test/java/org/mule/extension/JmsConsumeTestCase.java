@@ -8,28 +8,24 @@ package org.mule.extension;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-
-import org.mule.api.temporary.MuleMessage;
+import org.mule.api.MuleEvent;
 
 import org.junit.Test;
 
-public class JmsSubscriberTestCase extends AbstractJmsTestCase
+public class JmsConsumeTestCase extends AbstractJmsTestCase
 {
 
     @Override
     protected String getConfigFile()
     {
-        return "jms-subscriber-test-case";
+        return "jms-consume-test-case.xml";
     }
 
     @Test
-    public void subscribe() throws Exception
+    public void test() throws Exception
     {
-        String textMessage = "my message";
-        sendMessageToQueue("myQueue", textMessage);
-        MuleMessage message = muleContext.getClient().request("test://out", RECEIVE_TIMEOUT);
-        assertThat(message.getPayload(), is("my message"));
+        getJmsTemplate().convertAndSend("myQueue", "myMessage");
+        MuleEvent testFlow = runFlow("testFlow");
+        assertThat(testFlow.getMessage().getPayload(), is("myMessage"));
     }
-
-
 }

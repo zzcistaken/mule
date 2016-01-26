@@ -313,6 +313,7 @@ public class DefaultMuleMessage extends TypedValue<Object> implements MuleMessag
         super(resolveValue(message), dataType.cloneDataType());
         id = previous.getUniqueId();
         rootId = previous.getMessageRootId();
+        attributes = previous.getAttributes();
         setMuleContext(muleContext);
 
         if (message instanceof MuleMessage)

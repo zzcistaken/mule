@@ -36,15 +36,19 @@ import javax.jms.Destination;
 import javax.jms.ExceptionListener;
 import javax.jms.JMSException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * A {@link org.mule.api.connection.ConnectionProvider} which provides instances of
- * {@link org.mule.module.extension.file.api.FileSystem} from instances of {@link org.mule.extension.jms.api.JmsConnector}
+ * {@link org.mule.extension.jms.api.GenericConnectionProvider} from instances of {@link org.mule.extension.jms.api.JmsConnector}
  *
  * @since 4.0
  */
 @Alias("generic")
 public final class GenericConnectionProvider implements ConnectionProvider<JmsConnector, JmsConnection>, Startable, Initialisable, ExceptionListener, Stoppable
 {
+    private Logger logger = LoggerFactory.getLogger(GenericConnectionProvider.class);
 
     @Parameter
     private ConnectionFactory connectionFactory;
@@ -61,8 +65,9 @@ public final class GenericConnectionProvider implements ConnectionProvider<JmsCo
     @Optional(defaultValue = JmsConstants.JMS_SPECIFICATION_11)
     private String specification;
 
-    //TODO discuss with MG how can I get the config injected
-    private JmsConnector jmsConnector;
+    @Parameter
+    @Optional
+    private String clientId;
 
     private JmsSupport jmsSupport;
     private java.util.Optional<JndiConnectionFactory> jndiConnectionFactoryOptional = java.util.Optional.empty();;
@@ -104,6 +109,7 @@ public final class GenericConnectionProvider implements ConnectionProvider<JmsCo
         try
         {
             this.connection = createConnection();
+            this.connection.start();
         }
         catch (JMSException e)
         {
@@ -118,7 +124,6 @@ public final class GenericConnectionProvider implements ConnectionProvider<JmsCo
         {
             jndiConnectionFactoryOptional = java.util.Optional.of((JndiConnectionFactory) connectionFactory);
         }
-
         createJmsSupport();
     }
 
@@ -175,10 +180,10 @@ public final class GenericConnectionProvider implements ConnectionProvider<JmsCo
         if (connection != null)
         {
             // EE-1901: only sets the clientID if it was not already set
-            java.util.Optional<String> configuredClientIdOptional = jmsConnector.getClientId();
-            if (configuredClientIdOptional.isPresent() && !jmsConnector.getClientId().get().equals(connection.getClientID()))
+            java.util.Optional<String> configuredClientIdOptional = java.util.Optional.ofNullable(clientId);
+            if (configuredClientIdOptional.isPresent() && !configuredClientIdOptional.get().equals(connection.getClientID()))
             {
-                connection.setClientID(jmsConnector.getClientId().get());
+                connection.setClientID(configuredClientIdOptional.get());
             }
 
             //TODO review embeddedMode improvement
@@ -236,6 +241,17 @@ public final class GenericConnectionProvider implements ConnectionProvider<JmsCo
     public void stop() throws MuleException
     {
         disconnecting = true;
-
+        try
+        {
+            connection.close();
+        }
+        catch (Exception e)
+        {
+            logger.warn(e.getMessage());
+            if (logger.isDebugEnabled())
+            {
+                logger.debug(e.getMessage(), e);
+            }
+        }
     }
 }

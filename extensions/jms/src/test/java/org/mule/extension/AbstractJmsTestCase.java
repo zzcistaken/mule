@@ -13,7 +13,23 @@ import org.springframework.jms.core.JmsTemplate;
 public class AbstractJmsTestCase extends ExtensionFunctionalTestCase
 {
 
+    public static final String DEFAULT_TEST_CONNECTION_FACTORY_NAME = "connectionFactory";
+
     private JmsTemplate jmsTemplate;
+
+    public JmsTemplate getJmsTemplate()
+    {
+        if (jmsTemplate == null)
+        {
+            jmsTemplate = new JmsTemplate(muleContext.getRegistry().get(DEFAULT_TEST_CONNECTION_FACTORY_NAME));
+        }
+        return jmsTemplate;
+    }
+
+    public void sendMessageToQueue(String destination, Object messageContent)
+    {
+        getJmsTemplate().convertAndSend(destination, messageContent);
+    }
 
 
 }

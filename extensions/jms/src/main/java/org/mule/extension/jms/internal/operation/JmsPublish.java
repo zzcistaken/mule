@@ -6,6 +6,7 @@
  */
 package org.mule.extension.jms.internal.operation;
 
+import static java.util.Optional.ofNullable;
 import org.mule.api.temporary.MuleMessage;
 import org.mule.extension.annotation.api.Operation;
 import org.mule.extension.annotation.api.param.Connection;
@@ -23,17 +24,18 @@ import javax.jms.Session;
 public class JmsPublish
 {
 
+    private MessageBuilder defaultMessageBuilder = new MessageBuilder();
+
     //TODO add transaction support
     //TODO persistentDelivery, priority, timeToLive should have the value inherited from the config if no value is provided
     @Operation
     public void publish(@Connection JmsConnection connection,
                  String destination,
-                 @Optional boolean persistentDeliveryParameter,
+                 @Optional boolean persistentDelivery,
                  @Optional DestinationType destinationType,
                  @Optional MessageBuilder messageBuilder,
                  @Optional Integer priority,
-                 @Optional Long timeToLive,
-                 MuleMessage<Object, Serializable> muleMessage) throws Exception
+                 @Optional Long timeToLive) throws Exception
     {
         Session session = null;
         MessageProducer producer = null;
@@ -42,8 +44,9 @@ public class JmsPublish
             session = connection.createSession(JmsConnection.AckMode.AUTO);
             Destination jmsDestination = connection.getJmsSupport().createDestinationFromAddress(session, destination, destinationType.isTopic());
             producer = connection.getJmsSupport().createProducer(session, jmsDestination, destinationType.isTopic());
-            Message message = messageBuilder.build(session, muleMessage);
-            connection.getJmsSupport().send(producer, message, persistentDeliveryParameter, priority, timeToLive, destinationType.isTopic());
+            messageBuilder = ofNullable(messageBuilder).orElse(defaultMessageBuilder);
+            //Message message = messageBuilder.build(session, muleMessage);
+            //connection.getJmsSupport().send(producer, message, persistentDelivery, priority, timeToLive, destinationType.isTopic());
         }
         finally
         {

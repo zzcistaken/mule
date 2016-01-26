@@ -7,6 +7,7 @@
 package org.mule.extension.jms.internal.message;
 
 import org.mule.DefaultMuleMessage;
+import org.mule.api.MuleContext;
 import org.mule.api.temporary.MuleMessage;
 import org.mule.extension.jms.api.message.JmsHeaders;
 import org.mule.extension.jms.internal.JmsMessageUtils;
@@ -30,11 +31,12 @@ public class JmsMuleMessageFactory
 
     private static final Logger logger = LoggerFactory.getLogger(JmsMuleMessageFactory.class);
 
-    public MuleMessage createMessage(Message message, JmsSupport.JmsSpecification specification) throws IOException, JMSException
+    public MuleMessage createMessage(Message message, JmsSupport.JmsSpecification specification, MuleContext muleContext) throws IOException, JMSException
     {
         DefaultJmsAttributes jmsAttributes = new DefaultJmsAttributes(createMessageProperties(message), createJmsHeades(message));
         Object payload = getPayload(message, specification);
         DefaultMuleMessage defaultMuleMessage = new DefaultMuleMessage(payload, jmsAttributes);
+        defaultMuleMessage.setMuleContext(muleContext);
         return defaultMuleMessage;
     }
 

@@ -6,6 +6,8 @@
  */
 package org.mule.extension.jms.internal.support;
 
+import java.util.Optional;
+
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
@@ -45,7 +47,7 @@ public interface JmsSupport
                                    Destination destination,
                                    String messageSelector,
                                    boolean noLocal,
-                                   String durableName,
+                                   Optional<String> durableName,
                                    boolean topic) throws JMSException;
 
     MessageConsumer createConsumer(Session session, Destination destination, boolean topic)

@@ -6,7 +6,10 @@
  */
 package org.mule.extension.jms.internal.source;
 
+import org.mule.api.MuleContext;
 import org.mule.api.execution.CompletionHandler;
+import org.mule.api.lifecycle.Initialisable;
+import org.mule.api.lifecycle.InitialisationException;
 import org.mule.api.temporary.MuleMessage;
 import org.mule.extension.annotation.api.Parameter;
 import org.mule.extension.annotation.api.param.Connection;
@@ -17,7 +20,9 @@ import org.mule.extension.jms.api.message.JmsAttributes;
 import org.mule.extension.jms.internal.message.JmsMuleMessageFactory;
 import org.mule.extension.jms.internal.operation.DestinationType;
 import org.mule.extension.jms.internal.operation.JmsConnection;
+import org.mule.extension.jms.internal.operation.QueueDestinationType;
 
+import javax.inject.Inject;
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -25,7 +30,7 @@ import javax.jms.MessageConsumer;
 import javax.jms.MessageListener;
 import javax.jms.Session;
 
-public class Subscriber extends Source<Object, JmsAttributes>
+public class Subscriber extends Source<Object, JmsAttributes> implements Initialisable
 {
 
     @Parameter
@@ -37,8 +42,8 @@ public class Subscriber extends Source<Object, JmsAttributes>
     private Integer maxRedelivery;
 
     @Parameter
-    @Optional
-    private Boolean noLocal;
+    @Optional(defaultValue = "false")
+    private boolean noLocal;
 
     @Parameter
     @Optional
@@ -49,23 +54,26 @@ public class Subscriber extends Source<Object, JmsAttributes>
 
     @Parameter
     @Optional
-    private DestinationType destinationType;
+    private DestinationType destinationType = new QueueDestinationType();
 
     @Connection
     private JmsConnection connection;
 
+    @Inject
+    private MuleContext muleContext;
+
     private JmsMuleMessageFactory jmsMuleMessageFactory = new JmsMuleMessageFactory();
+    private MessageConsumer consumer;
+    private Session session;
 
     @Override
     public void start()
     {
-        Session session = null;
-        MessageConsumer consumer = null;
         try
         {
             session = connection.createSession(convertAckMode(ackMode));
             Destination jmsDestination = connection.getJmsSupport().createDestination(session, destination, destinationType.isTopic());
-            String durableName = destinationType.isTopic() && destinationType.useDurableTopicSubscription() ? destinationType.getDurableSubscriptionName() : null;
+            java.util.Optional<String> durableName = java.util.Optional.ofNullable(destinationType.isTopic() && destinationType.useDurableTopicSubscription() ? destinationType.getDurableSubscriptionName() : null);
             consumer = connection.getJmsSupport().createConsumer(session, jmsDestination, selector, noLocal, durableName, destinationType.isTopic());
             consumer.setMessageListener(new MessageListener()
             {
@@ -85,7 +93,7 @@ public class Subscriber extends Source<Object, JmsAttributes>
                     }
                     try
                     {
-                        sourceContext.getMessageHandler().handle(jmsMuleMessageFactory.createMessage(message, connection.getJmsSupport().getSpecification()), new CompletionHandler<MuleMessage<Object,JmsAttributes>, Exception>()
+                        sourceContext.getMessageHandler().handle(jmsMuleMessageFactory.createMessage(message, connection.getJmsSupport().getSpecification(), muleContext), new CompletionHandler<MuleMessage<Object,JmsAttributes>, Exception>()
                         {
                             @Override
                             public void onCompletion(MuleMessage muleMessage)
@@ -119,11 +127,9 @@ public class Subscriber extends Source<Object, JmsAttributes>
         }
         catch (Exception e)
         {
-            sourceContext.getExceptionCallback().onException(e);
-        }
-        finally
-        {
+            connection.closeQuietly(consumer);
             connection.closeQuietly(session);
+            sourceContext.getExceptionCallback().onException(e);
         }
     }
 
@@ -150,6 +156,17 @@ public class Subscriber extends Source<Object, JmsAttributes>
     @Override
     public void stop()
     {
+        connection.closeQuietly(consumer);
+        connection.closeQuietly(session);
+    }
 
+    @Override
+    public void initialise() throws InitialisationException
+    {
+        //TODO MULE-9350 - remove once SDK does not overrides default value with null
+        if (destinationType == null)
+        {
+            destinationType = new QueueDestinationType();
+        }
     }
 }

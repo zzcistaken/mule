@@ -9,6 +9,7 @@ package org.mule.extension.jms.internal.support;
 import com.google.common.base.Preconditions;
 
 import java.text.MessageFormat;
+import java.util.Optional;
 import java.util.function.Function;
 
 import javax.jms.Connection;
@@ -97,10 +98,10 @@ public class Jms11Support implements JmsSupport
                                           Destination destination,
                                           String messageSelector,
                                           boolean noLocal,
-                                          String durableName,
+                                          Optional<String> durableName,
                                           boolean topic) throws JMSException
     {
-        if (durableName == null)
+        if (!durableName.isPresent())
         {
             if (topic)
             {
@@ -115,7 +116,7 @@ public class Jms11Support implements JmsSupport
         {
             if (topic)
             {
-                return session.createDurableSubscriber((Topic) destination, durableName, messageSelector,
+                return session.createDurableSubscriber((Topic) destination, durableName.get(), messageSelector,
                     noLocal);
             }
             else

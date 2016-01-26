@@ -73,7 +73,62 @@ public final class ReflectiveMethodOperationExecutor implements OperationExecuto
     @Override
     public Object execute(OperationContext operationContext) throws Exception
     {
-        return invokeMethod(operationMethod, executorDelegate, getParameterValues(operationContext));
+        return invokeMethod(operationMethod, executorDelegate, resolvePrimitiveTypes(operationMethod, getParameterValues(operationContext)));
+    }
+
+    private Object[] resolvePrimitiveTypes(Method operationMethod, Object[] parameterValues)
+    {
+        Object[] resolvedParameters = new Object[parameterValues.length];
+        for (int i = 0; i < parameterValues.length; i++)
+        {
+            Object parameterValue = parameterValues[i];
+            if (parameterValue == null)
+            {
+                resolvedParameters[i] = resolvePrimitiveTypeDefaultValue(operationMethod.getParameterTypes()[i]);
+            }
+            else
+            {
+                resolvedParameters[i] = parameterValue;
+            }
+        }
+        return resolvedParameters;
+    }
+
+    private Object resolvePrimitiveTypeDefaultValue(Class<?> type)
+    {
+        if (type.equals(byte.class))
+        {
+            return (byte) 0;
+        }
+        if (type.equals(short.class))
+        {
+            return (short) 0;
+        }
+        if (type.equals(int.class))
+        {
+            return 0;
+        }
+        if (type.equals(long.class))
+        {
+            return 0l;
+        }
+        if (type.equals(float.class))
+        {
+            return 0.0f;
+        }
+        if (type.equals(double.class))
+        {
+            return 0.0d;
+        }
+        if (type.equals(boolean.class))
+        {
+            return false;
+        }
+        if (type.equals(char.class))
+        {
+            return '\u0000';
+        }
+        return null;
     }
 
     private Object[] getParameterValues(OperationContext operationContext)
