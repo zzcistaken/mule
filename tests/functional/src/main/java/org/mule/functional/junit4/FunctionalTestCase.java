@@ -7,6 +7,7 @@
 package org.mule.functional.junit4;
 
 import static org.junit.Assert.fail;
+import static org.mule.module.classloader.MuleClassLoaderFactory.createMuleClassLoader;
 import static org.mule.execution.TransactionalExecutionTemplate.createTransactionalExecutionTemplate;
 
 import org.mule.DefaultMuleEvent;
@@ -35,6 +36,7 @@ import org.mule.construct.AbstractPipeline;
 import org.mule.construct.Flow;
 import org.mule.functional.functional.FlowAssert;
 import org.mule.functional.functional.FunctionalTestComponent;
+import org.mule.module.classloader.MuleClassLoaderFactory;
 import org.mule.processor.chain.SubflowInterceptingChainLifecycleWrapper;
 import org.mule.tck.SensingNullReplyToHandler;
 import org.mule.tck.junit4.AbstractMuleContextTestCase;
@@ -81,8 +83,7 @@ public abstract class FunctionalTestCase extends AbstractMuleContextTestCase
     @Override
     protected ClassLoader getExecutionClassLoader()
     {
-        //TODO(pablo.kraan): CCL - must use the same class as the one used on the launcher module
-        return MuleClassLoaderFactory.createMuleClassLoader();
+        return createMuleClassLoader();
     }
 
     @Override
@@ -282,7 +283,7 @@ public abstract class FunctionalTestCase extends AbstractMuleContextTestCase
 
     /**
      * Runs the given flow with a default event inside a transaction
-     * 
+     *
      * @param flowName the name of the flow to be executed
      * @param action See {@link TransactionConfig} constants
      * @param factory See {@link MuleTransactionConfig#setFactory(TransactionFactory)}.
@@ -296,7 +297,7 @@ public abstract class FunctionalTestCase extends AbstractMuleContextTestCase
 
     /**
      * Runs the given flow with a default event inside a transaction
-     * 
+     *
      * @param flowName the name of the flow to be executed
      * @param payload the payload to use in the message
      * @param action See {@link TransactionConfig} constants
