@@ -17,7 +17,7 @@
         <jms:generic-connection connectionFactory="connectionFactory" />
     </jms:config>
 
-    <flow name="testFlow">
+    <flow name="minimalConfig">
         <jms:subscriber destination="myQueue"/>
         <test:queue name="out"/>
     </flow>

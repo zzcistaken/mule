@@ -26,7 +26,7 @@ import javax.jms.Session;
 public interface JmsSupport
 {
     public enum JmsSpecification {
-        JMS_1_0_2b, JMS_1_1;
+        JMS_1_0_2b, JMS_1_1, JMS_2_0;
     }
 
     Connection createConnection(ConnectionFactory connectionFactory) throws JMSException;

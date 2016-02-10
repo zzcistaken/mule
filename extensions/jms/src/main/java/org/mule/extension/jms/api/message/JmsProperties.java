@@ -6,14 +6,13 @@
  */
 package org.mule.extension.jms.api.message;
 
-import java.io.Serializable;
 import java.util.Map;
 
-public interface JmsAttributes extends Serializable
+public interface JmsProperties extends Map<String, Object>
 {
 
-    JmsProperties getProperties();
-    JmsHeaders getHeaders();
-    void acknowlewdge();
+    Map<String, Object> getUserProperties();
+    Map<String, Object> getJmsProperties();
+    Map<String, Object> getJmsxProperties();
 
 }

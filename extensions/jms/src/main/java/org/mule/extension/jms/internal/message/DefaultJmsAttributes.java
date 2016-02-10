@@ -8,21 +8,22 @@ package org.mule.extension.jms.internal.message;
 
 import org.mule.extension.jms.api.message.JmsAttributes;
 import org.mule.extension.jms.api.message.JmsHeaders;
+import org.mule.extension.jms.api.message.JmsProperties;
 
 import java.util.Map;
 
 public class DefaultJmsAttributes implements JmsAttributes
 {
-    private Map<String, Object> properties;
+    private JmsProperties properties;
     private JmsHeaders headers;
 
-    public DefaultJmsAttributes(Map<String, Object> properties, JmsHeaders headers)
+    public DefaultJmsAttributes(JmsProperties properties, JmsHeaders headers)
     {
         this.properties = properties;
         this.headers = headers;
     }
 
-    public Map<String, Object> getProperties()
+    public JmsProperties getProperties()
     {
         return properties;
     }

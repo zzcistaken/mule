@@ -6,11 +6,14 @@
  */
 package org.mule.extension;
 
+import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 
 import javax.jms.Message;
+import javax.jms.TextMessage;
 
+import org.hamcrest.core.Is;
 import org.junit.Test;
 
 public class JmsPublishTestCase extends AbstractJmsTestCase
@@ -23,10 +26,11 @@ public class JmsPublishTestCase extends AbstractJmsTestCase
     }
 
     @Test
-    public void test() throws Exception
+    public void minimalConfig() throws Exception
     {
-        runFlow("testFlow");
+        runFlow("minimalConfig", TEST_PAYLOAD);
         Message message = getJmsTemplate().receive("myQueue");
         assertThat(message, notNullValue());
+        assertThat(((TextMessage)message).getText(), is(TEST_PAYLOAD));
     }
 }

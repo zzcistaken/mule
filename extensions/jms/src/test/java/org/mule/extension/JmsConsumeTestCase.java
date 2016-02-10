@@ -22,10 +22,10 @@ public class JmsConsumeTestCase extends AbstractJmsTestCase
     }
 
     @Test
-    public void test() throws Exception
+    public void minimalConfig() throws Exception
     {
-        getJmsTemplate().convertAndSend("myQueue", "myMessage");
-        MuleEvent testFlow = runFlow("testFlow");
-        assertThat(testFlow.getMessage().getPayload(), is("myMessage"));
+        getJmsTemplate().convertAndSend("myQueue", TEST_PAYLOAD);
+        MuleEvent testFlow = runFlow("minimalConfig");
+        assertThat(testFlow.getMessage().getPayload(), is(TEST_PAYLOAD));
     }
 }

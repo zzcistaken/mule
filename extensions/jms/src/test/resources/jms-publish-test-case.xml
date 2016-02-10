@@ -15,7 +15,7 @@
         <jms:generic-connection connectionFactory="connectionFactory" />
     </jms:config>
 
-    <flow name="testFlow">
+    <flow name="minimalConfig">
         <jms:publish destination="myQueue"/>
     </flow>
 

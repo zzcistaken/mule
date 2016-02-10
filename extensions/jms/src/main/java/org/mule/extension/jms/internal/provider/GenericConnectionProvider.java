@@ -4,7 +4,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.extension.jms.api;
+package org.mule.extension.jms.internal.provider;
 
 import org.mule.api.DefaultMuleException;
 import org.mule.api.MuleException;
@@ -20,6 +20,7 @@ import org.mule.api.lifecycle.Stoppable;
 import org.mule.extension.annotation.api.Alias;
 import org.mule.extension.annotation.api.Parameter;
 import org.mule.extension.annotation.api.param.Optional;
+import org.mule.extension.jms.api.JmsConnector;
 import org.mule.extension.jms.internal.connectionfactory.jndi.JndiConnectionFactory;
 import org.mule.extension.jms.internal.operation.JmsConnection;
 import org.mule.extension.jms.internal.support.Jms102bSupport;
@@ -41,12 +42,12 @@ import org.slf4j.LoggerFactory;
 
 /**
  * A {@link org.mule.api.connection.ConnectionProvider} which provides instances of
- * {@link org.mule.extension.jms.api.GenericConnectionProvider} from instances of {@link org.mule.extension.jms.api.JmsConnector}
+ * {@link GenericConnectionProvider} from instances of {@link org.mule.extension.jms.api.JmsConnector}
  *
  * @since 4.0
  */
 @Alias("generic")
-public final class GenericConnectionProvider implements ConnectionProvider<JmsConnector, JmsConnection>, Startable, Initialisable, ExceptionListener, Stoppable
+public class GenericConnectionProvider implements ConnectionProvider<JmsConnector, JmsConnection>, Startable, Initialisable, ExceptionListener, Stoppable
 {
     private Logger logger = LoggerFactory.getLogger(GenericConnectionProvider.class);
 
@@ -111,7 +112,11 @@ public final class GenericConnectionProvider implements ConnectionProvider<JmsCo
             this.connection = createConnection();
             this.connection.start();
         }
-        catch (JMSException e)
+        catch (MuleException e)
+        {
+            throw e;
+        }
+        catch (Exception e)
         {
             throw new DefaultMuleException(e);
         }
@@ -162,7 +167,7 @@ public final class GenericConnectionProvider implements ConnectionProvider<JmsCo
         }
     }
 
-    protected Connection createConnection() throws MuleException, JMSException
+    protected Connection createConnection() throws Exception
     {
         createConnectionFactory();
 
@@ -195,7 +200,7 @@ public final class GenericConnectionProvider implements ConnectionProvider<JmsCo
         return connection;
     }
 
-    private void createConnectionFactory() throws DefaultMuleException
+    protected void createConnectionFactory() throws Exception
     {
         //Already created since it's must be configured through the config.
     }
@@ -253,5 +258,40 @@ public final class GenericConnectionProvider implements ConnectionProvider<JmsCo
                 logger.debug(e.getMessage(), e);
             }
         }
+    }
+
+    protected String getUsername()
+    {
+        return username;
+    }
+
+    protected String getPassword()
+    {
+        return password;
+    }
+
+    protected String getSpecification()
+    {
+        return specification;
+    }
+
+    protected String getClientId()
+    {
+        return clientId;
+    }
+
+    protected JmsSupport getJmsSupport()
+    {
+        return jmsSupport;
+    }
+
+    protected ConnectionFactory getConnectionFactory() throws Exception
+    {
+        return connectionFactory;
+    }
+
+    protected void setConnectionFactory(ConnectionFactory connectionFactory)
+    {
+        this.connectionFactory = connectionFactory;
     }
 }

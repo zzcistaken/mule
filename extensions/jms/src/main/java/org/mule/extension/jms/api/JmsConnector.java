@@ -16,6 +16,8 @@ import org.mule.extension.annotation.api.Sources;
 import org.mule.extension.annotation.api.capability.Xml;
 import org.mule.extension.annotation.api.connector.Providers;
 import org.mule.extension.annotation.api.param.Optional;
+import org.mule.extension.jms.internal.provider.ActiveMqConnectionProvider;
+import org.mule.extension.jms.internal.provider.GenericConnectionProvider;
 import org.mule.extension.jms.internal.operation.JmsConsume;
 import org.mule.extension.jms.internal.operation.JmsPublish;
 import org.mule.extension.jms.internal.source.Subscriber;
@@ -27,7 +29,7 @@ import javax.inject.Inject;
  */
 @Extension(name = "JMS Connector", description = "Connector to connector to any JMS broker")
 @Operations({JmsConsume.class, JmsPublish.class})
-@Providers(GenericConnectionProvider.class)
+@Providers({GenericConnectionProvider.class, ActiveMqConnectionProvider.class})
 @Sources(Subscriber.class)
 @Xml(schemaLocation = "http://www.mulesoft.org/schema/mule/jms", namespace = "jms", schemaVersion = "4.0")
 public class JmsConnector implements Initialisable
@@ -49,7 +51,7 @@ public class JmsConnector implements Initialisable
     private boolean durableTopicSubscriber;
 
     @Parameter
-    @Optional(defaultValue = "false")
+    @Optional(defaultValue = "true")
     private boolean persistentDelivery;
 
     @Parameter

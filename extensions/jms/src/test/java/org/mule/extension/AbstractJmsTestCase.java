@@ -22,6 +22,7 @@ public class AbstractJmsTestCase extends ExtensionFunctionalTestCase
         if (jmsTemplate == null)
         {
             jmsTemplate = new JmsTemplate(muleContext.getRegistry().get(DEFAULT_TEST_CONNECTION_FACTORY_NAME));
+            jmsTemplate.setReceiveTimeout(RECEIVE_TIMEOUT);
         }
         return jmsTemplate;
     }

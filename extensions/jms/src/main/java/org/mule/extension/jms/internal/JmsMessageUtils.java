@@ -8,6 +8,7 @@ package org.mule.extension.jms.internal;
 
 import org.mule.api.transport.OutputHandler;
 import org.mule.extension.jms.internal.support.JmsSupport;
+import org.mule.transport.NullPayload;
 import org.mule.util.ArrayUtils;
 import org.mule.util.ClassUtils;
 import org.mule.util.IOUtils;
@@ -363,8 +364,7 @@ public class JmsMessageUtils
             return result;
         }
 
-        // what else is there to do?
-        return message;
+        return NullPayload.getInstance();
     }
 
     /**

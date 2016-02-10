@@ -15,6 +15,7 @@ import org.mule.extension.jms.internal.JmsMessageUtils;
 import java.io.Serializable;
 import java.util.List;
 
+import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Session;
 
@@ -28,17 +29,14 @@ public class MessageBuilder
     @Optional
     List<MessageProperty> properties;
 
-    public Message build(Session session, MuleMessage<Object, Serializable> muleMessage)
+    public Message build(Session session, MuleMessage<Object, Serializable> muleMessage) throws JMSException
     {
         //TODO review with MG how to deal with properties
-        //Message message = JmsMessageUtils.toMessage(muleMessage.getPayload(), session);
-
-
-
+        Message message = JmsMessageUtils.toMessage(muleMessage.getPayload(), session);
         if (sendContentType)
         {
 
         }
-        return null;
+        return message;
     }
 }
