@@ -8,6 +8,7 @@ package org.mule.module.http.internal.listener;
 
 import static org.mule.MessageExchangePattern.REQUEST_RESPONSE;
 import static org.mule.api.config.MuleProperties.MULE_ENCODING_PROPERTY;
+import static org.mule.api.config.MuleProperties.SYSTEM_PROPERTY_PREFIX;
 import static org.mule.module.http.api.HttpConstants.ALL_INTERFACES_IP;
 import static org.mule.module.http.internal.HttpParser.decodeUrlEncodedBody;
 import static org.mule.module.http.internal.domain.HttpProtocol.HTTP_0_9;
@@ -42,8 +43,12 @@ import java.util.Map;
 
 import javax.activation.DataHandler;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class HttpRequestToMuleEvent
 {
+    private static final Logger logger = LoggerFactory.getLogger(HttpRequestToMuleEvent.class);
 
     public static MuleEvent transform(final HttpRequestContext requestContext, final MuleContext muleContext, final FlowConstruct flowConstruct, Boolean parseRequest, ListenerPath listenerPath) throws HttpRequestParsingException
     {
@@ -77,7 +82,23 @@ public class HttpRequestToMuleEvent
         Object payload = NullPayload.getInstance();
         //We need to reject the request if the Content-Type is invalid, just like newer versions
         final String contentTypeValue = request.getHeaderValue(HttpHeaders.Names.CONTENT_TYPE);
-        final MediaType mediaType = contentTypeValue != null ? MediaType.parse(contentTypeValue) : null;
+        MediaType mediaType = null;
+        try
+        {
+            mediaType = contentTypeValue != null ? MediaType.parse(contentTypeValue) : null;
+        }
+        catch (IllegalArgumentException e)
+        {
+            if (Boolean.parseBoolean(System.getProperty(SYSTEM_PROPERTY_PREFIX + "laxContentType")))
+            {
+                logger.warn(String.format("%s when parsing Content-Type '%s': %s", e.getClass().getName(), contentTypeValue, e.getMessage()));
+                logger.warn(String.format("Using defualt encoding: %s", Charset.defaultCharset().name()));
+            }
+            else
+            {
+                throw e;// new IllegalArgumentException("Invalid Content-Type property value", e);
+            }
+        }
         if (parseRequest)
         {
             final HttpEntity entity = request.getEntity();
@@ -89,7 +110,7 @@ public class HttpRequestToMuleEvent
                 }
                 else
                 {
-                    if (contentTypeValue != null)
+                    if (mediaType != null)
                     {
                         String encoding = mediaType.charset().isPresent() ? mediaType.charset().get().name() : Charset.defaultCharset().name();
                         outboundProperties.put(MULE_ENCODING_PROPERTY, encoding);

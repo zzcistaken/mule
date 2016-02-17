@@ -6,7 +6,8 @@
  */
 package org.mule;
 
-import static org.mule.util.SystemUtils.LINE_SEPARATOR;
+import static org.apache.commons.lang.SystemUtils.LINE_SEPARATOR;
+
 import org.mule.api.ExceptionPayload;
 import org.mule.api.MuleContext;
 import org.mule.api.MuleEvent;
@@ -76,7 +77,7 @@ public class DefaultMuleMessage implements MuleMessage, ThreadSafeAccess, Deseri
 
     private static final long serialVersionUID = 1541720810851984845L;
     private static final Log logger = LogFactory.getLog(DefaultMuleMessage.class);
-    private static final List<Class<?>> consumableClasses = new ArrayList<Class<?>>();
+    private static final List<Class<?>> consumableClasses = new ArrayList<>();
 
     /**
      * The default UUID for the message. If the underlying transport has the notion of a
@@ -102,12 +103,12 @@ public class DefaultMuleMessage implements MuleMessage, ThreadSafeAccess, Deseri
     /**
      * Collection of attachments that were attached to the incoming message
      */
-    private transient Map<String, DataHandler> inboundAttachments = new HashMap<String, DataHandler>();
+    private transient Map<String, DataHandler> inboundAttachments = new HashMap<>();
 
     /**
      * Collection of attachments that will be sent out with this message
      */
-    private transient Map<String, DataHandler> outboundAttachments = new HashMap<String, DataHandler>();
+    private transient Map<String, DataHandler> outboundAttachments = new HashMap<>();
 
     private transient byte[] cache;
     protected transient MuleContext muleContext;
@@ -358,7 +359,22 @@ public class DefaultMuleMessage implements MuleMessage, ThreadSafeAccess, Deseri
             throw new IllegalArgumentException(CoreMessages.objectIsNull("resultType").getMessage());
         }
 
-        DataType source = DataTypeFactory.createFromObject(this);
+        DataType source;
+        try
+        {
+            source = DataTypeFactory.createFromObject(this);
+        }
+        catch (MuleRuntimeException e)
+        {
+            if (e.getCause() instanceof javax.activation.MimeTypeParseException)
+            {
+                source = DataTypeFactory.OBJECT;
+            }
+            else
+            {
+                throw e;
+            }
+        }
 
         // If no conversion is necessary, just return the payload as-is
         if (resultType.isCompatibleWith(source))
@@ -1593,7 +1609,7 @@ public class DefaultMuleMessage implements MuleMessage, ThreadSafeAccess, Deseri
     {
         if (null == ownerThread)
         {
-            ownerThread = new AtomicReference<Thread>();
+            ownerThread = new AtomicReference<>();
         }
         if (null == mutable)
         {
@@ -1767,7 +1783,7 @@ public class DefaultMuleMessage implements MuleMessage, ThreadSafeAccess, Deseri
         }
         else
         {
-            toWrite = new HashMap<String, SerializedDataHandler>(attachments.size());
+            toWrite = new HashMap<>(attachments.size());
             for (Map.Entry<String, DataHandler> entry : attachments.entrySet())
             {
                 String name = entry.getKey();
@@ -1787,7 +1803,7 @@ public class DefaultMuleMessage implements MuleMessage, ThreadSafeAccess, Deseri
         }
         else
         {
-            toReturn = new HashMap<String, DataHandler>(attachments.size());
+            toReturn = new HashMap<>(attachments.size());
             for (Map.Entry<String, SerializedDataHandler> entry : attachments.entrySet())
             {
                 toReturn.put(entry.getKey(), entry.getValue().getHandler());
@@ -1833,12 +1849,12 @@ public class DefaultMuleMessage implements MuleMessage, ThreadSafeAccess, Deseri
         this.muleContext = context;
         if (this.inboundAttachments == null)
         {
-            this.inboundAttachments = new HashMap<String, DataHandler>();
+            this.inboundAttachments = new HashMap<>();
         }
 
         if (this.outboundAttachments == null)
         {
-            this.outboundAttachments = new HashMap<String, DataHandler>();
+            this.outboundAttachments = new HashMap<>();
         }
     }
 
@@ -2002,13 +2018,13 @@ public class DefaultMuleMessage implements MuleMessage, ThreadSafeAccess, Deseri
         // We ignore inbound and invocation scopes since the VM receiver needs to behave the
         // same way as any other receiver in Mule and would only receive inbound headers
         // and attachments
-        Map<String, DataHandler> attachments = new HashMap<String, DataHandler>(3);
+        Map<String, DataHandler> attachments = new HashMap<>(3);
         for (String name : getOutboundAttachmentNames())
         {
             attachments.put(name, getOutboundAttachment(name));
         }
 
-        Map<String, Object> newInboundProperties = new HashMap<String, Object>(3);
+        Map<String, Object> newInboundProperties = new HashMap<>(3);
         for (String name : getOutboundPropertyNames())
         {
             newInboundProperties.put(name, getOutboundProperty(name));
