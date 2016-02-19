@@ -76,6 +76,15 @@ public abstract class AbstractImmutableModel implements Described, EnrichableMod
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Map<String,Object> getModelProperties()
+    {
+        return modelProperties;
+    }
+
+    /**
      * Defines object equality based on the given object
      * being an object of this class and in the equality
      * of the {@link #getName()} attributes

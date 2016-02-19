@@ -82,6 +82,7 @@ import org.mule.extension.api.introspection.DataType;
 import org.mule.extension.api.introspection.ExpressionSupport;
 import org.mule.extension.api.introspection.ExtensionFactory;
 import org.mule.extension.api.introspection.ExtensionModel;
+import org.mule.extension.api.introspection.IDataType;
 import org.mule.extension.api.introspection.Interceptable;
 import org.mule.extension.api.introspection.OperationModel;
 import org.mule.extension.api.introspection.ParameterModel;
@@ -434,7 +435,7 @@ public class ExtensionBuildersTestCase extends AbstractMuleTestCase
         }
     }
 
-    private void assertDataType(DataType dataType, Class<?> expectedRawType, DataQualifier expectedQualifier)
+    private void assertDataType(IDataType dataType, Class<?> expectedRawType, DataQualifier expectedQualifier)
     {
         assertThat(dataType.getRawType(), equalTo(expectedRawType));
         assertThat(dataType.getQualifier(), is(expectedQualifier));

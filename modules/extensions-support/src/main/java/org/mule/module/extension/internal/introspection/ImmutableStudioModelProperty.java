@@ -36,4 +36,10 @@ public final class ImmutableStudioModelProperty implements StudioModelProperty
     {
         return derived;
     }
+
+    @Override
+    public String getKey()
+    {
+        return StudioModelProperty.KEY;
+    }
 }

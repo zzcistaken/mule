@@ -53,4 +53,10 @@ public final class ImmutableXmlModelProperty implements XmlModelProperty
     {
         return schemaLocation;
     }
+
+    @Override
+    public String getKey()
+    {
+        return XmlModelProperty.KEY;
+    }
 }

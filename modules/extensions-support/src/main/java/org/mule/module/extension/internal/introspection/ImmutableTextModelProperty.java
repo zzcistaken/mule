@@ -16,4 +16,9 @@ import org.mule.extension.api.introspection.property.TextModelProperty;
 public final class ImmutableTextModelProperty implements TextModelProperty
 {
 
+    @Override
+    public String getKey()
+    {
+        return TextModelProperty.KEY;
+    }
 }

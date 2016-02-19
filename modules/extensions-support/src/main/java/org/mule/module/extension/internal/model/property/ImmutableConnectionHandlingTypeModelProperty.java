@@ -107,4 +107,10 @@ public final class ImmutableConnectionHandlingTypeModelProperty implements Conne
     {
         return poolingSupport;
     }
+
+    @Override
+    public String getKey()
+    {
+        return ConnectionHandlingTypeModelProperty.KEY;
+    }
 }

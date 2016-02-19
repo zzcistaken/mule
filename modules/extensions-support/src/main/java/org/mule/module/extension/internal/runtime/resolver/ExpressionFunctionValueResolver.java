@@ -9,6 +9,7 @@ package org.mule.module.extension.internal.runtime.resolver;
 import org.mule.api.MuleEvent;
 import org.mule.api.MuleException;
 import org.mule.extension.api.introspection.DataType;
+import org.mule.extension.api.introspection.IDataType;
 
 import java.util.function.Function;
 
@@ -22,7 +23,7 @@ public final class ExpressionFunctionValueResolver<T> implements ValueResolver<F
 {
 
     private final String exp;
-    private DataType dataType;
+    private IDataType dataType;
 
     public ExpressionFunctionValueResolver(String exp, DataType dataType)
     {

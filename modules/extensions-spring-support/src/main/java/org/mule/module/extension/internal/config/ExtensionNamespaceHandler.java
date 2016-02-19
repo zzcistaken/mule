@@ -11,8 +11,8 @@ import static org.mule.module.extension.internal.util.NameUtils.hyphenize;
 import static org.mule.util.Preconditions.checkState;
 import org.mule.config.spring.MuleArtifactContext;
 import org.mule.extension.api.ExtensionManager;
-import org.mule.extension.api.introspection.DataType;
 import org.mule.extension.api.introspection.ExtensionModel;
+import org.mule.extension.api.introspection.IDataType;
 import org.mule.extension.api.introspection.ParameterModel;
 import org.mule.extension.api.introspection.property.XmlModelProperty;
 import org.mule.module.extension.internal.introspection.AbstractDataQualifierVisitor;
@@ -130,7 +130,7 @@ public class ExtensionNamespaceHandler extends NamespaceHandlerSupport
         extensionModel.getOperationModels().forEach(operationModel -> registerTopLevelParameter(extensionModel, operationModel.getParameterModels()));
     }
 
-    private void registerTopLevelParameter(final ExtensionModel extensionModel, final DataType parameterType)
+    private void registerTopLevelParameter(final ExtensionModel extensionModel, final IDataType parameterType)
     {
         parameterType.getQualifier().accept(new AbstractDataQualifierVisitor()
         {
@@ -157,13 +157,13 @@ public class ExtensionNamespaceHandler extends NamespaceHandlerSupport
             @Override
             public void onMap()
             {
-                DataType[] genericTypes = parameterType.getGenericTypes();
+                IDataType[] genericTypes = parameterType.getGenericTypes();
                 if (ArrayUtils.isEmpty(genericTypes))
                 {
                     return;
                 }
 
-                DataType keyType = genericTypes[0];
+                IDataType keyType = genericTypes[0];
                 keyType.getQualifier().accept(this);
                 registerTopLevelParameter(extensionModel, keyType);
             }

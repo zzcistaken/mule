@@ -16,4 +16,9 @@ import org.mule.extension.api.introspection.property.PasswordModelProperty;
 public final class ImmutablePasswordModelProperty implements PasswordModelProperty
 {
 
+    @Override
+    public String getKey()
+    {
+        return PasswordModelProperty.KEY;
+    }
 }

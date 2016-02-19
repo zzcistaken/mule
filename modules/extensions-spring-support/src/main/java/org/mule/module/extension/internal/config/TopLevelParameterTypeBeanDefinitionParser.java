@@ -7,7 +7,7 @@
 package org.mule.module.extension.internal.config;
 
 import static org.mule.api.config.MuleProperties.OBJECT_MULE_CONTEXT;
-import org.mule.extension.api.introspection.DataType;
+import org.mule.extension.api.introspection.IDataType;
 
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.ParserContext;
@@ -26,9 +26,9 @@ import org.w3c.dom.Element;
  */
 final class TopLevelParameterTypeBeanDefinitionParser extends BaseExtensionBeanDefinitionParser
 {
-    private final DataType dataType;
+    private final IDataType dataType;
 
-    TopLevelParameterTypeBeanDefinitionParser(DataType dataType)
+    TopLevelParameterTypeBeanDefinitionParser(IDataType dataType)
     {
         super(TopLevelParameterTypeFactoryBean.class);
         this.dataType = dataType;

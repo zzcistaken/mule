@@ -28,6 +28,7 @@ import org.mule.extension.api.introspection.DataQualifier;
 import org.mule.extension.api.introspection.DataQualifierVisitor;
 import org.mule.extension.api.introspection.DataType;
 import org.mule.extension.api.introspection.ExpressionSupport;
+import org.mule.extension.api.introspection.IDataType;
 import org.mule.extension.api.introspection.ParameterModel;
 import org.mule.module.extension.internal.introspection.AbstractDataQualifierVisitor;
 import org.mule.module.extension.internal.introspection.SimpleTypeDataQualifierVisitor;
@@ -163,7 +164,7 @@ final class XmlExtensionParserDelegate
      */
     ValueResolver parseElement(final ElementDescriptor element,
                                final String fieldName,
-                               final DataType dataType,
+                               final IDataType dataType,
                                final Object defaultValue)
     {
         final String hyphenizedFieldName = hyphenize(fieldName);
@@ -358,9 +359,9 @@ final class XmlExtensionParserDelegate
 
     ValueResolver parseCollectionAsInnerElement(ElementDescriptor collectionElement,
                                                 String childElementName,
-                                                final DataType collectionType)
+                                                final IDataType collectionType)
     {
-        final DataType itemsType = ArrayUtils.isEmpty(collectionType.getGenericTypes()) ? DataType.of(Object.class) : collectionType.getGenericTypes()[0];
+        final IDataType itemsType = ArrayUtils.isEmpty(collectionType.getGenericTypes()) ? DataType.of(Object.class) : collectionType.getGenericTypes()[0];
         final List<ValueResolver<Object>> resolvers = new LinkedList<>();
 
         for (final ElementDescriptor item : collectionElement.getChildsByName(childElementName))
@@ -388,10 +389,10 @@ final class XmlExtensionParserDelegate
 
     ValueResolver parseMapAsInnerElement(ElementDescriptor mapElement,
                                          String childElementName,
-                                         DataType mapType)
+                                         IDataType mapType)
     {
-        final DataType keyType = mapType.getGenericTypes().length > 1 ? mapType.getGenericTypes()[0] : DataType.of(Object.class);
-        final DataType valueType = mapType.getGenericTypes().length > 1 ? mapType.getGenericTypes()[1] : DataType.of(Object.class);
+        final IDataType keyType = mapType.getGenericTypes().length > 1 ? mapType.getGenericTypes()[0] : DataType.of(Object.class);
+        final IDataType valueType = mapType.getGenericTypes().length > 1 ? mapType.getGenericTypes()[1] : DataType.of(Object.class);
         final List<ValueResolver<Object>> keyResolvers = new LinkedList<>();
         final List<ValueResolver<Object>> valueResolvers = new LinkedList<>();
 
@@ -445,7 +446,7 @@ final class XmlExtensionParserDelegate
                                   String parentElementName,
                                   String childElementName,
                                   Object defaultValue,
-                                  DataType collectionType)
+                                  IDataType collectionType)
     {
         ValueResolver resolver = getResolverFromAttribute(element, fieldName, collectionType, defaultValue);
         if (resolver == null)
@@ -469,7 +470,7 @@ final class XmlExtensionParserDelegate
                            String parentElementName,
                            String childElementName,
                            Object defaultValue,
-                           DataType mapDataType)
+                           IDataType mapDataType)
     {
         ValueResolver resolver = getResolverFromAttribute(element, fieldName, mapDataType, defaultValue);
         if (resolver == null)
@@ -488,7 +489,7 @@ final class XmlExtensionParserDelegate
         return resolver;
     }
 
-    ValueResolver getResolverFromAttribute(ElementDescriptor element, String attributeName, DataType expectedDataType, Object defaultValue)
+    ValueResolver getResolverFromAttribute(ElementDescriptor element, String attributeName, IDataType expectedDataType, Object defaultValue)
     {
         return getResolverFromValue(getAttributeValue(element, attributeName, defaultValue), expectedDataType);
     }
@@ -503,11 +504,11 @@ final class XmlExtensionParserDelegate
         this.infrastructureParameters = infrastructureParameters;
     }
 
-    private ValueResolver getResolverFromValue(final Object value, final DataType expectedDataType)
+    private ValueResolver getResolverFromValue(final Object value, final IDataType expectedDataType)
     {
         if (isExpressionFunction(expectedDataType) && value != null)
         {
-            return new ExpressionFunctionValueResolver<>((String) value, expectedDataType.getGenericTypes()[1]);
+            return new ExpressionFunctionValueResolver<String>((String) value, (DataType) expectedDataType.getGenericTypes()[1]);
         }
 
         if (isExpression(value, parser))
@@ -548,7 +549,7 @@ final class XmlExtensionParserDelegate
         return null;
     }
 
-    private boolean isExpressionFunction(DataType dataType)
+    private boolean isExpressionFunction(IDataType dataType)
     {
         return dataType.getRawType().equals(Function.class)
                && dataType.getGenericTypes().length == 2
@@ -569,7 +570,7 @@ final class XmlExtensionParserDelegate
     private ValueResolver parsePojo(ElementDescriptor element,
                                     String fieldName,
                                     String childElementName,
-                                    DataType pojoType,
+                                    IDataType pojoType,
                                     Object defaultValue)
     {
         // check if the pojo is referenced as an attribute
@@ -605,7 +606,7 @@ final class XmlExtensionParserDelegate
         return new StaticValueResolver(null);
     }
 
-    private ValueResolver getPojoValueResolver(DataType pojoType, ElementDescriptor element)
+    private ValueResolver getPojoValueResolver(IDataType pojoType, ElementDescriptor element)
     {
         return new ObjectBuilderValueResolver(recursePojoProperties(pojoType.getRawType(), element));
     }
@@ -681,7 +682,7 @@ final class XmlExtensionParserDelegate
                 String.format("Could not transform value of type '%s' to Date", value != null ? value.getClass().getName() : "null"));
     }
 
-    private ValueResolver parseCalendar(ElementDescriptor element, String attributeName, DataType dataType, Object defaultValue)
+    private ValueResolver parseCalendar(ElementDescriptor element, String attributeName, IDataType dataType, Object defaultValue)
     {
         Object value = getAttributeValue(element, attributeName, defaultValue);
         if (isExpression(value, parser))
@@ -696,7 +697,7 @@ final class XmlExtensionParserDelegate
         return new StaticValueResolver(calendar);
     }
 
-    private ValueResolver parseDate(ElementDescriptor element, String attributeName, DataType dataType, Object defaultValue)
+    private ValueResolver parseDate(ElementDescriptor element, String attributeName, IDataType dataType, Object defaultValue)
     {
         Object value = getAttributeValue(element, attributeName, defaultValue);
         if (isExpression(value, parser))

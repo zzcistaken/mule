@@ -15,7 +15,7 @@ import org.mule.api.MuleException;
 import org.mule.api.transformer.MessageTransformer;
 import org.mule.api.transformer.Transformer;
 import org.mule.api.transformer.TransformerException;
-import org.mule.extension.api.introspection.DataType;
+import org.mule.extension.api.introspection.IDataType;
 import org.mule.transformer.types.DataTypeFactory;
 import org.mule.util.AttributeEvaluator;
 import org.mule.util.ClassUtils;
@@ -42,12 +42,12 @@ import org.apache.commons.lang.StringUtils;
 public class TypeSafeExpressionValueResolver<T> implements ValueResolver<T>
 {
 
-    private final DataType expectedType;
+    private final IDataType expectedType;
     private final AttributeEvaluator evaluator;
     private MuleContext muleContext;
     private EvaluatorDelegate delegate = new CaptureContextEvaluatorDelegate();
 
-    public TypeSafeExpressionValueResolver(String expression, DataType expectedType)
+    public TypeSafeExpressionValueResolver(String expression, IDataType expectedType)
     {
         checkArgument(!StringUtils.isBlank(expression), "Expression cannot be blank or null");
         checkArgument(expectedType != null, "expected type cannot be null");

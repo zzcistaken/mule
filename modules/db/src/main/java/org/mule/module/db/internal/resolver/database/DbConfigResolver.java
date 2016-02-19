@@ -9,6 +9,7 @@ package org.mule.module.db.internal.resolver.database;
 
 import org.mule.api.AnnotatedObject;
 import org.mule.api.MuleEvent;
+import org.mule.api.config.Config;
 import org.mule.common.Testable;
 import org.mule.common.metadata.ConnectorMetaDataEnabled;
 import org.mule.module.db.internal.domain.database.DbConfig;
@@ -16,7 +17,7 @@ import org.mule.module.db.internal.domain.database.DbConfig;
 /**
  * Resolves a {@link DbConfig} for a given {@link MuleEvent}
  */
-public interface DbConfigResolver extends AnnotatedObject, Testable, ConnectorMetaDataEnabled
+public interface DbConfigResolver extends AnnotatedObject, Testable, ConnectorMetaDataEnabled, Config
 {
 
     /**

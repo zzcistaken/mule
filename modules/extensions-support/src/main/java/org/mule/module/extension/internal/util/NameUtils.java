@@ -9,6 +9,7 @@ package org.mule.module.extension.internal.util;
 import org.mule.extension.annotation.api.Alias;
 import org.mule.extension.api.introspection.DataType;
 import org.mule.extension.api.introspection.ExtensionModel;
+import org.mule.extension.api.introspection.IDataType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -260,7 +261,7 @@ public class NameUtils
      * @param type the {@link DataType} which name you want
      * @return the name for the given {@code type}
      */
-    public static String getTopLevelTypeName(DataType type)
+    public static String getTopLevelTypeName(IDataType type)
     {
         Alias alias = type.getRawType().getAnnotation(Alias.class);
         String name = alias != null ? alias.value() : type.getRawType().getSimpleName();

@@ -15,6 +15,7 @@ import org.mule.module.extension.internal.model.property.ParameterGroupModelProp
 import com.google.common.collect.ImmutableMap;
 
 import java.lang.reflect.Field;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -109,5 +110,14 @@ public class ParameterGroup implements EnrichableModel
     public void addModelProperty(String key, Object value)
     {
         modelProperties.put(key, value);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Map<String,Object> getModelProperties()
+    {
+        return modelProperties;
     }
 }

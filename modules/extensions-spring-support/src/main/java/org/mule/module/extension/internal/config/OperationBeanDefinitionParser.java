@@ -8,15 +8,14 @@ package org.mule.module.extension.internal.config;
 
 import static org.mule.api.config.MuleProperties.OBJECT_MULE_CONTEXT;
 import static org.springframework.beans.factory.config.BeanDefinition.SCOPE_SINGLETON;
-
 import org.mule.api.processor.MessageProcessor;
 import org.mule.config.spring.factories.MessageProcessorChainFactoryBean;
 import org.mule.config.spring.factories.PollingMessageSourceFactoryBean;
 import org.mule.config.spring.util.SpringXMLUtils;
 import org.mule.enricher.MessageEnricher;
 import org.mule.extension.api.introspection.DataQualifier;
-import org.mule.extension.api.introspection.DataType;
 import org.mule.extension.api.introspection.ExtensionModel;
+import org.mule.extension.api.introspection.IDataType;
 import org.mule.extension.api.introspection.OperationModel;
 import org.mule.extension.api.introspection.ParameterModel;
 import org.mule.module.extension.internal.introspection.AbstractDataQualifierVisitor;
@@ -79,7 +78,7 @@ final class OperationBeanDefinitionParser extends BaseExtensionBeanDefinitionPar
 
         for (final ParameterModel parameterModel : operationModel.getParameterModels())
         {
-            final DataType type = parameterModel.getType();
+            final IDataType type = parameterModel.getType();
             type.getQualifier().accept(new AbstractDataQualifierVisitor()
             {
 
@@ -92,7 +91,7 @@ final class OperationBeanDefinitionParser extends BaseExtensionBeanDefinitionPar
                 @Override
                 public void onList()
                 {
-                    DataType[] generics = type.getGenericTypes();
+                    IDataType[] generics = type.getGenericTypes();
                     if (!ArrayUtils.isEmpty(generics) && generics[0].getQualifier() == DataQualifier.OPERATION)
                     {
                         nestedOperations.put(parameterModel.getName(), parseNestedProcessor(element, parameterModel, parserContext));

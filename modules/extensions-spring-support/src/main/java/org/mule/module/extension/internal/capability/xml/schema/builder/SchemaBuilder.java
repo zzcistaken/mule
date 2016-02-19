@@ -57,6 +57,7 @@ import org.mule.extension.api.introspection.DataQualifierVisitor;
 import org.mule.extension.api.introspection.DataType;
 import org.mule.extension.api.introspection.ExpressionSupport;
 import org.mule.extension.api.introspection.ExtensionModel;
+import org.mule.extension.api.introspection.IDataType;
 import org.mule.extension.api.introspection.OperationModel;
 import org.mule.extension.api.introspection.ParameterModel;
 import org.mule.extension.api.introspection.ParametrizedModel;
@@ -115,8 +116,8 @@ public final class SchemaBuilder
 
     private static final String UNBOUNDED = "unbounded";
 
-    private final Set<DataType> registeredEnums = new HashSet<>();
-    private final Map<DataType, ComplexTypeHolder> registeredComplexTypesHolders = new HashMap<>();
+    private final Set<IDataType> registeredEnums = new HashSet<>();
+    private final Map<IDataType, ComplexTypeHolder> registeredComplexTypesHolders = new HashMap<>();
     private final Map<String, NamedGroup> substitutionGroups = new HashMap<>();
     private final ObjectFactory objectFactory = new ObjectFactory();
 
@@ -242,7 +243,7 @@ public final class SchemaBuilder
      * @param description the type's description
      * @return the reference name of the complexType
      */
-    private String registerPojoType(DataType type, String description)
+    private String registerPojoType(IDataType type, String description)
     {
         ComplexTypeHolder alreadyRegisteredType = registeredComplexTypesHolders.get(type);
         if (alreadyRegisteredType != null)
@@ -256,12 +257,12 @@ public final class SchemaBuilder
         return getBaseTypeName(type);
     }
 
-    private String getBaseTypeName(DataType type)
+    private String getBaseTypeName(IDataType type)
     {
         return type.getName();
     }
 
-    private TopLevelComplexType registerBasePojoType(DataType type, String description)
+    private TopLevelComplexType registerBasePojoType(IDataType type, String description)
     {
         final TopLevelComplexType complexType = new TopLevelComplexType();
         registeredComplexTypesHolders.put(type, new ComplexTypeHolder(complexType, type));
@@ -359,7 +360,7 @@ public final class SchemaBuilder
 
     public SchemaBuilder registerEnums()
     {
-        for (DataType enumToBeRegistered : registeredEnums)
+        for (IDataType enumToBeRegistered : registeredEnums)
         {
             registerEnum(schema, enumToBeRegistered);
         }
@@ -367,7 +368,7 @@ public final class SchemaBuilder
         return this;
     }
 
-    private void registerEnum(Schema schema, DataType enumType)
+    private void registerEnum(Schema schema, IDataType enumType)
     {
         TopLevelSimpleType enumSimpleType = new TopLevelSimpleType();
         enumSimpleType.setName(enumType.getName() + SchemaConstants.ENUM_TYPE_SUFFIX);
@@ -390,7 +391,7 @@ public final class SchemaBuilder
         return expression;
     }
 
-    private LocalSimpleType createEnumSimpleType(DataType enumType)
+    private LocalSimpleType createEnumSimpleType(IDataType enumType)
     {
         LocalSimpleType enumValues = new LocalSimpleType();
         Restriction restriction = new Restriction();
@@ -415,7 +416,7 @@ public final class SchemaBuilder
     private void registerComplexTypeChildElement(ExplicitGroup all,
                                                  String name,
                                                  String description,
-                                                 DataType type,
+                                                 IDataType type,
                                                  boolean required)
     {
         name = hyphenize(name);
@@ -428,7 +429,7 @@ public final class SchemaBuilder
         all.getParticle().add(objectFactory.createElement(objectElement));
     }
 
-    private void registerPojoGlobalElement(DataType type, String description)
+    private void registerPojoGlobalElement(IDataType type, String description)
     {
         TopLevelElement objectElement = new TopLevelElement();
         objectElement.setName(getTopLevelTypeName(type));
@@ -443,7 +444,7 @@ public final class SchemaBuilder
         schema.getSimpleTypeOrComplexTypeOrGroup().add(objectElement);
     }
 
-    private LocalComplexType newLocalComplexTypeWithBase(DataType type, String description)
+    private LocalComplexType newLocalComplexTypeWithBase(IDataType type, String description)
     {
         LocalComplexType objectComplexType = new LocalComplexType();
         objectComplexType.setComplexContent(new ComplexContent());
@@ -465,12 +466,12 @@ public final class SchemaBuilder
                                parameterModel.getExpressionSupport());
     }
 
-    Attribute createAttribute(String name, DataType type, boolean required, ExpressionSupport expressionSupport)
+    Attribute createAttribute(String name, IDataType type, boolean required, ExpressionSupport expressionSupport)
     {
         return createAttribute(name, EMPTY, type, null, required, expressionSupport);
     }
 
-    private Attribute createAttribute(final String name, String description, final DataType type, Object defaultValue, boolean required, final ExpressionSupport expressionSupport)
+    private Attribute createAttribute(final String name, String description, final IDataType type, Object defaultValue, boolean required, final ExpressionSupport expressionSupport)
     {
         final Attribute attribute = new Attribute();
         attribute.setUse(required ? SchemaConstants.USE_REQUIRED : SchemaConstants.USE_OPTIONAL);
@@ -509,7 +510,7 @@ public final class SchemaBuilder
         generateCollectionElement(all, parameterModel.getName(), parameterModel.getDescription(), parameterModel.getType(), required);
     }
 
-    private void generateCollectionElement(ExplicitGroup all, String name, String description, DataType type, boolean required)
+    private void generateCollectionElement(ExplicitGroup all, String name, String description, IDataType type, boolean required)
     {
         name = hyphenize(name);
 
@@ -524,7 +525,7 @@ public final class SchemaBuilder
         collectionElement.setComplexType(collectionComplexType);
     }
 
-    private LocalComplexType generateCollectionComplexType(String name, final String description, final DataType type)
+    private LocalComplexType generateCollectionComplexType(String name, final String description, final IDataType type)
     {
         final LocalComplexType collectionComplexType = new LocalComplexType();
         final ExplicitGroup sequence = new ExplicitGroup();
@@ -532,7 +533,7 @@ public final class SchemaBuilder
 
         final TopLevelElement collectionItemElement = createTopLevelElement(name, ZERO, SchemaConstants.UNBOUNDED);
 
-        final DataType genericType = getFirstGenericType(type);
+        final IDataType genericType = getFirstGenericType(type);
         genericType.getQualifier().accept(new AbstractDataQualifierVisitor()
         {
 
@@ -562,7 +563,7 @@ public final class SchemaBuilder
         generateMapElement(all, parameterModel.getName(), parameterModel.getDescription(), parameterModel.getType(), required);
     }
 
-    private void generateMapElement(ExplicitGroup all, String name, String description, DataType type, boolean required)
+    private void generateMapElement(ExplicitGroup all, String name, String description, IDataType type, boolean required)
     {
         name = hyphenize(name);
 
@@ -577,7 +578,7 @@ public final class SchemaBuilder
         mapElement.setComplexType(mapComplexType);
     }
 
-    private LocalComplexType generateMapComplexType(String name, final String description, final DataType type)
+    private LocalComplexType generateMapComplexType(String name, final String description, final IDataType type)
     {
         final LocalComplexType mapComplexType = new LocalComplexType();
         final ExplicitGroup mapEntrySequence = new ExplicitGroup();
@@ -588,8 +589,8 @@ public final class SchemaBuilder
         mapEntryElement.setMinOccurs(ZERO);
         mapEntryElement.setMaxOccurs(SchemaConstants.UNBOUNDED);
 
-        final DataType keyType = getFirstGenericType(type);
-        final DataType valueType = type.getGenericTypes()[1];
+        final IDataType keyType = getFirstGenericType(type);
+        final IDataType valueType = type.getGenericTypes()[1];
         final LocalComplexType entryComplexType = new LocalComplexType();
         final Attribute keyAttribute = createAttribute(ATTRIBUTE_NAME_KEY, keyType, true, ExpressionSupport.REQUIRED);
         entryComplexType.getAttributeOrAttributeGroup().add(keyAttribute);
@@ -617,7 +618,7 @@ public final class SchemaBuilder
                 entryComplexType.setSequence(new ExplicitGroup());
 
                 LocalComplexType itemComplexType = new LocalComplexType();
-                DataType itemType = ArrayUtils.isEmpty(valueType.getGenericTypes()) ? DataType.of(Object.class) : valueType.getGenericTypes()[0];
+                IDataType itemType = ArrayUtils.isEmpty(valueType.getGenericTypes()) ? DataType.of(Object.class) : valueType.getGenericTypes()[0];
                 itemComplexType.getAttributeOrAttributeGroup().add(createAttribute(ATTRIBUTE_NAME_VALUE, itemType, true, REQUIRED));
 
                 String itemName = hyphenize(NameUtils.singularize(name)).concat("-item");
@@ -639,7 +640,7 @@ public final class SchemaBuilder
         return mapComplexType;
     }
 
-    private DataType getFirstGenericType(DataType type)
+    private IDataType getFirstGenericType(IDataType type)
     {
         return ArrayUtils.isEmpty(type.getGenericTypes()) ? type : type.getGenericTypes()[0];
     }
@@ -708,7 +709,7 @@ public final class SchemaBuilder
 
         for (final ParameterModel parameterModel : parametrizedModel.getParameterModels())
         {
-            DataType parameterType = parameterModel.getType();
+            IDataType parameterType = parameterModel.getType();
             DataQualifier parameterQualifier = parameterType.getQualifier();
 
             if (isOperation(parameterType))
@@ -743,7 +744,7 @@ public final class SchemaBuilder
             {
                 forceOptional = shouldForceOptional();
                 defaultOperation();
-                DataType genericType = parameterModel.getType().getGenericTypes()[0];
+                IDataType genericType = parameterModel.getType().getGenericTypes()[0];
                 if (shouldGenerateDataTypeChildElements(genericType, parameterModel))
                 {
                     generateCollectionElement(all, parameterModel, true);
@@ -755,7 +756,7 @@ public final class SchemaBuilder
             {
                 forceOptional = shouldForceOptional();
                 defaultOperation();
-                DataType genericType = parameterModel.getType().getGenericTypes()[0];
+                IDataType genericType = parameterModel.getType().getGenericTypes()[0];
                 if (shouldGenerateDataTypeChildElements(genericType, parameterModel))
                 {
                     generateMapElement(all, parameterModel, true);
@@ -798,7 +799,7 @@ public final class SchemaBuilder
                 extensionType.getAttributeOrAttributeGroup().add(createAttribute(parameterModel, isRequired(parameterModel, forceOptional)));
             }
 
-            private boolean shouldGenerateDataTypeChildElements(DataType type, ParameterModel parameterModel)
+            private boolean shouldGenerateDataTypeChildElements(IDataType type, ParameterModel parameterModel)
             {
                 if (type == null)
                 {
@@ -822,9 +823,9 @@ public final class SchemaBuilder
         };
     }
 
-    private boolean isOperation(DataType type)
+    private boolean isOperation(IDataType type)
     {
-        DataType[] genericTypes = type.getGenericTypes();
+        IDataType[] genericTypes = type.getGenericTypes();
         DataQualifier qualifier = type.getQualifier();
 
         return OPERATION.equals(qualifier) ||
@@ -942,9 +943,9 @@ public final class SchemaBuilder
     {
 
         private ComplexType complexType;
-        private DataType type;
+        private IDataType type;
 
-        public ComplexTypeHolder(ComplexType complexType, DataType type)
+        public ComplexTypeHolder(ComplexType complexType, IDataType type)
         {
             this.complexType = complexType;
             this.type = type;
@@ -955,7 +956,7 @@ public final class SchemaBuilder
             return complexType;
         }
 
-        public DataType getType()
+        public IDataType getType()
         {
             return type;
         }
