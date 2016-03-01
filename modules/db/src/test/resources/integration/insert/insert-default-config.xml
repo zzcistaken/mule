@@ -9,7 +9,10 @@
         <inbound-endpoint address="vm://testRequestResponse" exchange-pattern="request-response"/>
 
         <db:insert config-ref="dbConfig">
-            <db:parameterized-query>INSERT INTO PLANET(POSITION, NAME) VALUES (777, 'Mercury')</db:parameterized-query>
+            <db:parameterized-query>INSERT INTO PLANET(ID, POSITION, NAME) VALUES (1, 777, 'Mercury')</db:parameterized-query>
+        </db:insert>
+        <db:insert config-ref="dbConfig">
+            <db:parameterized-query>INSERT INTO PLANET(ID, POSITION, NAME) VALUES (1, 888, 'Mercury2')</db:parameterized-query>
         </db:insert>
     </flow>
 
