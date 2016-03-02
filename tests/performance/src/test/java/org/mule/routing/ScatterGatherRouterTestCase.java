@@ -34,7 +34,7 @@ public class ScatterGatherRouterTestCase extends FunctionalTestCase
 
     @Test
 
-    @Required(throughput = 130, average = 8, percentile90 = 9)
+    @Required(throughput = 120, average = 9, percentile90 = 10)
     @PerfTest(duration = 15000, threads = 1, warmUp = 5000)
     public void parallelProcessing() throws Exception
     {
@@ -50,7 +50,7 @@ public class ScatterGatherRouterTestCase extends FunctionalTestCase
     }
 
     @Test
-    @Required(throughput = 260, average = 4, percentile90 = 5)
+    @Required(throughput = 220, average = 5, percentile90 = 6)
     @PerfTest(duration = 15000, threads = 1, warmUp = 5000)
     public void parallelHttpProcessing() throws Exception
     {
@@ -66,7 +66,7 @@ public class ScatterGatherRouterTestCase extends FunctionalTestCase
     }
 
     @Test
-    @Required(throughput = 420, average = 23, percentile90 = 40)
+    @Required(throughput = 400, average = 25, percentile90 = 40)
     @PerfTest(duration = 15000, threads = 10, warmUp = 5000)
     public void parallelHttMultiThreadedpProcessing() throws Exception
     {
@@ -74,7 +74,7 @@ public class ScatterGatherRouterTestCase extends FunctionalTestCase
     }
 
     @Test
-    @Required(throughput = 700, average = 15, percentile90 = 20)
+    @Required(throughput = 600, average = 16, percentile90 = 22)
     @PerfTest(duration = 15000, threads = 10, warmUp = 5000)
     public void sequentialHttpMultiThreadedProcessing() throws Exception
     {
