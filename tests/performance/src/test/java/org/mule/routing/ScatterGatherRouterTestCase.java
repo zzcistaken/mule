@@ -34,7 +34,7 @@ public class ScatterGatherRouterTestCase extends FunctionalTestCase
 
     @Test
 
-    @Required(throughput = 115, average = 10, percentile90 = 10)
+    @Required(throughput = 130, average = 8, percentile90 = 9)
     @PerfTest(duration = 15000, threads = 1, warmUp = 5000)
     public void parallelProcessing() throws Exception
     {
@@ -42,7 +42,7 @@ public class ScatterGatherRouterTestCase extends FunctionalTestCase
     }
 
     @Test
-    @Required(throughput = 50, average = 20, percentile90 = 25)
+    @Required(throughput = 50, average = 18, percentile90 = 20)
     @PerfTest(duration = 15000, threads = 1, warmUp = 5000)
     public void sequentialProcessing() throws Exception
     {
@@ -50,7 +50,7 @@ public class ScatterGatherRouterTestCase extends FunctionalTestCase
     }
 
     @Test
-    @Required(throughput = 230, average = 5, percentile90 = 5)
+    @Required(throughput = 260, average = 4, percentile90 = 5)
     @PerfTest(duration = 15000, threads = 1, warmUp = 5000)
     public void parallelHttpProcessing() throws Exception
     {
@@ -58,7 +58,7 @@ public class ScatterGatherRouterTestCase extends FunctionalTestCase
     }
 
     @Test
-    @Required(throughput = 100, average = 12, percentile90 = 20)
+    @Required(throughput = 120, average = 8, percentile90 = 10)
     @PerfTest(duration = 15000, threads = 1, warmUp = 5000)
     public void sequentialHttpProcessing() throws Exception
     {
@@ -66,7 +66,7 @@ public class ScatterGatherRouterTestCase extends FunctionalTestCase
     }
 
     @Test
-    @Required(throughput = 800, average = 12, percentile90 = 18)
+    @Required(throughput = 420, average = 23, percentile90 = 40)
     @PerfTest(duration = 15000, threads = 10, warmUp = 5000)
     public void parallelHttMultiThreadedpProcessing() throws Exception
     {
@@ -74,7 +74,7 @@ public class ScatterGatherRouterTestCase extends FunctionalTestCase
     }
 
     @Test
-    @Required(throughput = 917, average = 11, percentile90 = 14)
+    @Required(throughput = 700, average = 15, percentile90 = 20)
     @PerfTest(duration = 15000, threads = 10, warmUp = 5000)
     public void sequentialHttpMultiThreadedProcessing() throws Exception
     {
