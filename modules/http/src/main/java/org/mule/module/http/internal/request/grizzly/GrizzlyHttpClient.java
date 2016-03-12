@@ -15,7 +15,8 @@ import org.mule.api.context.WorkManagerSource;
 import org.mule.api.execution.CompletionHandler;
 import org.mule.api.lifecycle.InitialisationException;
 import org.mule.api.lifecycle.LifecycleUtils;
-import org.mule.config.i18n.CoreMessages;
+import org.mule.api.tls.TlsContextFactory;
+import org.mule.api.tls.TlsContextTrustStoreConfiguration;
 import org.mule.module.http.api.requester.proxy.ProxyConfig;
 import org.mule.module.http.internal.domain.ByteArrayHttpEntity;
 import org.mule.module.http.internal.domain.InputStreamHttpEntity;
@@ -27,11 +28,8 @@ import org.mule.module.http.internal.domain.response.HttpResponse;
 import org.mule.module.http.internal.domain.response.HttpResponseBuilder;
 import org.mule.module.http.internal.multipart.HttpPart;
 import org.mule.module.http.internal.request.HttpAuthenticationType;
-import org.mule.module.http.internal.request.HttpClient;
 import org.mule.module.http.internal.request.NtlmProxyConfig;
 import org.mule.module.socket.api.TcpClientSocketProperties;
-import org.mule.api.tls.TlsContextFactory;
-import org.mule.api.tls.TlsContextTrustStoreConfiguration;
 import org.mule.util.IOUtils;
 import org.mule.util.StringUtils;
 
@@ -60,7 +58,7 @@ import javax.net.ssl.SSLContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class GrizzlyHttpClient implements HttpClient
+public class GrizzlyHttpClient
 {
 
     private static final int MAX_CONNECTION_LIFETIME = 30 * 60 * 1000;
@@ -92,7 +90,7 @@ public class GrizzlyHttpClient implements HttpClient
         this.ownerName = config.getOwnerName();
     }
 
-    @Override
+    //@Override
     public void initialise() throws InitialisationException
     {
         AsyncHttpClientConfig.Builder builder = new AsyncHttpClientConfig.Builder();
@@ -122,7 +120,7 @@ public class GrizzlyHttpClient implements HttpClient
             }
             catch (Exception e)
             {
-                throw new InitialisationException(CoreMessages.createStaticMessage("Cannot initialize SSL context"), e, this);
+                //throw new InitialisationException(CoreMessages.createStaticMessage("Cannot initialize SSL context"), e, this);
             }
 
             // This sets all the TLS configuration needed, except for the enabled protocols and cipher suites.
@@ -219,7 +217,7 @@ public class GrizzlyHttpClient implements HttpClient
         builder.setIOThreadMultiplier(1);
     }
 
-    @Override
+    //@Override
     public HttpResponse send(HttpRequest request, int responseTimeout, boolean followRedirects, HttpRequestAuthentication authentication) throws IOException, TimeoutException
     {
 
@@ -259,7 +257,7 @@ public class GrizzlyHttpClient implements HttpClient
         }
     }
 
-    @Override
+    //@Override
     public void send(HttpRequest request, int responseTimeout, boolean followRedirects, HttpRequestAuthentication
             authentication, final CompletionHandler<HttpResponse, Exception> completionHandler, WorkManager workManager)
     {
@@ -441,7 +439,7 @@ public class GrizzlyHttpClient implements HttpClient
         return InetAddress.getLocalHost().getHostName();
     }
 
-    @Override
+    //@Override
     public void stop()
     {
         asyncHttpClient.close();

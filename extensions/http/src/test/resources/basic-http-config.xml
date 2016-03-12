@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:http-ext="http://www.mulesoft.org/schema/mule/http-ext"
+      xmlns:spring="http://www.springframework.org/schema/beans"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+      http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+        http://www.mulesoft.org/schema/mule/http-ext http://www.mulesoft.org/schema/mule/http-ext/current/mule-http-ext.xsd">
+
+    <http-ext:requester-config name="reqConfig" protocol="http" port="${clientPort}" host="localhost"/>
+    <http-ext:listener-config name="lisConfig" host="localhost" protocol="http" port="${serverPort}"/>
+
+    <flow name="client">
+        <http-ext:request path="/" config-ref="reqConfig"/>
+    </flow>
+
+    <flow name="server">
+        <http-ext:listener responseStreamingMode="AUTO" path="test" allowedMethods="GET" parseRequest="true" config-ref="lisConfig"/>
+        <set-payload value="HEY"/>
+    </flow>
+
+</mule>
