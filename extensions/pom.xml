@@ -22,6 +22,7 @@
         <module>file</module>
         <module>ftp</module>
         <module>validation</module>
+        <module>http</module>
     </modules>
 
     <dependencies>

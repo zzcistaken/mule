@@ -27,7 +27,6 @@ import org.mule.module.http.api.requester.HttpRequesterConfig;
 import org.mule.module.http.api.requester.HttpSendBodyMode;
 import org.mule.module.http.api.requester.HttpStreamingType;
 import org.mule.module.http.api.requester.proxy.ProxyConfig;
-import org.mule.module.http.internal.request.grizzly.GrizzlyHttpClient;
 import org.mule.module.http.internal.request.grizzly.GrizzlyHttpClientConfiguration;
 import org.mule.module.socket.api.TcpClientSocketProperties;
 import org.mule.module.socket.internal.DefaultTcpClientSocketProperties;
@@ -117,9 +116,9 @@ public class DefaultHttpRequesterConfig extends AbstractAnnotatedObject implemen
                 .setOwnerName(name)
                 .build();
 
-        httpClient = new GrizzlyHttpClient(configuration);
-
-        httpClient.initialise();
+        //httpClient = new GrizzlyHttpClient(configuration);
+        //
+        //httpClient.initialise();
     }
 
     private void verifyConnectionsParameters() throws InitialisationException
