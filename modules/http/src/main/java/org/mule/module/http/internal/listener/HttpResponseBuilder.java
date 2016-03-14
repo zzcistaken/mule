@@ -79,7 +79,7 @@ public class HttpResponseBuilder extends HttpMessageBuilder implements Initialis
         init();
     }
 
-    void init() throws InitialisationException
+    void init() //throws InitialisationException
     {
         statusCodeEvaluator = new AttributeEvaluator(statusCode).initialize(muleContext.getExpressionManager());
         reasonPhraseEvaluator = new AttributeEvaluator(reasonPhrase).initialize(muleContext.getExpressionManager());
@@ -371,7 +371,7 @@ public class HttpResponseBuilder extends HttpMessageBuilder implements Initialis
         }
     }
 
-    public static HttpResponseBuilder emptyInstance(MuleContext muleContext) throws InitialisationException
+    public static HttpResponseBuilder emptyInstance(MuleContext muleContext) //throws InitialisationException
     {
         final HttpResponseBuilder httpResponseBuilder = new HttpResponseBuilder();
         httpResponseBuilder.setMuleContext(muleContext);

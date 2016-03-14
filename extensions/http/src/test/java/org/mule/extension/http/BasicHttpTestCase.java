@@ -9,7 +9,6 @@ package org.mule.extension.http;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import org.mule.api.MuleEvent;
-import org.mule.api.MuleMessage;
 import org.mule.extension.http.api.HttpExtConnector;
 import org.mule.functional.junit4.ExtensionFunctionalTestCase;
 import org.mule.tck.junit4.rule.DynamicPort;
@@ -22,6 +21,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
@@ -121,7 +124,23 @@ public class BasicHttpTestCase extends ExtensionFunctionalTestCase
     @Test
     public void receivesRequest() throws Exception
     {
-        MuleMessage response = muleContext.getClient().send(String.format("serverPort://localhost:%s/test", serverPort), getTestMuleMessage());
-        assertThat(response.getPayload(), is("HEY"));
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+        HttpGet getRequest = new HttpGet(String.format("http://localhost:%s/test", serverPort.getValue()));
+        try
+        {
+            CloseableHttpResponse response = httpClient.execute(getRequest);
+            try
+            {
+                assertThat(IOUtils.toString(response.getEntity().getContent()), is("HEY"));
+            }
+            finally
+            {
+                response.close();
+            }
+        }
+        finally
+        {
+            httpClient.close();
+        }
     }
 }

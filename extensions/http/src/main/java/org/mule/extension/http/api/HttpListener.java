@@ -10,6 +10,7 @@ import static org.mule.module.http.api.HttpConstants.HttpStatus.BAD_REQUEST;
 import static org.mule.module.http.api.HttpConstants.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.mule.module.http.api.HttpConstants.Protocols.HTTP;
 import org.mule.DefaultMuleEvent;
+import org.mule.DefaultMuleMessage;
 import org.mule.OptimizedRequestContext;
 import org.mule.RequestContext;
 import org.mule.api.MessagingException;
@@ -21,12 +22,10 @@ import org.mule.api.construct.FlowConstructAware;
 import org.mule.api.context.MuleContextAware;
 import org.mule.api.execution.CompletionHandler;
 import org.mule.api.lifecycle.Disposable;
-import org.mule.api.lifecycle.Initialisable;
 import org.mule.api.lifecycle.InitialisationException;
 import org.mule.api.lifecycle.LifecycleUtils;
 import org.mule.api.temporary.MuleMessage;
 import org.mule.config.ExceptionHelper;
-import org.mule.config.i18n.CoreMessages;
 import org.mule.execution.MessageProcessingManager;
 import org.mule.extension.api.annotation.Alias;
 import org.mule.extension.api.annotation.Parameter;
@@ -59,7 +58,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Alias("listener")
-public class HttpListener extends Source<org.mule.api.MuleMessage, HttpAttributes> implements Initialisable, MuleContextAware, FlowConstructAware, Disposable
+public class HttpListener extends Source<org.mule.api.MuleMessage, HttpAttributes> implements MuleContextAware, FlowConstructAware, Disposable
 {
 
     private static final Logger logger = LoggerFactory.getLogger(HttpListener.class);
@@ -91,12 +90,6 @@ public class HttpListener extends Source<org.mule.api.MuleMessage, HttpAttribute
 
     private HttpThrottlingHeadersMapBuilder httpThrottlingHeadersMapBuilder = new HttpThrottlingHeadersMapBuilder();
 
-    @Override
-    public synchronized void start()
-    {
-        requestHandlerManager.start();
-    }
-
     private RequestHandler getRequestHandler()
     {
         return new RequestHandler()
@@ -113,8 +106,8 @@ public class HttpListener extends Source<org.mule.api.MuleMessage, HttpAttribute
                         {
                             final org.mule.module.http.internal.domain.response.HttpResponseBuilder responseBuilder = new org.mule.module.http.internal.domain.response.HttpResponseBuilder();
                             final HttpResponse httpResponse;
-                            httpResponse = buildResponse((org.mule.api.MuleMessage) message.getPayload(), responseBuilder);
-                            responseCallback.responseReady(httpResponse, getResponseFailureCallback(new DefaultMuleEvent((org.mule.api.MuleMessage) message.getPayload(), flowConstruct)));
+                            httpResponse = buildResponse(new DefaultMuleMessage(message.getPayload(), muleContext), responseBuilder);
+                            responseCallback.responseReady(httpResponse, getResponseFailureCallback());
                         }
 
                         @Override
@@ -140,7 +133,7 @@ public class HttpListener extends Source<org.mule.api.MuleMessage, HttpAttribute
                                 throw new MuleRuntimeException(e);
                             }
 
-                            responseCallback.responseReady(response, getResponseFailureCallback(messagingException.getEvent()));
+                            responseCallback.responseReady(response, getResponseFailureCallback());
                         }
                     };
                     sourceContext.getMessageHandler().handle(createEvent(requestContext).getMessage().asNewMessage(), httpCompletionHandler);
@@ -200,7 +193,7 @@ public class HttpListener extends Source<org.mule.api.MuleMessage, HttpAttribute
     }
 
     @Override
-    public synchronized void initialise() throws InitialisationException
+    public synchronized void start() //throws InitialisationException
     {
         if (allowedMethods != null)
         {
@@ -212,14 +205,22 @@ public class HttpListener extends Source<org.mule.api.MuleMessage, HttpAttribute
             responseBuilder = HttpResponseBuilder.emptyInstance(muleContext);
         }
 
-        LifecycleUtils.initialiseIfNeeded(responseBuilder);
-
-        if (errorResponseBuilder == null)
+        try
         {
-            errorResponseBuilder = HttpResponseBuilder.emptyInstance(muleContext);
+            LifecycleUtils.initialiseIfNeeded(responseBuilder);
+            if (errorResponseBuilder == null)
+            {
+                errorResponseBuilder = HttpResponseBuilder.emptyInstance(muleContext);
+            }
+
+            LifecycleUtils.initialiseIfNeeded(errorResponseBuilder);
+        }
+        catch (InitialisationException e)
+        {
+            e.printStackTrace();
         }
 
-        LifecycleUtils.initialiseIfNeeded(errorResponseBuilder);
+
 
         path = HttpParser.sanitizePathWithStartSlash(path);
         HttpListenerConfig listenerConfig = (HttpListenerConfig) config;
@@ -235,11 +236,12 @@ public class HttpListener extends Source<org.mule.api.MuleMessage, HttpAttribute
         }
         catch (Exception e)
         {
-            throw new InitialisationException(e, this);
+            //throw new InitialisationException(e, this);
         }
+        requestHandlerManager.start();
     }
 
-    private void validatePath() throws InitialisationException
+    private void validatePath()// throws InitialisationException
     {
         final String[] pathParts = this.path.split("/");
         List<String> uriParamNames = new ArrayList<>();
@@ -250,7 +252,7 @@ public class HttpListener extends Source<org.mule.api.MuleMessage, HttpAttribute
                 String uriParamName = pathPart.substring(1, pathPart.length() - 1);
                 if (uriParamNames.contains(uriParamName))
                 {
-                    throw new InitialisationException(CoreMessages.createStaticMessage(String.format("Http Listener with path %s contains duplicated uri param names", this.path)), this);
+                    //throw new InitialisationException(CoreMessages.createStaticMessage(String.format("Http Listener with path %s contains duplicated uri param names", this.path)), this);
                 }
                 uriParamNames.add(uriParamName);
             }
@@ -258,13 +260,13 @@ public class HttpListener extends Source<org.mule.api.MuleMessage, HttpAttribute
             {
                 if (pathPart.contains("*") && pathPart.length() > 1)
                 {
-                    throw new InitialisationException(CoreMessages.createStaticMessage(String.format("Http Listener with path %s contains an invalid use of a wildcard. Wildcards can only be used at the end of the path (i.e.: /path/*) or between / characters (.i.e.: /path/*/anotherPath))", this.path)), this);
+                    //throw new InitialisationException(CoreMessages.createStaticMessage(String.format("Http Listener with path %s contains an invalid use of a wildcard. Wildcards can only be used at the end of the path (i.e.: /path/*) or between / characters (.i.e.: /path/*/anotherPath))", this.path)), this);
                 }
             }
         }
     }
 
-    private String[] extractAllowedMethods() throws InitialisationException
+    private String[] extractAllowedMethods() //throws InitialisationException
     {
         final String[] values = this.allowedMethods.split(",");
         final String[] normalizedValues = new String[values.length];
@@ -279,7 +281,6 @@ public class HttpListener extends Source<org.mule.api.MuleMessage, HttpAttribute
 
     protected HttpResponse buildResponse(org.mule.api.MuleMessage muleEvent, final org.mule.module.http.internal.domain.response.HttpResponseBuilder responseBuilder)
     {
-        MuleEvent event = new DefaultMuleEvent(muleEvent, flowConstruct);
         try
         {
             addThrottlingHeaders(responseBuilder);
@@ -292,6 +293,7 @@ public class HttpListener extends Source<org.mule.api.MuleMessage, HttpAttribute
             }
             else
             {
+                MuleEvent event = new DefaultMuleEvent(muleEvent, flowConstruct);
                 httpResponse = this.responseBuilder.build(responseBuilder, event);
             }
             return httpResponse;
@@ -306,7 +308,7 @@ public class HttpListener extends Source<org.mule.api.MuleMessage, HttpAttribute
     }
 
 
-    private ResponseStatusCallback getResponseFailureCallback(final MuleEvent muleEvent)
+    private ResponseStatusCallback getResponseFailureCallback()
     {
         return new ResponseStatusCallback()
         {
