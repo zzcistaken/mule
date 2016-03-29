@@ -7,174 +7,196 @@
 package org.mule.routing.filters;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import org.mule.api.lifecycle.InitialisationException;
 import org.mule.tck.junit4.AbstractMuleTestCase;
 import org.mule.tck.size.SmallTest;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 @SmallTest
 public class WildcardFilterTestCase extends AbstractMuleTestCase
 {
 
+    public static final String REGEX_SUGGESTION_MESSAGE = "Consider using a regex-filter instead";
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
+
     private WildcardFilter filter = new WildcardFilter();
 
-    @Test
-    public void testWildcardFilterNoPattern()
+    private void setUpPattern(String pattern) throws InitialisationException
     {
-        // start with default
-        assertFalse(filter.accept("No tengo dinero"));
-
-        // activate a pattern
-        filter.setPattern("* brown fox");
-        assertTrue(filter.accept("The quick brown fox"));
-
-        // remove pattern again, i.e. block all
-        filter.setPattern(null);
-        assertFalse(filter.accept("oh-oh"));
+        filter.setPattern(pattern);
+        filter.initialise();
     }
 
     @Test
-    public void testWildcardFilterPostfix()
+    public void noPattern() throws InitialisationException
+    {
+        filter.initialise();
+        assertThat(filter.accept("No tengo dinero"), is(false));
+        assertThat(filter.accept(""), is(false));
+    }
+
+    @Test
+    public void simpleWildcard() throws InitialisationException
+    {
+        setUpPattern("*");
+        assertThat(filter.accept("all"), is(true));
+        assertThat(filter.accept("none"), is(true));
+    }
+
+    @Test
+    public void doubleWildcard() throws InitialisationException
+    {
+        setUpPattern("**");
+        assertThat(filter.accept("all"), is(true));
+        assertThat(filter.accept("none"), is(true));
+    }
+
+    @Test
+    public void exactMatch() throws InitialisationException
+    {
+        setUpPattern("fox");
+        assertThat(filter.accept("fox"), is(true));
+        assertThat(filter.accept("fire fox"), is(false));
+        assertThat(filter.accept("fox games"), is(false));
+        assertThat(filter.accept("The quick fox run"), is(false));
+    }
+
+    @Test
+    public void prefix() throws InitialisationException
+    {
+        setUpPattern("* brown fox");
+        assertThat(filter.accept("The quick brown fox"), is(true));
+        assertThat(filter.accept("* brown fox"), is(true));
+        assertThat(filter.accept("The quickbrown fox"), is(false));
+        assertThat(filter.accept("The quick brown fo"), is(false));
+
+    }
+
+    @Test
+    public void postfix() throws InitialisationException
     {
         WildcardFilter filter = new WildcardFilter("The quick *");
-        assertNotNull(filter.getPattern());
-        assertTrue(filter.accept("The quick brown fox"));
-        assertTrue(filter.accept("The quick *"));
-
-        assertTrue(!filter.accept("The quickbrown fox"));
-        assertTrue(!filter.accept("he quick brown fox"));
+        filter.initialise();
+        assertThat(filter.getPattern(), is(notNullValue()));
+        assertThat(filter.accept("The quick brown fox"), is(true));
+        assertThat(filter.accept("The quick *"), is(true));
+        assertThat(filter.accept("The quickbrown fox"), is(false));
+        assertThat(filter.accept("he quick brown fox"), is(false));
     }
 
     @Test
-    public void testWildcardFilterPrefix()
+    public void enclosing() throws InitialisationException
     {
-        filter.setPattern("* brown fox");
-        assertTrue(filter.accept("The quick brown fox"));
-        assertTrue(filter.accept("* brown fox"));
-
-        assertTrue(!filter.accept("The quickbrown fox"));
-        assertTrue(!filter.accept("The quick brown fo"));
-
+        setUpPattern("* brown *");
+        assertThat(filter.accept("The quick brown fox"), is(true));
+        assertThat(filter.accept("* brown fox"), is(true));
+        assertThat(filter.accept("The quickbrown fox"), is(false));
+        assertThat(filter.accept("The quick brock fox"), is(false));
     }
 
     @Test
-    public void testWildcardFilterExactMatch()
+    public void multiplePatterns() throws InitialisationException
     {
-        filter.setPattern("fox");
-        assertTrue(filter.accept("fox"));
-
-        filter.setPattern("");
-        assertTrue(filter.accept(""));
+        setUpPattern("* brown*, The*");
+        assertThat(filter.accept("The quick brown fox"), is(true));
+        assertThat(filter.accept(" brown fox"), is(true));
+        assertThat(filter.accept("The quickbrown fox"), is(true));
+        assertThat(filter.accept("This brock"), is(false));
     }
 
     @Test
-    public void testWildcardFilterPrePost()
+    public void caseSensitive() throws InitialisationException
     {
-        filter.setPattern("* brown *");
-        assertTrue(filter.accept("The quick brown fox"));
-        assertTrue(filter.accept("* brown fox"));
-
-        assertTrue(!filter.accept("The quickbrown fox"));
-        assertTrue(filter.accept("The quick brown fo"));
-
-        filter.setPattern("**");
-        assertTrue(filter.accept("The quick brown fox"));
-
-        filter.setPattern("*w*");
-        assertTrue(filter.accept("The quick brown fox"));
-
-        filter.setPattern("*");
-        assertTrue(filter.accept("The quick brown fox"));
-
-        filter.setPattern("*.*");
-        assertTrue(filter.accept("test.xml"));
-
-        filter.setPattern("*.txt");
-        assertTrue(filter.accept("test.txt"));
+        setUpPattern("* Brown fox");
+        assertThat(filter.accept("The quick Brown fox"), is(true));
+        assertThat(filter.accept("* brown fox"), is(false));
     }
 
     @Test
-    public void testWildcardFilterMultiplePatterns()
+    public void caseInsensitive() throws InitialisationException
     {
-        filter.setPattern("* brown*, The*");
-        assertTrue(filter.accept("The quick brown fox"));
-        assertTrue(filter.accept(" brown fox"));
-
-        assertTrue(filter.accept("The quickbrown fox"));
-
-        filter.setPattern("* if, The*");
-        assertTrue(!filter.accept("What The!"));
-        assertTrue(!filter.accept("simplify"));
-
-    }
-
-    @Test
-    public void testWildcardFilterCasesensitive()
-    {
-        filter.setPattern("* brown fox");
-        assertFalse(filter.accept("The quick Brown fox"));
-        assertTrue(filter.accept("* brown fox"));
+        filter.setPattern("* Brown fox");
         filter.setCaseSensitive(false);
-        assertTrue(filter.accept("The quick Brown fox"));
+        filter.initialise();
+        assertThat(filter.accept("The quick Brown fox"), is(true));
+        assertThat(filter.accept("* brown fox"), is(true));
     }
 
     @Test
-    public void testWildcardMidPattern()
+    public void midPatternWildcardNotAccepted() throws InitialisationException
     {
         filter.setPattern("The quick * fox");
-
-        assertThat(filter.accept("The quick fox"), is(false));
-        assertThat(filter.accept("The quick  black horse"), is(false));
-        assertThat(filter.accept("The brown fox"), is(false));
-        assertThat(filter.accept("The slow fox"), is(false));
+        expectedException.expect(InitialisationException.class);
+        expectedException.expectMessage(REGEX_SUGGESTION_MESSAGE);
+        filter.initialise();
     }
 
     @Test
-    public void testTwoWildcardsMidPattern()
+    public void twoWildcardsStartMidPatternNotAccepted() throws InitialisationException
     {
         filter.setPattern("*the quick * fox");
-        assertThat(filter.accept("this is the quick horse"), is(false));
-        assertThat(filter.accept("the quick * fox"), is(false));
+        expectedException.expect(InitialisationException.class);
+        expectedException.expectMessage(REGEX_SUGGESTION_MESSAGE);
+        filter.initialise();
+    }
 
-        filter.setPattern("the * brown fox*");
-        assertThat(filter.accept("my brown fox"), is(false));
-        assertThat(filter.accept("the brown fox here"), is(false));
-
+    @Test
+    public void twoWildcardsMidPatternNotAccepted() throws InitialisationException
+    {
         filter.setPattern("the * brown * run");
-        assertThat(filter.accept("the quick brown fox run"), is(false));
-        assertThat(filter.accept("the brown goat"), is(false));
+        expectedException.expect(InitialisationException.class);
+        expectedException.expectMessage(REGEX_SUGGESTION_MESSAGE);
+        filter.initialise();
     }
 
     @Test
-    public void testClassAndSubclass()
+    public void twoWildcardsMidEndPatternNotAccepted() throws InitialisationException
     {
-        filter.setPattern("java.lang.Throwable+");
-        assertTrue(filter.accept(new Exception()));
-        assertTrue(filter.accept(new Throwable()));
-        assertFalse(filter.accept(new Object()));
-
-        filter.setPattern("java.lang.Throwable");
-        assertFalse(filter.accept(new Exception()));
-        assertTrue(filter.accept(new Throwable()));
-        assertFalse(filter.accept(new Object()));
+        filter.setPattern("the * brown fox*");
+        expectedException.expect(InitialisationException.class);
+        expectedException.expectMessage(REGEX_SUGGESTION_MESSAGE);
+        filter.initialise();
     }
 
     @Test
-    public void testClassAndSubclassUsingString()
+    public void subclassesFilter() throws InitialisationException
     {
-        filter.setPattern("java.lang.Throwable+");
-        assertTrue(filter.accept(new Exception().getClass().getName()));
-        assertTrue(filter.accept(new Throwable().getClass().getName()));
-        assertFalse(filter.accept(new Object().getClass().getName()));
-
-        filter.setPattern("java.lang.Throwable");
-        assertFalse(filter.accept(new Exception().getClass().getName()));
-        assertTrue(filter.accept(new Throwable().getClass().getName()));
-        assertFalse(filter.accept(new Object().getClass().getName()));
+        setUpPattern("java.lang.Throwable+");
+        assertThat(filter.accept(new Exception()), is(true));
+        assertThat(filter.accept(new Throwable()), is(true));
+        assertThat(filter.accept(new Object()), is(false));
     }
 
+    @Test
+    public void classFilter() throws InitialisationException
+    {
+        setUpPattern("java.lang.Throwable");
+        assertThat(filter.accept(new Exception()), is(false));
+        assertThat(filter.accept(new Throwable()), is(true));
+        assertThat(filter.accept(new Object()), is(false));
+    }
+
+    @Test
+    public void subclassesUsingStringFilter() throws InitialisationException
+    {
+        setUpPattern("java.lang.Throwable+");
+        assertThat(filter.accept(new Exception().getClass().getName()), is(true));
+        assertThat(filter.accept(new Throwable().getClass().getName()), is(true));
+        assertThat(filter.accept(new Object().getClass().getName()), is(false));
+    }
+
+    @Test
+    public void classUsingStringFilter() throws InitialisationException
+    {
+        setUpPattern("java.lang.Throwable");
+        assertThat(filter.accept(new Exception().getClass().getName()), is(false));
+        assertThat(filter.accept(new Throwable().getClass().getName()), is(true));
+        assertThat(filter.accept(new Object().getClass().getName()), is(false));
+    }
 }

@@ -31,7 +31,7 @@ MULE-9306: Losing flow and session variables when using MuleClient to dispatch/s
 MULE-9383: HTTP Connector will allow invalid Content-Type header values. In order to strictly validate them as before, use the mule.strictContentType=true system property.
 MULE-9405: MuleException instead of NPE is now thrown when setting a null value for a context-property in an XstlTransformation.
 MULE-9160: Log4J was upgraded from 2.1 to 2.5.
-MULE-9501: The wildcard filter will only work with prefix (*.log), suffix (java.util.*) or enclosing strings (*util*) patterns, otherwise no match will be possible, regardless of the input. The regex-filter should be used for other cases.
+MULE-9501: The wildcard filter will only work with prefix (*.log), suffix (java.util.*) or enclosing strings (*util*) patterns, as well as the deprecated payload based filter (java.lang.Throwable+) and regular strings. In any other case an InitialisationException will be thrown. The regex-filter should be used for those cases.
 
 Migration changes from 3.6.x to 3.7.x
 
