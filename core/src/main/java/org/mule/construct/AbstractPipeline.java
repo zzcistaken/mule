@@ -16,8 +16,11 @@ import org.mule.api.MuleException;
 import org.mule.api.config.MuleConfiguration;
 import org.mule.api.config.MuleProperties;
 import org.mule.api.construct.FlowConstructInvalidException;
+import org.mule.api.construct.MuleConnectionsBuilder;
+import org.mule.api.construct.MuleConnectionsBuilder.MuleConnectionDirection;
 import org.mule.api.construct.Pipeline;
 import org.mule.api.endpoint.InboundEndpoint;
+import org.mule.api.endpoint.OutboundEndpoint;
 import org.mule.api.exception.MessagingExceptionHandlerAcceptor;
 import org.mule.api.lifecycle.LifecycleException;
 import org.mule.api.processor.DefaultMessageProcessorPathElement;
@@ -33,6 +36,8 @@ import org.mule.api.source.ClusterizableMessageSource;
 import org.mule.api.source.CompositeMessageSource;
 import org.mule.api.source.MessageSource;
 import org.mule.api.source.NonBlockingMessageSource;
+import org.mule.api.transport.MessageDispatcher;
+import org.mule.api.transport.MessageRequester;
 import org.mule.config.i18n.CoreMessages;
 import org.mule.construct.flow.DefaultFlowProcessingStrategy;
 import org.mule.context.notification.PipelineMessageNotification;
@@ -40,18 +45,29 @@ import org.mule.exception.ChoiceMessagingExceptionStrategy;
 import org.mule.exception.RollbackMessagingExceptionStrategy;
 import org.mule.processor.AbstractFilteringMessageProcessor;
 import org.mule.processor.AbstractInterceptingMessageProcessor;
+import org.mule.processor.AbstractMessageProcessorOwner;
 import org.mule.processor.AbstractRequestResponseMessageProcessor;
+import org.mule.processor.InboundMessageSource;
+import org.mule.processor.OutboundMessageProcessor;
 import org.mule.processor.chain.DefaultMessageProcessorChainBuilder;
 import org.mule.processor.strategy.AsynchronousProcessingStrategy;
 import org.mule.processor.strategy.NonBlockingProcessingStrategy;
 import org.mule.processor.strategy.SynchronousProcessingStrategy;
 import org.mule.source.ClusterizableMessageSourceWrapper;
+import org.mule.transport.polling.MessageProcessorPollingConnector;
+import org.mule.transport.polling.MessageProcessorPollingMessageReceiver;
 import org.mule.util.NotificationUtils;
 import org.mule.util.NotificationUtils.PathResolver;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+
+import javax.xml.namespace.QName;
+
+import org.reflections.ReflectionUtils;
 
 /**
  * Abstract implementation of {@link AbstractFlowConstruct} that allows a list of {@link MessageProcessor}s
@@ -460,4 +476,167 @@ public abstract class AbstractPipeline extends AbstractFlowConstruct implements 
         super.doDispose();
     }
 
+    @Override
+    public void visitForConnections(MuleConnectionsBuilder visitor)
+    {
+        // visitor.visit(messageSource);
+        if (messageSource instanceof InboundEndpoint)
+        {
+            final InboundEndpoint endpoint = (InboundEndpoint) messageSource;
+            if (endpoint.getConnector() instanceof MessageProcessorPollingConnector)
+            {
+                final Object pollingProcessor = endpoint.getProperty(MessageProcessorPollingMessageReceiver.SOURCE_MESSAGE_PROCESSOR_PROPERTY_NAME);
+                if (pollingProcessor instanceof AbstractMessageProcessorOwner)
+                {
+                    AbstractMessageProcessorOwner o = (AbstractMessageProcessorOwner) pollingProcessor;
+                    o.visitForConnections(visitor);
+                }
+                else if (pollingProcessor instanceof MessageDispatcher)
+                {
+                    final OutboundEndpoint ppEndpoint = ((MessageDispatcher) pollingProcessor).getEndpoint();
+                    visitor.setProvided(ppEndpoint.getProtocol(), ppEndpoint.getAddress(), MuleConnectionDirection.TO, ppEndpoint.getConnector().isConnected(), getDescription(pollingProcessor));
+
+                }
+                else if (pollingProcessor instanceof MessageRequester)
+                {
+                    final InboundEndpoint ppEndpoint = ((MessageRequester) pollingProcessor).getEndpoint();
+                    visitor.setProvided(ppEndpoint.getProtocol(), ppEndpoint.getAddress(), MuleConnectionDirection.FROM, ppEndpoint.getConnector().isConnected(),
+                            getDescription(((MessageRequester) pollingProcessor).getConnector()));
+                }
+                else if (pollingProcessor instanceof OutboundMessageProcessor)
+                {
+                    OutboundMessageProcessor omp = (OutboundMessageProcessor) pollingProcessor;
+
+                    visitor.setProvided(omp.getProtocol(), omp.getAddress(), MuleConnectionDirection.TO, true, getDescription(omp));
+                }
+            }
+            else
+            {
+                visitor.setProvided(endpoint.getProtocol(), endpoint.getAddress(), MuleConnectionDirection.FROM,
+                        endpoint.getConnector().isConnected(), getDescription(((InboundEndpoint) messageSource).getConnector()));
+            }
+
+        }
+        else if (messageSource instanceof InboundMessageSource)
+        {
+            final InboundMessageSource source = (InboundMessageSource) messageSource;
+            visitor.setProvided(source.getProtocol(), source.getAddress(), MuleConnectionDirection.FROM, true, getDescription(messageSource));
+        }
+
+        doVisitForConnections(visitor, getMessageProcessors());
+    }
+
+    public static void doVisitForConnections(MuleConnectionsBuilder visitor, final List<MessageProcessor> messageProcessors)
+    {
+        for (MessageProcessor messageProcessor : messageProcessors)
+        {
+            doVisit(visitor, messageProcessor);
+        }
+    }
+
+    public static void doVisit(MuleConnectionsBuilder visitor, MessageProcessor messageProcessor)
+    {
+        if (messageProcessor instanceof AbstractMessageProcessorOwner)
+        {
+            AbstractMessageProcessorOwner o = (AbstractMessageProcessorOwner) messageProcessor;
+            o.visitForConnections(visitor);
+        }
+        else if (messageProcessor instanceof MessageDispatcher)
+        {
+            final OutboundEndpoint endpoint = ((MessageDispatcher) messageProcessor).getEndpoint();
+            visitor.addConsumed(endpoint.getProtocol(), endpoint.getAddress(), MuleConnectionDirection.TO, endpoint.getConnector().isConnected(), getDescription(messageProcessor));
+
+        }
+        else if (messageProcessor instanceof MessageRequester)
+        {
+            final InboundEndpoint endpoint = ((MessageRequester) messageProcessor).getEndpoint();
+            visitor.addConsumed(endpoint.getProtocol(), endpoint.getAddress(), MuleConnectionDirection.FROM, endpoint.getConnector().isConnected(),
+                    getDescription(((MessageRequester) messageProcessor).getConnector()));
+        }
+        else if (messageProcessor instanceof OutboundMessageProcessor)
+        {
+            OutboundMessageProcessor omp = (OutboundMessageProcessor) messageProcessor;
+
+            visitor.addConsumed(omp.getProtocol(), omp.getAddress(), MuleConnectionDirection.TO, true, getDescription(omp));
+        }
+        else if (isGithub(messageProcessor))
+        {
+            try
+            {
+                final Set<Field> fields = ReflectionUtils.getFields(Class.forName("org.mule.devkit.processor.DevkitBasedMessageProcessor"), ReflectionUtils.withName("operationName"));
+                final Field field = fields.iterator().next();
+                field.setAccessible(true);
+                visitor.addConsumed("GITHUB", "github.com/" + (String) field.get(messageProcessor), MuleConnectionDirection.FROM, true, "");
+            }
+            catch (ClassNotFoundException e)
+            {
+            }
+            catch (IllegalArgumentException e)
+            {
+            }
+            catch (IllegalAccessException e)
+            {
+            }
+
+        }
+        else if (isSalesforce(messageProcessor))
+        {
+            try
+            {
+                final Set<Field> fields = ReflectionUtils.getFields(Class.forName("org.mule.devkit.processor.DevkitBasedMessageProcessor"), ReflectionUtils.withName("operationName"));
+                final Field field = fields.iterator().next();
+                field.setAccessible(true);
+                visitor.addConsumed("SFDC", "salsforce.com/" + (String) field.get(messageProcessor), MuleConnectionDirection.FROM, true, "");
+            }
+            catch (ClassNotFoundException e)
+            {
+            }
+            catch (IllegalArgumentException e)
+            {
+            }
+            catch (IllegalAccessException e)
+            {
+            }
+
+        }
+    }
+
+    private static boolean isGithub(MessageProcessor messageProcessor)
+    {
+        try
+        {
+            return messageProcessor.getClass().getName().startsWith("org.mule.modules.github")
+                   && Class.forName("org.mule.devkit.processor.DevkitBasedMessageProcessor").isAssignableFrom(messageProcessor.getClass());
+        }
+        catch (ClassNotFoundException e)
+        {
+            return false;
+        }
+    }
+
+    private static boolean isSalesforce(MessageProcessor messageProcessor)
+    {
+        try
+        {
+            return messageProcessor.getClass().getName().startsWith("org.mule.modules.salesforce")
+                   && Class.forName("org.mule.devkit.processor.DevkitBasedMessageProcessor").isAssignableFrom(messageProcessor.getClass());
+        }
+        catch (ClassNotFoundException e)
+        {
+            return false;
+        }
+    }
+
+
+    private static String getDescription(Object o)
+    {
+        if (o instanceof AnnotatedObject)
+        {
+            return (String) ((AnnotatedObject) o).getAnnotation(new QName("http://www.mulesoft.org/schema/mule/doc", "description"));
+        }
+        else
+        {
+            return "";
+        }
+    }
 }

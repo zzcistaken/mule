@@ -229,6 +229,7 @@ public class DefaultHttpListenerConfig extends AbstractAnnotatedObject implement
         return new ServerAddress(NetworkUtils.getLocalHostIp(host), port);
     }
 
+    @Override
     public void setMuleContext(final MuleContext muleContext)
     {
         this.muleContext = muleContext;
@@ -244,11 +245,13 @@ public class DefaultHttpListenerConfig extends AbstractAnnotatedObject implement
         return listenerParseRequest != null ? listenerParseRequest : (parseRequest != null ? parseRequest : true);
     }
 
+    @Override
     public int getPort()
     {
         return port;
     }
 
+    @Override
     public String getHost()
     {
         return host;
@@ -314,7 +317,7 @@ public class DefaultHttpListenerConfig extends AbstractAnnotatedObject implement
         }
     }
 
-    private String listenerUrl()
+    protected String listenerUrl()
     {
         return String.format("%s://%s:%d%s", protocol.getScheme(), getHost(), getPort(), StringUtils.defaultString(basePath));
     }

@@ -42,6 +42,7 @@ import org.mule.module.http.internal.domain.request.HttpRequestAuthentication;
 import org.mule.module.http.internal.domain.request.HttpRequestBuilder;
 import org.mule.module.http.internal.domain.response.HttpResponse;
 import org.mule.processor.AbstractNonBlockingMessageProcessor;
+import org.mule.processor.OutboundMessageProcessor;
 import org.mule.util.AttributeEvaluator;
 
 import com.google.common.collect.Lists;
@@ -55,7 +56,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public class DefaultHttpRequester extends AbstractNonBlockingMessageProcessor implements Initialisable, MuleContextAware, FlowConstructAware, DebugInfoProvider
+public class DefaultHttpRequester extends AbstractNonBlockingMessageProcessor implements Initialisable, MuleContextAware, FlowConstructAware, DebugInfoProvider, OutboundMessageProcessor
 {
 
     public static final List<String> DEFAULT_EMPTY_BODY_METHODS = Lists.newArrayList("GET", "HEAD", "OPTIONS");
@@ -693,5 +694,45 @@ public class DefaultHttpRequester extends AbstractNonBlockingMessageProcessor im
         }
 
         return securityFieldDebugInfo;
+    }
+
+    @Override
+    public String getProtocol()
+    {
+        if (url.getRawValue() != null)
+        {
+            try
+            {
+                return new URL(url.getRawValue()).getProtocol();
+            }
+            catch (MalformedURLException e)
+            {
+                return "http";
+            }
+        }
+        else
+        {
+            return requestConfig.getScheme();
+        }
+    }
+
+    @Override
+    public String getAddress()
+    {
+        final String rawValue = url.getRawValue();
+        if (rawValue != null)
+        {
+            return rawValue;
+        }
+        else
+        {
+            String resolvedPath = buildPath(basePath.getRawValue(), path.getRawValue());
+
+            // Encode spaces to generate a valid HTTP request.
+            resolvedPath = HttpParser.encodeSpaces(resolvedPath);
+
+            return String.format("%s:%s%s", host.getRawValue(),
+                    port.getRawValue(), resolvedPath);
+        }
     }
 }
