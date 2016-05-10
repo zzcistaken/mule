@@ -11,6 +11,10 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
     <http:request-config name="HTTP_Request_google" host="google.com" port="80" doc:name="HTTP Request Configuration"/>
     <http:request-config name="HTTP_Request_facebook" host="facebook.com" port="80" doc:name="HTTP Request Configuration"/>
 
+    <flow name="noInbound">
+        <http:request config-ref="HTTP_Request_facebook" path="" method="" doc:name="HTTP"/>
+    </flow>
+
     <flow name="connectorsFlow">
         <http:listener config-ref="HTTP_Listener_Configuration1" path="/1" doc:name="HTTP"/>
         <http:request config-ref="HTTP_Request_google" path="/" method="GET" doc:name="HTTP"/>
@@ -19,4 +23,5 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
         <http:listener config-ref="HTTP_Listener_Configuration2" path="/2" doc:name="HTTP"/>
         <http:request config-ref="HTTP_Request_facebook" path="" method="" doc:name="HTTP"/>
     </flow>
+
 </mule>

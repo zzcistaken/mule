@@ -82,18 +82,30 @@ public class MuleConnectionsBuilder
     private Map<MuleConnection, Set<MuleConnection>> flowConnections = new HashMap<>();
     private Set<MuleConnection> consumed;
 
+    private Set<MuleConnection> heldBack = new HashSet<>();
+
 
     public void setProvided(String protocol, String address, MuleConnectionDirection direction, boolean connected, String description)
     {
         final MuleConnection mc = buildConnection(protocol, address, direction, connected, description);
         consumed = new HashSet<MuleConnection>();
+        consumed.addAll(heldBack);
+        heldBack.clear();
         flowConnections.put(mc, consumed);
     }
 
     public void addConsumed(String protocol, String address, MuleConnectionDirection direction, boolean connected, String description)
     {
         final MuleConnection mc = buildConnection(protocol, address, direction, connected, description);
-        consumed.add(mc);
+        if (consumed != null)
+        {
+            consumed.add(mc);
+        }
+        else
+        {
+            // hold back
+            heldBack.add(mc);
+        }
     }
 
     protected MuleConnection buildConnection(String protocol, String address, MuleConnectionDirection direction, boolean connected, String description)

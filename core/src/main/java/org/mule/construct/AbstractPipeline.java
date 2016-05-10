@@ -574,7 +574,7 @@ public abstract class AbstractPipeline extends AbstractFlowConstruct implements 
         }
         else if (isSalesforce(messageProcessor))
         {
-            visitor.addConsumed("SFDC", "salsforce.com/" + getOperationName(messageProcessor), MuleConnectionDirection.FROM, true, "");
+            visitor.addConsumed("SFDC", "salesforce.com/" + getOperationName(messageProcessor), MuleConnectionDirection.FROM, true, "");
         }
     }
 
@@ -651,7 +651,7 @@ public abstract class AbstractPipeline extends AbstractFlowConstruct implements 
     {
         if (o instanceof AnnotatedObject)
         {
-            return (String) ((AnnotatedObject) o).getAnnotation(new QName("http://www.mulesoft.org/schema/mule/doc", "description"));
+            return (String) ((AnnotatedObject) o).getAnnotation(new QName("http://www.mulesoft.org/schema/mule/documentation", "description"));
         }
         else
         {

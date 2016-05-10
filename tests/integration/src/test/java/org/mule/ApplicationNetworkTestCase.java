@@ -38,8 +38,13 @@ public class ApplicationNetworkTestCase extends FunctionalTestCase
         System.out.println(builder);
 
 
-        // MuleConnectionsBuilder[provided: {HTTP://0.0.0.0:8081 (FROM, true) =[HTTP://google.com:80/ (TO, true) null],
-        // HTTP://0.0.0.0:8088 (FROM, true) =[HTTP://facebook.com:80/ (TO, true) null]}]
+        // MuleConnectionsBuilder[
+        // flowConnections: {
+        // HTTP://0.0.0.0:8088 (FROM, true) =[
+        // HTTP://facebook.com:80/ (TO, true) null],
+        // HTTP://0.0.0.0:8081 (FROM, true) =[
+        // HTTP://facebook.com:80/ (TO, true) null,
+        // HTTP://google.com:80/ (TO, true) null]}]
 
     }
 }
