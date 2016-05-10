@@ -6,7 +6,12 @@
  */
 package org.mule.api.construct;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 public class MuleConnectionsBuilder
@@ -52,20 +57,37 @@ public class MuleConnectionsBuilder
         }
     }
 
+    public class MuleConnectionFlow
+    {
+        private MuleConnection provided;
+        private Set<MuleConnection> consumed;
+
+        public MuleConnection getProvidedConnection()
+        {
+            return provided;
+        }
+
+        public Set<MuleConnection> getConsumedConnections()
+        {
+            return consumed;
+        }
+    }
 
     public enum MuleConnectionDirection
     {
         TO, FROM;
     }
 
-    private MuleConnection provided;
-    private Set<MuleConnection> consumed = new HashSet<>();
+    // key is the inbound endpoint (message source) of the flow, values are the outbound endpoints.
+    private Map<MuleConnection, Set<MuleConnection>> flowConnections = new HashMap<>();
+    private Set<MuleConnection> consumed;
 
 
     public void setProvided(String protocol, String address, MuleConnectionDirection direction, boolean connected, String description)
     {
         final MuleConnection mc = buildConnection(protocol, address, direction, connected, description);
-        provided = mc;
+        consumed = new HashSet<MuleConnection>();
+        flowConnections.put(mc, consumed);
     }
 
     public void addConsumed(String protocol, String address, MuleConnectionDirection direction, boolean connected, String description)
@@ -97,16 +119,21 @@ public class MuleConnectionsBuilder
     @Override
     public String toString()
     {
-        return "MuleConnectionsBuilder[provided: " + (provided != null ? provided.toString() : "null") + "; consumed: " + consumed.toString() + "]";
+        return "MuleConnectionsBuilder[flowConnections: " + flowConnections.toString() + "]";
     }
 
-    public MuleConnection getProvidedConnection()
+    public List<MuleConnectionFlow> getConnections()
     {
-        return provided;
-    }
+        final List<MuleConnectionFlow> flowConns = new ArrayList<>();
 
-    public Set<MuleConnection> getConsumedConnections()
-    {
-        return consumed;
+        for (Entry<MuleConnection, Set<MuleConnection>> flowConn : flowConnections.entrySet())
+        {
+            final MuleConnectionFlow flow = new MuleConnectionFlow();
+            flow.provided = flowConn.getKey();
+            flow.consumed = flowConn.getValue();
+            flowConns.add(flow);
+        }
+
+        return flowConns;
     }
 }

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+    xmlns:spring="http://www.springframework.org/schema/beans" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+    <http:listener-config name="HTTP_Listener_Configuration1" host="0.0.0.0" port="8081" doc:name="HTTP Listener Configuration"/>
+    <http:listener-config name="HTTP_Listener_Configuration2" host="0.0.0.0" port="8088" doc:name="HTTP Listener Configuration"/>
+    <http:request-config name="HTTP_Request_google" host="google.com" port="80" doc:name="HTTP Request Configuration"/>
+    <http:request-config name="HTTP_Request_facebook" host="facebook.com" port="80" doc:name="HTTP Request Configuration"/>
+
+    <flow name="connectorsFlow">
+        <http:listener config-ref="HTTP_Listener_Configuration1" path="/1" doc:name="HTTP"/>
+        <http:request config-ref="HTTP_Request_google" path="/" method="GET" doc:name="HTTP"/>
+    </flow>
+    <flow name="connectorsFlow1">
+        <http:listener config-ref="HTTP_Listener_Configuration2" path="/2" doc:name="HTTP"/>
+        <http:request config-ref="HTTP_Request_facebook" path="" method="" doc:name="HTTP"/>
+    </flow>
+</mule>
