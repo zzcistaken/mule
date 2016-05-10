@@ -7,6 +7,7 @@
 package org.mule.devkit.processor;
 
 import static org.mule.util.Preconditions.checkArgument;
+
 import org.mule.api.MessagingException;
 import org.mule.api.MuleContext;
 import org.mule.api.MuleEvent;
@@ -21,7 +22,6 @@ import org.mule.api.lifecycle.Initialisable;
 import org.mule.api.lifecycle.InitialisationException;
 import org.mule.api.lifecycle.Startable;
 import org.mule.api.lifecycle.Stoppable;
-import org.mule.api.processor.MessageProcessor;
 import org.mule.api.registry.RegistrationException;
 import org.mule.api.transformer.Transformer;
 import org.mule.common.security.oauth.exception.NotAuthorizedException;
@@ -290,6 +290,11 @@ public abstract class DevkitBasedMessageProcessor extends ExpressionEvaluatorSup
     public final FlowConstruct getFlowConstruct()
     {
         return this.flowConstruct;
+    }
+
+    public String getOperationName()
+    {
+        return operationName;
     }
 
     /**

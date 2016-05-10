@@ -562,43 +562,35 @@ public abstract class AbstractPipeline extends AbstractFlowConstruct implements 
         }
         else if (isGithub(messageProcessor))
         {
-            try
-            {
-                final Set<Field> fields = ReflectionUtils.getFields(Class.forName("org.mule.devkit.processor.DevkitBasedMessageProcessor"), ReflectionUtils.withName("operationName"));
-                final Field field = fields.iterator().next();
-                field.setAccessible(true);
-                visitor.addConsumed("GITHUB", "github.com/" + (String) field.get(messageProcessor), MuleConnectionDirection.FROM, true, "");
-            }
-            catch (ClassNotFoundException e)
-            {
-            }
-            catch (IllegalArgumentException e)
-            {
-            }
-            catch (IllegalAccessException e)
-            {
-            }
-
+            visitor.addConsumed("GITHUB", "github.com/" + getOperationName(messageProcessor), MuleConnectionDirection.FROM, true, "");
+        }
+        else if (isTwitter(messageProcessor))
+        {
+            visitor.addConsumed("TWITTER", "twitter.com/" + getOperationName(messageProcessor), MuleConnectionDirection.FROM, true, "");
+        }
+        else if (isGmail(messageProcessor))
+        {
+            visitor.addConsumed("GMAIL", "gmail.google.com/" + getOperationName(messageProcessor), MuleConnectionDirection.FROM, true, "");
         }
         else if (isSalesforce(messageProcessor))
         {
-            try
-            {
-                final Set<Field> fields = ReflectionUtils.getFields(Class.forName("org.mule.devkit.processor.DevkitBasedMessageProcessor"), ReflectionUtils.withName("operationName"));
-                final Field field = fields.iterator().next();
-                field.setAccessible(true);
-                visitor.addConsumed("SFDC", "salsforce.com/" + (String) field.get(messageProcessor), MuleConnectionDirection.FROM, true, "");
-            }
-            catch (ClassNotFoundException e)
-            {
-            }
-            catch (IllegalArgumentException e)
-            {
-            }
-            catch (IllegalAccessException e)
-            {
-            }
+            visitor.addConsumed("SFDC", "salsforce.com/" + getOperationName(messageProcessor), MuleConnectionDirection.FROM, true, "");
+        }
+    }
 
+    protected static String getOperationName(MessageProcessor messageProcessor)
+    {
+        try
+        {
+            final Set<Field> fields = ReflectionUtils.getFields(Class.forName("org.mule.devkit.processor.DevkitBasedMessageProcessor"), ReflectionUtils.withName("operationName"));
+            final Field field = fields.iterator().next();
+            field.setAccessible(true);
+            final String operation = (String) field.get(messageProcessor);
+            return operation;
+        }
+        catch (ClassNotFoundException | IllegalArgumentException | IllegalAccessException e)
+        {
+            return "";
         }
     }
 
@@ -607,6 +599,32 @@ public abstract class AbstractPipeline extends AbstractFlowConstruct implements 
         try
         {
             return messageProcessor.getClass().getName().startsWith("org.mule.modules.github")
+                   && Class.forName("org.mule.devkit.processor.DevkitBasedMessageProcessor").isAssignableFrom(messageProcessor.getClass());
+        }
+        catch (ClassNotFoundException e)
+        {
+            return false;
+        }
+    }
+
+    private static boolean isTwitter(MessageProcessor messageProcessor)
+    {
+        try
+        {
+            return messageProcessor.getClass().getName().startsWith("org.mule.modules.twitter")
+                   && Class.forName("org.mule.devkit.processor.DevkitBasedMessageProcessor").isAssignableFrom(messageProcessor.getClass());
+        }
+        catch (ClassNotFoundException e)
+        {
+            return false;
+        }
+    }
+
+    private static boolean isGmail(MessageProcessor messageProcessor)
+    {
+        try
+        {
+            return messageProcessor.getClass().getName().startsWith("org.mule.module.gmail")
                    && Class.forName("org.mule.devkit.processor.DevkitBasedMessageProcessor").isAssignableFrom(messageProcessor.getClass());
         }
         catch (ClassNotFoundException e)
