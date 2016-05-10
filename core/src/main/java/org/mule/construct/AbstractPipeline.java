@@ -8,6 +8,7 @@ package org.mule.construct;
 
 import static org.mule.util.NotificationUtils.buildPathResolver;
 
+import org.mule.api.AnnotatedObject;
 import org.mule.api.GlobalNameableObject;
 import org.mule.api.MessagingException;
 import org.mule.api.MuleContext;
