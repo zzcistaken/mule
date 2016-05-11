@@ -7,7 +7,7 @@
 
 package org.mule.runtime.config.spring.dsl.processor;
 
-public class AbstractParameterDefinitionVisitor implements ParameterDefinitionVisitor
+public class AbstractAttributeDefinitionVisitor implements AttributeDefinitionVisitor
 {
     @Override
     public void onReferenceObject(Class<?> objectType)

@@ -10,14 +10,16 @@ import static org.mule.runtime.config.spring.dsl.model.ApplicationModel.PROCESSO
 import static org.mule.runtime.config.spring.dsl.model.ApplicationModel.REFERENCE_ATTRIBUTE;
 import static org.mule.runtime.config.spring.dsl.model.ApplicationModel.TRANSFORMER_REFERENCE_ELEMENT;
 import static org.mule.runtime.config.spring.dsl.processor.xml.CoreXmlNamespaceInfoProvider.CORE_NAMESPACE_NAME;
-import org.mule.runtime.config.spring.dsl.model.ApplicationModel;
 import org.mule.runtime.config.spring.dsl.model.ComponentIdentifier;
 import org.mule.runtime.config.spring.dsl.model.ComponentModel;
-import org.mule.runtime.config.spring.dsl.processor.xml.CoreXmlNamespaceInfoProvider;
 import org.mule.runtime.core.api.processor.MessageProcessor;
 
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 
+/**
+ * Processor of the chain of responsibility that knows how to create the {@link org.springframework.beans.factory.config.BeanDefinition}
+ * for a transformer or processor reference element.
+ */
 public class ReferenceProcessorBeanDefinitionCreator extends BeanDefinitionCreator
 {
     private static final ComponentIdentifier PROCESSOR_REF_IDENTIFIER = new ComponentIdentifier.Builder().withNamespace(CORE_NAMESPACE_NAME).withName(PROCESSOR_REFERENCE_ELEMENT).build();
@@ -30,7 +32,7 @@ public class ReferenceProcessorBeanDefinitionCreator extends BeanDefinitionCreat
         if (componentModel.getIdentifier().equals(PROCESSOR_REF_IDENTIFIER) || componentModel.getIdentifier().equals(TRANSFORMER_REF_IDENTIFIER))
         {
             componentModel.setType(MessageProcessor.class);
-            componentModel.setBeanReference(new RuntimeBeanReference(componentModel.getAttributes().get(REFERENCE_ATTRIBUTE)));
+            componentModel.setBeanReference(new RuntimeBeanReference(componentModel.getParameters().get(REFERENCE_ATTRIBUTE)));
             return true;
         }
         return false;

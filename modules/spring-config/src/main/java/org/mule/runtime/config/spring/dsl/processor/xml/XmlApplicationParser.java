@@ -30,24 +30,27 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+/**
+ * Simple parser that transforms an XML document to a set of {@link org.mule.runtime.config.spring.dsl.processor.ConfigLine}
+ * objects.
+ *
+ * It uses the SPI interface {@link org.mule.runtime.config.spring.dsl.api.xml.XmlNamespaceInfoProvider} to locate for
+ * all namespace info provided and normalize the namespace from the XML document.
+ */
 public class XmlApplicationParser
 {
 
-
-    public static final String COLON = ":";
+    private static final String COLON = ":";
     private static final Map<String, String> predefinedNamespace = new HashMap<>();
+    private static final String UNDEFINED_NAMESPACE = "undefined";
+    private final ServiceLoader<XmlNamespaceInfoProvider> xmlNamespaceInfoProviders;
+    private final Cache<String, String> namespaceCache;
 
     static
     {
         predefinedNamespace.put("http://www.springframework.org/schema/beans", SPRING_NAMESPACE);
         predefinedNamespace.put("http://www.springframework.org/schema/context", SPRING_CONTEXT_NAMESPACE);
     }
-
-    public static final String UNDEFINED_NAMESPACE = "undefined";
-
-    private final ServiceLoader<XmlNamespaceInfoProvider> xmlNamespaceInfoProviders;
-    private final Cache<String, String> namespaceCache;
-
 
     public XmlApplicationParser()
     {

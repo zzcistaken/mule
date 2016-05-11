@@ -26,8 +26,8 @@ public class MuleDomainBeanDefinitionDocumentReader extends MuleBeanDefinitionDo
     }
 
     @Override
-    protected MuleHierarchicalBeanDefinitionParserDelegate createBeanDefinitionParserDelegate(XmlReaderContext readerContext)
+    protected ElementValidator[] getElementsValidator()
     {
-        return new MuleHierarchicalBeanDefinitionParserDelegate(readerContext, this, null, null, new DomainElementsValidator());
+        return new ElementValidator[]{new DomainElementsValidator()};
     }
 }

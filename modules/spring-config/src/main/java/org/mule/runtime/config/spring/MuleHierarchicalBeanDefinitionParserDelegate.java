@@ -67,18 +67,18 @@ public class MuleHierarchicalBeanDefinitionParserDelegate extends BeanDefinition
     public static final String MULE_NO_REGISTRATION = "org.mule.runtime.config.spring.MuleHierarchicalBeanDefinitionParserDelegate.MULE_NO_REGISTRATION";
     public static final String MULE_POST_CHILDREN = "org.mule.runtime.config.spring.MuleHierarchicalBeanDefinitionParserDelegate.MULE_POST_CHILDREN";
     private final Supplier<ApplicationModel> applicationModelSupplier;
-    private DefaultBeanDefinitionDocumentReader spring;
     private final List<ElementValidator> elementValidators;
+    private final DefaultBeanDefinitionDocumentReader beanDefinitionDocumentReader;
 
     private BeanDefinitionFactory beanDefinitionFactory;
 
     protected static final Log logger = LogFactory.getLog(MuleHierarchicalBeanDefinitionParserDelegate.class);
 
     public MuleHierarchicalBeanDefinitionParserDelegate(XmlReaderContext readerContext,
-                                                        DefaultBeanDefinitionDocumentReader spring, Supplier<ApplicationModel> applicationModelSupplier, BeanDefinitionFactory beanDefinitionFactory, ElementValidator... elementValidators)
+                                                        DefaultBeanDefinitionDocumentReader beanDefinitionDocumentReader, Supplier<ApplicationModel> applicationModelSupplier, BeanDefinitionFactory beanDefinitionFactory, ElementValidator... elementValidators)
     {
         super(readerContext);
-        this.spring = spring;
+        this.beanDefinitionDocumentReader = beanDefinitionDocumentReader;
         this.applicationModelSupplier = applicationModelSupplier;
         this.beanDefinitionFactory = beanDefinitionFactory;
         this.elementValidators = ArrayUtils.isEmpty(elementValidators) ? ImmutableList.<ElementValidator>of() : ImmutableList.copyOf(elementValidators);
@@ -223,22 +223,21 @@ public class MuleHierarchicalBeanDefinitionParserDelegate extends BeanDefinition
                     {
                         try
                         {
-                            type = ((FactoryBean)type.newInstance()).getObjectType();
+                            type = (Class<?>) ((ParameterizedType) Class.forName(finalChild.getBeanClassName()).getGenericInterfaces()[0]).getActualTypeArguments()[0];
                         }
-                        catch (InstantiationException e)
+                        catch (Exception e2)
                         {
-                            //TODO DB Factory beans do not have a default constructor. This should be the preferred method anyway.
                             try
                             {
-                                type = (Class<?>) ((ParameterizedType)Class.forName(finalChild.getBeanClassName()).getGenericInterfaces()[0]).getActualTypeArguments()[0];
+                                type = (Class<?>) ((ParameterizedType) Class.forName(finalChild.getBeanClassName()).getGenericSuperclass()).getActualTypeArguments()[0];
                             }
-                            catch (Exception e2)
+                            catch(Exception e3)
                             {
                                 try
                                 {
-                                    type = (Class<?>) ((ParameterizedType)Class.forName(finalChild.getBeanClassName()).getGenericSuperclass()).getActualTypeArguments()[0];
+                                    type = ((FactoryBean)type.newInstance()).getObjectType();
                                 }
-                                catch(Exception e3)
+                                catch (InstantiationException e)
                                 {
                                     type = Object.class;
                                 }
@@ -257,13 +256,15 @@ public class MuleHierarchicalBeanDefinitionParserDelegate extends BeanDefinition
 
     private boolean shouldUseNewMechanism(Element element)
     {
+        if (element.getLocalName().equals(MULE_ROOT_ELEMENT)) {
+            return false;
+        }
         Node parentNode = element;
         while ((parentNode = parentNode.getParentNode()) != null)
         {
-            String[] parentNodeParts = parentNode.getNodeName().split(":");
-            String parentNodeNamespace = parentNodeParts.length > 1 ? parentNodeParts[0] : CORE_NAMESPACE_NAME;
-            String parentNodeName = parentNodeParts.length > 1 ? parentNodeParts[1] : parentNodeParts[0];
-            if (parentNodeName.equals(CORE_NAMESPACE_NAME))
+            String parentNodeNamespace = getNamespace(parentNode);
+            String parentNodeName = parentNode.getLocalName();
+            if (parentNode.getNodeName().equals(MULE_ROOT_ELEMENT))
             {
                 break;
             }
@@ -272,11 +273,14 @@ public class MuleHierarchicalBeanDefinitionParserDelegate extends BeanDefinition
                 return false;
             }
         }
-
-        String[] nodeNameParts = element.getNodeName().split(":");
-        String namespace = nodeNameParts.length > 1 ? nodeNameParts[0] : CORE_NAMESPACE_NAME;
-        String nodeName = nodeNameParts.length > 1 ? nodeNameParts[1] : nodeNameParts[0];
+        String namespace = getNamespace(element);
+        String nodeName = element.getLocalName();
         return beanDefinitionFactory.hasDefinition(new ComponentIdentifier.Builder().withNamespace(namespace).withName(nodeName).build());
+    }
+
+    private String getNamespace(Node parentNode)
+    {
+        return parentNode.getPrefix() != null ? parentNode.getPrefix() : CORE_NAMESPACE_NAME;
     }
 
     private void validate(Element element)
@@ -302,7 +306,7 @@ public class MuleHierarchicalBeanDefinitionParserDelegate extends BeanDefinition
             {
                 Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
                 doc.appendChild(doc.importNode(element, true));
-                spring.registerBeanDefinitions(doc, getReaderContext());
+                beanDefinitionDocumentReader.registerBeanDefinitions(doc, getReaderContext());
             }
             catch (ParserConfigurationException e)
             {

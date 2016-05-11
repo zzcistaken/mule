@@ -23,6 +23,9 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+/**
+ * {@link org.mule.runtime.config.spring.dsl.api.ObjectFactory} to create a {@link org.mule.runtime.core.enricher.MessageEnricher}.
+ */
 public class MessageEnricherObjectFactory implements ObjectFactory<MessageEnricher>, MuleContextAware, FlowConstructAware, AnnotatedObject
 {
 

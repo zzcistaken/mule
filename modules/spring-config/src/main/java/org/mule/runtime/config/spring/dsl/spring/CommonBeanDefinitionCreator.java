@@ -45,6 +45,10 @@ import org.springframework.cglib.proxy.MethodProxy;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+/**
+ * Processor in the chain of responsibility that knows how to handle a generic
+ * {@code ComponentBuildingDefinition}.
+ */
 public class CommonBeanDefinitionCreator extends BeanDefinitionCreator
 {
 
@@ -84,7 +88,7 @@ public class CommonBeanDefinitionCreator extends BeanDefinitionCreator
 
     private void processAnnotationParameters(ComponentModel componentModel, Map<QName, Object> annotations)
     {
-        componentModel.getAttributes().entrySet().stream().filter(entry -> {
+        componentModel.getParameters().entrySet().stream().filter(entry -> {
             return entry.getKey().contains(":");
         }).forEach(annotationKey -> {
             Node attribute = from(componentModel).getNode().getAttributes().getNamedItem(annotationKey.getKey());

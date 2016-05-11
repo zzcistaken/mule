@@ -24,8 +24,8 @@ public class ComponentBuildingDefinition
 
     private TypeDefinition typeDefinition;
     private boolean scope;
-    private List<ParameterDefinition> constructorParameterDefinition = new ArrayList<>();
-    private Map<String, ParameterDefinition> setterParameterDefinitions = new HashMap<>();
+    private List<AttributeDefinition> constructorAttributeDefinition = new ArrayList<>();
+    private Map<String, AttributeDefinition> setterParameterDefinitions = new HashMap<>();
     //TODO MULE-9638 Use generics. Generics cannot be used right now because this method colides with the ones defined in FactoryBeans.
     private Class<?> objectFactoryType;
     private boolean prototype;
@@ -54,15 +54,15 @@ public class ComponentBuildingDefinition
     /**
      * @return an ordered list of the constructor parameters that must be set to create the domain object
      */
-    public List<ParameterDefinition> getConstructorParameterDefinition()
+    public List<AttributeDefinition> getConstructorAttributeDefinition()
     {
-        return constructorParameterDefinition;
+        return constructorAttributeDefinition;
     }
 
     /**
      * @return a map of the attributes that may contain configuration for the domain object to be created. The map key is the attribute name.
      */
-    public Map<String, ParameterDefinition> getSetterParameterDefinitions()
+    public Map<String, AttributeDefinition> getSetterParameterDefinitions()
     {
         return setterParameterDefinitions;
     }
@@ -105,12 +105,12 @@ public class ComponentBuildingDefinition
         /**
          * Adds a new constructor parameter to be used during the object instantiation.
          *
-         * @param parameterDefinition the constructor argument definition.
+         * @param attributeDefinition the constructor argument definition.
          * @return the builder
          */
-        public Builder withConstructorParameterDefinition(ParameterDefinition parameterDefinition)
+        public Builder withConstructorParameterDefinition(AttributeDefinition attributeDefinition)
         {
-            definition.constructorParameterDefinition.add(parameterDefinition);
+            definition.constructorAttributeDefinition.add(attributeDefinition);
             return this;
         }
 
@@ -118,39 +118,103 @@ public class ComponentBuildingDefinition
          * Adds a new parameter to be added to the object by using a setter method.
          *
          * @param fieldName the name of the field in which the value must be injected
-         * @param parameterDefinition the setter parameter definition
+         * @param attributeDefinition the setter parameter definition
          * @return the builder
          */
-        public Builder withSetterParameterDefinition(String fieldName, ParameterDefinition parameterDefinition)
+        public Builder withSetterParameterDefinition(String fieldName, AttributeDefinition attributeDefinition)
         {
-            definition.setterParameterDefinitions.put(fieldName, parameterDefinition);
+            definition.setterParameterDefinitions.put(fieldName, attributeDefinition);
             return this;
         }
 
+        /**
+         * Sets the identifier of the configuration element that this building definition is for.
+         * For instance, a config element <http:listener> has as identifier listener
+         *
+         * @param identifier configuration element identifier
+         * @return the builder
+         */
         public Builder withIdentifier(String identifier)
         {
             this.identifier = identifier;
             return this;
         }
 
+        /**
+         * Sets the namespace of the configuration element that this building definition is for.
+         * For instance, a config element <http:listener> has as namespace http
+         *
+         * @param namespace configuration element namespace
+         * @return the builder
+         */
         public Builder withNamespace(String namespace)
         {
             this.namespace = namespace;
             return this;
         }
 
+        /**
+         * Sets the {@link org.mule.runtime.config.spring.dsl.processor.TypeDefinition} to discover the object type.
+         * It may be created from {@link org.mule.runtime.config.spring.dsl.processor.TypeDefinition#fromType(Class)} which
+         * means the type is predefined. Or it may be created from {@link org.mule.runtime.config.spring.dsl.processor.TypeDefinition#fromConfigurationAttribute(String)}
+         * which means that the object type is declared within the configuration using a config attribute.
+         *
+         * @param typeDefinition the type definition to discover the objecvt type
+         * @return the builder
+         */
         public Builder withTypeDefinition(TypeDefinition typeDefinition)
         {
             definition.typeDefinition = typeDefinition;
             return this;
         }
 
+        /**
+         * Used to declare that object to be created is an scope.
+         *
+         * @return the builder
+         */
         public Builder asScope()
         {
             definition.scope = true;
             return this;
         }
 
+        /**
+         * Defines a factory class to be used for creating the object. This method can be used
+         * when the object to be build required complex logic.
+         *
+         * @param objectFactoryType {@code Class} for the factory to use to create the object
+         * @return the builder
+         */
+        public Builder withObjectFactoryType(Class<?> objectFactoryType)
+        {
+            definition.objectFactoryType = objectFactoryType;
+            return this;
+        }
+
+        /**
+         * Makes a deep copy of the builder so it's current configuration can be reused.
+         * @return a {@code Builder} copy.
+         */
+        public Builder copy()
+        {
+            Builder builder = new Builder();
+            builder.definition.setterParameterDefinitions = new HashMap<>(this.definition.setterParameterDefinitions);
+            builder.definition.constructorAttributeDefinition = new ArrayList<>(this.definition.constructorAttributeDefinition);
+            builder.identifier = this.identifier;
+            builder.namespace = this.namespace;
+            builder.definition.scope = this.definition.scope;
+            builder.definition.typeDefinition = this.definition.typeDefinition;
+            return builder;
+        }
+
+        /**
+         * Builds a {@link org.mule.runtime.config.spring.dsl.api.ComponentBuildingDefinition} with the parameters set in the builder.
+         *
+         * At least the identifier, namespace and type definition must be configured or this method will fail.
+         *
+         * @return a fully configured {@link org.mule.runtime.config.spring.dsl.api.ComponentBuildingDefinition}
+         */
         public ComponentBuildingDefinition build()
         {
             Preconditions.checkState(definition.typeDefinition != null, "You must specify the type");
@@ -158,24 +222,6 @@ public class ComponentBuildingDefinition
             Preconditions.checkState(namespace != null, "You must specify the namespace");
             definition.componentIdentifier = new ComponentIdentifier.Builder().withName(identifier).withNamespace(namespace).build();
             return definition;
-        }
-
-        public Builder withObjectFactoryType(Class<?> objectFactoryType)
-        {
-            definition.objectFactoryType = objectFactoryType;
-            return this;
-        }
-
-        public Builder copy()
-        {
-            Builder builder = new Builder();
-            builder.definition.setterParameterDefinitions = new HashMap<>(this.definition.setterParameterDefinitions);
-            builder.definition.constructorParameterDefinition = new ArrayList<>(this.definition.constructorParameterDefinition);
-            builder.identifier = this.identifier;
-            builder.namespace = this.namespace;
-            builder.definition.scope = this.definition.scope;
-            builder.definition.typeDefinition = this.definition.typeDefinition;
-            return builder;
         }
 
         //TODO MULE-9681: remove for some other semantic. The API should not define something as "prototype" it should declare if it's a reusable component or an instance.

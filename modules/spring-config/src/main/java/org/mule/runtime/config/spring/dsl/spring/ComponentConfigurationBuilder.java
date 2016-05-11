@@ -10,9 +10,9 @@ import static org.mule.runtime.config.spring.dsl.model.ApplicationModel.PROCESSI
 import static org.mule.runtime.config.spring.dsl.spring.CommonBeanDefinitionCreator.areMatchingTypes;
 import static org.mule.runtime.config.spring.util.ProcessingStrategyUtils.parseProcessingStrategy;
 import org.mule.runtime.config.spring.dsl.api.ComponentBuildingDefinition;
-import org.mule.runtime.config.spring.dsl.api.ParameterDefinition;
+import org.mule.runtime.config.spring.dsl.api.AttributeDefinition;
 import org.mule.runtime.config.spring.dsl.model.ComponentModel;
-import org.mule.runtime.config.spring.dsl.processor.ParameterDefinitionVisitor;
+import org.mule.runtime.config.spring.dsl.processor.AttributeDefinitionVisitor;
 import org.mule.runtime.core.api.processor.ProcessingStrategy;
 
 import java.util.HashMap;
@@ -46,19 +46,19 @@ public class ComponentConfigurationBuilder
         this.componentModel = componentModel;
         this.componentBuildingDefinition = componentBuildingDefinition;
         this.beanDefinitionBuilderHelper = beanDefinitionBuilderHelper;
-        this.simpleParameters = new HashMap(componentModel.getAttributes());
+        this.simpleParameters = new HashMap(componentModel.getParameters());
         this.complexParameters = collectComplexParametersWithTypes(componentModel);
     }
 
     public void processConfiguration()
     {
-        for (Map.Entry<String, ParameterDefinition> definitionEntry : componentBuildingDefinition.getSetterParameterDefinitions().entrySet())
+        for (Map.Entry<String, AttributeDefinition> definitionEntry : componentBuildingDefinition.getSetterParameterDefinitions().entrySet())
         {
             definitionEntry.getValue().accept(setterVisitor(definitionEntry.getKey()));
         }
-        for (ParameterDefinition parameterDefinition : componentBuildingDefinition.getConstructorParameterDefinition())
+        for (AttributeDefinition attributeDefinition : componentBuildingDefinition.getConstructorAttributeDefinition())
         {
-            parameterDefinition.accept(constructorVisitor());
+            attributeDefinition.accept(constructorVisitor());
         }
     }
 
@@ -97,23 +97,23 @@ public class ComponentConfigurationBuilder
         }).collect(Collectors.toList());
     }
 
-    private ConfigurableParameterDefinitionVisitor constructorVisitor()
+    private ConfigurableAttributeDefinitionVisitor constructorVisitor()
     {
-        return new ConfigurableParameterDefinitionVisitor(beanDefinitionBuilderHelper::addConstructorValue, beanDefinitionBuilderHelper::addConstructorReference);
+        return new ConfigurableAttributeDefinitionVisitor(beanDefinitionBuilderHelper::addConstructorValue, beanDefinitionBuilderHelper::addConstructorReference);
     }
 
-    private ConfigurableParameterDefinitionVisitor setterVisitor(String propertyName)
+    private ConfigurableAttributeDefinitionVisitor setterVisitor(String propertyName)
     {
-        return new ConfigurableParameterDefinitionVisitor(beanDefinitionBuilderHelper.forProperty(propertyName)::addValue, beanDefinitionBuilderHelper.forProperty(propertyName)::addReference);
+        return new ConfigurableAttributeDefinitionVisitor(beanDefinitionBuilderHelper.forProperty(propertyName)::addValue, beanDefinitionBuilderHelper.forProperty(propertyName)::addReference);
     }
 
-    public class ConfigurableParameterDefinitionVisitor implements ParameterDefinitionVisitor
+    public class ConfigurableAttributeDefinitionVisitor implements AttributeDefinitionVisitor
     {
 
         private final Consumer<String> referencePopulator;
         private final Consumer<Object> valuePopulator;
 
-        ConfigurableParameterDefinitionVisitor(Consumer<Object> valuePopulator, Consumer<String> referencePopulator)
+        ConfigurableAttributeDefinitionVisitor(Consumer<Object> valuePopulator, Consumer<String> referencePopulator)
         {
             this.valuePopulator = valuePopulator;
             this.referencePopulator = referencePopulator;

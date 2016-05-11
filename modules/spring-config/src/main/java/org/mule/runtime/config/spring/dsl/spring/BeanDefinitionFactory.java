@@ -30,8 +30,18 @@ import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.w3c.dom.Element;
 
+/**
+ * The {@code BeanDefinitionFactory} is the one that knows how to convert a {@code ComponentModel} to an actual
+ * {@link org.springframework.beans.factory.config.BeanDefinition} that can later be converted to a runtime object
+ * that will be part of the artifact.
+ *
+ * It will recursively process a {@code ComponentModel} to create a {@code BeanDefinition}. For the time being
+ * it will collaborate with the old bean definitions parsers for configurations that are partially defined in the
+ * new parsing method.
+ */
 public class BeanDefinitionFactory
 {
+
     private final ImmutableSet<ComponentIdentifier> ignoredMuleCoreComponentIdentifiers = ImmutableSet.<ComponentIdentifier>builder()
             .add(new ComponentIdentifier.Builder().withNamespace(CORE_NAMESPACE_NAME).withName(MULE_ROOT_ELEMENT).build())
             .add(new ComponentIdentifier.Builder().withNamespace(CORE_NAMESPACE_NAME).withName(DESCRIPTION_ELEMENT).build())
@@ -40,33 +50,53 @@ public class BeanDefinitionFactory
     private ComponentBuildingDefinitionRegistry componentBuildingDefinitionRegistry;
     private BeanDefinitionCreator componentModelProcessor;
 
+    /**
+     * @param componentBuildingDefinitionRegistry a registry with all the known {@code ComponentBuildingDefinition}s by the artifact.
+     */
     public BeanDefinitionFactory(ComponentBuildingDefinitionRegistry componentBuildingDefinitionRegistry)
     {
         this.componentBuildingDefinitionRegistry = componentBuildingDefinitionRegistry;
         this.componentModelProcessor = buildComponentModelProcessorChainOfResponsability();
     }
 
-    public BeanDefinition resolveComponentRecursively(ComponentModel parentComponentModel, ComponentModel componentModel, BeanDefinitionRegistry registry, BiConsumer<ComponentModel, BeanDefinitionRegistry> resolvedComponentDefinitionModelProcessor, BiFunction<Element, BeanDefinition, BeanDefinition> oldParsingMechansim) {
+    /**
+     * Creates a {@code BeanDefinition} by traversing the {@code ComponentModel} and its children.
+     *
+     * @param parentComponentModel the parent component model since the bean definition to be created may depend on the context.
+     * @param componentModel the component model from which we want to create the bean definition.
+     * @param registry the bean registry since it may be required to get other bean definitions to create this one or to register the bean definition.
+     * @param componentModelPostProcessor a function to post process the bean definition.
+     * @param oldParsingMechanism a function to execute the old parsing mechanism if required by children {@code ComponentModel}s
+     * @return the {@code BeanDefinition} of the component model.
+     */
+    public BeanDefinition resolveComponentRecursively(ComponentModel parentComponentModel,
+                                                      ComponentModel componentModel,
+                                                      BeanDefinitionRegistry registry,
+                                                      BiConsumer<ComponentModel, BeanDefinitionRegistry> componentModelPostProcessor,
+                                                      BiFunction<Element, BeanDefinition, BeanDefinition> oldParsingMechanism)
+    {
         List<ComponentModel> innerComponents = componentModel.getInnerComponents();
         if (!innerComponents.isEmpty())
         {
-            for (ComponentModel innerComponent : innerComponents) {
+            for (ComponentModel innerComponent : innerComponents)
+            {
                 if (hasDefinition(innerComponent.getIdentifier()))
                 {
-                    resolveComponentRecursively(componentModel, innerComponent, registry, resolvedComponentDefinitionModelProcessor, oldParsingMechansim);
+                    resolveComponentRecursively(componentModel, innerComponent, registry, componentModelPostProcessor, oldParsingMechanism);
                 }
                 else
                 {
-                    AbstractBeanDefinition oldBeanDefinition = (AbstractBeanDefinition) oldParsingMechansim.apply((Element) from(innerComponent).getNode(), null);
+                    AbstractBeanDefinition oldBeanDefinition = (AbstractBeanDefinition) oldParsingMechanism.apply((Element) from(innerComponent).getNode(), null);
                     oldBeanDefinition = adaptFilterBeanDefinitions(componentModel, oldBeanDefinition);
                     innerComponent.setBeanDefinition(oldBeanDefinition);
                 }
             }
         }
-        return resolveComponent(parentComponentModel, componentModel, registry, resolvedComponentDefinitionModelProcessor);
+        return resolveComponent(parentComponentModel, componentModel, registry, componentModelPostProcessor);
     }
 
-    private BeanDefinition resolveComponent(ComponentModel parentComponentModel, ComponentModel componentModel, BeanDefinitionRegistry registry, BiConsumer<ComponentModel, BeanDefinitionRegistry> componentDefinitionModelProcessor) {
+    private BeanDefinition resolveComponent(ComponentModel parentComponentModel, ComponentModel componentModel, BeanDefinitionRegistry registry, BiConsumer<ComponentModel, BeanDefinitionRegistry> componentDefinitionModelProcessor)
+    {
         if (ignoredMuleCoreComponentIdentifiers.contains(componentModel.getIdentifier()))
         {
             return null;
@@ -77,25 +107,11 @@ public class BeanDefinitionFactory
     }
 
 
-    public void resolveComponentBeanDefinition(ComponentModel parentComponentModel, ComponentModel componentModel) {
-        ComponentBuildingDefinition componentBuildingDefinition = componentBuildingDefinitionRegistry.getBuildingDefinition(componentModel.getIdentifier()).orElseThrow( () -> {
+    private void resolveComponentBeanDefinition(ComponentModel parentComponentModel, ComponentModel componentModel)
+    {
+        ComponentBuildingDefinition componentBuildingDefinition = componentBuildingDefinitionRegistry.getBuildingDefinition(componentModel.getIdentifier()).orElseThrow(() -> {
             return new MuleRuntimeException(CoreMessages.createStaticMessage(String.format("No component building definition for element %s. It may be that there's a dependency missing to the project that handle that extension.", componentModel.getIdentifier())));
         });
-
-        ////TODO see if this condition is needed
-        //if (componentDefinitionModel.getNamespace().equals(SPRING_NAMESPACE) || componentDefinitionModel.getNamespace().equals(SPRING_CONTEXT_NAMESPACE))
-        //{
-        //    return;
-        //}
-        //
-        //if (componentBuildingDefinition == null)
-        //{
-        //    //Parse using old method
-        //    BeanDefinition beanDefinition = oldParsingMechansim.apply((Element) componentDefinitionModel.getNode(), null);
-        //    beanDefinition = wrapBeanDefinitionForFilters(componentDefinitionModel.getNode().getParentNode(), beanDefinition);
-        //    componentDefinitionModel.setBeanDefinition(beanDefinition);
-        //    return;
-        //}
         this.componentModelProcessor.processRequest(new CreateBeanDefinitionRequest(parentComponentModel, componentModel, componentBuildingDefinition));
     }
 
@@ -111,8 +127,6 @@ public class BeanDefinitionFactory
         }
     }
 
-
-
     private BeanDefinitionCreator buildComponentModelProcessorChainOfResponsability()
     {
         ReferenceProcessorBeanDefinitionCreator referenceProcessorBeanDefinitionCreator = new ReferenceProcessorBeanDefinitionCreator();
@@ -126,6 +140,13 @@ public class BeanDefinitionFactory
         return referenceProcessorBeanDefinitionCreator;
     }
 
+    /**
+     * Used to collaborate with the bean definition parsers mechanism.
+     * If {@code #hasDefinition} returns false, then the old mechanism must be used.
+     *
+     * @param componentIdentifier a {@code ComponentModel} identifier.
+     * @return true if there's a {@code ComponentBuildingDefinition} for the specified configuration identifier, false if there's not.
+     */
     public boolean hasDefinition(ComponentIdentifier componentIdentifier)
     {
         return ignoredMuleCoreComponentIdentifiers.contains(componentIdentifier) || componentBuildingDefinitionRegistry.getBuildingDefinition(componentIdentifier).isPresent();

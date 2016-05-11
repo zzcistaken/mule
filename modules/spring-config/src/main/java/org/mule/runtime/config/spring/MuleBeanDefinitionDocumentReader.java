@@ -17,6 +17,7 @@ import org.mule.runtime.config.spring.parsers.AbstractMuleBeanDefinitionParser;
 import org.mule.runtime.core.api.MuleRuntimeException;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 import org.springframework.beans.factory.xml.BeanDefinitionParserDelegate;
@@ -32,10 +33,10 @@ import org.w3c.dom.Element;
 public class MuleBeanDefinitionDocumentReader extends DefaultBeanDefinitionDocumentReader
 {
 
-    private BeanDefinitionFactory beanDefinitionFactory;
-    private XmlApplicationParser xmlApplicationParser = new XmlApplicationParser();
+    private final BeanDefinitionFactory beanDefinitionFactory;
+    private final XmlApplicationParser xmlApplicationParser = new XmlApplicationParser();
     //This same instance is called several time to parse different XML files so a stack is needed to save previous state.
-    private Stack<ApplicationModel> applicationModelStack = new Stack<>();
+    private final Stack<ApplicationModel> applicationModelStack = new Stack<>();
 
     public MuleBeanDefinitionDocumentReader(BeanDefinitionFactory beanDefinitionFactory)
     {
@@ -52,7 +53,12 @@ public class MuleBeanDefinitionDocumentReader extends DefaultBeanDefinitionDocum
 
     protected MuleHierarchicalBeanDefinitionParserDelegate createBeanDefinitionParserDelegate(XmlReaderContext readerContext)
     {
-        return new MuleHierarchicalBeanDefinitionParserDelegate(readerContext, this, () -> { return applicationModelStack.peek();}, beanDefinitionFactory);
+        return new MuleHierarchicalBeanDefinitionParserDelegate(readerContext, this, () -> { return applicationModelStack.peek();}, beanDefinitionFactory, getElementsValidator());
+    }
+
+    protected ElementValidator[] getElementsValidator()
+    {
+        return new ElementValidator[0];
     }
 
     /**
@@ -77,7 +83,7 @@ public class MuleBeanDefinitionDocumentReader extends DefaultBeanDefinitionDocum
     {
         try
         {
-            ArrayList<ConfigLine> configLines = new ArrayList<>();
+            List<ConfigLine> configLines = new ArrayList<>();
             configLines.add(xmlApplicationParser.parse(root).get());
             ApplicationConfig applicationConfig = new ApplicationConfig.Builder().addConfigFile(new ConfigFile(getConfigFileIdentifier(getReaderContext().getResource()), configLines)).build();
             applicationModelStack.push(new ApplicationModel(applicationConfig));

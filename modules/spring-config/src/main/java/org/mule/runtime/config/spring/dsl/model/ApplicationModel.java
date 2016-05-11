@@ -24,11 +24,20 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+/**
+ * An {@code ApplicationModel} holds a representation of all the artifact configuration using an abstract model
+ * to represent any configuration option.
+ *
+ * This model is represented by a set of {@link org.mule.runtime.config.spring.dsl.model.ComponentModel}. Each {@code ComponentModel}
+ * holds a piece of configuration and may have children {@code ComponentModel}s as defined in the artifact configuration.
+ *
+ * Once the set of {@code ComponentModel} gets created from the application {@link org.mule.runtime.config.spring.dsl.processor.ConfigFile}s
+ * the {@code ApplicationModel} executes a set of common validations dictated by the configuration semantics.
+ */
 public class ApplicationModel
 {
 
@@ -51,8 +60,8 @@ public class ApplicationModel
     public static final String MESSAGE_FILTER_ELEMENT = "message-filter";
     public static final String ANNOTATION_ELEMENT = "annotations";
     public static final String FILTER_ELEMENT_SUFFIX = "-filter";
-
     public static final String PROCESSING_STRATEGY_ATTRIBUTE = "processingStrategy";
+
     //TODO MULE-9638 Remove once all bean definitions parsers where migrated
     public static final String TEST_NAMESPACE = "test";
     public static final String DB_NAMESPACE = "db";
@@ -62,9 +71,9 @@ public class ApplicationModel
     public static final String MULE_XML_NAMESPACE = "mulexml";
     public static final String PGP_NAMESPACE = "pgp";
     public static final String XSL_NAMESPACE = "xsl";
-
     public static final String JMS_NAMESPACE = "jms";
     public static final String VM_NAMESPACE = "vm";
+
     public static final ComponentIdentifier CHOICE_EXCEPTION_STRATEGY_IDENTIFIER = new ComponentIdentifier.Builder().withNamespace(CORE_NAMESPACE_NAME).withName(CHOICE_EXCEPTION_STRATEGY).build();
     public static final ComponentIdentifier EXCEPTION_STRATEGY_REFERENCE_IDENTIFIER = new ComponentIdentifier.Builder().withNamespace(CORE_NAMESPACE_NAME).withName(EXCEPTION_STRATEGY_REFERENCE_ELEMENT).build();
     public static final ComponentIdentifier MULE_IDENTIFIER = new ComponentIdentifier.Builder().withNamespace(CORE_NAMESPACE_NAME).withName(MULE_ROOT_ELEMENT).build();
@@ -114,12 +123,31 @@ public class ApplicationModel
 
     private List<ComponentModel> componentModels = new ArrayList<>();
 
-    public ApplicationModel()
+    /**
+     * Creates an {code ApplicationModel} from a {@link ApplicationConfig}.
+     *
+     * A set of validations are applied that may make creation fail.
+     *
+     * @param applicationConfig the mule artifact configuration content.
+     * @throws Exception when the application configuration has semantic errors.
+     */
+    public ApplicationModel(ApplicationConfig applicationConfig) throws Exception
     {
-        super();
+        convertConfigFileToComponentModel(applicationConfig);
+        validateModel();
     }
 
-    public ApplicationModel(ApplicationConfig applicationConfig) throws Exception
+    /**
+     * @param element element which was the source of the {@code ComponentModel}.
+     * @return the {@code ComponentModel} created from the element.
+     */
+    //TODO MULE-9638: remove once the old parsing mechanism is not needed anymore
+    public ComponentModel findComponentDefinitionModel(Element element)
+    {
+        return innerFindComponentDefinitionModel(element, componentModels);
+    }
+
+    private void convertConfigFileToComponentModel(ApplicationConfig applicationConfig)
     {
         List<ConfigFile> configFiles = applicationConfig.getConfigFiles();
         configFiles.stream()
@@ -133,7 +161,6 @@ public class ApplicationModel
                 .forEach(configFile -> {
                     componentModels.addAll(extractComponentDefinitionModel(Arrays.asList(configFile.getConfigLines().get(0)), configFile.getFilename()));
                 });
-        validateModel();
     }
 
     private boolean isSpringFile(ConfigFile configFile)
@@ -148,7 +175,7 @@ public class ApplicationModel
             return;
         }
         validateNameIsNotRepeated();
-        validateNameIsOnlyOnTopElements();
+        validateNameIsOnlyOnTopLevelElements();
         validateExceptionStrategyWhenAttributeIsOnlyPresentInsideChoice();
         validateChoiceExceptionStrategyStructure();
     }
@@ -190,7 +217,7 @@ public class ApplicationModel
     private void validateNoMoreThanOneRollbackExceptionStrategyWithRedelivery(ComponentModel component)
     {
         if (component.getInnerComponents().stream().filter(exceptionStrategyComponent -> {
-            return exceptionStrategyComponent.getAttributes().get(MAX_REDELIVERY_ATTEMPTS_ROLLBACK_ES_ATTRIBUTE) != null;
+            return exceptionStrategyComponent.getParameters().get(MAX_REDELIVERY_ATTEMPTS_ROLLBACK_ES_ATTRIBUTE) != null;
         }).count() > 1)
         {
             throw new MuleRuntimeException(createStaticMessage("Only one rollback-exception-strategy within a choice-exception-strategy can handle message redelivery. Remove one of the maxRedeliveryAttempts attributes"));
@@ -202,7 +229,7 @@ public class ApplicationModel
         List<ComponentModel> innerComponents = component.getInnerComponents();
         for (int i = 0; i < innerComponents.size() - 1; i++)
         {
-            if (innerComponents.get(i).getAttributes().get(WHEN_CHOICE_ES_ATTRIBUTE) == null)
+            if (innerComponents.get(i).getParameters().get(WHEN_CHOICE_ES_ATTRIBUTE) == null)
             {
                 throw new MuleRuntimeException(createStaticMessage("Every exception strategy (except for the last one) within a choice-exception-strategy must specify the when attribute"));
             }
@@ -215,7 +242,7 @@ public class ApplicationModel
             if (component.getIdentifier().getName().endsWith(EXCEPTION_STRATEGY_REFERENCE_ELEMENT))
             {
                 Node componentNode = from(component).getNode();
-                if (component.getAttributes().get(WHEN_CHOICE_ES_ATTRIBUTE) != null
+                if (component.getParameters().get(WHEN_CHOICE_ES_ATTRIBUTE) != null
                     && !componentNode.getParentNode().getLocalName().equals(CHOICE_EXCEPTION_STRATEGY)
                     && !componentNode.getParentNode().getLocalName().equals(MULE_ROOT_ELEMENT))
                 {
@@ -225,7 +252,7 @@ public class ApplicationModel
         });
     }
 
-    private void validateNameIsOnlyOnTopElements() throws ConfigurationException
+    private void validateNameIsOnlyOnTopLevelElements() throws ConfigurationException
     {
         try
         {
@@ -289,17 +316,17 @@ public class ApplicationModel
             to(builder).addNode(from(configLine).getNode()).addConfigFileName(configFileName);
             for (SimpleConfigAttribute simpleConfigAttribute : configLine.getConfigAttributes().values())
             {
-                builder.addAttribute(simpleConfigAttribute.getName(), simpleConfigAttribute.getValue());
+                builder.addParameter(simpleConfigAttribute.getName(), simpleConfigAttribute.getValue());
             }
             List<ComponentModel> componentModels = extractComponentDefinitionModel(configLine.getChildren(), configFileName);
             componentModels.stream().forEach(componentDefinitionModel -> {
                 if (SPRING_PROPERTY_IDENTIFIER.equals(componentDefinitionModel.getIdentifier()))
                 {
-                    builder.addAttribute(componentDefinitionModel.getNameAttribute(), componentDefinitionModel.getAttributes().get("value"));
+                    builder.addParameter(componentDefinitionModel.getNameAttribute(), componentDefinitionModel.getParameters().get("value"));
                 }
                 else
                 {
-                    builder.addChildComponentDefinitionModel(componentDefinitionModel);
+                    builder.addChildComponentModel(componentDefinitionModel);
                 }
             });
             ConfigLine parent = configLine.getParent();
@@ -310,26 +337,6 @@ public class ApplicationModel
             models.add(builder.build());
         }
         return models;
-    }
-
-    public void foreach(Consumer<ComponentModel> componentDefinitionModelConsumer)
-    {
-        innerForeach(componentDefinitionModelConsumer, componentModels);
-    }
-
-    private void innerForeach(Consumer<ComponentModel> componentDefinitionModelConsumer, List<ComponentModel> componentModels)
-    {
-        for (ComponentModel componentModel : componentModels)
-        {
-            componentDefinitionModelConsumer.accept(componentModel);
-            innerForeach(componentDefinitionModelConsumer, componentModel.getInnerComponents());
-        }
-    }
-
-    //TODO MULE-9638: remove once the old parsing mechanism is not needed anymore
-    public ComponentModel findComponentDefinitionModel(Element element)
-    {
-        return innerFindComponentDefinitionModel(element, componentModels);
     }
 
     private ComponentModel innerFindComponentDefinitionModel(Element element, List<ComponentModel> componentModels)
@@ -355,6 +362,7 @@ public class ApplicationModel
     @FunctionalInterface
     interface ComponentConsumer
     {
+
         void consume(ComponentModel componentModel) throws MuleRuntimeException;
     }
 }

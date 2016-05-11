@@ -38,11 +38,11 @@ public class ObjectTypeVisitor implements TypeDefinitionVisitor
     {
         try
         {
-            type = ClassUtils.getClass(Thread.currentThread().getContextClassLoader(), componentModel.getAttributes().get(attributeName));
+            type = ClassUtils.getClass(Thread.currentThread().getContextClassLoader(), componentModel.getParameters().get(attributeName));
         }
         catch (ClassNotFoundException e)
         {
-            throw new MuleRuntimeException(CoreMessages.createStaticMessage("Error while trying to locate Class definition for type %s on element %s", componentModel.getAttributes().get(attributeName), componentModel.getIdentifier()), e);
+            throw new MuleRuntimeException(CoreMessages.createStaticMessage("Error while trying to locate Class definition for type %s on element %s", componentModel.getParameters().get(attributeName), componentModel.getIdentifier()), e);
         }
     }
 

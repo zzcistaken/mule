@@ -13,6 +13,10 @@ import org.mule.runtime.core.api.exception.MessagingExceptionHandler;
 
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 
+/**
+ * Processor of the chain of responsibility that knows how to create the {@link org.springframework.beans.factory.config.BeanDefinition}
+ * for an exception strategy reference element.
+ */
 public class ExceptionStrategyRefBeanDefinitionCreator extends BeanDefinitionCreator
 {
 
@@ -23,7 +27,7 @@ public class ExceptionStrategyRefBeanDefinitionCreator extends BeanDefinitionCre
         if (componentModel.getIdentifier().equals(EXCEPTION_STRATEGY_REFERENCE_IDENTIFIER))
         {
             componentModel.setType(MessagingExceptionHandler.class);
-            componentModel.setBeanReference(new RuntimeBeanReference(componentModel.getAttributes().get(REFERENCE_ATTRIBUTE)));
+            componentModel.setBeanReference(new RuntimeBeanReference(componentModel.getParameters().get(REFERENCE_ATTRIBUTE)));
             return true;
         }
         return false;

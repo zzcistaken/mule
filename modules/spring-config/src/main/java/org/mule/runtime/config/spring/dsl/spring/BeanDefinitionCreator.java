@@ -6,16 +6,29 @@
  */
 package org.mule.runtime.config.spring.dsl.spring;
 
+/**
+ * Abstract construct of a chain of responsibility to create a {@link org.springframework.beans.factory.config.BeanDefinition}
+ * from a {@code org.mule.runtime.config.spring.dsl.model.ComponentModel}.
+ */
 public abstract class BeanDefinitionCreator
 {
 
     private BeanDefinitionCreator successor;
 
+    /**
+     * @param nextBeanDefinitionCreator next processor in the chain.
+     */
     public void setSuccessor(BeanDefinitionCreator nextBeanDefinitionCreator)
     {
         this.successor = nextBeanDefinitionCreator;
     }
 
+    /**
+     * Will iterate over the chain of processors until there's one that handle
+     * the request by return true to {@code #handleRequest}.
+     *
+     * @param request
+     */
     public final void processRequest(CreateBeanDefinitionRequest request)
     {
         if (handleRequest(request))
@@ -28,6 +41,14 @@ public abstract class BeanDefinitionCreator
         }
     }
 
+    /**
+     * Instances of {@code BeanDefinitionCreator} that will be responsible
+     * to create the {@code BeanDefinition} must return true to this call,
+     * otherwise they must do nothing.
+     *
+     * @param createBeanDefinitionRequest the creation request.
+     * @return true if it created the {@code BeanDefinition}, false otherwise.
+     */
     abstract boolean handleRequest(CreateBeanDefinitionRequest createBeanDefinitionRequest);
 
 }

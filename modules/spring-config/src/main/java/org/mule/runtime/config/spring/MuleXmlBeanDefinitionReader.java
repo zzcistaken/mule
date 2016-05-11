@@ -19,7 +19,7 @@ import org.w3c.dom.Document;
 public class MuleXmlBeanDefinitionReader extends XmlBeanDefinitionReader implements BeanDefinitionDocumentReader
 {
 
-    private MuleBeanDefinitionDocumentReader beanDefinitionDocumentReader;
+    private final MuleBeanDefinitionDocumentReader beanDefinitionDocumentReader;
 
     /**
      * Create new XmlBeanDefinitionReader for the given bean factory.
@@ -31,8 +31,6 @@ public class MuleXmlBeanDefinitionReader extends XmlBeanDefinitionReader impleme
     {
         super(registry);
         beanDefinitionDocumentReader = new MuleBeanDefinitionDocumentReader(beanDefinitionFactory);
-//        beanDefinitionDocumentReader.setBeanDefinitionFactory();
-
     }
 
     @Override

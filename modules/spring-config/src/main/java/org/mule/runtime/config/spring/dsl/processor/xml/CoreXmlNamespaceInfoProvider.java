@@ -8,6 +8,9 @@ package org.mule.runtime.config.spring.dsl.processor.xml;
 
 import org.mule.runtime.config.spring.dsl.api.xml.XmlNamespaceInfoProvider;
 
+/**
+ * Provides the core namespace XML information.
+ */
 public class CoreXmlNamespaceInfoProvider implements XmlNamespaceInfoProvider
 {
 

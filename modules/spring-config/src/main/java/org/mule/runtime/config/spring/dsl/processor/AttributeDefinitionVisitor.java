@@ -7,7 +7,7 @@
 
 package org.mule.runtime.config.spring.dsl.processor;
 
-public interface ParameterDefinitionVisitor
+public interface AttributeDefinitionVisitor
 {
 
     void onReferenceObject(Class<?> objectType);

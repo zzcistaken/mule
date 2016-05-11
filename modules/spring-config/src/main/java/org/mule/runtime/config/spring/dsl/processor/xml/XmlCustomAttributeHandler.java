@@ -12,7 +12,7 @@ import org.mule.runtime.config.spring.dsl.processor.ConfigLine;
 import org.w3c.dom.Node;
 
 /**
- * Handler for adding and removing custom XML attributes from config files.
+ * Handler for adding and removing custom XML attributes from and to {@code ConfigLine} and {@code ComponentModel}.
  */
 public class XmlCustomAttributeHandler
 {
@@ -20,21 +20,37 @@ public class XmlCustomAttributeHandler
     public static final String XML_NODE = "XML_NODE";
     public static final String CONFIG_FILE_NAME = "CONFIG_FILE_NAME";
 
+    /**
+     * @param builder builder which is going to be used to create the {@code org.mule.runtime.config.spring.dsl.processor.ConfigLine}.
+     * @return handler for adding custom attributes to the builder.
+     */
     public static ConfigLineCustomAttributeStore to(ConfigLine.Builder builder)
     {
         return new ConfigLineCustomAttributeStore(builder);
     }
 
+    /**
+     * @param configLine line from which the custom attribute must be retrieved.
+     * @return a handler for retrieving custom attributes.
+     */
     public static ConfigLineCustomAttributeRetrieve from(ConfigLine configLine)
     {
         return new ConfigLineCustomAttributeRetrieve(configLine);
     }
 
+    /**
+     * @param builder builder which is going to be used to create the {@code org.mule.runtime.config.spring.dsl.processor.ComponentModel}.
+     * @return handler for adding custom attributes to the builder.
+     */
     public static ComponentCustomAttributeStore to(ComponentModel.Builder builder)
     {
         return new ComponentCustomAttributeStore(builder);
     }
 
+    /**
+     * @param componentModel model from which the custom attribute must be retrieved.
+     * @return a handler for retrieving custom attributes.
+     */
     public static ComponentCustomAttributeRetrieve from(ComponentModel componentModel)
     {
         return new ComponentCustomAttributeRetrieve(componentModel);
@@ -83,6 +99,10 @@ public class XmlCustomAttributeHandler
             this.builder = builder;
         }
 
+        /**
+         * @param node XML source element of the model.
+         * @return the store.
+         */
         public ComponentCustomAttributeStore addNode(Node node)
         {
             this.builder.addCustomAttribute(XML_NODE, node);
@@ -90,6 +110,10 @@ public class XmlCustomAttributeHandler
             return this;
         }
 
+        /**
+         * @param configFileName the config file name in which the model was defined.
+         * @return the store.
+         */
         public ComponentCustomAttributeStore addConfigFileName(String configFileName)
         {
             this.builder.addCustomAttribute(CONFIG_FILE_NAME, configFileName);
@@ -106,16 +130,25 @@ public class XmlCustomAttributeHandler
             this.componentModel = componentModel;
         }
 
+        /**
+         * @return the namespace URI of the XML source element.
+         */
         public String getNamespaceUri()
         {
             return (String) this.componentModel.getCustomAttributes().get(NAMESPACE_URI);
         }
 
+        /**
+         * @return the config file name in which this configuration was defined.
+         */
         public String getConfigFileName()
         {
             return (String) this.componentModel.getCustomAttributes().get(CONFIG_FILE_NAME);
         }
 
+        /**
+         * @return the XML node element which was the source of this configuration.
+         */
         public Node getNode()
         {
             return (Node) this.componentModel.getCustomAttributes().get(XML_NODE);

@@ -13,14 +13,16 @@ import static org.mule.runtime.config.spring.dsl.processor.xml.CoreXmlNamespaceI
 import static org.mule.runtime.config.spring.dsl.processor.xml.XmlCustomAttributeHandler.from;
 import org.mule.runtime.config.spring.dsl.model.ComponentIdentifier;
 import org.mule.runtime.config.spring.dsl.model.ComponentModel;
-import org.mule.runtime.config.spring.dsl.processor.xml.CoreXmlNamespaceInfoProvider;
-import org.mule.runtime.config.spring.dsl.processor.xml.XmlCustomAttributeHandler;
 import org.mule.runtime.core.api.processor.MessageProcessor;
 import org.mule.runtime.core.api.routing.filter.Filter;
 import org.mule.runtime.core.routing.MessageFilter;
 
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 
+/**
+ * Processor of the chain of responsibility that knows how to create the {@link org.springframework.beans.factory.config.BeanDefinition}
+ * for an filter reference element.
+ */
 public class FilterReferenceBeanDefinitionCreator extends BeanDefinitionCreator
 {
     private static final ComponentIdentifier FILTER_REFERENCE_IDENTIFIER = new ComponentIdentifier.Builder().withNamespace(CORE_NAMESPACE_NAME).withName(FILTER_REFERENCE_ELEMENT).build();
@@ -34,13 +36,13 @@ public class FilterReferenceBeanDefinitionCreator extends BeanDefinitionCreator
             if (from(componentModel).getNode().getParentNode().getNodeName().equals(MESSAGE_FILTER_ELEMENT))
             {
                 componentModel.setType(Filter.class);
-                componentModel.setBeanReference(new RuntimeBeanReference(componentModel.getAttributes().get(REFERENCE_ATTRIBUTE)));
+                componentModel.setBeanReference(new RuntimeBeanReference(componentModel.getParameters().get(REFERENCE_ATTRIBUTE)));
             }
             else
             {
                 componentModel.setType(MessageProcessor.class);
                 org.springframework.beans.factory.support.BeanDefinitionBuilder beanDefinitionBuilder = org.springframework.beans.factory.support.BeanDefinitionBuilder.genericBeanDefinition(MessageFilter.class);
-                beanDefinitionBuilder.addConstructorArgReference(componentModel.getAttributes().get(REFERENCE_ATTRIBUTE));
+                beanDefinitionBuilder.addConstructorArgReference(componentModel.getParameters().get(REFERENCE_ATTRIBUTE));
                 componentModel.setBeanDefinition(beanDefinitionBuilder.getBeanDefinition());
             }
             return true;

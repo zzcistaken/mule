@@ -7,18 +7,19 @@
 
 package org.mule.runtime.config.spring.dsl.model;
 
-import static org.mule.runtime.config.spring.dsl.api.ParameterDefinition.Builder.fromChildConfiguration;
-import static org.mule.runtime.config.spring.dsl.api.ParameterDefinition.Builder.fromChildListConfiguration;
-import static org.mule.runtime.config.spring.dsl.api.ParameterDefinition.Builder.fromNoConfiguration;
-import static org.mule.runtime.config.spring.dsl.api.ParameterDefinition.Builder.fromReferenceObject;
-import static org.mule.runtime.config.spring.dsl.api.ParameterDefinition.Builder.fromSimpleParameter;
-import static org.mule.runtime.config.spring.dsl.api.ParameterDefinition.Builder.fromSimpleReferenceParameter;
+import static org.mule.runtime.config.spring.dsl.api.AttributeDefinition.Builder.fromChildConfiguration;
+import static org.mule.runtime.config.spring.dsl.api.AttributeDefinition.Builder.fromChildListConfiguration;
+import static org.mule.runtime.config.spring.dsl.api.AttributeDefinition.Builder.fromFixedValue;
+import static org.mule.runtime.config.spring.dsl.api.AttributeDefinition.Builder.fromReferenceObject;
+import static org.mule.runtime.config.spring.dsl.api.AttributeDefinition.Builder.fromSimpleParameter;
+import static org.mule.runtime.config.spring.dsl.api.AttributeDefinition.Builder.fromSimpleReferenceParameter;
 import static org.mule.runtime.config.spring.dsl.processor.TypeDefinition.fromConfigurationAttribute;
 import static org.mule.runtime.config.spring.dsl.processor.TypeDefinition.fromType;
 import static org.mule.runtime.config.spring.dsl.processor.xml.CoreXmlNamespaceInfoProvider.CORE_NAMESPACE_NAME;
-import org.mule.runtime.config.spring.dsl.api.ComponentBuildingDefinitionProvider;
+import org.mule.runtime.config.spring.dsl.api.AttributeDefinition;
 import org.mule.runtime.config.spring.dsl.api.ComponentBuildingDefinition;
-import org.mule.runtime.config.spring.dsl.api.ParameterDefinition;
+import org.mule.runtime.config.spring.dsl.api.ComponentBuildingDefinitionProvider;
+import org.mule.runtime.config.spring.dsl.processor.MessageEnricherObjectFactory;
 import org.mule.runtime.config.spring.factories.AsyncMessageProcessorsFactoryBean;
 import org.mule.runtime.config.spring.factories.ChoiceRouterFactoryBean;
 import org.mule.runtime.config.spring.factories.MessageProcessorChainFactoryBean;
@@ -37,8 +38,6 @@ import org.mule.runtime.core.api.routing.MessageInfoMapping;
 import org.mule.runtime.core.api.routing.filter.Filter;
 import org.mule.runtime.core.api.schedule.SchedulerFactory;
 import org.mule.runtime.core.api.source.MessageSource;
-import org.mule.runtime.config.spring.dsl.processor.MessageEnricherObjectFactory;
-import org.mule.runtime.core.processor.TransactionalMessageProcessor;
 import org.mule.runtime.core.construct.Flow;
 import org.mule.runtime.core.enricher.MessageEnricher;
 import org.mule.runtime.core.exception.CatchMessagingExceptionStrategy;
@@ -48,6 +47,7 @@ import org.mule.runtime.core.exception.RedeliveryExceeded;
 import org.mule.runtime.core.exception.RollbackMessagingExceptionStrategy;
 import org.mule.runtime.core.processor.AsyncDelegateMessageProcessor;
 import org.mule.runtime.core.processor.ResponseMessageProcessorAdapter;
+import org.mule.runtime.core.processor.TransactionalMessageProcessor;
 import org.mule.runtime.core.routing.AggregationStrategy;
 import org.mule.runtime.core.routing.ChoiceRouter;
 import org.mule.runtime.core.routing.FirstSuccessful;
@@ -121,10 +121,8 @@ public class CoreComponentBuildingDefinitionProvider implements ComponentBuildin
     @Override
     public void init(MuleContext muleContext)
     {
-
         baseDefinition = new ComponentBuildingDefinition.Builder().withNamespace(CORE_NAMESPACE_NAME);
         transactionManagerBaseDefinition = baseDefinition.copy();
-
     }
 
     @Override
@@ -134,12 +132,10 @@ public class CoreComponentBuildingDefinitionProvider implements ComponentBuildin
         LinkedList<ComponentBuildingDefinition> componentBuildingDefinitions = new LinkedList<>();
 
 
-        ParameterDefinition messageProcessorListParameterDefinition = fromChildListConfiguration(MessageProcessor.class).build();
+        AttributeDefinition messageProcessorListAttributeDefinition = fromChildListConfiguration(MessageProcessor.class).build();
         ComponentBuildingDefinition.Builder exceptionStrategyBaseBuilder = baseDefinition.copy()
-                .withSetterParameterDefinition(MESSAGE_PROCESSORS, messageProcessorListParameterDefinition)
+                .withSetterParameterDefinition(MESSAGE_PROCESSORS, messageProcessorListAttributeDefinition)
                 .withSetterParameterDefinition("globalName", fromSimpleParameter(NAME).build());
-
-        //TODO not necessary but needs to return true when asked to resolve it.
         componentBuildingDefinitions.add(baseDefinition.copy()
                                                  .withIdentifier(EXCEPTION_STRATEGY)
                                                  .withTypeDefinition(fromType(Object.class))
@@ -167,7 +163,6 @@ public class CoreComponentBuildingDefinitionProvider implements ComponentBuildin
                                                  .withSetterParameterDefinition(MESSAGE_PROCESSORS, fromChildListConfiguration(MessageProcessor.class).build())
                                                  .asScope()
                                                  .build());
-
         componentBuildingDefinitions.add(exceptionStrategyBaseBuilder.copy()
                                                  .withIdentifier(DEFAULT_EXCEPTION_STRATEGY)
                                                  .withTypeDefinition(fromType(DefaultMessagingExceptionStrategy.class))
@@ -188,7 +183,6 @@ public class CoreComponentBuildingDefinitionProvider implements ComponentBuildin
                                                  .withTypeDefinition(fromType(NotWildcardFilter.class))
                                                  .withSetterParameterDefinition("pattern", fromSimpleParameter("exception-pattern").build())
                                                  .build());
-
         componentBuildingDefinitions.add(baseDefinition.copy()
                                                  .withIdentifier(CUSTOM_EXCEPTION_STRATEGY)
                                                  .withTypeDefinition(fromConfigurationAttribute(CLASS_ATTRIBUTE))
@@ -201,7 +195,6 @@ public class CoreComponentBuildingDefinitionProvider implements ComponentBuildin
                                                  .withSetterParameterDefinition("globalName", fromSimpleParameter(NAME).build())
                                                  .withSetterParameterDefinition("exceptionListeners", fromChildListConfiguration(MessagingExceptionHandler.class).build())
                                                  .build());
-
         componentBuildingDefinitions.add(baseDefinition.copy()
                                                  .withIdentifier(SET_PAYLOAD)
                                                  .withTypeDefinition(fromType(SetPayloadMessageProcessor.class))
@@ -209,7 +202,6 @@ public class CoreComponentBuildingDefinitionProvider implements ComponentBuildin
                                                  .withSetterParameterDefinition("mimeType", fromSimpleParameter("mimeType").build())
                                                  .withSetterParameterDefinition("encoding", fromSimpleParameter("encoding").build())
                                                  .build());
-
         componentBuildingDefinitions.add(createTransactionManagerDefinitionBuilder("jndi-transaction-manager", GenericTransactionManagerLookupFactory.class) //TODO add support for environment
                                                  .withSetterParameterDefinition("jndiName", fromSimpleParameter("jndiName").build())
                                                  .build());
@@ -218,8 +210,6 @@ public class CoreComponentBuildingDefinitionProvider implements ComponentBuildin
         componentBuildingDefinitions.add(createTransactionManagerDefinitionBuilder("jrun-transaction-manager", JRunTransactionManagerLookupFactory.class).build());
         componentBuildingDefinitions.add(createTransactionManagerDefinitionBuilder("resin-transaction-manager", Resin3TransactionManagerLookupFactory.class).build());
         componentBuildingDefinitions.add(createTransactionManagerDefinitionBuilder("websphere-transaction-manager", WebsphereTransactionManagerLookupFactory.class).build());
-
-        //TODO change this as a predefined language construct. It's here so hasDefiniton returns true
         componentBuildingDefinitions.add(baseDefinition.copy()
                                                  .withIdentifier(PROCESSOR)
                                                  .withTypeDefinition(fromType(Object.class))
@@ -237,7 +227,6 @@ public class CoreComponentBuildingDefinitionProvider implements ComponentBuildin
                                                  .withTypeDefinition(fromConfigurationAttribute(CLASS_ATTRIBUTE))
                                                  .asPrototype()
                                                  .build());
-        //TODO see if we can remove the factory bean. Removing it brakes MessageProcessorNotificationPathTestCase.scopes
         componentBuildingDefinitions.add(baseDefinition.copy()
                                                  .withIdentifier(PROCESSOR_CHAIN)
                                                  .withTypeDefinition(fromType(MessageProcessor.class))
@@ -279,7 +268,6 @@ public class CoreComponentBuildingDefinitionProvider implements ComponentBuildin
                                                  .withSetterParameterDefinition("processingStrategy", fromSimpleReferenceParameter("processingStrategy").build())
                                                  .withSetterParameterDefinition("messageInfoMapping", fromChildConfiguration(MessageInfoMapping.class).build())
                                                  .build());
-
         componentBuildingDefinitions.add(baseDefinition.copy()
                                                  .withIdentifier(SCATTER_GATHER)
                                                  .withTypeDefinition(fromType(ScatterGatherRouter.class))
@@ -290,7 +278,6 @@ public class CoreComponentBuildingDefinitionProvider implements ComponentBuildin
                                                  .withSetterParameterDefinition(MESSAGE_PROCESSORS, fromChildListConfiguration(MessageProcessor.class).build())
                                                  .asScope()
                                                  .build());
-
         componentBuildingDefinitions.add(baseDefinition.copy()
                                                  .withIdentifier(WIRE_TAP)
                                                  .withTypeDefinition(fromType(WireTap.class))
@@ -298,7 +285,6 @@ public class CoreComponentBuildingDefinitionProvider implements ComponentBuildin
                                                  .withSetterParameterDefinition("filter", fromChildConfiguration(Filter.class).build())
                                                  .asScope()
                                                  .build());
-
         componentBuildingDefinitions.add(baseDefinition.copy()
                                                  .withIdentifier(ENRICHER)
                                                  .withObjectFactoryType(MessageEnricherObjectFactory.class)
@@ -384,16 +370,13 @@ public class CoreComponentBuildingDefinitionProvider implements ComponentBuildin
                                                  .withTypeDefinition(fromType(MessageProcessorFilterPair.class))
                                                  .withObjectFactoryType(MessageProcessorFilterPairFactoryBean.class)
                                                  .withSetterParameterDefinition(MESSAGE_PROCESSORS, fromChildListConfiguration(MessageProcessor.class).build())
-                                                 .withSetterParameterDefinition("expression", fromNoConfiguration().withDefaultValue("true").build())
+                                                 .withSetterParameterDefinition("expression", fromFixedValue("true").build())
                                                  .build());
         componentBuildingDefinitions.add(baseDefinition.copy()
                                                  .withIdentifier(ALL)
                                                  .withTypeDefinition(fromType(MulticastingRouter.class))
                                                  .withSetterParameterDefinition(MESSAGE_PROCESSORS, fromChildListConfiguration(MessageProcessor.class).build())
                                                  .build());
-
-
-
         componentBuildingDefinitions.add(baseDefinition.copy()
                                                  .withIdentifier(POLL)
                                                  .withTypeDefinition(fromType(PollingMessageSource.class))
@@ -411,8 +394,6 @@ public class CoreComponentBuildingDefinitionProvider implements ComponentBuildin
                                                  .withSetterParameterDefinition("startDelay", fromSimpleParameter("startDelay").build())
                                                  .withSetterParameterDefinition("timeUnit", fromSimpleParameter("timeUnit").build())
                                                  .build());
-
-
         componentBuildingDefinitions.add(baseDefinition.copy()
                                                  .withIdentifier("watermark")
                                                  .withSetterParameterDefinition("variable", fromSimpleParameter("variable").build())
@@ -424,7 +405,6 @@ public class CoreComponentBuildingDefinitionProvider implements ComponentBuildin
                                                  .withTypeDefinition(fromType(Watermark.class))
                                                  .withObjectFactoryType(WatermarkFactoryBean.class)
                                                  .build());
-
         return componentBuildingDefinitions;
     }
 

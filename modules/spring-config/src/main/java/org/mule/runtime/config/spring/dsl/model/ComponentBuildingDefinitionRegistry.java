@@ -13,7 +13,9 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Registry with all {@code ComponentBuildingDefinition} that where discovered in the classpath.
+ * Registry with all {@link ComponentBuildingDefinition} that where discovered in the classpath.
+ *
+ * {@code ComponentBuildingDefinition}s are located using SPI class {@link org.mule.runtime.config.spring.dsl.api.ComponentBuildingDefinitionProvider}.
  */
 public class ComponentBuildingDefinitionRegistry
 {
