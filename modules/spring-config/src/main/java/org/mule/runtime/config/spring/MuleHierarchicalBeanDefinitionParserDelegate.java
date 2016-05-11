@@ -210,6 +210,7 @@ public class MuleHierarchicalBeanDefinitionParserDelegate extends BeanDefinition
         }
     }
 
+    //TODO MULE-9638 Remove this ugly code since it's not going to be needed anymore.
     private void setComponentModelTypeFromBeanDefinition(BeanDefinition finalChild, ComponentModel componentModel)
     {
         if (componentModel != null) //This condition is needed when we are parsing something unrelated to mule. See ReferenceTestCase
@@ -223,18 +224,21 @@ public class MuleHierarchicalBeanDefinitionParserDelegate extends BeanDefinition
                     {
                         try
                         {
+                            //When the FactoryBean implementation implements the FactoryBean directly.
                             type = (Class<?>) ((ParameterizedType) Class.forName(finalChild.getBeanClassName()).getGenericInterfaces()[0]).getActualTypeArguments()[0];
                         }
                         catch (Exception e2)
                         {
                             try
                             {
+                                //When the FactoryBean implementation extends a Class that implements FactoryBean.
                                 type = (Class<?>) ((ParameterizedType) Class.forName(finalChild.getBeanClassName()).getGenericSuperclass()).getActualTypeArguments()[0];
                             }
                             catch(Exception e3)
                             {
                                 try
                                 {
+                                    //We get the type directly from a FactoryBean instance if it has a default constructor.
                                     type = ((FactoryBean)type.newInstance()).getObjectType();
                                 }
                                 catch (InstantiationException e)
@@ -256,7 +260,7 @@ public class MuleHierarchicalBeanDefinitionParserDelegate extends BeanDefinition
 
     private boolean shouldUseNewMechanism(Element element)
     {
-        if (element.getLocalName().equals(MULE_ROOT_ELEMENT)) {
+        if (element.getLocalName().equals(MULE_ROOT_ELEMENT) || element.getLocalName().equals(MULE_DOMAIN_ROOT_ELEMENT)) {
             return false;
         }
         Node parentNode = element;

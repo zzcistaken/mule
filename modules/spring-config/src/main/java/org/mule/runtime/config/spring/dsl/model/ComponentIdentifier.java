@@ -67,7 +67,7 @@ public class ComponentIdentifier
         public ComponentIdentifier build()
         {
             Preconditions.checkState(componentIdentifier.namespace != null, "Namespace must be not null");
-            Preconditions.checkState(componentIdentifier.identifier != null, "Identifier must be not null");
+            Preconditions.checkState(componentIdentifier.identifier != null, "Name must be not null");
             return componentIdentifier;
         }
     }
