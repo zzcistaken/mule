@@ -283,7 +283,7 @@ public abstract class AbstractPipeline extends AbstractFlowConstruct implements 
         // Ensure that inbound endpoints are compatible with processing strategy.
         boolean userConfiguredProcessingStrategy = !(processingStrategy instanceof DefaultFlowProcessingStrategy);
         boolean userConfiguredAsyncProcessingStrategy = processingStrategy instanceof AsynchronousProcessingStrategy
-                && userConfiguredProcessingStrategy;
+                                                        && userConfiguredProcessingStrategy;
 
         boolean redeliveryHandlerConfigured = isRedeliveryPolicyConfigured();
 
@@ -321,7 +321,7 @@ public abstract class AbstractPipeline extends AbstractFlowConstruct implements 
     {
         boolean isRedeliveredPolicyConfigured = false;
         if (this.exceptionListener instanceof RollbackMessagingExceptionStrategy
-                && ((RollbackMessagingExceptionStrategy) exceptionListener).hasMaxRedeliveryAttempts())
+            && ((RollbackMessagingExceptionStrategy) exceptionListener).hasMaxRedeliveryAttempts())
         {
             isRedeliveredPolicyConfigured = true;
         }
@@ -346,7 +346,7 @@ public abstract class AbstractPipeline extends AbstractFlowConstruct implements 
         {
             InboundEndpoint endpoint = ((InboundEndpoint) source);
             return !endpoint.getExchangePattern().hasResponse()
-                    && !endpoint.getTransactionConfig().isConfigured();
+                   && !endpoint.getTransactionConfig().isConfigured();
         }
         else if (messageSource instanceof CompositeMessageSource)
         {
@@ -395,10 +395,10 @@ public abstract class AbstractPipeline extends AbstractFlowConstruct implements 
         for (MessageProcessor messageProcessor : getMessageProcessors())
         {
             if(messageProcessor instanceof InterceptingMessageProcessor){
-            {
-                filteredMessageProcessorList.add(messageProcessor);
-                break;
-            }
+                {
+                    filteredMessageProcessorList.add(messageProcessor);
+                    break;
+                }
             }else{
                 filteredMessageProcessorList.add(messageProcessor);
             }
@@ -485,6 +485,7 @@ public abstract class AbstractPipeline extends AbstractFlowConstruct implements 
         if (messageSource instanceof InboundEndpoint)
         {
             final InboundEndpoint endpoint = (InboundEndpoint) messageSource;
+
             if (endpoint.getConnector() instanceof MessageProcessorPollingConnector)
             {
                 final Object pollingProcessor = endpoint.getProperty(MessageProcessorPollingMessageReceiver.SOURCE_MESSAGE_PROCESSOR_PROPERTY_NAME);
@@ -496,33 +497,33 @@ public abstract class AbstractPipeline extends AbstractFlowConstruct implements 
                 else if (pollingProcessor instanceof MessageDispatcher)
                 {
                     final OutboundEndpoint ppEndpoint = ((MessageDispatcher) pollingProcessor).getEndpoint();
-                    visitor.setProvided(ppEndpoint.getProtocol(), ppEndpoint.getAddress(), MuleConnectionDirection.TO, ppEndpoint.getConnector().isConnected(), getDescription(pollingProcessor));
+                    visitor.setProvided(ppEndpoint.getProtocol(), ppEndpoint.getAddress(), MuleConnectionDirection.TO, ppEndpoint.getConnector().isConnected(), getDescription(pollingProcessor), name);
 
                 }
                 else if (pollingProcessor instanceof MessageRequester)
                 {
                     final InboundEndpoint ppEndpoint = ((MessageRequester) pollingProcessor).getEndpoint();
                     visitor.setProvided(ppEndpoint.getProtocol(), ppEndpoint.getAddress(), MuleConnectionDirection.FROM, ppEndpoint.getConnector().isConnected(),
-                            getDescription(((MessageRequester) pollingProcessor).getConnector()));
+                            getDescription(((MessageRequester) pollingProcessor).getConnector()), name);
                 }
                 else if (pollingProcessor instanceof OutboundMessageProcessor)
                 {
                     OutboundMessageProcessor omp = (OutboundMessageProcessor) pollingProcessor;
 
-                    visitor.setProvided(omp.getProtocol(), omp.getAddress(), MuleConnectionDirection.TO, true, getDescription(omp));
+                    visitor.setProvided(omp.getProtocol(), omp.getAddress(), MuleConnectionDirection.TO, true, getDescription(omp), name);
                 }
             }
             else
             {
                 visitor.setProvided(endpoint.getProtocol(), endpoint.getAddress(), MuleConnectionDirection.FROM,
-                        endpoint.getConnector().isConnected(), getDescription(((InboundEndpoint) messageSource).getConnector()));
+                        endpoint.getConnector().isConnected(), getDescription(((InboundEndpoint) messageSource).getConnector()), name);
             }
 
         }
         else if (messageSource instanceof InboundMessageSource)
         {
             final InboundMessageSource source = (InboundMessageSource) messageSource;
-            visitor.setProvided(source.getProtocol(), source.getAddress(), MuleConnectionDirection.FROM, true, getDescription(messageSource));
+            visitor.setProvided(source.getProtocol(), source.getAddress(), MuleConnectionDirection.FROM, true, getDescription(messageSource), name);
 
             for (Entry<String, Boolean> remoteHost : source.getRemoteHosts().entrySet())
             {

@@ -31,6 +31,7 @@ import org.mule.module.ws.security.SecurityStrategy;
 import org.mule.module.ws.security.WSSecurity;
 import org.mule.processor.AbstractRequestResponseMessageProcessor;
 import org.mule.processor.NonBlockingMessageProcessor;
+import org.mule.processor.OutboundMessageProcessor;
 import org.mule.processor.chain.DefaultMessageProcessorChainBuilder;
 import org.mule.transport.http.HttpConnector;
 import org.mule.util.Base64;
@@ -71,7 +72,7 @@ import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
 
 
-public class WSConsumer implements MessageProcessor, Initialisable, MuleContextAware, Disposable, NonBlockingMessageProcessor
+public class WSConsumer implements MessageProcessor, Initialisable, MuleContextAware, Disposable, NonBlockingMessageProcessor, OutboundMessageProcessor
 {
 
     public static final String SOAP_HEADERS_PROPERTY_PREFIX = "soap.";
@@ -516,5 +517,17 @@ public class WSConsumer implements MessageProcessor, Initialisable, MuleContextA
         {
             ((Disposable) messageProcessor).dispose();
         }
+    }
+
+    @Override
+    public String getProtocol()
+    {
+        return "SOAP";
+    }
+    
+    @Override
+    public String getAddress()
+    {
+        return config.getServiceAddress();
     }
 }

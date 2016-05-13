@@ -35,6 +35,7 @@ import org.mule.module.db.internal.resolver.database.DbConfigResolver;
 import org.mule.module.db.internal.resolver.database.UnresolvableDbConfigException;
 import org.mule.module.db.internal.result.statement.StatementStreamingResultSetCloser;
 import org.mule.processor.AbstractInterceptingMessageProcessor;
+import org.mule.processor.OutboundMessageProcessor;
 import org.mule.util.StringUtils;
 
 import java.sql.SQLException;
@@ -44,7 +45,8 @@ import java.util.List;
 /**
  * Base class for database message processors.
  */
-public abstract class AbstractDbMessageProcessor extends AbstractInterceptingMessageProcessor implements Initialisable, InterceptingMessageProcessor, OperationMetaDataEnabled, DebugInfoProvider
+public abstract class AbstractDbMessageProcessor extends AbstractInterceptingMessageProcessor
+    implements Initialisable, InterceptingMessageProcessor, OperationMetaDataEnabled, DebugInfoProvider, OutboundMessageProcessor
 {
 
     protected final DbConfigResolver dbConfigResolver;
@@ -254,4 +256,15 @@ public abstract class AbstractDbMessageProcessor extends AbstractInterceptingMes
 
     protected abstract List<QueryType> getValidQueryTypes();
 
+    @Override
+    public String getProtocol()
+    {
+        return "MYSQL";
+    }
+
+    @Override
+    public String getAddress()
+    {
+        return "services.mythicalcorp.com";
+    }
 }

@@ -25,6 +25,13 @@ public class MuleConnectionsBuilder
         private boolean connected;
         private String description;
 
+        public String getFlowName()
+        {
+            return flowName;
+        }
+
+        public String flowName;
+
         @Override
         public String toString()
         {
@@ -85,9 +92,9 @@ public class MuleConnectionsBuilder
     private Set<MuleConnection> heldBack = new HashSet<>();
 
 
-    public void setProvided(String protocol, String address, MuleConnectionDirection direction, boolean connected, String description)
+    public void setProvided(String protocol, String address, MuleConnectionDirection direction, boolean connected, String description, String flowName)
     {
-        final MuleConnection mc = buildConnection(protocol, address, direction, connected, description);
+        final MuleConnection mc = buildConnection(protocol, address, direction, connected, description, flowName);
         consumed = new HashSet<MuleConnection>();
         consumed.addAll(heldBack);
         heldBack.clear();
@@ -96,19 +103,32 @@ public class MuleConnectionsBuilder
 
     public void addConsumed(String protocol, String address, MuleConnectionDirection direction, boolean connected, String description)
     {
-        final MuleConnection mc = buildConnection(protocol, address, direction, connected, description);
-        if (consumed != null)
+        final MuleConnection mc = buildConnection(protocol, address, direction, connected, description, null);
+        if (consumed != null && !hasConnection(consumed, mc))
         {
             consumed.add(mc);
         }
-        else
+        else if (!hasConnection(heldBack, mc))
         {
             // hold back
             heldBack.add(mc);
         }
     }
 
-    protected MuleConnection buildConnection(String protocol, String address, MuleConnectionDirection direction, boolean connected, String description)
+    private boolean hasConnection(Set<MuleConnection> heldBack, MuleConnection mc)
+    {
+        for (MuleConnection muleConnection : heldBack)
+        {
+            if (muleConnection.getProtocol().equals(mc.getProtocol()) && muleConnection.getAddress().equals(mc.getAddress()))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    protected MuleConnection buildConnection(String protocol, String address, MuleConnectionDirection direction, boolean connected, String description, String flowName)
     {
         final MuleConnection mc = new MuleConnection();
         mc.protocol = protocol.toUpperCase();
@@ -125,6 +145,7 @@ public class MuleConnectionsBuilder
         mc.direction = direction;
         mc.connected = connected;
         mc.description = description;
+        mc.flowName = flowName;
         return mc;
     }
 
