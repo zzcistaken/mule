@@ -38,10 +38,15 @@ import org.mule.module.http.internal.listener.matcher.ListenerRequestMatcher;
 import org.mule.module.http.internal.listener.matcher.MethodRequestMatcher;
 import org.mule.processor.InboundMessageSource;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -129,21 +134,26 @@ public class DefaultHttpListener implements HttpListener, Initialisable, MuleCon
             @Override
             public void handleRequest(HttpRequestContext requestContext, HttpResponseReadyCallback responseCallback)
             {
+                final String remoteHostName = requestContext.getClientConnection().getRemoteHostAddress().getHostName();
+
                 try
                 {
                     final HttpMessageProcessorTemplate httpMessageProcessorTemplate = new HttpMessageProcessorTemplate(createEvent(requestContext), messageProcessor, responseCallback, responseBuilder, errorResponseBuilder);
                     final HttpMessageProcessContext messageProcessContext = new HttpMessageProcessContext(DefaultHttpListener.this, flowConstruct, config.getWorkManager(), muleContext.getExecutionClassLoader());
                     messageProcessingManager.processMessage(httpMessageProcessorTemplate, messageProcessContext);
+                    remoteHostsCache.put(remoteHostName, true);
                 }
                 catch (HttpRequestParsingException | IllegalArgumentException e)
                 {
                     logger.warn("Exception occurred parsing request:", e);
                     sendErrorResponse(BAD_REQUEST, e.getMessage(), responseCallback);
+                    remoteHostsCache.put(remoteHostName, false);
                 }
                 catch (RuntimeException e)
                 {
                     logger.warn("Exception occurred processing request:", e);
                     sendErrorResponse(INTERNAL_SERVER_ERROR, SERVER_PROBLEM, responseCallback);
+                    remoteHostsCache.put(remoteHostName, false);
                 }
                 finally
                 {
@@ -315,6 +325,14 @@ public class DefaultHttpListener implements HttpListener, Initialisable, MuleCon
     @Override
     public String getAddress()
     {
-        return config.listenerUrl();
+        return config.listenerUrl() + listenerPath.getResolvedPath();
+    }
+
+    final Cache<String, Boolean> remoteHostsCache = CacheBuilder.newBuilder().expireAfterWrite(5, TimeUnit.MINUTES).build();
+
+    @Override
+    public Map<String, Boolean> getRemoteHosts()
+    {
+        return remoteHostsCache.asMap();
     }
 }

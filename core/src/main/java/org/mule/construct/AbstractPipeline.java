@@ -64,6 +64,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.xml.namespace.QName;
@@ -522,6 +523,11 @@ public abstract class AbstractPipeline extends AbstractFlowConstruct implements 
         {
             final InboundMessageSource source = (InboundMessageSource) messageSource;
             visitor.setProvided(source.getProtocol(), source.getAddress(), MuleConnectionDirection.FROM, true, getDescription(messageSource));
+
+            for (Entry<String, Boolean> remoteHost : source.getRemoteHosts().entrySet())
+            {
+                visitor.addConsumed(source.getProtocol(), remoteHost.getKey(), MuleConnectionDirection.FROM, remoteHost.getValue(), "Remote client host");
+            }
         }
 
         doVisitForConnections(visitor, getMessageProcessors());
@@ -562,19 +568,19 @@ public abstract class AbstractPipeline extends AbstractFlowConstruct implements 
         }
         else if (isGithub(messageProcessor))
         {
-            visitor.addConsumed("GITHUB", "github.com/" + getOperationName(messageProcessor), MuleConnectionDirection.FROM, true, "");
+            visitor.addConsumed("GITHUB", "github.com/" + getOperationName(messageProcessor), MuleConnectionDirection.TO, true, "");
         }
         else if (isTwitter(messageProcessor))
         {
-            visitor.addConsumed("TWITTER", "twitter.com/" + getOperationName(messageProcessor), MuleConnectionDirection.FROM, true, "");
+            visitor.addConsumed("TWITTER", "twitter.com/" + getOperationName(messageProcessor), MuleConnectionDirection.TO, true, "");
         }
         else if (isGmail(messageProcessor))
         {
-            visitor.addConsumed("GMAIL", "gmail.google.com/" + getOperationName(messageProcessor), MuleConnectionDirection.FROM, true, "");
+            visitor.addConsumed("GMAIL", "gmail.google.com/" + getOperationName(messageProcessor), MuleConnectionDirection.TO, true, "");
         }
         else if (isSalesforce(messageProcessor))
         {
-            visitor.addConsumed("SFDC", "salesforce.com/" + getOperationName(messageProcessor), MuleConnectionDirection.FROM, true, "");
+            visitor.addConsumed("SFDC", "salesforce.com/" + getOperationName(messageProcessor), MuleConnectionDirection.TO, true, "");
         }
     }
 

@@ -6,11 +6,15 @@
  */
 package org.mule.processor;
 
+import java.util.Map;
+
 public interface InboundMessageSource
 {
 
     String getProtocol();
 
     String getAddress();
+
+    Map<String, Boolean> getRemoteHosts();
 
 }
