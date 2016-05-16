@@ -11,8 +11,19 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
     <http:request-config name="HTTP_Request_google" host="google.com" port="80" doc:name="HTTP Request Configuration"/>
     <http:request-config name="HTTP_Request_facebook" host="facebook.com" port="80" doc:name="HTTP Request Configuration"/>
 
-    <flow name="noInbound">
-        <http:request config-ref="HTTP_Request_facebook" path="" method="" doc:name="HTTP"/>
+<!--     <flow name="noInbound"> -->
+<!--         <http:request config-ref="HTTP_Request_facebook" path="" method="" doc:name="HTTP"/> -->
+<!--     </flow> -->
+
+    <flow name="withChoice">
+        <choice>
+            <when expression="#[false]">
+                <http:request config-ref="HTTP_Request_facebook" path="" method="" doc:name="HTTP"/>
+            </when>
+            <otherwise>
+                <logger/>
+            </otherwise>
+        </choice>
     </flow>
 
     <flow name="connectorsFlow">

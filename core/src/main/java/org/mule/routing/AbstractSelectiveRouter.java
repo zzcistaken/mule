@@ -22,6 +22,7 @@ import org.mule.api.lifecycle.Lifecycle;
 import org.mule.api.lifecycle.Startable;
 import org.mule.api.lifecycle.Stoppable;
 import org.mule.api.processor.MessageProcessor;
+import org.mule.api.processor.MessageProcessorChain;
 import org.mule.api.processor.MessageProcessorContainer;
 import org.mule.api.processor.MessageProcessorPathElement;
 import org.mule.api.routing.RoutePathNotFoundException;
@@ -383,15 +384,18 @@ public abstract class AbstractSelectiveRouter extends AbstractAnnotatedObject
     @Override
     public void visitForConnections(MuleConnectionsBuilder visitor)
     {
-        final List<MessageProcessor> messageProcessors = (List<MessageProcessor>) CollectionUtils.collect(getConditionalMessageProcessors(), new Transformer()
+        final List<MessageProcessorChain> messageProcessors = (List<MessageProcessorChain>) CollectionUtils.collect(getConditionalMessageProcessors(), new Transformer()
         {
             @Override
             public Object transform(Object input)
             {
                 return ((MessageProcessorFilterPair) input).getMessageProcessor();
             }
-        }, new ArrayList<MessageProcessor>());
+        }, new ArrayList<MessageProcessorChain>());
 
-        AbstractPipeline.doVisitForConnections(visitor, messageProcessors);
+        for (MessageProcessorChain messageProcessorChain : messageProcessors)
+        {
+            AbstractPipeline.doVisitForConnections(visitor, messageProcessorChain.getMessageProcessors());
+        }
     }
 }
