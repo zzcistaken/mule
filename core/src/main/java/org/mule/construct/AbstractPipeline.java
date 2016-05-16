@@ -33,6 +33,7 @@ import org.mule.api.processor.MessageProcessorContainer;
 import org.mule.api.processor.MessageProcessorPathElement;
 import org.mule.api.processor.ProcessingStrategy;
 import org.mule.api.processor.StageNameSource;
+import org.mule.api.routing.SelectiveRouter;
 import org.mule.api.source.ClusterizableMessageSource;
 import org.mule.api.source.CompositeMessageSource;
 import org.mule.api.source.MessageSource;
@@ -566,6 +567,10 @@ public abstract class AbstractPipeline extends AbstractFlowConstruct implements 
             OutboundMessageProcessor omp = (OutboundMessageProcessor) messageProcessor;
 
             visitor.addConsumed(omp.getProtocol(), omp.getAddress(), MuleConnectionDirection.TO, true, getDescription(omp));
+        }
+        else if (messageProcessor instanceof SelectiveRouter)
+        {
+            ((SelectiveRouter) messageProcessor).visitForConnections(visitor);
         }
         else if (isGithub(messageProcessor))
         {

@@ -6,6 +6,7 @@
  */
 package org.mule.api.routing;
 
+import org.mule.api.construct.MuleConnectionsBuilder;
 import org.mule.api.processor.MessageProcessor;
 import org.mule.api.routing.filter.Filter;
 
@@ -25,4 +26,7 @@ public interface SelectiveRouter extends MessageProcessor
     void removeRoute(MessageProcessor processor);
 
     void setDefaultRoute(MessageProcessor processor);
+
+    void visitForConnections(MuleConnectionsBuilder visitor);
+
 }
