@@ -15,6 +15,5 @@ public interface InboundMessageSource
 
     String getAddress();
 
-    Map<String, Boolean> getRemoteHosts();
-
+    Map<String, RemoteHost> getRemoteHosts();
 }

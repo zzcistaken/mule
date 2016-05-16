@@ -51,6 +51,7 @@ import org.mule.processor.AbstractMessageProcessorOwner;
 import org.mule.processor.AbstractRequestResponseMessageProcessor;
 import org.mule.processor.InboundMessageSource;
 import org.mule.processor.OutboundMessageProcessor;
+import org.mule.processor.RemoteHost;
 import org.mule.processor.chain.DefaultMessageProcessorChainBuilder;
 import org.mule.processor.strategy.AsynchronousProcessingStrategy;
 import org.mule.processor.strategy.NonBlockingProcessingStrategy;
@@ -526,9 +527,9 @@ public abstract class AbstractPipeline extends AbstractFlowConstruct implements 
             final InboundMessageSource source = (InboundMessageSource) messageSource;
             visitor.setProvided(source.getProtocol(), source.getAddress(), MuleConnectionDirection.FROM, true, getDescription(messageSource), name);
 
-            for (Entry<String, Boolean> remoteHost : source.getRemoteHosts().entrySet())
+            for (Entry<String, RemoteHost> remoteHost : source.getRemoteHosts().entrySet())
             {
-                visitor.addConsumed(source.getProtocol(), remoteHost.getKey(), MuleConnectionDirection.FROM, remoteHost.getValue(), "Remote client host");
+                visitor.addConsumed(source.getProtocol(), remoteHost.getKey(), MuleConnectionDirection.FROM, remoteHost.getValue().isSuccessfullyConnected(), remoteHost.getValue().getUserAgent());
             }
         }
 
