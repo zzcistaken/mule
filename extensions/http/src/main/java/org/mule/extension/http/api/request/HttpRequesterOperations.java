@@ -88,7 +88,7 @@ public class HttpRequesterOperations
                                                           @UseConfig HttpRequesterConfig config,
                                                           MuleEvent muleEvent) throws MuleException
     {
-        //TODO: Add request builder
+        //TODO: This should all go to a sort of RequesterBuilder to generate a Requester with the auth retry logic
         if (host == null)
         {
             host = config.getHost().apply(muleEvent);

@@ -7,17 +7,25 @@
 package org.mule.extension.http.internal.listener;
 
 
+import static java.lang.String.format;
+import static org.mule.runtime.core.api.config.ThreadingProfile.DEFAULT_THREADING_PROFILE;
 import org.mule.module.socket.api.TcpServerSocketProperties;
 import org.mule.module.socket.internal.DefaultTcpServerSocketProperties;
+import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.api.tls.TlsContextFactory;
 import org.mule.runtime.core.api.MuleContext;
+import org.mule.runtime.core.api.MuleException;
 import org.mule.runtime.core.api.MuleRuntimeException;
+import org.mule.runtime.core.api.config.ThreadingProfile;
 import org.mule.runtime.core.api.context.MuleContextAware;
+import org.mule.runtime.core.api.context.WorkManager;
 import org.mule.runtime.core.api.context.WorkManagerSource;
 import org.mule.runtime.core.api.lifecycle.Disposable;
 import org.mule.runtime.core.api.lifecycle.Initialisable;
 import org.mule.runtime.core.api.lifecycle.InitialisationException;
+import org.mule.runtime.core.config.MutableThreadingProfile;
 import org.mule.runtime.core.config.i18n.CoreMessages;
+import org.mule.runtime.core.util.NetworkUtils;
 import org.mule.runtime.core.util.concurrent.ThreadNameHelper;
 import org.mule.runtime.module.http.internal.listener.HttpListenerRegistry;
 import org.mule.runtime.module.http.internal.listener.HttpServerManager;
@@ -28,16 +36,19 @@ import org.mule.runtime.module.http.internal.listener.grizzly.GrizzlyServerManag
 import com.google.common.collect.Iterables;
 
 import java.io.IOException;
+import java.net.UnknownHostException;
 import java.util.Collection;
 
-public class HttpListenerConnectionManager implements Initialisable, Disposable, MuleContextAware
+public class HttpListenerConnectionManager implements HttpServerFactory, Initialisable, Disposable, MuleContextAware
 {
 
     public static final String HTTP_LISTENER_CONNECTION_MANAGER = "_httpExtListenerConnectionManager";
     public static final String SERVER_ALREADY_EXISTS_FORMAT = "A server in port(%s) already exists for ip(%s) or one overlapping it (0.0.0.0).";
     private static final String LISTENER_THREAD_NAME_PREFIX = "http.listener";
+    private static final int DEFAULT_MAX_THREADS = 128;
 
     private HttpListenerRegistry httpListenerRegistry = new HttpListenerRegistry();
+    private ThreadingProfile workerThreadingProfile;
     private HttpServerManager httpServerManager;
 
     private MuleContext muleContext;
@@ -67,6 +78,10 @@ public class HttpListenerConnectionManager implements Initialisable, Disposable,
             throw new InitialisationException(e, this);
         }
 
+        //TODO: Analyse whether this can be avoided
+        workerThreadingProfile = new MutableThreadingProfile(DEFAULT_THREADING_PROFILE);
+        workerThreadingProfile.setMaxThreadsActive(DEFAULT_MAX_THREADS);
+
     }
 
     @Override
@@ -79,6 +94,49 @@ public class HttpListenerConnectionManager implements Initialisable, Disposable,
     public void setMuleContext(MuleContext muleContext)
     {
         this.muleContext = muleContext;
+    }
+
+    @Override
+    public Server create(HttpServerConfiguration serverConfiguration) throws ConnectionException
+    {
+        ServerAddress serverAddress;
+        String host = serverConfiguration.getHost();
+        try
+        {
+            serverAddress = createServerAddress(host, serverConfiguration.getPort());
+        }
+        catch (UnknownHostException e)
+        {
+            throw new ConnectionException(String.format("Cannot resolve host %s", host), e);
+        }
+
+        //TODO: Should save a reference to this so as to dispose it later
+        WorkManager workManager = createWorkManager(serverConfiguration.getOwnerName());
+        try
+        {
+            workManager.start();
+        }
+        catch (MuleException e)
+        {
+            throw new ConnectionException("Could not create work manager", e);
+        }
+
+        TlsContextFactory tlsContextFactory = serverConfiguration.getTlsContextFactory();
+        if (tlsContextFactory == null)
+        {
+            return createServer(serverAddress,
+                                createWorkManagerSource(workManager),
+                                serverConfiguration.isUsePersistentConnections(),
+                                serverConfiguration.getConnectionIdleTimeout());
+        }
+        else
+        {
+            return createSslServer(serverAddress,
+                                   createWorkManagerSource(workManager),
+                                   tlsContextFactory,
+                                   serverConfiguration.isUsePersistentConnections(),
+                                   serverConfiguration.getConnectionIdleTimeout());
+        }
     }
 
     public Server createServer(ServerAddress serverAddress, WorkManagerSource workManagerSource, boolean usePersistentConnections, int connectionIdleTimeout)
@@ -124,4 +182,26 @@ public class HttpListenerConnectionManager implements Initialisable, Disposable,
         }
     }
 
+    /**
+     * Creates the server address object with the IP and port that a server should bind to.
+     */
+    private ServerAddress createServerAddress(String host, int port) throws UnknownHostException
+    {
+        return new ServerAddress(NetworkUtils.getLocalHostIp(host), port);
+    }
+
+    private WorkManager createWorkManager(String name)
+    {
+        final WorkManager workManager = workerThreadingProfile.createWorkManager(format("%s%s.%s", ThreadNameHelper.getPrefix(muleContext), name, "worker"), muleContext.getConfiguration().getShutdownTimeout());
+        if (workManager instanceof MuleContextAware)
+        {
+            ((MuleContextAware) workManager).setMuleContext(muleContext);
+        }
+        return workManager;
+    }
+
+    private WorkManagerSource createWorkManagerSource(WorkManager workManager)
+    {
+        return () -> workManager;
+    }
 }

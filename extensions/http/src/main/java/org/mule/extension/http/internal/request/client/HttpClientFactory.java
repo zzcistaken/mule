@@ -4,10 +4,9 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.extension.http.internal.request;
+package org.mule.extension.http.internal.request.client;
 
 import org.mule.extension.http.api.request.client.HttpClient;
-import org.mule.extension.http.internal.request.client.HttpClientConfiguration;
 
 /**
  * Factory object for {@link HttpClient} mule-to-httpLibrary adapters.

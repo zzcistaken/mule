@@ -197,7 +197,7 @@ public class HttpListener extends Source<Object, HttpRequestAttributes> implemen
             @Override
             public void handleRequest(HttpRequestContext requestContext, HttpResponseReadyCallback responseCallback)
             {
-                //TODO: analyse adding security here
+                //TODO: analyse adding security here to reject the HttpRequestContext and avoid creating a Message
                 try
                 {
                     final String httpVersion = requestContext.getRequest().getProtocol().asString();
@@ -284,7 +284,6 @@ public class HttpListener extends Source<Object, HttpRequestAttributes> implemen
         };
     }
 
-    //TODO: Refactor to return mule message
     private MuleMessage<Object, HttpRequestAttributes> createMuleMessage(HttpRequestContext requestContext) throws HttpRequestParsingException
     {
         return HttpRequestToMuleMessage.transform(requestContext, muleContext, flowConstruct, parseRequest, listenerPath);

@@ -9,7 +9,7 @@ package org.mule.extension.http.api.request;
 import static org.mule.runtime.extension.api.introspection.parameter.ExpressionSupport.NOT_SUPPORTED;
 import org.mule.extension.http.api.request.client.HttpClient;
 import org.mule.extension.http.api.request.proxy.ProxyConfig;
-import org.mule.extension.http.internal.request.HttpClientFactory;
+import org.mule.extension.http.internal.request.client.HttpClientFactory;
 import org.mule.extension.http.internal.request.client.HttpClientConfiguration;
 import org.mule.extension.http.internal.request.grizzly.GrizzlyHttpClient;
 import org.mule.module.socket.api.TcpClientSocketProperties;
@@ -39,8 +39,8 @@ public class HttpRequesterProvider implements ConnectionProvider<HttpRequesterCo
      * A proxy element must define a host name and a port attributes, and optionally can define a username
      * and a password.
      */
-    //@Parameter
-    //@Optional
+    @Parameter
+    @Optional
     private ProxyConfig proxyConfig;
 
     /**

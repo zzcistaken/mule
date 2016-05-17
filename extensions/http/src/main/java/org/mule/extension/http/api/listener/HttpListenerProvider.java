@@ -6,12 +6,11 @@
  */
 package org.mule.extension.http.api.listener;
 
-import static java.lang.String.format;
-import static org.mule.runtime.core.api.config.ThreadingProfile.DEFAULT_THREADING_PROFILE;
 import static org.mule.runtime.extension.api.introspection.parameter.ExpressionSupport.NOT_SUPPORTED;
 import static org.mule.runtime.module.http.api.HttpConstants.Protocols.HTTP;
 import static org.mule.runtime.module.http.api.HttpConstants.Protocols.HTTPS;
 import org.mule.extension.http.internal.listener.HttpListenerConnectionManager;
+import org.mule.extension.http.internal.listener.HttpServerConfiguration;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.api.connection.ConnectionHandlingStrategy;
 import org.mule.runtime.api.connection.ConnectionHandlingStrategyFactory;
@@ -19,35 +18,25 @@ import org.mule.runtime.api.connection.ConnectionProvider;
 import org.mule.runtime.api.connection.ConnectionValidationResult;
 import org.mule.runtime.api.tls.TlsContextFactory;
 import org.mule.runtime.core.api.MuleContext;
-import org.mule.runtime.core.api.MuleException;
-import org.mule.runtime.core.api.config.ThreadingProfile;
 import org.mule.runtime.core.api.context.MuleContextAware;
-import org.mule.runtime.core.api.context.WorkManager;
-import org.mule.runtime.core.api.context.WorkManagerSource;
 import org.mule.runtime.core.api.lifecycle.Initialisable;
 import org.mule.runtime.core.api.lifecycle.InitialisationException;
 import org.mule.runtime.core.api.lifecycle.LifecycleUtils;
-import org.mule.runtime.core.config.MutableThreadingProfile;
 import org.mule.runtime.core.config.i18n.CoreMessages;
-import org.mule.runtime.core.util.NetworkUtils;
-import org.mule.runtime.core.util.concurrent.ThreadNameHelper;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.Expression;
 import org.mule.runtime.extension.api.annotation.Parameter;
 import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.module.http.api.HttpConstants;
 import org.mule.runtime.module.http.internal.listener.Server;
-import org.mule.runtime.module.http.internal.listener.ServerAddress;
 
 import java.io.IOException;
-import java.net.UnknownHostException;
 
 import javax.inject.Inject;
 
 @Alias("listener")
 public class HttpListenerProvider implements ConnectionProvider<HttpListenerConfig, Server>, Initialisable, MuleContextAware
 {
-    private static final int DEFAULT_MAX_THREADS = 128;
 
     /**
      * Host where the requests will be sent.
@@ -98,7 +87,6 @@ public class HttpListenerProvider implements ConnectionProvider<HttpListenerConf
 
     @Inject
     private HttpListenerConnectionManager connectionManager;
-    private ThreadingProfile workerThreadingProfile;
     private MuleContext muleContext;
 
     @Override
@@ -129,46 +117,21 @@ public class HttpListenerProvider implements ConnectionProvider<HttpListenerConf
         }
 
         verifyConnectionsParameters();
-
-        //TODO: Analyse whether this can be avoided
-        workerThreadingProfile = new MutableThreadingProfile(DEFAULT_THREADING_PROFILE);
-        workerThreadingProfile.setMaxThreadsActive(DEFAULT_MAX_THREADS);
-
     }
 
     @Override
     public Server connect(HttpListenerConfig httpListenerConfig) throws ConnectionException
     {
-        ServerAddress serverAddress;
-        try
-        {
-            serverAddress = createServerAddress();
-        }
-        catch (UnknownHostException e)
-        {
-            throw new ConnectionException(String.format("Cannot resolve host %s", host), e);
-        }
+        HttpServerConfiguration serverConfiguration = new HttpServerConfiguration.Builder()
+                .setHost(host)
+                .setPort(port)
+                .setTlsContextFactory(tlsContext)
+                .setUsePersistentConnections(usePersistentConnections)
+                .setConnectionIdleTimeout(connectionIdleTimeout)
+                .setOwnerName(httpListenerConfig.getConfigName())
+                .build();
+        Server server = connectionManager.create(serverConfiguration);
 
-        //TODO: Should save a reference to this so as to dispose it later
-        WorkManager workManager = createWorkManager(httpListenerConfig.configName);
-        try
-        {
-            workManager.start();
-        }
-        catch (MuleException e)
-        {
-            throw new ConnectionException("Could not create work manager", e);
-        }
-
-        Server server;
-        if (tlsContext == null)
-        {
-            server = connectionManager.createServer(serverAddress, createWorkManagerSource(workManager), usePersistentConnections, connectionIdleTimeout);
-        }
-        else
-        {
-            server = connectionManager.createSslServer(serverAddress, createWorkManagerSource(workManager), tlsContext, usePersistentConnections, connectionIdleTimeout);
-        }
         try
         {
             server.start();
@@ -177,6 +140,7 @@ public class HttpListenerProvider implements ConnectionProvider<HttpListenerConf
         {
             throw new ConnectionException("Could not start server", e);
         }
+
         return server;
     }
 
@@ -204,29 +168,6 @@ public class HttpListenerProvider implements ConnectionProvider<HttpListenerConf
         {
             connectionIdleTimeout = 0;
         }
-    }
-
-    /**
-     * Creates the server address object with the IP and port that a server should bind to.
-     */
-    private ServerAddress createServerAddress() throws UnknownHostException
-    {
-        return new ServerAddress(NetworkUtils.getLocalHostIp(host), port);
-    }
-
-    private WorkManager createWorkManager(String name)
-    {
-        final WorkManager workManager = workerThreadingProfile.createWorkManager(format("%s%s.%s", ThreadNameHelper.getPrefix(muleContext), name, "worker"), muleContext.getConfiguration().getShutdownTimeout());
-        if (workManager instanceof MuleContextAware)
-        {
-            ((MuleContextAware) workManager).setMuleContext(muleContext);
-        }
-        return workManager;
-    }
-
-    private WorkManagerSource createWorkManagerSource(WorkManager workManager)
-    {
-        return () -> workManager;
     }
 
     @Override

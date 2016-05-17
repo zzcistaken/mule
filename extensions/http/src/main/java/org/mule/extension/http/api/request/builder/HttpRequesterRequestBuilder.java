@@ -14,7 +14,7 @@ import org.mule.runtime.extension.api.annotation.param.Optional;
 import java.util.HashMap;
 import java.util.Map;
 
-@Alias("request-builder")
+@Alias("requester-request-builder")
 public class HttpRequesterRequestBuilder extends HttpMessageBuilder
 {
     @Parameter

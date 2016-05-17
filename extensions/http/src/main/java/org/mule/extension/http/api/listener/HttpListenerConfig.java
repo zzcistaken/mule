@@ -28,7 +28,7 @@ import org.mule.runtime.module.http.internal.listener.ListenerPath;
 public class HttpListenerConfig implements Initialisable
 {
     @ConfigName
-    String configName;
+    private String configName;
 
     /**
      * Base path to use for all requests that reference this config.
@@ -65,5 +65,10 @@ public class HttpListenerConfig implements Initialisable
     public Boolean resolveParseRequest(Boolean listenerParseRequest)
     {
         return listenerParseRequest != null ? listenerParseRequest : (parseRequest != null ? parseRequest : true);
+    }
+
+    public String getConfigName()
+    {
+        return configName;
     }
 }

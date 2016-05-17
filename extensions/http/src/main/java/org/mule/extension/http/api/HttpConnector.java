@@ -12,6 +12,9 @@ import org.mule.extension.http.api.request.authentication.BasicAuthentication;
 import org.mule.extension.http.api.request.authentication.DigestAuthentication;
 import org.mule.extension.http.api.request.authentication.HttpAuthentication;
 import org.mule.extension.http.api.request.authentication.NtlmAuthentication;
+import org.mule.extension.http.api.request.proxy.DefaultProxyConfig;
+import org.mule.extension.http.api.request.proxy.NtlmProxyConfig;
+import org.mule.extension.http.api.request.proxy.ProxyConfig;
 import org.mule.extension.http.api.request.validator.FailureStatusCodeValidator;
 import org.mule.extension.http.api.request.validator.ResponseValidator;
 import org.mule.extension.http.api.request.validator.SuccessStatusCodeValidator;
@@ -28,7 +31,7 @@ import org.mule.runtime.module.socket.api.TcpClientSocketProperties;
 @Configurations({HttpListenerConfig.class, HttpRequesterConfig.class})
 @Operations({SimpleHttpOperations.class})
 @SubTypeMapping(baseType = HttpAuthentication.class, subTypes = {BasicAuthentication.class, DigestAuthentication.class, NtlmAuthentication.class})
-//@SubTypeMapping(baseType = ProxyConfig.class, subTypes = {DefaultProxyConfig.class, NtlmProxyConfig.class})
+@SubTypeMapping(baseType = ProxyConfig.class, subTypes = {DefaultProxyConfig.class, NtlmProxyConfig.class})
 @SubTypeMapping(baseType = ResponseValidator.class, subTypes = {SuccessStatusCodeValidator.class, FailureStatusCodeValidator.class})
 @Import(type = TcpClientSocketProperties.class, from = SocketsExtension.class)
 @Xml(namespaceLocation = "http://www.mulesoft.org/schema/mule/httpn", namespace = "httpn")
