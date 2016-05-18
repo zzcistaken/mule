@@ -6,15 +6,17 @@
  */
 package org.mule.runtime.module.launcher.descriptor;
 
-import static org.mule.runtime.module.launcher.domain.Domain.DEFAULT_DOMAIN_NAME;
 import static org.mule.runtime.core.util.Preconditions.checkArgument;
-import org.mule.runtime.module.launcher.plugin.ApplicationPluginDescriptor;
+import static org.mule.runtime.module.launcher.domain.Domain.DEFAULT_DOMAIN_NAME;
 import org.mule.runtime.core.util.StringUtils;
+import org.mule.runtime.module.launcher.plugin.ApplicationPluginDescriptor;
 
 import java.io.File;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -34,7 +36,6 @@ public class ApplicationDescriptor extends DeployableArtifactDescriptor
     private String encoding;
     private String configurationBuilder;
     private String domain = DEFAULT_DOMAIN_NAME;
-    private String packagesToScan;
     private String[] configResources = new String[] {DEFAULT_CONFIGURATION_RESOURCE};
     private String[] absoluteResourcePaths;
     private File[] configResourcesFile;
@@ -43,6 +44,7 @@ public class ApplicationDescriptor extends DeployableArtifactDescriptor
     private File logConfigFile;
     private Set<ApplicationPluginDescriptor> plugins = new HashSet<ApplicationPluginDescriptor>(0);
     private URL[] sharedPluginLibs = new URL[0];
+    private List<ArtifactDependency> dependencies = new LinkedList<>();
 
     public String getEncoding()
     {
@@ -151,4 +153,13 @@ public class ApplicationDescriptor extends DeployableArtifactDescriptor
         this.plugins = plugins;
     }
 
+    public List<ArtifactDependency> getDependencies()
+    {
+        return dependencies;
+    }
+
+    public void setDependencies(List<ArtifactDependency> dependencies)
+    {
+        this.dependencies = dependencies;
+    }
 }

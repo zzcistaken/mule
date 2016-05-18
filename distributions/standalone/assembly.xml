@@ -6,6 +6,18 @@
         <format>tar.gz</format>
     </formats>
 
+    <!--<repositories>-->
+        <!--<repository>-->
+            <!--<includeMetadata>false</includeMetadata>-->
+            <!--<outputDirectory>repository</outputDirectory>-->
+            <!--<includes>-->
+                <!--<include>org.mule.modules:mule-module-file:zip</include>-->
+                <!--<include>org.mule.modules:mule-module-ftp:zip</include>-->
+                <!--<include>org.mule.modules:mule-module-validation:zip</include>-->
+            <!--</includes>-->
+        <!--</repository>-->
+    <!--</repositories>-->
+
     <fileSets>
         <fileSet>
             <directory>src/main/resources</directory>
@@ -15,6 +27,10 @@
                 <exclude>bin/**</exclude>
                 <exclude>lib/boot/exec/**</exclude>
             </excludes>
+        </fileSet>
+        <fileSet>
+            <directory>${project.build.directory}/repository</directory>
+            <outputDirectory>repository</outputDirectory>
         </fileSet>
 
         <!-- Make binary files executable. -->
@@ -133,9 +149,9 @@
                 <include>org.mule.modules:mule-module-db</include>
                 <include>org.mule.modules:mule-module-extensions-support</include>
                 <include>org.mule.modules:mule-module-extensions-spring-support</include>
-                <include>org.mule.modules:mule-module-file</include>
+                <!--<include>org.mule.modules:mule-module-file:zip</include>-->
                 <include>org.mule.modules:mule-module-file-extension-common</include>
-                <include>org.mule.modules:mule-module-ftp</include>
+                <!--<include>org.mule.modules:mule-module-ftp:zip</include>-->
                 <include>org.mule.modules:mule-module-http</include>
                 <include>org.mule.modules:mule-module-jaas</include>
                 <include>org.mule.modules:mule-module-jbossts</include>
@@ -152,7 +168,7 @@
                 <include>org.mule.modules:mule-module-sockets</include>
                 <include>org.mule.modules:mule-module-tls</include>
                 <include>org.mule.modules:mule-module-tomcat</include>
-                <include>org.mule.modules:mule-module-validation</include>
+                <!--<include>org.mule.modules:mule-module-validation:zip</include>-->
                 <include>org.mule.modules:mule-module-ws</include>
                 <include>org.mule.modules:mule-module-xml</include>
 

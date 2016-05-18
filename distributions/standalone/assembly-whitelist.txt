@@ -133,9 +133,7 @@
 /mule-standalone-${productVersion}/lib/mule/mule-module-db-${productVersion}.jar
 /mule-standalone-${productVersion}/lib/mule/mule-module-extensions-spring-support-${productVersion}.jar
 /mule-standalone-${productVersion}/lib/mule/mule-module-extensions-support-${productVersion}.jar
-/mule-standalone-${productVersion}/lib/mule/mule-module-file-${productVersion}.jar
 /mule-standalone-${productVersion}/lib/mule/mule-module-file-extension-common-${productVersion}.jar
-/mule-standalone-${productVersion}/lib/mule/mule-module-ftp-${productVersion}.jar
 /mule-standalone-${productVersion}/lib/mule/mule-module-http-${productVersion}.jar
 /mule-standalone-${productVersion}/lib/mule/mule-module-jaas-${productVersion}.jar
 /mule-standalone-${productVersion}/lib/mule/mule-module-jbossts-${productVersion}.jar
@@ -153,7 +151,6 @@
 /mule-standalone-${productVersion}/lib/mule/mule-module-sockets-${productVersion}.jar
 /mule-standalone-${productVersion}/lib/mule/mule-module-tls-${productVersion}.jar
 /mule-standalone-${productVersion}/lib/mule/mule-module-tomcat-${productVersion}.jar
-/mule-standalone-${productVersion}/lib/mule/mule-module-validation-${productVersion}.jar
 /mule-standalone-${productVersion}/lib/mule/mule-module-ws-${productVersion}.jar
 /mule-standalone-${productVersion}/lib/mule/mule-module-xml-${productVersion}.jar
 /mule-standalone-${productVersion}/lib/mule/mule-mvel2-2.1.9-MULE-010.jar
@@ -184,13 +181,11 @@
 /mule-standalone-${productVersion}/lib/opt/commons-codec-1.9.jar
 /mule-standalone-${productVersion}/lib/opt/commons-collections-3.2.2.jar
 /mule-standalone-${productVersion}/lib/opt/commons-dbutils-1.2.jar
-/mule-standalone-${productVersion}/lib/opt/commons-digester-1.8.jar
 /mule-standalone-${productVersion}/lib/opt/commons-io-2.4.jar
 /mule-standalone-${productVersion}/lib/opt/commons-lang-2.4.jar
 /mule-standalone-${productVersion}/lib/opt/commons-lang3-3.4.jar
 /mule-standalone-${productVersion}/lib/opt/commons-net-3.3.jar
 /mule-standalone-${productVersion}/lib/opt/commons-pool-1.6.jar
-/mule-standalone-${productVersion}/lib/opt/commons-validator-1.4.0.jar
 /mule-standalone-${productVersion}/lib/opt/cxf-api-2.7.15.jar
 /mule-standalone-${productVersion}/lib/opt/cxf-rt-management-2.7.15.jar
 /mule-standalone-${productVersion}/lib/opt/cxf-rt-bindings-soap-2.7.15.jar
@@ -338,6 +333,28 @@
 /mule-standalone-${productVersion}/lib/user/README.txt
 /mule-standalone-${productVersion}/lib/user/xmlunit-1.6.jar
 
+#
+# Repository
+#
+/mule-standalone-${productVersion}/repository
+/mule-standalone-${productVersion}/repository/org
+/mule-standalone-${productVersion}/repository/org/mule
+/mule-standalone-${productVersion}/repository/org/mule/modules
+/mule-standalone-${productVersion}/repository/org/mule/modules/mule-module-file
+/mule-standalone-${productVersion}/repository/org/mule/modules/mule-module-file/maven-metadata-local.xml
+/mule-standalone-${productVersion}/repository/org/mule/modules/mule-module-file/${productVersion}
+/mule-standalone-${productVersion}/repository/org/mule/modules/mule-module-file/${productVersion}/mule-module-file-${productVersion}.zip
+/mule-standalone-${productVersion}/repository/org/mule/modules/mule-module-file/${productVersion}/maven-metadata-local.xml
+/mule-standalone-${productVersion}/repository/org/mule/modules/mule-module-ftp
+/mule-standalone-${productVersion}/repository/org/mule/modules/mule-module-ftp/maven-metadata-local.xml
+/mule-standalone-${productVersion}/repository/org/mule/modules/mule-module-ftp/${productVersion}
+/mule-standalone-${productVersion}/repository/org/mule/modules/mule-module-ftp/${productVersion}/mule-module-ftp-${productVersion}.zip
+/mule-standalone-${productVersion}/repository/org/mule/modules/mule-module-ftp/${productVersion}/maven-metadata-local.xml
+/mule-standalone-${productVersion}/repository/org/mule/modules/mule-module-validation
+/mule-standalone-${productVersion}/repository/org/mule/modules/mule-module-validation/maven-metadata-local.xml
+/mule-standalone-${productVersion}/repository/org/mule/modules/mule-module-validation/${productVersion}
+/mule-standalone-${productVersion}/repository/org/mule/modules/mule-module-validation/${productVersion}/mule-module-validation-${productVersion}.zip
+/mule-standalone-${productVersion}/repository/org/mule/modules/mule-module-validation/${productVersion}/maven-metadata-local.xml
 
 #
 # /lib/logs

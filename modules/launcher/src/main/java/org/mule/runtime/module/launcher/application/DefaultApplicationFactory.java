@@ -8,8 +8,10 @@ package org.mule.runtime.module.launcher.application;
 
 import static java.util.Collections.emptyMap;
 import static org.mule.runtime.module.artifact.classloader.ClassLoaderLookupStrategy.PARENT_FIRST;
+import org.mule.runtime.core.util.FileUtils;
 import org.mule.runtime.module.artifact.classloader.ArtifactClassLoader;
 import org.mule.runtime.module.artifact.classloader.ArtifactClassLoaderFactory;
+import org.mule.runtime.module.artifact.classloader.ArtifactClassLoaderFilterFactory;
 import org.mule.runtime.module.artifact.classloader.ClassLoaderLookupPolicy;
 import org.mule.runtime.module.artifact.classloader.ClassLoaderLookupStrategy;
 import org.mule.runtime.module.artifact.classloader.FilteringArtifactClassLoader;
@@ -18,8 +20,10 @@ import org.mule.runtime.module.launcher.ApplicationDescriptorFactory;
 import org.mule.runtime.module.launcher.DeploymentListener;
 import org.mule.runtime.module.launcher.artifact.ArtifactFactory;
 import org.mule.runtime.module.launcher.descriptor.ApplicationDescriptor;
+import org.mule.runtime.module.launcher.descriptor.ArtifactDependency;
 import org.mule.runtime.module.launcher.domain.DomainRepository;
 import org.mule.runtime.module.launcher.plugin.ApplicationPluginDescriptor;
+import org.mule.runtime.module.launcher.plugin.ApplicationPluginDescriptorFactory;
 import org.mule.runtime.module.reboot.MuleContainerBootstrapUtils;
 
 import java.io.File;
@@ -40,14 +44,18 @@ public class DefaultApplicationFactory implements ArtifactFactory<Application>
     private final ArtifactClassLoaderFactory applicationClassLoaderFactory;
     private final ApplicationDescriptorFactory applicationDescriptorFactory;
     private final DomainRepository domainRepository;
+    private final ApplicationPluginDescriptorFactory pluginDescriptorFactory;
     protected DeploymentListener deploymentListener;
-    private PackageDiscoverer packageDiscoverer = new FilePackageDiscoverer();
+    private final PackageDiscoverer packageDiscoverer = new FilePackageDiscoverer();
+    private final ArtifactRepository artifactRepository = new LocalArtifactRepository();
+    private final ApplicationPluginFactory applicationPluginFactory = new DefaultApplicationPluginFactory();
 
     public DefaultApplicationFactory(ArtifactClassLoaderFactory<ApplicationDescriptor> applicationClassLoaderFactory, ApplicationDescriptorFactory applicationDescriptorFactory, DomainRepository domainRepository)
     {
         this.applicationClassLoaderFactory = applicationClassLoaderFactory;
         this.applicationDescriptorFactory = applicationDescriptorFactory;
         this.domainRepository = domainRepository;
+        this.pluginDescriptorFactory = new ApplicationPluginDescriptorFactory(new ArtifactClassLoaderFilterFactory());
     }
 
     public void setDeploymentListener(DeploymentListener deploymentListener)
@@ -82,7 +90,8 @@ public class DefaultApplicationFactory implements ArtifactFactory<Application>
 
         parent = getSharedLibClassLoader(descriptor, parent);
 
-        final List<ApplicationPlugin> applicationPlugins = createApplicationPlugins(parent, descriptor.getPlugins());
+        final List<ApplicationPlugin> applicationPlugins = createContainerApplicationPlugins(parent, descriptor);
+        applicationPlugins.addAll(createApplicationPlugins(parent, descriptor.getPlugins()));
         if (!applicationPlugins.isEmpty())
         {
           parent = createCompositePluginClassLoader(parent, applicationPlugins);
@@ -97,6 +106,27 @@ public class DefaultApplicationFactory implements ArtifactFactory<Application>
         }
 
         return new ApplicationWrapper(delegate);
+    }
+
+    private List<ApplicationPlugin> createContainerApplicationPlugins(ArtifactClassLoader parentClassLoader, ApplicationDescriptor appDescriptor) throws IOException
+    {
+        final List<ApplicationPlugin> plugins = new LinkedList<>();
+
+        //TODO(pablo.kraan): remove duplication from ApplicationDescriptorParser
+        for (ArtifactDependency dependency : appDescriptor.getDependencies())
+        {
+            final File pluginFile = artifactRepository.getArtifactDependencyFile(dependency);
+
+            // must unpack as there's no straightforward way for a ClassLoader to use a jar within another jar/zip
+            final File tmpDir = new File(MuleContainerBootstrapUtils.getMuleTmpDir(),
+                                         appDescriptor.getName() + "/plugins/" + dependency.getArtifact());
+            FileUtils.unzip(pluginFile, tmpDir);
+            final ApplicationPluginDescriptor descriptor = pluginDescriptorFactory.create(tmpDir);
+
+            plugins.add(applicationPluginFactory.create(descriptor, parentClassLoader));
+        }
+
+        return plugins;
     }
 
     private ArtifactClassLoader getSharedLibClassLoader(ApplicationDescriptor descriptor, ArtifactClassLoader parent)
@@ -135,22 +165,10 @@ public class DefaultApplicationFactory implements ArtifactFactory<Application>
 
         for (ApplicationPluginDescriptor descriptor : pluginDescriptors)
         {
-            final MuleArtifactClassLoader pluginClassLoader = createPluginClassLoader(parentClassLoader, descriptor);
-            final DefaultApplicationPlugin applicationPlugin = new DefaultApplicationPlugin(descriptor, pluginClassLoader);
-
-            plugins.add(applicationPlugin);
+            plugins.add(applicationPluginFactory.create(descriptor, parentClassLoader));
         }
 
         return plugins;
-    }
-
-    private MuleArtifactClassLoader createPluginClassLoader(ArtifactClassLoader parent, ApplicationPluginDescriptor descriptor)
-    {
-        URL[] urls = new URL[descriptor.getRuntimeLibs().length + 1];
-        urls[0] = descriptor.getRuntimeClassesDir();
-        System.arraycopy(descriptor.getRuntimeLibs(), 0, urls, 1, descriptor.getRuntimeLibs().length);
-
-        return new MuleArtifactClassLoader(descriptor.getName(), urls, parent.getClassLoader(), parent.getClassLoaderLookupPolicy());
     }
 
     private Map<String, ClassLoaderLookupStrategy> getLookStrategiesFrom(URL[] libraries)

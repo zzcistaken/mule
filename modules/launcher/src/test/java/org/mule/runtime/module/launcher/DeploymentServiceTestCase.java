@@ -33,8 +33,9 @@ import static org.mockito.Mockito.verify;
 import static org.mule.runtime.core.util.ClassUtils.withContextClassLoader;
 import static org.mule.runtime.module.artifact.classloader.ArtifactClassLoaderFilter.EXPORTED_CLASS_PACKAGES_PROPERTY;
 import static org.mule.runtime.module.artifact.classloader.ArtifactClassLoaderFilter.EXPORTED_RESOURCE_PACKAGES_PROPERTY;
-import static org.mule.runtime.module.launcher.MuleDeploymentService.SYSTEM_PACKAGES;
+import static org.mule.runtime.module.launcher.MuleFoldersUtil.APP_PLUGIN_REPOSITORY;
 import static org.mule.runtime.module.launcher.MuleFoldersUtil.getDomainFolder;
+import static org.mule.runtime.module.launcher.descriptor.PropertiesDescriptorParser.DEPLOYMENT_DEPENDENCIES;
 import static org.mule.runtime.module.launcher.descriptor.PropertiesDescriptorParser.PROPERTY_DOMAIN;
 import static org.mule.runtime.module.launcher.domain.Domain.DEFAULT_DOMAIN_NAME;
 import static org.mule.runtime.module.launcher.domain.Domain.DOMAIN_CONFIG_FILE_LOCATION;
@@ -164,6 +165,7 @@ public class DeploymentServiceTestCase extends AbstractMuleContextTestCase
 
     protected File muleHome;
     protected File appsDir;
+    protected File repository;
     protected File domainsDir;
     protected MuleDeploymentService deploymentService;
     protected DeploymentListener applicationDeploymentListener;
@@ -184,6 +186,8 @@ public class DeploymentServiceTestCase extends AbstractMuleContextTestCase
         muleHome = new File(new File(tmpDir, "mule home"), getClass().getSimpleName() + System.currentTimeMillis());
         appsDir = new File(muleHome, "apps");
         appsDir.mkdirs();
+        repository = new File(muleHome, APP_PLUGIN_REPOSITORY);
+        repository.mkdirs();
         domainsDir = new File(muleHome, "domains");
         domainsDir.mkdirs();
         System.setProperty(MuleProperties.MULE_HOME_DIRECTORY_PROPERTY, muleHome.getCanonicalPath());
@@ -1291,6 +1295,24 @@ public class DeploymentServiceTestCase extends AbstractMuleContextTestCase
         deploymentService.start();
 
         assertDeploymentSuccess(applicationDeploymentListener, echoPluginAppFileBuilder.getId());
+    }
+
+    @Test
+    public void deploysAppZipWithPluginInContainer() throws Exception
+    {
+        final File groupFolder = new File(repository, "org.foo".replace(".", File.separator));
+        final File artifactFolder = new File(groupFolder, echoPlugin.getId());
+        final File versionFolder = new File(artifactFolder, "1.0");
+        File installedPlugin = new File(versionFolder, echoPlugin.getId() + "-1.0.zip");
+        copyFile(echoPlugin.getArtifactFile(), installedPlugin);
+
+        final ApplicationFileBuilder applicationFileBuilder = new ApplicationFileBuilder("dummyWithEchoPlugin").definedBy("app-with-echo-plugin-config.xml")
+                .deployedWith(DEPLOYMENT_DEPENDENCIES, "org.foo:echoPlugin:1.0");
+        addPackedAppFromBuilder(applicationFileBuilder);
+
+        deploymentService.start();
+
+        assertDeploymentSuccess(applicationDeploymentListener, applicationFileBuilder.getId());
     }
 
     @Test

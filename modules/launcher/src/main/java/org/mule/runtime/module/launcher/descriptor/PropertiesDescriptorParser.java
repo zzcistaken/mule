@@ -6,6 +6,7 @@
  */
 package org.mule.runtime.module.launcher.descriptor;
 
+import static org.mule.runtime.module.launcher.domain.Domain.DEFAULT_DOMAIN_NAME;
 import static org.mule.runtime.module.reboot.MuleContainerBootstrapUtils.getMuleAppDir;
 import org.mule.runtime.core.util.PropertiesUtils;
 import org.mule.runtime.core.util.StringUtils;
@@ -13,6 +14,8 @@ import org.mule.runtime.core.util.StringUtils;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Properties;
 
 import org.apache.commons.lang.BooleanUtils;
@@ -26,6 +29,7 @@ public class PropertiesDescriptorParser implements DescriptorParser<ApplicationD
     // support not yet implemented for CL reversal
     protected static final String PROPERTY_CONFIG_RESOURCES = "config.resources";
     protected static final String PROPERTY_LOG_CONFIG_FILE = "log.configFile";
+    public static final String DEPLOYMENT_DEPENDENCIES = "deployment.dependencies";
 
     @Override
     public ApplicationDescriptor parse(File descriptor, String artifactName) throws IOException
@@ -36,7 +40,7 @@ public class PropertiesDescriptorParser implements DescriptorParser<ApplicationD
         d.setName(artifactName);
         d.setEncoding(p.getProperty(PROPERTY_ENCODING));
         d.setConfigurationBuilder(p.getProperty(PROPERTY_CONFIG_BUILDER));
-        d.setDomain(p.getProperty(PROPERTY_DOMAIN));
+        d.setDomain(p.getProperty(PROPERTY_DOMAIN, DEFAULT_DOMAIN_NAME));
 
         final String resProps = p.getProperty(PROPERTY_CONFIG_RESOURCES);
         String[] urls;
@@ -50,6 +54,8 @@ public class PropertiesDescriptorParser implements DescriptorParser<ApplicationD
         }
         d.setConfigResources(urls);
 
+        d.setDependencies(parseDependencies(p.getProperty(DEPLOYMENT_DEPENDENCIES)));
+
         String[] absoluteResourcePaths = convertConfigResourcesToAbsolutePatch(urls, artifactName);
         d.setAbsoluteResourcePaths(absoluteResourcePaths);
         d.setConfigResourcesFile(convertConfigResourcesToFile(absoluteResourcePaths));
@@ -62,6 +68,31 @@ public class PropertiesDescriptorParser implements DescriptorParser<ApplicationD
             d.setLogConfigFile(new File(p.getProperty(PROPERTY_LOG_CONFIG_FILE)));
         }
         return d;
+    }
+
+    private List<ArtifactDependency> parseDependencies(String property)
+    {
+        final List<ArtifactDependency> dependencies = new LinkedList<>();
+
+        if (!StringUtils.isEmpty(property))
+        {
+            for (String dependency : property.split(","))
+            {
+                dependencies.add(parseDependency(dependency));
+            }
+        }
+
+        return dependencies;
+    }
+
+    private ArtifactDependency parseDependency(String dependencyValue)
+    {
+        final String[] split = dependencyValue.split(":");
+        if (split.length != 3)
+        {
+            throw new IllegalArgumentException("Invalid artifact dependency: " + dependencyValue);
+        }
+        return new ArtifactDependency(split[0], split[1], split[2]);
     }
 
     private File[] convertConfigResourcesToFile(String[] absoluteResourcePaths)
