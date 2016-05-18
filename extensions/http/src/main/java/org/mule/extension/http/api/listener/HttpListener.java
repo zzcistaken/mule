@@ -138,14 +138,14 @@ public class HttpListener extends Source<Object, HttpRequestAttributes> implemen
 
         if (responseBuilder == null)
         {
-            responseBuilder = HttpResponseBuilder.emptyInstance(muleContext);
+            responseBuilder = HttpResponseBuilder.emptyInstance();
         }
 
         LifecycleUtils.initialiseIfNeeded(responseBuilder);
 
         if (errorResponseBuilder == null)
         {
-            errorResponseBuilder = HttpResponseBuilder.emptyInstance(muleContext);
+            errorResponseBuilder = HttpResponseBuilder.emptyInstance();
         }
 
         LifecycleUtils.initialiseIfNeeded(errorResponseBuilder);
@@ -209,7 +209,7 @@ public class HttpListener extends Source<Object, HttpRequestAttributes> implemen
                         {
                             //TODO: analyse adding static resource handler here
                             final org.mule.runtime.module.http.internal.domain.response.HttpResponseBuilder responseBuilder = new org.mule.runtime.module.http.internal.domain.response.HttpResponseBuilder();
-                            final HttpResponse httpResponse = buildResponse(((MuleEvent) result).getMessage(), responseBuilder, supportStreaming, exceptionCallback);
+                            final HttpResponse httpResponse = buildResponse((MuleEvent) result, responseBuilder, supportStreaming, exceptionCallback);
                             responseCallback.responseReady(httpResponse, getResponseFailureCallback(responseCallback));
                         }
 
@@ -229,7 +229,7 @@ public class HttpListener extends Source<Object, HttpRequestAttributes> implemen
                             HttpResponse response;
                             try
                             {
-                                response = errorResponseBuilder.build(failureResponseBuilder, messagingException.getEvent().getMessage(), supportStreaming);
+                                response = errorResponseBuilder.build(failureResponseBuilder, messagingException.getEvent(), supportStreaming);
                             }
                             catch (MessagingException e)
                             {
@@ -238,7 +238,6 @@ public class HttpListener extends Source<Object, HttpRequestAttributes> implemen
                             responseCallback.responseReady(response, getResponseFailureCallback(responseCallback));
                         }
                     };
-                    responseBuilder.setHttpVersion(requestContext.getRequest().getProtocol().asString());
                     sourceContext.getMessageHandler().handle(createMuleMessage(requestContext), completionHandler);
                 }
                 catch (HttpRequestParsingException | IllegalArgumentException e)
@@ -292,28 +291,28 @@ public class HttpListener extends Source<Object, HttpRequestAttributes> implemen
         //return muleEvent;
     }
 
-    protected HttpResponse buildResponse(MuleMessage muleMessage, final org.mule.runtime.module.http.internal.domain.response.HttpResponseBuilder responseBuilder, boolean supportStreaming, ExceptionCallback exceptionCallback)
+    protected HttpResponse buildResponse(MuleEvent event, final org.mule.runtime.module.http.internal.domain.response.HttpResponseBuilder responseBuilder, boolean supportStreaming, ExceptionCallback exceptionCallback)
     {
         addThrottlingHeaders(responseBuilder);
         final HttpResponse httpResponse;
 
-        if (muleMessage == null)
+        if (event == null)
         {
             // If the event was filtered, return an empty response with status code 200 OK.
             httpResponse = responseBuilder.setStatusCode(200).build();
         }
         else
         {
-            httpResponse = doBuildResponse(muleMessage, responseBuilder, supportStreaming, exceptionCallback);
+            httpResponse = doBuildResponse(event, responseBuilder, supportStreaming, exceptionCallback);
         }
         return httpResponse;
     }
 
-    protected HttpResponse doBuildResponse(MuleMessage muleMessage, final org.mule.runtime.module.http.internal.domain.response.HttpResponseBuilder responseBuilder, boolean supportsStreaming, ExceptionCallback exceptionCallback)
+    protected HttpResponse doBuildResponse(MuleEvent event, final org.mule.runtime.module.http.internal.domain.response.HttpResponseBuilder responseBuilder, boolean supportsStreaming, ExceptionCallback exceptionCallback)
     {
         try
         {
-            return this.responseBuilder.build(responseBuilder, (org.mule.runtime.core.api.MuleMessage) muleMessage, supportsStreaming);
+            return this.responseBuilder.build(responseBuilder, event, supportsStreaming);
         }
         catch (Exception e)
         {
@@ -322,7 +321,7 @@ public class HttpListener extends Source<Object, HttpRequestAttributes> implemen
                 // Handle errors that occur while building the response. We need to send ES result back.
                 MuleEvent exceptionStrategyResult = (MuleEvent) exceptionCallback.onException(e);
                 // Send the result from the event that was built from the Exception Strategy.
-                return this.responseBuilder.build(responseBuilder, exceptionStrategyResult.getMessage(), supportsStreaming);
+                return this.responseBuilder.build(responseBuilder, exceptionStrategyResult, supportsStreaming);
             }
             catch (Exception innerException)
             {

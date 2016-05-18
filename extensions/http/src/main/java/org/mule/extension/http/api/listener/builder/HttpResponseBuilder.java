@@ -15,13 +15,11 @@ import org.mule.extension.http.api.HttpMessageBuilder;
 import org.mule.runtime.api.message.NullPayload;
 import org.mule.runtime.api.metadata.DataType;
 import org.mule.runtime.core.api.MessagingException;
-import org.mule.runtime.core.api.MuleContext;
+import org.mule.runtime.core.api.MuleEvent;
 import org.mule.runtime.core.api.MuleMessage;
 import org.mule.runtime.core.api.config.MuleProperties;
-import org.mule.runtime.core.api.context.MuleContextAware;
 import org.mule.runtime.core.api.lifecycle.InitialisationException;
 import org.mule.runtime.core.config.i18n.MessageFactory;
-import org.mule.runtime.core.transformer.types.DataTypeFactory;
 import org.mule.runtime.core.transformer.types.MimeTypes;
 import org.mule.runtime.core.util.DataTypeUtils;
 import org.mule.runtime.core.util.IOUtils;
@@ -52,7 +50,7 @@ import javax.activation.DataHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class HttpResponseBuilder extends HttpMessageBuilder implements MuleContextAware
+public class HttpResponseBuilder extends HttpMessageBuilder
 {
     public static final String MULTIPART = "multipart";
     private Logger logger = LoggerFactory.getLogger(getClass());
@@ -69,17 +67,15 @@ public class HttpResponseBuilder extends HttpMessageBuilder implements MuleConte
 
     private boolean multipartEntityWithNoMultipartContentyTypeWarned;
     private boolean mapPayloadButNoUrlEncodedContentyTypeWarned;
-    private String httpVersion;
-    private MuleContext muleContext;
 
-    public HttpResponse build(org.mule.runtime.module.http.internal.domain.response.HttpResponseBuilder httpResponseBuilder, MuleMessage muleMessage, boolean supportsTransferEncoding) throws MessagingException
+    public HttpResponse build(org.mule.runtime.module.http.internal.domain.response.HttpResponseBuilder httpResponseBuilder, MuleEvent event, boolean supportsTransferEncoding) throws MessagingException
     {
         final HttpResponseHeaderBuilder httpResponseHeaderBuilder = new HttpResponseHeaderBuilder();
 
 
         if (httpResponseHeaderBuilder.getHeader(MuleProperties.CONTENT_TYPE_PROPERTY) != null)
         {
-            DataType<?> dataType = muleMessage.getDataType();
+            DataType<?> dataType = event.getMessage().getDataType();
             if (!MimeTypes.ANY.equals(dataType.getMimeType()))
             {
                 httpResponseHeaderBuilder.addHeader(MuleProperties.CONTENT_TYPE_PROPERTY, DataTypeUtils.getContentType(dataType));
@@ -119,12 +115,12 @@ public class HttpResponseBuilder extends HttpMessageBuilder implements MuleConte
             {
                 warnNoMultipartContentTypeButMultipartEntity(httpResponseHeaderBuilder.getContentType());
             }
-            httpEntity = createMultipartEntity(muleMessage, httpResponseHeaderBuilder.getContentType());
+            httpEntity = createMultipartEntity(event.getMessage(), httpResponseHeaderBuilder.getContentType());
             resolveEncoding(httpResponseHeaderBuilder, existingTransferEncoding, existingContentLength, supportsTransferEncoding, (ByteArrayHttpEntity) httpEntity);
         }
         else
         {
-            final Object payload = muleMessage.getPayload();
+            final Object payload = event.getMessage().getPayload();
             if (payload == NullPayload.getInstance())
             {
                 setupContentLengthEncoding(httpResponseHeaderBuilder, 0);
@@ -140,7 +136,7 @@ public class HttpResponseBuilder extends HttpMessageBuilder implements MuleConte
                 {
                     warnMapPayloadButNoUrlEncodedContentType(httpResponseHeaderBuilder.getContentType());
                 }
-                httpEntity = createUrlEncodedEntity((Map) payload);
+                httpEntity = createUrlEncodedEntity(event, (Map) payload);
             }
             else if (payload instanceof InputStream)
             {
@@ -163,8 +159,7 @@ public class HttpResponseBuilder extends HttpMessageBuilder implements MuleConte
             {
                 try
                 {
-                    //TODO: Find a better way to do this
-                    ByteArrayHttpEntity byteArrayHttpEntity = new ByteArrayHttpEntity((byte[]) muleContext.getTransformationService().transform((org.mule.runtime.core.api.MuleMessage) muleMessage, DataTypeFactory.BYTE_ARRAY).getPayload());
+                    ByteArrayHttpEntity byteArrayHttpEntity = new ByteArrayHttpEntity(event.getMessageAsBytes());
                     resolveEncoding(httpResponseHeaderBuilder, existingTransferEncoding, existingContentLength, supportsTransferEncoding, byteArrayHttpEntity);
                     httpEntity = byteArrayHttpEntity;
                 }
@@ -241,21 +236,20 @@ public class HttpResponseBuilder extends HttpMessageBuilder implements MuleConte
         return String.format("%s; boundary=%s", HttpHeaders.Values.MULTIPART_FORM_DATA, UUID.getUUID());
     }
 
-    private HttpEntity createUrlEncodedEntity(Map payload)
+    private HttpEntity createUrlEncodedEntity(MuleEvent event, Map payload)
     {
         final Map mapPayload = payload;
         HttpEntity entity = new EmptyHttpEntity();
         if (!mapPayload.isEmpty())
         {
-            //TODO: Figure out a proper way to get the encoding
             String encodedBody;
             if (mapPayload instanceof ParameterMap)
             {
-                encodedBody = HttpParser.encodeString("UTF-8", ((ParameterMap) mapPayload).toListValuesMap());
+                encodedBody = HttpParser.encodeString(event.getEncoding(), ((ParameterMap) mapPayload).toListValuesMap());
             }
             else
             {
-                encodedBody = HttpParser.encodeString("UTF-8", mapPayload);
+                encodedBody = HttpParser.encodeString(event.getEncoding(), mapPayload);
             }
             entity = new ByteArrayHttpEntity(encodedBody.getBytes());
         }
@@ -299,14 +293,13 @@ public class HttpResponseBuilder extends HttpMessageBuilder implements MuleConte
         }
         catch (Exception e)
         {
-            throw new MessagingException(MessageFactory.createStaticMessage("Error creating multipart HTTP entity."), (org.mule.runtime.core.api.MuleMessage) muleMessage, e);
+            throw new MessagingException(MessageFactory.createStaticMessage("Error creating multipart HTTP entity."), muleMessage, e);
         }
     }
 
-    public static HttpResponseBuilder emptyInstance(MuleContext muleContext) throws InitialisationException
+    public static HttpResponseBuilder emptyInstance() throws InitialisationException
     {
         final HttpResponseBuilder httpResponseBuilder = new HttpResponseBuilder();
-        httpResponseBuilder.setMuleContext(muleContext);
         return httpResponseBuilder;
     }
 
@@ -315,14 +308,4 @@ public class HttpResponseBuilder extends HttpMessageBuilder implements MuleConte
         return responseStreaming;
     }
 
-    public void setHttpVersion(String httpVersion)
-    {
-        this.httpVersion = httpVersion;
-    }
-
-    @Override
-    public void setMuleContext(MuleContext context)
-    {
-        muleContext = context;
-    }
 }
