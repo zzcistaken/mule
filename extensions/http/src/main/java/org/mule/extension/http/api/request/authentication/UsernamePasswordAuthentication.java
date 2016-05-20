@@ -13,6 +13,9 @@ import org.mule.runtime.extension.api.annotation.Parameter;
 import org.mule.runtime.module.http.internal.domain.request.HttpRequestAuthentication;
 import org.mule.runtime.module.http.internal.request.HttpAuthenticationType;
 
+/**
+ * Base class for user/pass based implementations.
+ */
 public abstract class UsernamePasswordAuthentication implements HttpAuthentication
 {
     @Parameter

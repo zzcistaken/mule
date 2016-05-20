@@ -17,7 +17,6 @@ import org.mule.runtime.api.tls.TlsContextFactoryBuilder;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.MuleEvent;
 import org.mule.runtime.core.api.MuleException;
-import org.mule.runtime.core.api.context.MuleContextAware;
 import org.mule.runtime.core.api.lifecycle.Initialisable;
 import org.mule.runtime.core.api.lifecycle.InitialisationException;
 import org.mule.runtime.core.api.lifecycle.LifecycleUtils;
@@ -41,7 +40,7 @@ import javax.inject.Inject;
 @Configuration(name = "request-config")
 @Providers(HttpRequesterProvider.class)
 @Operations({HttpRequesterOperations.class})
-public class HttpRequesterConfig implements Initialisable, Stoppable, MuleContextAware
+public class HttpRequesterConfig implements Initialisable, Stoppable
 {
     @ConfigName
     private String configName;
@@ -71,7 +70,9 @@ public class HttpRequesterConfig implements Initialisable, Stoppable, MuleContex
     @Expression(NOT_SUPPORTED)
     private HttpConstants.Protocols protocol;
 
-    //TODO: document?
+    /**
+     * Reference to a TLS config element. This will enable HTTPS for this config.
+     */
     @Parameter
     @Optional
     private TlsContextFactory tlsContextFactory;
@@ -151,6 +152,7 @@ public class HttpRequesterConfig implements Initialisable, Stoppable, MuleContex
     private TlsContextFactoryBuilder defaultTlsContextFactoryBuilder;
 
     private CookieManager cookieManager;
+    @Inject
     private MuleContext muleContext;
     private boolean stopped = false;
 
@@ -261,12 +263,6 @@ public class HttpRequesterConfig implements Initialisable, Stoppable, MuleContex
     public MuleContext getMuleContext()
     {
         return muleContext;
-    }
-
-    @Override
-    public void setMuleContext(MuleContext context)
-    {
-        this.muleContext = context;
     }
 
     @Override

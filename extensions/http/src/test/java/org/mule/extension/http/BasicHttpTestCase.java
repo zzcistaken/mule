@@ -44,6 +44,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+//TODO: MULE-9702 Remove once the tests are migrated.
 public class BasicHttpTestCase extends ExtensionFunctionalTestCase
 {
     @Rule
@@ -137,7 +138,6 @@ public class BasicHttpTestCase extends ExtensionFunctionalTestCase
     @Test
     public void sendsRequest() throws Exception
     {
-        //TODO: Analyse hung threads issue (possible race condition?)
         MuleEvent response = flowRunner("client").withPayload("PEPE").run();
         assertThat(IOUtils.toString((InputStream) response.getMessage().getPayload()), is("WOW"));
         assertThat(method, is("GET"));

@@ -18,7 +18,6 @@ import org.mule.runtime.api.connection.ConnectionProvider;
 import org.mule.runtime.api.connection.ConnectionValidationResult;
 import org.mule.runtime.api.tls.TlsContextFactory;
 import org.mule.runtime.core.api.MuleContext;
-import org.mule.runtime.core.api.context.MuleContextAware;
 import org.mule.runtime.core.api.lifecycle.Initialisable;
 import org.mule.runtime.core.api.lifecycle.InitialisationException;
 import org.mule.runtime.core.api.lifecycle.LifecycleUtils;
@@ -35,7 +34,7 @@ import java.io.IOException;
 import javax.inject.Inject;
 
 @Alias("listener")
-public class HttpListenerProvider implements ConnectionProvider<HttpListenerConfig, Server>, Initialisable, MuleContextAware
+public class HttpListenerProvider implements ConnectionProvider<HttpListenerConfig, Server>, Initialisable
 {
 
     /**
@@ -62,7 +61,9 @@ public class HttpListenerProvider implements ConnectionProvider<HttpListenerConf
     @Expression(NOT_SUPPORTED)
     private HttpConstants.Protocols protocol;
 
-    //TODO: document?
+    /**
+     * Reference to a TLS config element. This will enable HTTPS for this config.
+     */
     @Parameter
     @Optional
     @Expression(NOT_SUPPORTED)
@@ -87,6 +88,7 @@ public class HttpListenerProvider implements ConnectionProvider<HttpListenerConf
 
     @Inject
     private HttpListenerConnectionManager connectionManager;
+    @Inject
     private MuleContext muleContext;
 
     @Override
@@ -170,9 +172,4 @@ public class HttpListenerProvider implements ConnectionProvider<HttpListenerConf
         }
     }
 
-    @Override
-    public void setMuleContext(MuleContext context)
-    {
-        muleContext = context;
-    }
 }

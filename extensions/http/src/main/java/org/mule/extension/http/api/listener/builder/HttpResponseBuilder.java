@@ -42,14 +42,14 @@ import org.mule.runtime.module.http.internal.multipart.HttpPartDataSource;
 
 import java.io.InputStream;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
-
-import javax.activation.DataHandler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Component that transforms a {@link MuleEvent} to a proper HTTP response.
+ */
 public class HttpResponseBuilder extends HttpMessageBuilder
 {
     public static final String MULTIPART = "multipart";
@@ -68,6 +68,7 @@ public class HttpResponseBuilder extends HttpMessageBuilder
     private boolean multipartEntityWithNoMultipartContentyTypeWarned;
     private boolean mapPayloadButNoUrlEncodedContentyTypeWarned;
 
+    //TODO: This logic should be in a MuleEventToHttpResponse component instead, just like for HTTP requests
     public HttpResponse build(org.mule.runtime.module.http.internal.domain.response.HttpResponseBuilder httpResponseBuilder, MuleEvent event, boolean supportsTransferEncoding) throws MessagingException
     {
         final HttpResponseHeaderBuilder httpResponseHeaderBuilder = new HttpResponseHeaderBuilder();
@@ -84,19 +85,15 @@ public class HttpResponseBuilder extends HttpMessageBuilder
 
         for (String name : headers.keySet())
         {
-            //TODO: Support multiple values like ParamMap does
-            //final Collection<String> paramValues = resolvedHeaders.getAll(name);
-            //for (String value : paramValues)
-            //{
-                if (TRANSFER_ENCODING.equals(name) && !supportsTransferEncoding)
-                {
-                    logger.debug("Client HTTP version is lower than 1.1 so the unsupported 'Transfer-Encoding' header has been removed and 'Content-Length' will be sent instead.");
-                }
-                else
-                {
-                    httpResponseHeaderBuilder.addHeader(name, headers.get(name));
-                }
-            //}
+            //For now, only support single headers
+            if (TRANSFER_ENCODING.equals(name) && !supportsTransferEncoding)
+            {
+                logger.debug("Client HTTP version is lower than 1.1 so the unsupported 'Transfer-Encoding' header has been removed and 'Content-Length' will be sent instead.");
+            }
+            else
+            {
+                httpResponseHeaderBuilder.addHeader(name, headers.get(name));
+            }
         }
 
         final String configuredContentType = httpResponseHeaderBuilder.getContentType();
@@ -260,7 +257,7 @@ public class HttpResponseBuilder extends HttpMessageBuilder
     {
         if (!mapPayloadButNoUrlEncodedContentyTypeWarned)
         {
-            logger.warn(String.format("Payload is a Map which will be used to generate an url encoded http body but Contenty-Type specified is %s and not %s", contentType, HttpHeaders.Values.APPLICATION_X_WWW_FORM_URLENCODED));
+            logger.warn(String.format("Payload is a Map which will be used to generate an url encoded http body but Contenty-Type specified is %s and not %s.", contentType, HttpHeaders.Values.APPLICATION_X_WWW_FORM_URLENCODED));
             mapPayloadButNoUrlEncodedContentyTypeWarned = true;
         }
     }
@@ -269,7 +266,7 @@ public class HttpResponseBuilder extends HttpMessageBuilder
     {
         if (!multipartEntityWithNoMultipartContentyTypeWarned)
         {
-            logger.warn(String.format("Sending http response with Content-Type %s but the message has attachment and a multipart entity is generated", contentType));
+            logger.warn(String.format("Sending http response with Content-Type %s but the message has attachment and a multipart entity is generated.", contentType));
             multipartEntityWithNoMultipartContentyTypeWarned = true;
         }
     }
@@ -278,17 +275,13 @@ public class HttpResponseBuilder extends HttpMessageBuilder
     {
         if (logger.isDebugEnabled())
         {
-            logger.debug("Message contains outbound attachments. Ignoring payload and trying to generate multipart response");
+            logger.debug("Message contains attachments. Ignoring payload and trying to generate multipart response.");
         }
-        final HashMap<String, DataHandler> parts = new HashMap<>();
-        for (String attachmentName : attachments.keySet())
-        {
-            parts.put(attachmentName, attachments.get(attachmentName));
-        }
+
         final MultipartHttpEntity multipartEntity;
         try
         {
-            multipartEntity = new MultipartHttpEntity(HttpPartDataSource.createFrom(parts));
+            multipartEntity = new MultipartHttpEntity(HttpPartDataSource.createFrom(getAttachments()));
             return new ByteArrayHttpEntity(HttpMultipartEncoder.createMultipartContent(multipartEntity, contentType));
         }
         catch (Exception e)

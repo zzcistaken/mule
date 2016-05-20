@@ -11,6 +11,9 @@ import org.mule.runtime.extension.api.annotation.Parameter;
 import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.module.http.internal.domain.request.HttpRequestAuthentication;
 
+/**
+ * Configures NTLM authentication for the requests.
+ */
 public class NtlmAuthentication extends UsernamePasswordAuthentication
 {
     @Parameter

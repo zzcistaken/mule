@@ -25,7 +25,7 @@ public class HttpRequesterRequestBuilder extends HttpMessageBuilder
     @Optional
     private Map<String, String> uriParams = new HashMap<>();
 
-    //TODO: Analyse support of several definitions
+    //For now, only handle single params
     public String replaceUriParams(String path)
     {
         for (String uriParamName : uriParams.keySet())

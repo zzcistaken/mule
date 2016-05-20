@@ -21,9 +21,6 @@ import org.mule.runtime.core.RequestContext;
 import org.mule.runtime.core.api.MessagingException;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.MuleEvent;
-import org.mule.runtime.core.api.construct.FlowConstruct;
-import org.mule.runtime.core.api.construct.FlowConstructAware;
-import org.mule.runtime.core.api.context.MuleContextAware;
 import org.mule.runtime.core.api.lifecycle.Initialisable;
 import org.mule.runtime.core.api.lifecycle.InitialisationException;
 import org.mule.runtime.core.api.lifecycle.LifecycleUtils;
@@ -60,12 +57,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.apache.commons.collections.map.MultiValueMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Alias("listener")
-public class HttpListener extends Source<Object, HttpRequestAttributes> implements Initialisable, MuleContextAware, FlowConstructAware
+public class HttpListener extends Source<Object, HttpRequestAttributes> implements Initialisable
 {
     private static final Logger logger = LoggerFactory.getLogger(HttpListener.class);
     private static final String SERVER_PROBLEM = "Server encountered a problem";
@@ -124,7 +123,7 @@ public class HttpListener extends Source<Object, HttpRequestAttributes> implemen
     private String[] parsedAllowedMethods;
     private ListenerPath listenerPath;
     private RequestHandlerManager requestHandlerManager;
-    private FlowConstruct flowConstruct;
+    @Inject
     private MuleContext muleContext;
 
     @Override
@@ -197,7 +196,7 @@ public class HttpListener extends Source<Object, HttpRequestAttributes> implemen
             @Override
             public void handleRequest(HttpRequestContext requestContext, HttpResponseReadyCallback responseCallback)
             {
-                //TODO: analyse adding security here to reject the HttpRequestContext and avoid creating a Message
+                //TODO: MULE-9698 Analyse adding security here to reject the HttpRequestContext and avoid creating a Message
                 try
                 {
                     final String httpVersion = requestContext.getRequest().getProtocol().asString();
@@ -207,7 +206,7 @@ public class HttpListener extends Source<Object, HttpRequestAttributes> implemen
                         @Override
                         public void onCompletion(org.mule.runtime.api.message.MuleEvent result, ExceptionCallback<org.mule.runtime.api.message.MuleEvent, Exception> exceptionCallback)
                         {
-                            //TODO: analyse adding static resource handler here
+                            //TODO: MULE-9699 Analyse adding static resource handler here
                             final org.mule.runtime.module.http.internal.domain.response.HttpResponseBuilder responseBuilder = new org.mule.runtime.module.http.internal.domain.response.HttpResponseBuilder();
                             final HttpResponse httpResponse = buildResponse((MuleEvent) result, responseBuilder, supportStreaming, exceptionCallback);
                             responseCallback.responseReady(httpResponse, getResponseFailureCallback(responseCallback));
@@ -285,7 +284,7 @@ public class HttpListener extends Source<Object, HttpRequestAttributes> implemen
 
     private MuleMessage<Object, HttpRequestAttributes> createMuleMessage(HttpRequestContext requestContext) throws HttpRequestParsingException
     {
-        return HttpRequestToMuleMessage.transform(requestContext, muleContext, flowConstruct, parseRequest, listenerPath);
+        return HttpRequestToMuleMessage.transform(requestContext, muleContext, parseRequest, listenerPath);
         // Update RequestContext ThreadLocal for backwards compatibility
         //OptimizedRequestContext.unsafeSetEvent(muleEvent);
         //return muleEvent;
@@ -416,15 +415,4 @@ public class HttpListener extends Source<Object, HttpRequestAttributes> implemen
         }
     }
 
-    @Override
-    public void setFlowConstruct(FlowConstruct flowConstruct)
-    {
-        this.flowConstruct = flowConstruct;
-    }
-
-    @Override
-    public void setMuleContext(MuleContext context)
-    {
-        muleContext = context;
-    }
 }

@@ -86,6 +86,7 @@
         </dependency>
 
         <!-- Tests -->
+        <!-- MULE-9702 Remove once tests are migrated-->
         <dependency>
             <groupId>org.mule.tests</groupId>
             <artifactId>mule-tests-unit</artifactId>

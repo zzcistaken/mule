@@ -12,7 +12,6 @@ import org.mule.runtime.core.api.lifecycle.InitialisationException;
 import org.mule.runtime.core.util.Preconditions;
 import org.mule.runtime.extension.api.annotation.Configuration;
 import org.mule.runtime.extension.api.annotation.Expression;
-import org.mule.runtime.extension.api.annotation.Operations;
 import org.mule.runtime.extension.api.annotation.Parameter;
 import org.mule.runtime.extension.api.annotation.Sources;
 import org.mule.runtime.extension.api.annotation.connector.Providers;
@@ -23,7 +22,6 @@ import org.mule.runtime.module.http.internal.listener.ListenerPath;
 
 @Configuration(name = "listener-config")
 @Providers(HttpListenerProvider.class)
-@Operations(HttpListenerOps.class)
 @Sources(HttpListener.class)
 public class HttpListenerConfig implements Initialisable
 {
@@ -38,10 +36,9 @@ public class HttpListenerConfig implements Initialisable
     @Expression(NOT_SUPPORTED)
     private String basePath;
 
-    //TODO: fix doc
     /**
      * By default, the request will be parsed (for example, a multi part request will be mapped as a
-     * Mule message with null payload and inbound attachments with each part). If this property is set to false,
+     * Mule message with no payload and attributes with each part). If this property is set to false,
      * no parsing will be done, and the payload will always contain the raw contents of the HTTP request.
      */
     @Parameter
