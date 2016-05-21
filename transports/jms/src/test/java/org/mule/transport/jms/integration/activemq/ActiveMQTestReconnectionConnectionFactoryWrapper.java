@@ -23,7 +23,6 @@ import javax.jms.TopicConnection;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.Closeable;
-import org.apache.activemq.StreamConnection;
 import org.apache.activemq.management.StatsCapable;
 import org.apache.activemq.transport.TransportListener;
 
@@ -78,7 +77,7 @@ public class ActiveMQTestReconnectionConnectionFactoryWrapper extends ActiveMQCo
         return (QueueConnection) Proxy.newProxyInstance(
             ActiveMQTestReconnectionConnectionFactoryWrapper.class.getClassLoader(), new Class[]{Connection.class,
                 TopicConnection.class, QueueConnection.class, StatsCapable.class, Closeable.class,
-                StreamConnection.class, TransportListener.class}, this);
+                TransportListener.class}, this);
     }
 
     @Override
@@ -89,7 +88,7 @@ public class ActiveMQTestReconnectionConnectionFactoryWrapper extends ActiveMQCo
         return (QueueConnection) Proxy.newProxyInstance(
             ActiveMQTestReconnectionConnectionFactoryWrapper.class.getClassLoader(), new Class[]{Connection.class,
                 TopicConnection.class, QueueConnection.class, StatsCapable.class, Closeable.class,
-                StreamConnection.class, TransportListener.class}, this);
+                TransportListener.class}, this);
     }
 
     @Override
@@ -100,7 +99,7 @@ public class ActiveMQTestReconnectionConnectionFactoryWrapper extends ActiveMQCo
         return (TopicConnection) Proxy.newProxyInstance(
             ActiveMQTestReconnectionConnectionFactoryWrapper.class.getClassLoader(), new Class[]{Connection.class,
                 TopicConnection.class, QueueConnection.class, StatsCapable.class, Closeable.class,
-                StreamConnection.class, TransportListener.class}, this);
+                TransportListener.class}, this);
     }
 
     @Override
@@ -111,7 +110,7 @@ public class ActiveMQTestReconnectionConnectionFactoryWrapper extends ActiveMQCo
         return (TopicConnection) Proxy.newProxyInstance(
             ActiveMQTestReconnectionConnectionFactoryWrapper.class.getClassLoader(), new Class[]{Connection.class,
                 TopicConnection.class, QueueConnection.class, StatsCapable.class, Closeable.class,
-                StreamConnection.class, TransportListener.class}, this);
+                TransportListener.class}, this);
     }
 
     // For InvocationHandler interface
