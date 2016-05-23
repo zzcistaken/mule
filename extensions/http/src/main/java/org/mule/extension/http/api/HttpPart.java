@@ -10,8 +10,11 @@ import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.Parameter;
 import org.mule.runtime.extension.api.annotation.param.Optional;
 
-@Alias("attachment")
-public class HttpAttachment
+/**
+ * Representation of an HTTP attachment.
+ */
+@Alias("part")
+public class HttpPart
 {
     @Parameter
     private String id;

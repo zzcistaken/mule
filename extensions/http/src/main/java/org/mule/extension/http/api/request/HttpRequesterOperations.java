@@ -101,6 +101,7 @@ public class HttpRequesterOperations
                 .setResponseValidator(resolvedValidator)
                 .setConfig(config)
                 .build();
+
         return requester.doRequest(muleEvent, client, resolvedBuilder, true);
     }
 

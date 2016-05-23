@@ -11,10 +11,19 @@ import java.util.Map;
 
 import javax.activation.DataHandler;
 
-public class HttpAttributes implements Serializable
+/**
+ * Base representation of HTTP message attributes.
+ */
+public abstract class HttpAttributes implements Serializable
 {
-    protected Map<String, Object> headers;
-    protected Map<String, DataHandler> parts;
+    protected final Map<String, Object> headers;
+    protected final Map<String, DataHandler> parts;
+
+    public HttpAttributes(Map<String, Object> headers, Map<String, DataHandler> parts)
+    {
+        this.headers = headers;
+        this.parts = parts;
+    }
 
     public Map<String, Object> getHeaders()
     {

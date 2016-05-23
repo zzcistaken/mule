@@ -21,10 +21,12 @@ import org.mule.runtime.core.RequestContext;
 import org.mule.runtime.core.api.MessagingException;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.MuleEvent;
+import org.mule.runtime.core.api.MuleRuntimeException;
 import org.mule.runtime.core.api.lifecycle.Initialisable;
 import org.mule.runtime.core.api.lifecycle.InitialisationException;
 import org.mule.runtime.core.api.lifecycle.LifecycleUtils;
 import org.mule.runtime.core.config.ExceptionHelper;
+import org.mule.runtime.core.config.i18n.CoreMessages;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.Expression;
 import org.mule.runtime.extension.api.annotation.Parameter;
@@ -149,28 +151,21 @@ public class HttpListener extends Source<Object, HttpRequestAttributes> implemen
 
         LifecycleUtils.initialiseIfNeeded(errorResponseBuilder);
 
-
     }
 
     @Override
     public void start()
     {
+        //TODO: MULE-9733 Move this back to the initialise method
         path = HttpParser.sanitizePathWithStartSlash(path);
         listenerPath = config.getFullListenerPath(path);
         path = listenerPath.getResolvedPath();
-        //responseBuilder.setResponseStreaming(responseStreamingMode);
-        try
-        {
-            validatePath();
-        }
-        catch (InitialisationException e)
-        {
-            e.printStackTrace();
-        }
+        responseBuilder.setResponseStreaming(responseStreamingMode);
+        errorResponseBuilder.setResponseStreaming(responseStreamingMode);
+        validatePath();
         parseRequest = config.resolveParseRequest(parseRequest);
         try
         {
-            //messageProcessingManager = DefaultHttpListener.this.muleContext.getRegistry().lookupObject(MessageProcessingManager.class);
             requestHandlerManager = server.addRequestHandler(new ListenerRequestMatcher(methodRequestMatcher, path), getRequestHandler());
         }
         catch (Exception e)
@@ -390,7 +385,7 @@ public class HttpListener extends Source<Object, HttpRequestAttributes> implemen
         return normalizedValues;
     }
 
-    private void validatePath() throws InitialisationException
+    private void validatePath()
     {
         final String[] pathParts = this.path.split("/");
         List<String> uriParamNames = new ArrayList<>();
@@ -401,7 +396,8 @@ public class HttpListener extends Source<Object, HttpRequestAttributes> implemen
                 String uriParamName = pathPart.substring(1, pathPart.length() - 1);
                 if (uriParamNames.contains(uriParamName))
                 {
-                    //throw new InitialisationException(CoreMessages.createStaticMessage(String.format("Http Listener with path %s contains duplicated uri param names", this.path)), this);
+                    //TODO: MULE-8946 This should throw a MuleException
+                    throw new MuleRuntimeException(CoreMessages.createStaticMessage(String.format("Http Listener with path %s contains duplicated uri param names", this.path)));
                 }
                 uriParamNames.add(uriParamName);
             }
@@ -409,7 +405,8 @@ public class HttpListener extends Source<Object, HttpRequestAttributes> implemen
             {
                 if (pathPart.contains("*") && pathPart.length() > 1)
                 {
-                    //throw new InitialisationException(CoreMessages.createStaticMessage(String.format("Http Listener with path %s contains an invalid use of a wildcard. Wildcards can only be used at the end of the path (i.e.: /path/*) or between / characters (.i.e.: /path/*/anotherPath))", this.path)), this);
+                    //TODO: MULE-8946 This should throw a MuleException
+                    throw new MuleRuntimeException(CoreMessages.createStaticMessage(String.format("Http Listener with path %s contains an invalid use of a wildcard. Wildcards can only be used at the end of the path (i.e.: /path/*) or between / characters (.i.e.: /path/*/anotherPath))", this.path)));
                 }
             }
         }

@@ -8,6 +8,7 @@ package org.mule.extension.http.api.request.proxy;
 
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.Parameter;
+import org.mule.runtime.extension.api.annotation.param.display.Password;
 
 /**
  * Basic HTTP Proxy configuration based on host and port, and optionally a username and password for proxy authentication.
@@ -23,6 +24,7 @@ public class DefaultProxyConfig implements ProxyConfig
     @Parameter
     private String username;
     @Parameter
+    @Password
     private String password;
 
     public String getHost()

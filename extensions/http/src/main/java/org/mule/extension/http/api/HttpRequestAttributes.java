@@ -6,77 +6,49 @@
  */
 package org.mule.extension.http.api;
 
-import static java.util.Collections.emptyMap;
-import static org.mule.runtime.module.http.internal.HttpParser.decodeQueryString;
-import static org.mule.runtime.module.http.internal.HttpParser.decodeUriParams;
-import static org.mule.runtime.module.http.internal.HttpParser.extractPath;
-import static org.mule.runtime.module.http.internal.HttpParser.extractQueryParams;
-import org.mule.runtime.module.http.internal.ParameterMap;
-import org.mule.runtime.module.http.internal.domain.request.ClientConnection;
-import org.mule.runtime.module.http.internal.domain.request.HttpRequest;
-import org.mule.runtime.module.http.internal.domain.request.HttpRequestContext;
-import org.mule.runtime.module.http.internal.listener.ListenerPath;
+import static java.util.Collections.unmodifiableMap;
 
 import java.security.cert.Certificate;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.activation.DataHandler;
 
+/**
+ * Representation of an HTTP request message attributes.
+ */
 public class HttpRequestAttributes extends HttpAttributes
 {
-    private String listenerPath;
-    private String relativePath;
-    private String version;
-    private String scheme;
-    private String method;
-    private String requestPath;
-    private String requestUri;
-    private String queryString;
-    private Map<String, String> queryParams;
-    private Map<String, String> uriParams;
-    private String remoteHostAddress;
-    private Certificate clientCertificate;
+    private final String listenerPath;
+    private final String relativePath;
+    private final String version;
+    private final String scheme;
+    private final String method;
+    private final String requestPath;
+    private final String requestUri;
+    private final String queryString;
+    private final Map<String, String> queryParams;
+    private final Map<String, String> uriParams;
+    private final String remoteHostAddress;
+    private final Certificate clientCertificate;
 
-    public HttpRequestAttributes(HttpRequestContext requestContext, ListenerPath listenerPath, Map<String, DataHandler> attachments)
+    public HttpRequestAttributes(Map<String, Object> headers, Map<String, DataHandler> parts, String listenerPath,
+                                 String relativePath, String version, String scheme, String method, String requestPath,
+                                 String requestUri, String queryString, Map<String, String> queryParams,
+                                 Map<String, String> uriParams, String remoteHostAddress, Certificate clientCertificate)
     {
-        final String resolvedListenerPath = listenerPath.getResolvedPath();
-        HttpRequest request = requestContext.getRequest();
-        this.version = request.getProtocol().asString();
-        this.scheme = requestContext.getScheme();
-        this.method = request.getMethod();
-        String uri = request.getUri();
-        this.requestUri = uri;
-        final String path = extractPath(uri);
-        this.requestPath = path;
-        String queryString = extractQueryParams(uri);
+        super(unmodifiableMap(headers), unmodifiableMap(parts));
+        this.listenerPath = listenerPath;
+        this.relativePath = relativePath;
+        this.version = version;
+        this.scheme = scheme;
+        this.method = method;
+        this.requestPath = requestPath;
+        this.requestUri = requestUri;
         this.queryString = queryString;
-        ParameterMap queryParams = decodeQueryString(queryString);
-        this.queryParams = queryParams == null ? emptyMap() : queryParams.toImmutableParameterMap();
-        this.uriParams = decodeUriParams(resolvedListenerPath, path);
-        ClientConnection clientConnection = requestContext.getClientConnection();
-        this.remoteHostAddress = clientConnection.getRemoteHostAddress().toString();
-        this.clientCertificate = clientConnection.getClientCertificate();
-        this.relativePath = listenerPath.getRelativePath(path);
-        this.listenerPath = resolvedListenerPath;
-        final Collection<String> headerNames = request.getHeaderNames();
-        Map<String, Object> headers = new HashMap<>();
-        for (String headerName : headerNames)
-        {
-            final Collection<String> values = request.getHeaderValues(headerName);
-            if (values.size() == 1)
-            {
-                headers.put(headerName, values.iterator().next());
-            }
-            else
-            {
-                headers.put(headerName, values);
-            }
-        }
-        this.headers = Collections.unmodifiableMap(headers);
-        this.parts = Collections.unmodifiableMap(attachments);
+        this.queryParams = unmodifiableMap(queryParams);
+        this.uriParams = unmodifiableMap(uriParams);
+        this.remoteHostAddress = remoteHostAddress;
+        this.clientCertificate = clientCertificate;
     }
 
     public String getListenerPath()
@@ -138,4 +110,5 @@ public class HttpRequestAttributes extends HttpAttributes
     {
         return clientCertificate;
     }
+
 }

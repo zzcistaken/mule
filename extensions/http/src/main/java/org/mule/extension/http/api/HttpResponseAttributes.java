@@ -12,17 +12,20 @@ import java.util.Map;
 
 import javax.activation.DataHandler;
 
+/**
+ * Representation of an HTTP response message attributes.
+ */
 public class HttpResponseAttributes extends HttpAttributes
 {
-    private int statusCode;
-    private String reasonPhrase;
+    private final int statusCode;
+    private final String reasonPhrase;
 
-    public HttpResponseAttributes(int statusCode, String reasonPhrase, Map<String, DataHandler> attachments, Map<String, String> headers)
+    public HttpResponseAttributes(int statusCode, String reasonPhrase, Map<String, DataHandler> parts,
+                                  Map<String, String> headers)
     {
+        super(unmodifiableMap(headers), unmodifiableMap(parts));
         this.statusCode = statusCode;
         this.reasonPhrase = reasonPhrase;
-        this.parts = unmodifiableMap(attachments);
-        this.headers = unmodifiableMap(headers);
     }
 
     public int getStatusCode()
@@ -34,4 +37,5 @@ public class HttpResponseAttributes extends HttpAttributes
     {
         return reasonPhrase;
     }
+
 }

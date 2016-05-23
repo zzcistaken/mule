@@ -113,12 +113,12 @@ public class MuleEventToHttpRequest
 
         }
 
-        builder.setEntity(createRequestEntity(builder, event, this.method, requestBuilder.getAttachments()));
+        builder.setEntity(createRequestEntity(builder, event, this.method, requestBuilder.getParts()));
 
         return builder;
     }
 
-    private HttpEntity createRequestEntity(HttpRequestBuilder requestBuilder, MuleEvent muleEvent, String resolvedMethod, Map<String, DataHandler> attachments) throws MessagingException
+    private HttpEntity createRequestEntity(HttpRequestBuilder requestBuilder, MuleEvent muleEvent, String resolvedMethod, Map<String, DataHandler> parts) throws MessagingException
     {
         boolean customSource = false;
         Object oldPayload = null;
@@ -138,7 +138,7 @@ public class MuleEventToHttpRequest
         }
         else
         {
-            entity = createRequestEntityFromPayload(requestBuilder, muleEvent, attachments);
+            entity = createRequestEntityFromPayload(requestBuilder, muleEvent, parts);
         }
 
         if (customSource)
@@ -170,15 +170,15 @@ public class MuleEventToHttpRequest
         return emptyBody;
     }
 
-    private HttpEntity createRequestEntityFromPayload(HttpRequestBuilder requestBuilder, MuleEvent muleEvent, Map<String, DataHandler> attachments) throws MessagingException
+    private HttpEntity createRequestEntityFromPayload(HttpRequestBuilder requestBuilder, MuleEvent muleEvent, Map<String, DataHandler> parts) throws MessagingException
     {
         Object payload = muleEvent.getMessage().getPayload();
 
-        if (!attachments.isEmpty())
+        if (!parts.isEmpty())
         {
             try
             {
-                return new MultipartHttpEntity(HttpPartDataSource.createFrom(attachments));
+                return new MultipartHttpEntity(HttpPartDataSource.createFrom(parts));
             }
             catch (IOException e)
             {

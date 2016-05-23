@@ -9,6 +9,8 @@ package org.mule.extension.http.internal.listener;
 
 import static java.lang.String.format;
 import static org.mule.runtime.core.api.config.ThreadingProfile.DEFAULT_THREADING_PROFILE;
+import org.mule.extension.http.internal.listener.server.HttpServerConfiguration;
+import org.mule.extension.http.internal.listener.server.HttpServerFactory;
 import org.mule.module.socket.api.TcpServerSocketProperties;
 import org.mule.module.socket.internal.DefaultTcpServerSocketProperties;
 import org.mule.runtime.api.connection.ConnectionException;

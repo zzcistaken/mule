@@ -38,7 +38,7 @@ public class HttpRequestToMuleMessage
     public static MuleMessage transform(final HttpRequestContext requestContext, final MuleContext muleContext, Boolean parseRequest, ListenerPath listenerPath) throws HttpRequestParsingException
     {
         final HttpRequest request = requestContext.getRequest();
-        final Map<String, DataHandler> attachments = new HashMap<>();
+        final Map<String, DataHandler> parts = new HashMap<>();
         Object payload = NullPayload.getInstance();
         if (parseRequest)
         {
@@ -47,7 +47,7 @@ public class HttpRequestToMuleMessage
             {
                 if (entity instanceof MultipartHttpEntity)
                 {
-                    attachments.putAll(createDataHandlerFrom(((MultipartHttpEntity) entity).getParts()));
+                    parts.putAll(createDataHandlerFrom(((MultipartHttpEntity) entity).getParts()));
                 }
                 else
                 {
@@ -88,7 +88,9 @@ public class HttpRequestToMuleMessage
             }
         }
 
-        HttpRequestAttributes attributes = new HttpRequestAttributes(requestContext, listenerPath, attachments);
+        HttpRequestAttributes attributes = new HttpRequestAttributesBuilder().setRequestContext(requestContext)
+                .setListenerPath(listenerPath).setParts(parts).build();
+
         return new DefaultMuleMessage(payload, null, attributes, muleContext);
     }
 }

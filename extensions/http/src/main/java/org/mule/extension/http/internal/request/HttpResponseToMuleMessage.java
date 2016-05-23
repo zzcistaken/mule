@@ -13,6 +13,7 @@ import static org.mule.runtime.module.http.api.HttpHeaders.Names.SET_COOKIE2;
 import static org.mule.runtime.module.http.api.HttpHeaders.Values.APPLICATION_X_WWW_FORM_URLENCODED;
 import org.mule.extension.http.api.HttpResponseAttributes;
 import org.mule.extension.http.api.request.HttpRequesterConfig;
+import org.mule.extension.http.internal.request.builder.HttpResponseAttributesBuilder;
 import org.mule.runtime.api.message.NullPayload;
 import org.mule.runtime.api.metadata.DataType;
 import org.mule.runtime.api.message.MuleMessage;
@@ -72,14 +73,14 @@ public class HttpResponseToMuleMessage
         String encoding = getEncoding(responseContentType);
 
         Object payload = responseInputStream;
-        Map<String, DataHandler> attachments = new HashMap<>();
+        Map<String, DataHandler> parts = new HashMap<>();
         if (responseContentType != null && parseResponse)
         {
             if (responseContentType.startsWith(MULTI_PART_PREFIX))
             {
                 try
                 {
-                    attachments = processParts(responseInputStream, responseContentType);
+                    parts = processParts(responseInputStream, responseContentType);
                     payload = NullPayload.getInstance();
                 }
                 catch (IOException e)
@@ -111,7 +112,7 @@ public class HttpResponseToMuleMessage
             processCookies(response, uri);
         }
 
-        HttpResponseAttributes responseAttributes = createAttributes(response, attachments);
+        HttpResponseAttributes responseAttributes = createAttributes(response, parts);
         MuleMessage responseMessage = new DefaultMuleMessage(payload, dataType, responseAttributes);
 
         if (encoding != null)
@@ -124,19 +125,7 @@ public class HttpResponseToMuleMessage
 
     private HttpResponseAttributes createAttributes(HttpResponse response, Map<String, DataHandler> parts)
     {
-        Map<String, String> headers = new HashMap<>();
-
-        for (String headerName : response.getHeaderNames())
-        {
-            headers.put(headerName, response.getHeaderValue(headerName));
-        }
-
-        HttpResponseAttributes attributes = new HttpResponseAttributes(response.getStatusCode(),
-                                                                       response.getReasonPhrase(),
-                                                                       parts,
-                                                                       headers);
-
-        return attributes;
+        return new HttpResponseAttributesBuilder().setResponse(response).setParts(parts).build();
     }
 
     private String getEncoding(String responseContentType)

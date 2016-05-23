@@ -35,28 +35,28 @@ public class HttpMessageBuilder
 
     //@Parameter
     //@Optional
-    protected List<HttpAttachment> attachments = new LinkedList<>();
+    protected List<HttpPart> parts = new LinkedList<>();
 
     public Map<String, String> getHeaders()
     {
         return headers;
     }
 
-    public Map<String, DataHandler> getAttachments()
+    public Map<String, DataHandler> getParts()
     {
         Map<String, DataHandler> resolvedAttachments = new HashMap<>();
 
-        attachments.forEach(attachment -> {
+        parts.forEach(attachment -> {
             String filename = attachment.getFilename();
             String name = filename != null ? filename : attachment.getId();
             DataHandler dataHandler;
             try
             {
-               dataHandler = toDataHandler(name, attachment.getData(), attachment.getContentType());
+                dataHandler = toDataHandler(name, attachment.getData(), attachment.getContentType());
             }
             catch (Exception e)
             {
-                throw new MuleRuntimeException(createStaticMessage("Could not create attachment %s", attachment.getId()), e);
+                throw new MuleRuntimeException(createStaticMessage("Could not create part %s", attachment.getId()), e);
             }
             resolvedAttachments.put(attachment.getId(), dataHandler);
         });

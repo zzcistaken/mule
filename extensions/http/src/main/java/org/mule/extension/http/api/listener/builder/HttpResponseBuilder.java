@@ -6,12 +6,13 @@
  */
 package org.mule.extension.http.api.listener.builder;
 
+import static org.mule.extension.http.api.HttpStreamingType.ALWAYS;
+import static org.mule.extension.http.api.HttpStreamingType.AUTO;
 import static org.mule.runtime.module.http.api.HttpHeaders.Names.CONTENT_LENGTH;
 import static org.mule.runtime.module.http.api.HttpHeaders.Names.TRANSFER_ENCODING;
 import static org.mule.runtime.module.http.api.HttpHeaders.Values.CHUNKED;
-import static org.mule.runtime.module.http.api.requester.HttpStreamingType.ALWAYS;
-import static org.mule.runtime.module.http.api.requester.HttpStreamingType.AUTO;
 import org.mule.extension.http.api.HttpMessageBuilder;
+import org.mule.extension.http.api.HttpStreamingType;
 import org.mule.runtime.api.message.NullPayload;
 import org.mule.runtime.api.metadata.DataType;
 import org.mule.runtime.core.api.MessagingException;
@@ -27,7 +28,6 @@ import org.mule.runtime.core.util.UUID;
 import org.mule.runtime.extension.api.annotation.Parameter;
 import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.module.http.api.HttpHeaders;
-import org.mule.runtime.module.http.api.requester.HttpStreamingType;
 import org.mule.runtime.module.http.internal.HttpParser;
 import org.mule.runtime.module.http.internal.ParameterMap;
 import org.mule.runtime.module.http.internal.domain.ByteArrayHttpEntity;
@@ -61,10 +61,8 @@ public class HttpResponseBuilder extends HttpMessageBuilder
     @Parameter
     @Optional
     private String reasonPhrase;
-    @Parameter
-    @Optional(defaultValue = "AUTO")
-    private HttpStreamingType responseStreaming;
 
+    private HttpStreamingType responseStreaming = AUTO;
     private boolean multipartEntityWithNoMultipartContentyTypeWarned;
     private boolean mapPayloadButNoUrlEncodedContentyTypeWarned;
 
@@ -102,7 +100,7 @@ public class HttpResponseBuilder extends HttpMessageBuilder
 
         HttpEntity httpEntity;
 
-        if (!attachments.isEmpty())
+        if (!parts.isEmpty())
         {
             if (configuredContentType == null)
             {
@@ -281,7 +279,7 @@ public class HttpResponseBuilder extends HttpMessageBuilder
         final MultipartHttpEntity multipartEntity;
         try
         {
-            multipartEntity = new MultipartHttpEntity(HttpPartDataSource.createFrom(getAttachments()));
+            multipartEntity = new MultipartHttpEntity(HttpPartDataSource.createFrom(getParts()));
             return new ByteArrayHttpEntity(HttpMultipartEncoder.createMultipartContent(multipartEntity, contentType));
         }
         catch (Exception e)
@@ -290,15 +288,14 @@ public class HttpResponseBuilder extends HttpMessageBuilder
         }
     }
 
+    //TODO:  No point for having this.
     public static HttpResponseBuilder emptyInstance() throws InitialisationException
     {
-        final HttpResponseBuilder httpResponseBuilder = new HttpResponseBuilder();
-        return httpResponseBuilder;
+        return new HttpResponseBuilder();
     }
 
-    public HttpStreamingType getResponseStreaming()
+    public void setResponseStreaming(HttpStreamingType responseStreaming)
     {
-        return responseStreaming;
+        this.responseStreaming = responseStreaming;
     }
-
 }

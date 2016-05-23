@@ -150,10 +150,9 @@ public class HttpRequesterConfig implements Initialisable, Stoppable
     @Inject
     @DefaultTlsContextFactoryBuilder
     private TlsContextFactoryBuilder defaultTlsContextFactoryBuilder;
-
-    private CookieManager cookieManager;
     @Inject
     private MuleContext muleContext;
+    private CookieManager cookieManager;
     private boolean stopped = false;
 
     public String getName()
