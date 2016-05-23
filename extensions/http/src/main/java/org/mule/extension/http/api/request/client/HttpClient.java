@@ -22,7 +22,12 @@ public interface HttpClient extends Startable, Stoppable
 {
 
     /**
-     * Sends a HttpRequest blocking the current thread until a response is available for the request times out.
+     * Returns the default {@link UriParameters} for the {@link HttpRequest}
+     */
+    UriParameters getDefaultUriParameters();
+
+    /**
+     * Sends a {@link HttpRequest} blocking the current thread until a response is available for the request times out.
      */
     HttpResponse send(HttpRequest request, int responseTimeout, boolean followRedirects, HttpRequestAuthentication authentication) throws IOException, TimeoutException;
 

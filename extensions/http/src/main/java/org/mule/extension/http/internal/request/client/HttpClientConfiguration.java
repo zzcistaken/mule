@@ -6,6 +6,7 @@
  */
 package org.mule.extension.http.internal.request.client;
 
+import org.mule.extension.http.api.request.client.UriParameters;
 import org.mule.extension.http.api.request.proxy.ProxyConfig;
 import org.mule.module.socket.api.TcpClientSocketProperties;
 import org.mule.runtime.api.tls.TlsContextFactory;
@@ -13,6 +14,7 @@ import org.mule.runtime.api.tls.TlsContextFactory;
 
 public class HttpClientConfiguration
 {
+    private final UriParameters uriParameters;
     private final TlsContextFactory tlsContextFactory;
     private final ProxyConfig proxyConfig;
     private final TcpClientSocketProperties clientSocketProperties;
@@ -22,9 +24,10 @@ public class HttpClientConfiguration
     private final String threadNamePrefix;
     private final String ownerName;
 
-    private HttpClientConfiguration(TlsContextFactory tlsContextFactory, ProxyConfig proxyConfig, TcpClientSocketProperties clientSocketProperties,
+    private HttpClientConfiguration(UriParameters uriParameters, TlsContextFactory tlsContextFactory, ProxyConfig proxyConfig, TcpClientSocketProperties clientSocketProperties,
                                     int maxConnections, boolean usePersistentConnections, int connectionIdleTimeout, String threadNamePrefix, String ownerName)
     {
+        this.uriParameters = uriParameters;
         this.tlsContextFactory = tlsContextFactory;
         this.proxyConfig = proxyConfig;
         this.clientSocketProperties = clientSocketProperties;
@@ -33,6 +36,11 @@ public class HttpClientConfiguration
         this.connectionIdleTimeout = connectionIdleTimeout;
         this.threadNamePrefix = threadNamePrefix;
         this.ownerName = ownerName;
+    }
+
+    public UriParameters getUriParameters()
+    {
+        return uriParameters;
     }
 
     public TlsContextFactory getTlsContextFactory()
@@ -77,6 +85,7 @@ public class HttpClientConfiguration
 
     public static class Builder
     {
+        private UriParameters uriParameters;
         private TlsContextFactory tlsContextFactory;
         private ProxyConfig proxyConfig;
         private TcpClientSocketProperties clientSocketProperties;
@@ -85,6 +94,12 @@ public class HttpClientConfiguration
         private int connectionIdleTimeout;
         private String threadNamePrefix;
         private String ownerName;
+
+        public Builder setUriParameters(UriParameters uriParameters)
+        {
+            this.uriParameters = uriParameters;
+            return this;
+        }
 
         public Builder setTlsContextFactory(TlsContextFactory tlsContextFactory)
         {
@@ -136,7 +151,7 @@ public class HttpClientConfiguration
 
         public HttpClientConfiguration build()
         {
-            return new HttpClientConfiguration(tlsContextFactory, proxyConfig, clientSocketProperties, maxConnections,
+            return new HttpClientConfiguration(uriParameters, tlsContextFactory, proxyConfig, clientSocketProperties, maxConnections,
                                                       usePersistentConnections, connectionIdleTimeout, threadNamePrefix, ownerName);
         }
     }

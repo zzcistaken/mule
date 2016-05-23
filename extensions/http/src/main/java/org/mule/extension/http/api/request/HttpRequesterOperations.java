@@ -12,10 +12,11 @@ import org.mule.extension.http.api.HttpResponseAttributes;
 import org.mule.extension.http.api.HttpSendBodyMode;
 import org.mule.extension.http.api.HttpStreamingType;
 import org.mule.extension.http.api.request.builder.HttpRequesterRequestBuilder;
+import org.mule.extension.http.api.request.client.HttpClient;
+import org.mule.extension.http.api.request.client.UriParameters;
 import org.mule.extension.http.api.request.validator.ResponseValidator;
 import org.mule.extension.http.api.request.validator.SuccessStatusCodeValidator;
 import org.mule.extension.http.internal.request.HttpRequester;
-import org.mule.extension.http.internal.request.grizzly.GrizzlyHttpClient;
 import org.mule.runtime.api.message.MuleMessage;
 import org.mule.runtime.core.api.MuleEvent;
 import org.mule.runtime.core.api.MuleException;
@@ -67,19 +68,21 @@ public class HttpRequesterOperations
                                                           @Optional ResponseValidator responseValidator,
                                                           @Optional HttpRequesterRequestBuilder requestBuilder,
                                                           @MetadataKeyId String key,
-                                                          @Connection GrizzlyHttpClient client,
+                                                          @Connection HttpClient client,
                                                           @UseConfig HttpRequesterConfig config,
                                                           MuleEvent muleEvent) throws MuleException
     {
         HttpRequesterRequestBuilder resolvedBuilder = requestBuilder != null ? requestBuilder
                                                                              : new HttpRequesterRequestBuilder();
+        UriParameters uriParameters = client.getDefaultUriParameters();
 
-        String resolvedHost = resolveIfNecessary(host, config.getHost(), muleEvent);
-        Integer resolvedPort = resolveIfNecessary(port, config.getPort(), muleEvent);
+
+        String resolvedHost = host != null ? host : uriParameters.getHost();
+        Integer resolvedPort = port != null ? port : uriParameters.getPort();
         String resolvedBasePath = config.getBasePath().apply(muleEvent);
         String resolvedPath = resolvedBuilder.replaceUriParams(buildPath(resolvedBasePath, path));
 
-        String resolvedUri = resolveUri(config.getScheme(), resolvedHost, resolvedPort, resolvedPath);
+        String resolvedUri = resolveUri(uriParameters.getProtocol(), resolvedHost, resolvedPort, resolvedPath);
         Boolean resolvedFollowRedirects = resolveIfNecessary(followRedirects, config.getFollowRedirects(), muleEvent);
         HttpStreamingType resolvedStreamingMode = resolveIfNecessary(requestStreamingMode, config.getRequestStreamingMode(), muleEvent);
         HttpSendBodyMode resolvedSendBody = resolveIfNecessary(sendBodyMode, config.getSendBodyMode(), muleEvent);

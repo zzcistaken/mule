@@ -8,6 +8,7 @@ package org.mule.extension.http.internal.request;
 
 import static org.mule.runtime.core.context.notification.ConnectorMessageNotification.MESSAGE_REQUEST_BEGIN;
 import static org.mule.runtime.core.context.notification.ConnectorMessageNotification.MESSAGE_REQUEST_END;
+import static org.mule.runtime.module.http.api.HttpConstants.Protocols.HTTPS;
 import org.mule.extension.http.api.HttpResponseAttributes;
 import org.mule.extension.http.api.HttpSendBodyMode;
 import org.mule.extension.http.api.HttpStreamingType;
@@ -28,6 +29,7 @@ import org.mule.runtime.core.config.i18n.CoreMessages;
 import org.mule.runtime.core.context.notification.ConnectorMessageNotification;
 import org.mule.runtime.core.context.notification.NotificationHelper;
 import org.mule.runtime.core.util.StringUtils;
+import org.mule.runtime.module.http.api.HttpConstants.Protocols;
 import org.mule.runtime.module.http.internal.domain.request.HttpRequest;
 import org.mule.runtime.module.http.internal.domain.request.HttpRequestAuthentication;
 import org.mule.runtime.module.http.internal.domain.response.HttpResponse;
@@ -91,7 +93,7 @@ public class HttpRequester
         }
         catch (Exception e)
         {
-            checkIfRemotelyClosed(e, config);
+            checkIfRemotelyClosed(e, client.getDefaultUriParameters().getProtocol());
             throw new MessagingException(CoreMessages.createStaticMessage("Error sending HTTP request"), muleEvent, e);
         }
 
@@ -156,9 +158,9 @@ public class HttpRequester
         return builder.build();
     }
 
-    private void checkIfRemotelyClosed(Exception exception, HttpRequesterConfig config)
+    private void checkIfRemotelyClosed(Exception exception, Protocols protocol)
     {
-        if (config.getTlsContextFactory() != null && StringUtils.containsIgnoreCase(exception.getMessage(), REMOTELY_CLOSED))
+        if (protocol.getScheme().equals(HTTPS.getScheme()) && StringUtils.containsIgnoreCase(exception.getMessage(), REMOTELY_CLOSED))
         {
             logger.error("Remote host closed connection. Possible SSL/TLS handshake issue. Check protocols, cipher suites and certificate set up. Use -Djavax.net.debug=handshake for further debugging.");
         }

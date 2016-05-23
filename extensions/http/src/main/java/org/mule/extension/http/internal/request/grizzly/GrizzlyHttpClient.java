@@ -10,6 +10,7 @@ import static com.ning.http.client.Realm.AuthScheme.NTLM;
 import static org.mule.runtime.module.http.api.HttpHeaders.Names.CONNECTION;
 import static org.mule.runtime.module.http.api.HttpHeaders.Values.CLOSE;
 import org.mule.extension.http.api.request.client.HttpClient;
+import org.mule.extension.http.api.request.client.UriParameters;
 import org.mule.extension.http.api.request.proxy.ProxyConfig;
 import org.mule.extension.http.internal.request.DefaultHttpRequest;
 import org.mule.extension.http.internal.request.client.HttpClientConfiguration;
@@ -67,6 +68,8 @@ public class GrizzlyHttpClient implements HttpClient
 
     private static final Logger logger = LoggerFactory.getLogger(GrizzlyHttpClient.class);
 
+    private final UriParameters uriParameters;
+
     private final TlsContextFactory tlsContextFactory;
     private final ProxyConfig proxyConfig;
     private final TcpClientSocketProperties clientSocketProperties;
@@ -82,6 +85,7 @@ public class GrizzlyHttpClient implements HttpClient
 
     public GrizzlyHttpClient(HttpClientConfiguration config)
     {
+        this.uriParameters = config.getUriParameters();
         this.tlsContextFactory = config.getTlsContextFactory();
         this.proxyConfig = config.getProxyConfig();
         this.clientSocketProperties = config.getClientSocketProperties();
@@ -226,6 +230,12 @@ public class GrizzlyHttpClient implements HttpClient
         builder.setPooledConnectionIdleTimeout(connectionIdleTimeout);
 
         builder.setIOThreadMultiplier(1);
+    }
+
+    @Override
+    public UriParameters getDefaultUriParameters()
+    {
+        return uriParameters;
     }
 
     @Override
