@@ -334,7 +334,7 @@ public class MuleNamespaceHandler extends AbstractMuleNamespaceHandler
         registerMuleBeanDefinitionParser("enrich", new ChildDefinitionParser("enrichExpressionPair",
             EnrichExpressionPair.class));
 
-        registerBeanDefinitionParser("async", new AsyncMessageProcessorsDefinitionParser());
+        registerBeanDefinitionParser("async", new ScopeMessageProcessorDefinitionParser(new AsyncObjectBuilder()));
         registerBeanDefinitionParser("transactional", new ChildDefinitionParser("messageProcessor",
             TransactionalMessageProcessorsFactoryBean.class));
         registerMuleBeanDefinitionParser("logger", new ChildDefinitionParser("messageProcessor",
@@ -371,7 +371,7 @@ public class MuleNamespaceHandler extends AbstractMuleNamespaceHandler
         registerMuleBeanDefinitionParser("exclude-object-methods", new IgnoreObjectMethodsDefinitionParser());
 
         // Flow Constructs
-        registerBeanDefinitionParser("flow", new FlowDefinitionParser());
+        registerBeanDefinitionParser("flow", new NewFlowDefinitionParser());
         registerBeanDefinitionParser("flow-ref", new FlowRefDefinitionParser());
         
         // Processing Strategies
@@ -447,7 +447,7 @@ public class MuleNamespaceHandler extends AbstractMuleNamespaceHandler
         registerBeanDefinitionParser("otherwise", new ChildDefinitionParser("defaultRoute", MessageProcessorFilterPairFactoryBean.class));
 
         registerBeanDefinitionParser("all", new ChildDefinitionParser("messageProcessor", MulticastingRouter.class));
-        registerBeanDefinitionParser("scatter-gather", new ChildDefinitionParser("messageProcessor", ScatterGatherRouterFactoryBean.class));
+        registerBeanDefinitionParser("scatter-gather", new ScopeMessageProcessorDefinitionParser(new ScatterGatherObjectBuilder()));
         registerBeanDefinitionParser("custom-aggregation-strategy", new AggregationStrategyDefinitionParser());
         registerBeanDefinitionParser("recipient-list", new ChildDefinitionParser("messageProcessor", ExpressionRecipientList.class));
 

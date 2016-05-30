@@ -7,31 +7,28 @@
 
 package org.mule.config.spring.factories;
 
-import org.mule.AbstractAnnotatedObject;
 import org.mule.api.config.ThreadingProfile;
 import org.mule.api.processor.MessageProcessor;
+import org.mule.config.spring.RouterFactoryBean;
 import org.mule.routing.AggregationStrategy;
 import org.mule.routing.ScatterGatherRouter;
 
 import java.util.List;
 
-import org.springframework.beans.factory.FactoryBean;
-
-public class ScatterGatherRouterFactoryBean extends AbstractAnnotatedObject implements FactoryBean<ScatterGatherRouter>
+public class ScatterGather2RouterFactoryBean extends RouterFactoryBean
 {
 
     private long timeout = 0;
-    private List<MessageProcessor> messageProcessors;
     private AggregationStrategy aggregationStrategy;
     private ThreadingProfile threadingProfile;
 
     @Override
-    public ScatterGatherRouter getObject() throws Exception
+    protected MessageProcessor doGetObject(List<MessageProcessor> messageProcessors) throws Exception
     {
         ScatterGatherRouter sg = new ScatterGatherRouter();
         sg.setTimeout(timeout);
 
-        for (MessageProcessor mp : this.messageProcessors)
+        for (MessageProcessor mp : messageProcessors)
         {
             sg.addRoute(mp);
         }
@@ -45,6 +42,7 @@ public class ScatterGatherRouterFactoryBean extends AbstractAnnotatedObject impl
         {
             sg.setThreadingProfile(this.threadingProfile);
         }
+
         return sg;
     }
 
@@ -58,11 +56,6 @@ public class ScatterGatherRouterFactoryBean extends AbstractAnnotatedObject impl
     public boolean isSingleton()
     {
         return false;
-    }
-
-    public void setMessageProcessors(List<MessageProcessor> messageProcessors)
-    {
-        this.messageProcessors = messageProcessors;
     }
 
     public void setTimeout(long timeout)

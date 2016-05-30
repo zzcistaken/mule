@@ -10,11 +10,22 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
+import org.mule.DefaultMuleEvent;
+import org.mule.DefaultMuleMessage;
+import org.mule.MessageExchangePattern;
 import org.mule.api.MuleContext;
 import org.mule.api.config.ConfigurationBuilder;
+import org.mule.api.processor.DynamicMessageProcessor;
+import org.mule.api.processor.LoggerMessageProcessor;
+import org.mule.api.processor.MessageProcessor;
+import org.mule.construct.Flow;
 import org.mule.context.DefaultMuleContextFactory;
+import org.mule.session.DefaultMuleSession;
 import org.mule.tck.junit4.AbstractMuleTestCase;
 import org.mule.tck.testmodels.fruit.Orange;
+
+import java.util.List;
 
 import org.junit.After;
 import org.junit.Test;
@@ -161,5 +172,19 @@ public class ApplicationContextsTestCase extends AbstractMuleTestCase
         assertNotNull(orange);
         assertTrue(orange instanceof Orange);
         assertEquals("Pirulo", ((Orange) orange).getBrand());
+
+        Flow flow = context.getRegistry().get("service");
+        DefaultMuleEvent testEvent = new DefaultMuleEvent(new DefaultMuleMessage("hola", context), MessageExchangePattern.REQUEST_RESPONSE, flow, new DefaultMuleSession());
+        flow.process(testEvent);
+        List<MessageProcessor> messageProcessors = flow.getMessageProcessors();
+
+        LoggerMessageProcessor processor = new LoggerMessageProcessor();
+        processor.setMuleContext(context);
+        processor.setLevel("ERROR");
+        processor.setMessage("I'm a dynamic message processor");
+        processor.initialise();
+        ((DynamicMessageProcessor)messageProcessors.get(2)).setDelegate(processor);
+
+        flow.process(testEvent);
     }
 }

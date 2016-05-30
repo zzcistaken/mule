@@ -68,7 +68,11 @@ public class HttpListenerConnectionManager implements Initialisable, Disposable,
     @Override
     public synchronized void dispose()
     {
-        httpServerManager.dispose();
+        //TODO this change does not belong here
+        if (httpServerManager != null)
+        {
+            httpServerManager.dispose();
+        }
     }
 
     @Override

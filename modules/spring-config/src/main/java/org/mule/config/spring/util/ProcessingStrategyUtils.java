@@ -23,7 +23,7 @@ import org.w3c.dom.Element;
 public class ProcessingStrategyUtils
 {
 
-    private static String PROCESSING_STRATEGY_ATTRIBUTE_NAME = "processingStrategy";
+    public static String PROCESSING_STRATEGY_ATTRIBUTE_NAME = "processingStrategy";
 
     public static String DEFAULT_PROCESSING_STRATEGY = "default";
     public static String SYNC_PROCESSING_STRATEGY = "synchronous";

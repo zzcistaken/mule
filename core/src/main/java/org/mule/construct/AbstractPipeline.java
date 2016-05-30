@@ -6,13 +6,7 @@
  */
 package org.mule.construct;
 
-import static org.mule.util.NotificationUtils.buildPaths;
-
-import org.mule.api.GlobalNameableObject;
-import org.mule.api.MessagingException;
-import org.mule.api.MuleContext;
-import org.mule.api.MuleEvent;
-import org.mule.api.MuleException;
+import org.mule.api.*;
 import org.mule.api.config.MuleConfiguration;
 import org.mule.api.config.MuleProperties;
 import org.mule.api.construct.FlowConstructInvalidException;
@@ -20,15 +14,7 @@ import org.mule.api.construct.Pipeline;
 import org.mule.api.endpoint.InboundEndpoint;
 import org.mule.api.exception.MessagingExceptionHandlerAcceptor;
 import org.mule.api.lifecycle.LifecycleException;
-import org.mule.api.processor.DefaultMessageProcessorPathElement;
-import org.mule.api.processor.InterceptingMessageProcessor;
-import org.mule.api.processor.MessageProcessor;
-import org.mule.api.processor.MessageProcessorBuilder;
-import org.mule.api.processor.MessageProcessorChainBuilder;
-import org.mule.api.processor.MessageProcessorContainer;
-import org.mule.api.processor.MessageProcessorPathElement;
-import org.mule.api.processor.ProcessingStrategy;
-import org.mule.api.processor.StageNameSource;
+import org.mule.api.processor.*;
 import org.mule.api.source.ClusterizableMessageSource;
 import org.mule.api.source.CompositeMessageSource;
 import org.mule.api.source.MessageSource;
@@ -52,6 +38,8 @@ import org.mule.util.NotificationUtils.PathResolver;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import static org.mule.util.NotificationUtils.buildPaths;
 
 /**
  * Abstract implementation of {@link AbstractFlowConstruct} that allows a list of {@link MessageProcessor}s

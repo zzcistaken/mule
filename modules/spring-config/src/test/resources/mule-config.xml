@@ -9,11 +9,20 @@
 
     <flow name="service">
         <inbound-endpoint address="test://foo"/>
+        <set-payload value="asdf"/>
         <component>
             <spring-object bean="orange">
                 <property key="brand" value="Tutti Frutti"/>
             </spring-object>
         </component>
+        <async>
+            <set-payload value="asdf"/>
+            <set-property propertyName="asdf" value="asdf"/>
+        </async>
+        <scatter-gather timeout="12">
+            <set-payload value="asdf"/>
+            <set-property propertyName="asdf" value="asdf"/>
+        </scatter-gather>
     </flow>
 
 </mule>

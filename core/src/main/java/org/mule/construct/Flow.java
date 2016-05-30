@@ -18,16 +18,8 @@ import org.mule.api.MuleMessage;
 import org.mule.api.context.WorkManager;
 import org.mule.api.execution.ExecutionCallback;
 import org.mule.api.execution.ExecutionTemplate;
-import org.mule.api.processor.DynamicPipeline;
-import org.mule.api.processor.DynamicPipelineBuilder;
-import org.mule.api.processor.DynamicPipelineException;
-import org.mule.api.processor.MessageProcessor;
-import org.mule.api.processor.MessageProcessorChainBuilder;
-import org.mule.api.processor.NamedStageNameSource;
-import org.mule.api.processor.ProcessingStrategy;
-import org.mule.api.processor.SequentialStageNameSource;
-import org.mule.api.processor.StageNameSource;
-import org.mule.api.processor.StageNameSourceProvider;
+import org.mule.api.processor.*;
+import org.mule.api.processor.FlowDescriptor;
 import org.mule.api.transport.ExceptionHandlingReplyToHandlerDecorator;
 import org.mule.api.transport.ReplyToHandler;
 import org.mule.config.i18n.CoreMessages;
@@ -40,6 +32,8 @@ import org.mule.processor.strategy.AsynchronousProcessingStrategy;
 import org.mule.processor.strategy.NonBlockingProcessingStrategy;
 import org.mule.processor.strategy.QueuedAsynchronousProcessingStrategy;
 import org.mule.routing.requestreply.AsyncReplyToPropertyRequestReplyReplier;
+
+import java.util.ArrayList;
 
 /**
  * This implementation of {@link AbstractPipeline} adds the following functionality:
@@ -59,6 +53,7 @@ public class Flow extends AbstractPipeline implements MessageProcessor, StageNam
     private final StageNameSource sequentialStageNameSource;
     private DynamicPipelineMessageProcessor dynamicPipelineMessageProcessor;
     private WorkManager workManager;
+    private FlowDescriptor descriptor;
 
     public Flow(String name, MuleContext muleContext)
     {
@@ -270,5 +265,10 @@ public class Flow extends AbstractPipeline implements MessageProcessor, StageNam
     public WorkManager getWorkManager()
     {
         return workManager;
+    }
+
+    public void setDescriptor(FlowDescriptor descriptor)
+    {
+        this.descriptor = descriptor;
     }
 }

@@ -12,12 +12,17 @@ import org.mule.OptimizedRequestContext;
 import org.mule.api.DefaultMuleException;
 import org.mule.api.ExceptionPayload;
 import org.mule.api.MessagingException;
+import org.mule.api.MuleContext;
 import org.mule.api.MuleEvent;
 import org.mule.api.MuleException;
 import org.mule.api.MuleMessage;
 import org.mule.api.config.ThreadingProfile;
+import org.mule.api.context.MuleContextAware;
 import org.mule.api.context.WorkManager;
+import org.mule.api.lifecycle.Disposable;
+import org.mule.api.lifecycle.Initialisable;
 import org.mule.api.lifecycle.InitialisationException;
+import org.mule.api.lifecycle.Startable;
 import org.mule.api.processor.MessageProcessor;
 import org.mule.api.processor.MessageProcessorChain;
 import org.mule.api.processor.MessageRouter;
@@ -29,7 +34,6 @@ import org.mule.api.transport.DispatchException;
 import org.mule.config.i18n.CoreMessages;
 import org.mule.config.i18n.MessageFactory;
 import org.mule.message.DefaultExceptionPayload;
-import org.mule.processor.AbstractMessageProcessorOwner;
 import org.mule.processor.chain.DefaultMessageProcessorChainBuilder;
 import org.mule.routing.outbound.MulticastingRouter;
 import org.mule.util.Preconditions;
@@ -82,7 +86,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @since 3.5.0
  */
-public class ScatterGatherRouter extends AbstractMessageProcessorOwner implements MessageRouter
+public class ScatterGatherRouter implements MessageRouter, MuleContextAware, Initialisable, Disposable, Startable
 {
 
     private static final Logger logger = LoggerFactory.getLogger(ScatterGatherRouter.class);
@@ -122,6 +126,7 @@ public class ScatterGatherRouter extends AbstractMessageProcessorOwner implement
      * {@link WorkManager} used to execute the routes in parallel
      */
     private WorkManager workManager;
+    private MuleContext muleContext;
 
     @Override
     public MuleEvent process(MuleEvent event) throws MuleException
@@ -291,7 +296,6 @@ public class ScatterGatherRouter extends AbstractMessageProcessorOwner implement
             throw new InitialisationException(e, this);
         }
 
-        super.initialise();
         initialised = true;
     }
 
@@ -299,7 +303,6 @@ public class ScatterGatherRouter extends AbstractMessageProcessorOwner implement
     public void start() throws MuleException
     {
         workManager.start();
-        super.start();
     }
 
     @Override
@@ -313,10 +316,6 @@ public class ScatterGatherRouter extends AbstractMessageProcessorOwner implement
         {
             logger.error(
                 "Exception found while tring to dispose work manager. Will continue with the disposal", e);
-        }
-        finally
-        {
-            super.dispose();
         }
     }
 
@@ -369,12 +368,6 @@ public class ScatterGatherRouter extends AbstractMessageProcessorOwner implement
             "<scatter-gather> router is not dynamic. Cannot modify routes after initialisation");
     }
 
-    @Override
-    protected List<MessageProcessor> getOwnedMessageProcessors()
-    {
-        return routeChains;
-    }
-
     public void setAggregationStrategy(AggregationStrategy aggregationStrategy)
     {
         this.aggregationStrategy = aggregationStrategy;
@@ -393,5 +386,11 @@ public class ScatterGatherRouter extends AbstractMessageProcessorOwner implement
     public void setRoutes(List<MessageProcessor> routes)
     {
         this.routes = routes;
+    }
+
+    @Override
+    public void setMuleContext(MuleContext context)
+    {
+        this.muleContext = context;
     }
 }

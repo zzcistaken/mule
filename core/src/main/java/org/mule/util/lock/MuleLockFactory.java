@@ -29,7 +29,11 @@ public class MuleLockFactory implements LockFactory, MuleContextAware, Initialis
     @Override
     public void dispose()
     {
-        lockGroup.dispose();
+        //TODO this change does not belong here
+        if (lockGroup != null)
+        {
+            lockGroup.dispose();
+        }
     }
 
     @Override

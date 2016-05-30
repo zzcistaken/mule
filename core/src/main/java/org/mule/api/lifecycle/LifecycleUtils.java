@@ -8,6 +8,8 @@ package org.mule.api.lifecycle;
 
 import org.mule.api.MuleContext;
 import org.mule.api.MuleException;
+import org.mule.api.construct.FlowConstruct;
+import org.mule.api.construct.FlowConstructAware;
 import org.mule.api.context.MuleContextAware;
 
 import java.util.Arrays;
@@ -46,6 +48,35 @@ public class LifecycleUtils
     public static void initialiseIfNeeded(Object object) throws InitialisationException
     {
         initialiseIfNeeded(object, null);
+    }
+
+    //TODO - add javadoc
+    public static void initialiseAllIfNeeded(Collection<? extends Object> objects, MuleContext muleContext, FlowConstruct flowConstruct) throws InitialisationException
+    {
+        for (Object object : objects)
+        {
+            initialiseIfNeeded(object, muleContext, flowConstruct);
+        }
+    }
+
+    /**
+     * The same as {@link #initialiseIfNeeded(Object)}, only that before checking
+     * for {@code object} being {@link Initialisable}, it also checks if it implements
+     * {@link MuleContextAware}, in which case it will invoke {@link MuleContextAware#setMuleContext(MuleContext)}
+     * with the given {@code muleContext}
+     *
+     * @param object      the object you're trying to initialise
+     * @param muleContext a {@link MuleContext}
+     * @throws InitialisationException
+     */
+    public static void initialiseIfNeeded(Object object, MuleContext muleContext, FlowConstruct flowConstruct) throws InitialisationException
+    {
+        object = unwrap(object);
+        if (flowConstruct != null && object instanceof FlowConstructAware)
+        {
+            ((FlowConstructAware) object).setFlowConstruct(flowConstruct);
+        }
+        initialiseIfNeeded(object, muleContext);
     }
 
     /**
