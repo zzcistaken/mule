@@ -239,17 +239,32 @@ public final class StringMessageUtils
         StringBuilder buf = new StringBuilder();
         buf.append(SystemUtils.LINE_SEPARATOR).append("Message properties:").append(SystemUtils.LINE_SEPARATOR);
 
-        for (int i = 0; i < PropertyScope.ALL_SCOPES.length; i++)
-        {
-            PropertyScope scope = PropertyScope.ALL_SCOPES[i];
             try
             {
-                Set<Object> names = new TreeSet<Object>(m.getPropertyNames(scope));
-                buf.append("  ").append(scope.getScopeName().toUpperCase()).append(" scoped properties:").append(SystemUtils.LINE_SEPARATOR);
+                Set<Object> inboundNames = new TreeSet(m.getInboundPropertyNames());
+                buf.append("  ").append(PropertyScope.INBOUND.toString().toUpperCase()).append(" scoped properties:").append(SystemUtils.LINE_SEPARATOR);
 
-                for (Object name : names)
+                for (Object name : inboundNames)
                 {
-                    Object value = m.getProperty(name.toString(), scope);
+                    Object value = m.getInboundProperty(name.toString());
+                    // avoid calling toString recursively on MuleMessages
+                    if (value instanceof MuleMessage)
+                    {
+                        value = "<<<MuleMessage>>>";
+                    }
+                    if (name.equals("password") || name.toString().contains("secret") || name.equals("pass"))
+                    {
+                        value = "****";
+                    }
+                    buf.append("    ").append(name).append("=").append(value).append(SystemUtils.LINE_SEPARATOR);
+                }
+
+                Set<Object> outboundNames = new TreeSet(m.getOutboundPropertyNames());
+                buf.append("  ").append(PropertyScope.OUTBOUND.toString().toUpperCase()).append(" scoped properties:").append(SystemUtils.LINE_SEPARATOR);
+
+                for (Object name : outboundNames)
+                {
+                    Object value = m.getOutboundProperty(name.toString());
                     // avoid calling toString recursively on MuleMessages
                     if (value instanceof MuleMessage)
                     {
@@ -266,7 +281,6 @@ public final class StringMessageUtils
             {
                 // ignored
             }
-        }
         return buf.toString();
     }
 }

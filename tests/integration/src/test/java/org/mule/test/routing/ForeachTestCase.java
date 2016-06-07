@@ -22,13 +22,14 @@ import org.mule.runtime.core.api.MessagingException;
 import org.mule.runtime.core.api.MuleEvent;
 import org.mule.runtime.core.api.MuleMessage;
 import org.mule.runtime.core.api.client.MuleClient;
-import org.mule.runtime.core.PropertyScope;
 import org.mule.functional.functional.FlowAssert;
 import org.mule.functional.junit4.FunctionalTestCase;
 import org.mule.tck.junit4.rule.SystemProperty;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -110,8 +111,8 @@ public class ForeachTestCase extends FunctionalTestCase
         final Collection<String> names = new ArrayList<String>();
         names.add("residente");
         names.add("visitante");
-        Map<String, Object> props = new HashMap<String, Object>();
-        props.put("names", names);
+        Map<String, Serializable> props = new HashMap<>();
+        props.put("names", (Serializable) names);
         MuleMessage message = new DefaultMuleMessage("message payload", props, muleContext);
 
         MuleMessage result = flowRunner("minimal-config-expression").withPayload("message payload")
@@ -198,7 +199,7 @@ public class ForeachTestCase extends FunctionalTestCase
         for (int i = 0; i < 10; i++)
         {
             MuleMessage msg = new DefaultMuleMessage("message-" + i, muleContext);
-            msg.setProperty("out", "out" + (i+1), PropertyScope.OUTBOUND);
+            msg.setOutboundProperty("out", "out" + (i + 1));
             list.add(msg);
         }
 
@@ -215,8 +216,7 @@ public class ForeachTestCase extends FunctionalTestCase
         List<MuleMessage> list = new ArrayList<>();
         for (int i = 0; i < 10; i++)
         {
-            MuleMessage msg = new DefaultMuleMessage("message-" + i, muleContext);
-            msg.setProperty("out", "out" + (i+1), PropertyScope.INBOUND);
+            MuleMessage msg = new DefaultMuleMessage("message-" + i, Collections.singletonMap("out", "out" + (i+1)), null, null, muleContext);
             list.add(msg);
         }
         final String flowName = "message-collection-config-one-way";
@@ -246,8 +246,8 @@ public class ForeachTestCase extends FunctionalTestCase
         names.add("Sergei");
         names.add("Vasilievich");
         names.add("Rachmaninoff");
-        Map<String, Object> props = new HashMap<String, Object>();
-        props.put("names", names);
+        Map<String, Serializable> props = new HashMap<>();
+        props.put("names", (Serializable) names);
         MuleMessage message = new DefaultMuleMessage("message payload", props, muleContext);
 
         MuleMessage result = flowRunner("map-expression-config").withPayload("message payload")
