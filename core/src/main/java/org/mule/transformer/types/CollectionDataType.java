@@ -12,6 +12,7 @@ import org.mule.util.generics.MethodParameter;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * A data type that represents a generified collection.  When checked for compatability both the colection type and the
@@ -21,7 +22,7 @@ import java.util.Collection;
  */
 public class CollectionDataType<T> extends SimpleDataType<T>
 {
-    private Class<? extends Collection> collectionType;
+    protected Class<? extends Collection> collectionType;
 
     /**
      * Creates an untyped collection data type
@@ -135,41 +136,31 @@ public class CollectionDataType<T> extends SimpleDataType<T>
     }
 
     @Override
-    public boolean equals(Object o)
+    public boolean equals(Object obj)
     {
-        if (this == o)
+        if (obj == null)
+        {
+            return false;
+        }
+        if (obj == this)
         {
             return true;
         }
-        if (o == null || getClass() != o.getClass())
+        if (obj.getClass() != getClass())
         {
             return false;
         }
+        CollectionDataType other = (CollectionDataType) obj;
 
-        CollectionDataType that = (CollectionDataType) o;
-
-        if (!getItemType().equals(that.getItemType()))
-        {
-            return false;
-        }
-
-        if ((mimeType != null ? !mimeType.equals(that.mimeType) : that.mimeType != null) && !ANY_MIME_TYPE.equals(that.mimeType) && !ANY_MIME_TYPE.equals(this.mimeType))
-        {
-            return false;
-        }
-
-        return getType().equals(that.getType());
-
+        return Objects.equals(type, other.type)
+               && Objects.equals(collectionType, other.collectionType)
+               && Objects.equals(mimeType, other.mimeType);
     }
-
+    
     @Override
     public int hashCode()
     {
-        int result = getType().hashCode();
-        result = 31 * result + getItemType().hashCode();
-        result = 31 * result + (getMimeType() != null ? getMimeType().hashCode() : 0);
-        result = 31 * result + (getEncoding() != null ? getEncoding().hashCode() : 0);
-        return result;
+        return Objects.hash(type, collectionType, mimeType);
     }
 
     @Override

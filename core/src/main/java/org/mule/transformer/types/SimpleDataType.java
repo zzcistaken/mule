@@ -10,6 +10,7 @@ import org.mule.api.transformer.DataType;
 import org.mule.util.StringUtils;
 
 import java.nio.charset.Charset;
+import java.util.Objects;
 
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
@@ -42,16 +43,19 @@ public class SimpleDataType<T> implements DataType<T>, Cloneable
         this.type = type;
     }
 
+    @Override
     public Class getType()
     {
         return type;
     }
 
+    @Override
     public String getMimeType()
     {
         return mimeType;
     }
 
+    @Override
     public void setMimeType(String mimeType)
     {
         if (mimeType == null)
@@ -76,11 +80,13 @@ public class SimpleDataType<T> implements DataType<T>, Cloneable
         }
     }
 
+    @Override
     public String getEncoding()
     {
         return encoding;
     }
 
+    @Override
     public void setEncoding(String encoding)
     {
         if (!StringUtils.isEmpty(encoding))
@@ -92,6 +98,7 @@ public class SimpleDataType<T> implements DataType<T>, Cloneable
         this.encoding = encoding;
     }
 
+    @Override
     public boolean isCompatibleWith(DataType dataType)
     {
         if (dataType instanceof ImmutableDataType)
@@ -143,48 +150,32 @@ public class SimpleDataType<T> implements DataType<T>, Cloneable
     }
 
     @Override
-    public boolean equals(Object o)
+    public boolean equals(Object obj)
     {
-        if (this == o)
+        if (obj == null)
+        {
+            return false;
+        }
+        if (obj == this)
         {
             return true;
         }
-        if (o == null || getClass() != o.getClass())
+        if (obj.getClass() != getClass())
         {
             return false;
         }
+        SimpleDataType other = (SimpleDataType) obj;
 
-        SimpleDataType that = (SimpleDataType) o;
-
-        if (!type.equals(that.type))
-        {
-            return false;
-        }
-
-        //ANY_MIME_TYPE will match to a null or non-null value for MimeType
-        if ((this.mimeType == null && that.mimeType != null || that.mimeType == null && this.mimeType != null) && !ANY_MIME_TYPE.equals(that.mimeType))
-        {
-            return false;
-        }
-
-        if (this.mimeType != null && !mimeType.equals(that.mimeType) && !ANY_MIME_TYPE.equals(that.mimeType))
-        {
-            return false;
-        }
-
-        return true;
+        return Objects.equals(type, other.type)
+               && Objects.equals(mimeType, other.mimeType);
     }
-
+    
     @Override
     public int hashCode()
     {
-        int result = type.hashCode();
-        result = 31 * result + (encoding != null ? encoding.hashCode() : 0);
-        result = 31 * result + (mimeType != null ? mimeType.hashCode() : 0);
-        return result;
+        return Objects.hash(type, mimeType);
     }
 
-    
     @Override
     public String toString()
     {
@@ -195,6 +186,7 @@ public class SimpleDataType<T> implements DataType<T>, Cloneable
                 '}';
     }
 
+    @Override
     public DataType cloneDataType()
     {
         try

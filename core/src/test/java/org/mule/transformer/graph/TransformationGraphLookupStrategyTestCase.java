@@ -8,7 +8,6 @@ package org.mule.transformer.graph;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.fail;
-import static org.mockito.Mockito.mock;
 
 import org.mule.api.transformer.Converter;
 import org.mule.api.transformer.DataType;
@@ -16,7 +15,10 @@ import org.mule.tck.junit4.AbstractMuleTestCase;
 import org.mule.tck.size.SmallTest;
 import org.mule.transformer.CompositeConverter;
 import org.mule.transformer.builder.MockConverterBuilder;
+import org.mule.transformer.types.MimeTypes;
+import org.mule.transformer.types.SimpleDataType;
 
+import java.io.InputStream;
 import java.util.List;
 
 import org.junit.Assert;
@@ -26,10 +28,10 @@ import org.junit.Test;
 public class TransformationGraphLookupStrategyTestCase extends AbstractMuleTestCase
 {
 
-    private static final DataType XML_DATA_TYPE = mock(DataType.class, "XML_DATA_TYPE");
-    private static final DataType JSON_DATA_TYPE = mock(DataType.class, "JSON_DATA_TYPE");
-    private static final DataType INPUT_STREAM_DATA_TYPE = mock(DataType.class, "INPUT_STREAM_DATA_TYPE");
-    private static final DataType STRING_DATA_TYPE = mock(DataType.class, "STRING_DATA_TYPE");
+    private static final DataType XML_DATA_TYPE = new SimpleDataType(String.class, MimeTypes.XML);
+    private static final DataType JSON_DATA_TYPE = new SimpleDataType(String.class, MimeTypes.JSON);
+    private static final DataType INPUT_STREAM_DATA_TYPE = new SimpleDataType(InputStream.class, MimeTypes.ANY);
+    private static final DataType STRING_DATA_TYPE = new SimpleDataType(String.class, MimeTypes.TEXT);
 
     private TransformationGraph graph = new TransformationGraph();
     private TransformationGraphLookupStrategy lookupStrategyTransformation = new TransformationGraphLookupStrategy(graph);

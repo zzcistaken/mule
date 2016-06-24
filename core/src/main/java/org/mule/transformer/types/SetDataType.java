@@ -6,6 +6,7 @@
  */
 package org.mule.transformer.types;
 
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -28,5 +29,33 @@ public class SetDataType<T> extends CollectionDataType<T>
     public SetDataType(Class type)
     {
         super(Set.class, type);
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj == null)
+        {
+            return false;
+        }
+        if (obj == this)
+        {
+            return true;
+        }
+        if (obj.getClass() != getClass())
+        {
+            return false;
+        }
+        CollectionDataType other = (CollectionDataType) obj;
+
+        return Objects.equals(type, other.type)
+               && Objects.equals(collectionType, other.collectionType)
+               && Objects.equals(mimeType, other.mimeType);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(type, collectionType, mimeType);
     }
 }
