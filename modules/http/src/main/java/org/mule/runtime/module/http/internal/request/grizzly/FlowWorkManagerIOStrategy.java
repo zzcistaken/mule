@@ -116,12 +116,19 @@ public class FlowWorkManagerIOStrategy extends AbstractIOStrategy
         HttpTransactionContext httpTransactionContext = (HttpTransactionContext) connection.getAttributes().getAttribute
                 (HttpTransactionContext.class.getName());
 
-        if (httpTransactionContext != null && httpTransactionContext.getAsyncHandler() instanceof WorkManagerSource)
+        if (httpTransactionContext.getAsyncHandler() != null)
         {
-            return ((WorkManagerSource) httpTransactionContext.getAsyncHandler()).getWorkManager();
+            final AsyncHandler asyncHandler = httpTransactionContext.getAsyncHandler();
+            if (httpTransactionContext != null && asyncHandler instanceof WorkManagerSource)
+            {
+                return ((WorkManagerSource) httpTransactionContext.getAsyncHandler()).getWorkManager();
+            }
+            else
+            {
+                return null;
+            }
         }
-        else
-        {
+        else {
             return null;
         }
     }

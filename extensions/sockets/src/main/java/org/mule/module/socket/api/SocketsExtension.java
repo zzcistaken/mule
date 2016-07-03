@@ -8,6 +8,7 @@ package org.mule.module.socket.api;
 
 import org.mule.module.socket.api.config.ListenerConfig;
 import org.mule.module.socket.api.config.RequesterConfig;
+import org.mule.module.socket.api.exceptions.ReadingTimeoutException;
 import org.mule.module.socket.api.protocol.CustomProtocol;
 import org.mule.module.socket.api.protocol.DirectProtocol;
 import org.mule.module.socket.api.protocol.EOFProtocol;
@@ -34,7 +35,7 @@ import org.mule.runtime.extension.api.annotation.SubTypeMapping;
 @Configurations({ListenerConfig.class, RequesterConfig.class})
 @SubTypeMapping(baseType = TcpProtocol.class, subTypes = {SafeProtocol.class, DirectProtocol.class, LengthProtocol.class,
         StreamingProtocol.class, XmlMessageProtocol.class, XmlMessageEOFProtocol.class, CustomProtocol.class, EOFProtocol.class})
-@Export(classes = {TcpClientSocketProperties.class, TcpServerSocketProperties.class, UdpSocketProperties.class})
+@Export(classes = {SocketsExtension.class, ReadingTimeoutException.class, TcpClientSocketProperties.class, TcpServerSocketProperties.class, UdpSocketProperties.class})
 public class SocketsExtension
 {
 

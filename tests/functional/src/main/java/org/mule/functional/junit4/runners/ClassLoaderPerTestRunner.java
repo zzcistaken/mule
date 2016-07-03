@@ -58,6 +58,21 @@ public class ClassLoaderPerTestRunner extends BlockJUnit4ClassRunner
     //        " * available for garbage collection."
     private static Class<?> createTestClassUsingClassLoader(Class<?> klass) throws InitializationError
     {
+        ClassLoader isolatedClassLoader = createIsolatedClassLoader(klass);
+
+        try
+        {
+            final Class<?> aClass = isolatedClassLoader.loadClass(klass.getName());
+            return aClass;
+        }
+        catch (Exception e)
+        {
+            throw new InitializationError(e);
+        }
+    }
+
+    public static ClassLoader createIsolatedClassLoader(Class<?> klass)
+    {
         // Initializes utility classes
         ClassPathURLsProvider classPathURLsProvider = new DefaultClassPathURLsProvider();
         MavenDependenciesResolver mavenDependenciesResolver = new DependencyGraphMavenDependenciesResolver();
@@ -68,16 +83,7 @@ public class ClassLoaderPerTestRunner extends BlockJUnit4ClassRunner
         // Does the classification and creation of the isolated ClassLoader
         ArtifactUrlClassification artifactUrlClassification = classPathClassifier.classify(klass, classPathURLsProvider.getURLs(),
                                                                                            mavenDependenciesResolver.buildDependencies(), mavenMultiModuleArtifactMapping);
-        ClassLoader isolatedClassLoader = classLoaderRunnerFactory.createClassLoader(klass, artifactUrlClassification);
-
-        try
-        {
-            return isolatedClassLoader.loadClass(klass.getName());
-        }
-        catch (Exception e)
-        {
-            throw new InitializationError(e);
-        }
+        return classLoaderRunnerFactory.createClassLoader(klass, artifactUrlClassification);
     }
 
     @Override

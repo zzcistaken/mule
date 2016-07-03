@@ -84,7 +84,6 @@ public class ForeachTestCase extends AbstractIntegrationTestCase
     }
 
     @Test
-    @Ignore("ArtifactClassloaderTestRunner groovy error")
     public void defaultConfigurationPlusMP() throws Exception
     {
         final Collection<String> payload = new ArrayList<String>();
@@ -285,7 +284,6 @@ public class ForeachTestCase extends AbstractIntegrationTestCase
     }
 
     @Test
-    @Ignore("ArtifactClassloaderTestRunner groovy error")
     public void jsonUpdate() throws Exception
     {
         String json = "{\"order\": {\"name\": \"Ellen\", \"email\": \"ellen@mail.com\", \"items\": [{\"key1\": \"value1\"}, {\"key2\": \"value2\"}] } }";
@@ -294,7 +292,6 @@ public class ForeachTestCase extends AbstractIntegrationTestCase
     }
 
     @Test
-    @Ignore("ArtifactClassloaderTestRunner groovy error")
     public void arrayPayload() throws Exception
     {
         String[] payload = {"uno", "dos", "tres"};
