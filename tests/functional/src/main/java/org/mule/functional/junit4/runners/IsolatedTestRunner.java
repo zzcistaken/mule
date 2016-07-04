@@ -26,11 +26,14 @@ public class IsolatedTestRunner extends Runner implements Filterable
 {
 
     private final Runner delegate;
-    private final ClassLoader isolatedClassLoader;
+    private static ClassLoader isolatedClassLoader;
 
     public IsolatedTestRunner(Class<?> clazz, RunnerBuilder builder) throws Exception
     {
-        isolatedClassLoader = createIsolatedClassLoader(clazz);
+        if (isolatedClassLoader == null)
+        {
+            isolatedClassLoader = createIsolatedClassLoader(clazz);
+        }
 
         final Class<?> isolatedTestClass = getTestClass(clazz);
 
