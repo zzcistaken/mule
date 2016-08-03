@@ -10,7 +10,6 @@ import org.mule.runtime.core.api.MuleException;
 import org.mule.runtime.core.api.context.WorkManager;
 import org.mule.runtime.core.api.context.WorkManagerSource;
 
-import com.ning.http.client.AsyncHandler;
 import com.ning.http.client.providers.grizzly.HttpTransactionContext;
 
 import java.io.IOException;

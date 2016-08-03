@@ -20,6 +20,7 @@ import java.lang.reflect.Constructor;
  */
 public class NotificationLifecycleObject extends LifecycleObject
 {
+
     private String preNotificationName;
     private String postNotificationName;
     private Constructor ctor;
@@ -29,33 +30,16 @@ public class NotificationLifecycleObject extends LifecycleObject
         super(type);
     }
 
-    public NotificationLifecycleObject(Class type, Class notificationClass)
+    public NotificationLifecycleObject(Class type, Class<?>... hierarchyExclusion)
     {
-        super(type);
-
-        if (notificationClass==null)
-        {
-            throw new IllegalArgumentException(CoreMessages.objectIsNull("notificationClass").toString());
-        }
-
-        // MULE-2903: make sure the notifiactionClass is properly loaded and initialized
-        notificationClass = ClassUtils.initializeClass(notificationClass);
-
-        if (!ServerNotification.class.isAssignableFrom(notificationClass))
-        {
-            throw new ClassCastException("Notification class must be of type: " + ServerNotification.class.getName() + ". Offending class is: " + notificationClass.getName());
-        }
-
-        ctor = ClassUtils.getConstructor(notificationClass, new Class[]{Object.class, String.class});
-        if(ctor==null)
-        {
-            throw new IllegalArgumentException("No constructor defined in Notification class: " + notificationClass + " with arguments (Object.class, String.class)");
-        }
+        super(type, hierarchyExclusion);
     }
 
     public NotificationLifecycleObject(Class type, Class notificationClass, int preNotification, int postNotification)
     {
-        this(type, notificationClass);
+        this(type);
+
+        setNotificationClass(notificationClass);
         setPreNotificationName(MuleContextNotification.getActionName(preNotification));
         setPostNotificationName(MuleContextNotification.getActionName(postNotification));
     }
@@ -83,7 +67,7 @@ public class NotificationLifecycleObject extends LifecycleObject
     @Override
     public void firePreNotification(MuleContext context)
     {
-        if(getPreNotificationName()!=null)
+        if (getPreNotificationName() != null)
         {
             setPreNotification(createNotification(context, getPreNotificationName()));
         }
@@ -94,7 +78,7 @@ public class NotificationLifecycleObject extends LifecycleObject
     @Override
     public void firePostNotification(MuleContext context)
     {
-        if(getPostNotificationName()!=null)
+        if (getPostNotificationName() != null)
         {
             setPostNotification(createNotification(context, getPostNotificationName()));
         }
@@ -105,11 +89,33 @@ public class NotificationLifecycleObject extends LifecycleObject
     {
         try
         {
-            return (ServerNotification)ctor.newInstance(context, action);
+            return (ServerNotification) ctor.newInstance(context, action);
         }
         catch (Exception e)
         {
-            throw new MuleRuntimeException(CoreMessages.failedToCreate("Notification:" + action) ,e);
+            throw new MuleRuntimeException(CoreMessages.failedToCreate("Notification:" + action), e);
+        }
+    }
+
+    private void setNotificationClass(Class notificationClass)
+    {
+        if (notificationClass == null)
+        {
+            throw new IllegalArgumentException(CoreMessages.objectIsNull("notificationClass").toString());
+        }
+
+        // MULE-2903: make sure the notifiactionClass is properly loaded and initialized
+        notificationClass = ClassUtils.initializeClass(notificationClass);
+
+        if (!ServerNotification.class.isAssignableFrom(notificationClass))
+        {
+            throw new ClassCastException("Notification class must be of type: " + ServerNotification.class.getName() + ". Offending class is: " + notificationClass.getName());
+        }
+
+        ctor = ClassUtils.getConstructor(notificationClass, new Class[] {Object.class, String.class});
+        if (ctor == null)
+        {
+            throw new IllegalArgumentException("No constructor defined in Notification class: " + notificationClass + " with arguments (Object.class, String.class)");
         }
     }
 }

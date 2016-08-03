@@ -7,14 +7,13 @@
 package org.mule.runtime.module.http.api.listener;
 
 import org.mule.runtime.api.meta.AnnotatedObject;
-import org.mule.runtime.core.api.MuleException;
 import org.mule.runtime.api.meta.NamedObject;
-import org.mule.runtime.core.api.config.Config;
+import org.mule.runtime.api.tls.TlsContextFactory;
+import org.mule.runtime.core.api.MuleException;
 import org.mule.runtime.core.api.lifecycle.Startable;
 import org.mule.runtime.core.api.lifecycle.Stoppable;
-import org.mule.runtime.api.tls.TlsContextFactory;
 
-public interface HttpListenerConfig extends Config, NamedObject, AnnotatedObject, Startable, Stoppable
+public interface HttpListenerConfig extends NamedObject, AnnotatedObject, Startable, Stoppable
 {
 
     /**
@@ -39,12 +38,12 @@ public interface HttpListenerConfig extends Config, NamedObject, AnnotatedObject
     /**
       * @return the port in which the config is listening for request.
      */
-    public int getPort();
+    int getPort();
 
     /**
      * @return the host in which the config is listening for request.
      */
-    public String getHost();
+    String getHost();
 
     /**
      * @return TLS context for this config, or null if TLS is not enabled

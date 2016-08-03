@@ -13,11 +13,10 @@ import org.mule.extension.validation.internal.DefaultExceptionFactory;
 import org.mule.extension.validation.internal.NumberValidationOperation;
 import org.mule.extension.validation.internal.ValidationMessages;
 import org.mule.extension.validation.internal.ValidationStrategies;
+import org.mule.runtime.api.meta.NamedObject;
 import org.mule.runtime.core.AbstractAnnotatedObject;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.MuleRuntimeException;
-import org.mule.runtime.api.meta.NamedObject;
-import org.mule.runtime.core.api.config.Config;
 import org.mule.runtime.core.api.context.MuleContextAware;
 import org.mule.runtime.core.api.lifecycle.Initialisable;
 import org.mule.runtime.core.api.lifecycle.InitialisationException;
@@ -54,7 +53,7 @@ import java.util.Locale;
 @Operations({CommonValidationOperations.class, CustomValidatorOperation.class, ValidationStrategies.class, NumberValidationOperation.class})
 @Extensible(alias = "validator-message-processor")
 @Export(resources = {"/META-INF/services/org/mule/runtime/core/i18n"})
-public class ValidationExtension extends AbstractAnnotatedObject implements Config, NamedObject, Initialisable, MuleContextAware
+public class ValidationExtension extends AbstractAnnotatedObject implements NamedObject, Initialisable, MuleContextAware
 {
 
     public static final String DEFAULT_LOCALE = Locale.getDefault().getLanguage();

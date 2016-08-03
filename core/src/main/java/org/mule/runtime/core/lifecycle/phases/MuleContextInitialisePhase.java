@@ -9,11 +9,11 @@ package org.mule.runtime.core.lifecycle.phases;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.agent.Agent;
 import org.mule.runtime.core.api.component.Component;
-import org.mule.runtime.core.api.config.Config;
 import org.mule.runtime.core.api.construct.FlowConstruct;
 import org.mule.runtime.core.api.lifecycle.Disposable;
 import org.mule.runtime.core.api.lifecycle.Initialisable;
 import org.mule.runtime.core.api.lifecycle.LifecycleException;
+import org.mule.runtime.core.api.lifecycle.LifecycleManager;
 import org.mule.runtime.core.api.processor.InterceptingMessageProcessor;
 import org.mule.runtime.core.api.routing.OutboundRouter;
 import org.mule.runtime.core.api.security.SecurityManager;
@@ -37,14 +37,14 @@ import javax.annotation.PostConstruct;
  * The MuleContextInitialisePhase defines the lifecycle behaviour when the Mule context is initialised.  The MuleContext is associated
  * with one or more registries that inherit the lifecycle of the MuleContext.
  * <p/>
- * This phase is responsible for initialising objects. Any object that implements {@link org.mule.runtime.core.api.lifecycle.Initialisable} will
- * have its {@link org.mule.runtime.core.api.lifecycle.Initialisable#initialise()} method called.  Objects are initialised in the order based on type:
- * {@link org.mule.runtime.core.api.agent.Agent}, {@link org.mule.runtime.core.api.construct.FlowConstruct}, followed
- * by any other object that implements {@link org.mule.runtime.core.api.lifecycle.Initialisable}.
+ * This phase is responsible for initialising objects. Any object that implements {@link Initialisable} will
+ * have its {@link Initialisable#initialise()} method called.  Objects are initialised in the order based on type:
+ * {@link org.mule.runtime.core.api.agent.Agent}, {@link FlowConstruct}, followed
+ * by any other object that implements {@link Initialisable}.
  *
- * @see org.mule.runtime.core.api.MuleContext
- * @see org.mule.runtime.core.api.lifecycle.LifecycleManager
- * @see org.mule.runtime.core.api.lifecycle.Initialisable
+ * @see MuleContext
+ * @see LifecycleManager
+ * @see Initialisable
  * @since 3.0
  */
 public class MuleContextInitialisePhase extends DefaultLifecyclePhase
@@ -55,13 +55,12 @@ public class MuleContextInitialisePhase extends DefaultLifecyclePhase
         registerSupportedPhase(NotInLifecyclePhase.PHASE_NAME);
 
         Set<LifecycleObject> orderedObjects = new LinkedHashSet<>();
-        orderedObjects.add(new NotificationLifecycleObject(ConfigurationProvider.class));
-        orderedObjects.add(new NotificationLifecycleObject(Config.class));
         orderedObjects.add(new NotificationLifecycleObject(LegacyConnector.class));
         orderedObjects.add(new NotificationLifecycleObject(Agent.class));
         orderedObjects.add(new NotificationLifecycleObject(SecurityManager.class));
+        orderedObjects.add(new NotificationLifecycleObject(Initialisable.class, ConfigurationProvider.class, FlowConstruct.class));
+        orderedObjects.add(new NotificationLifecycleObject(ConfigurationProvider.class));
         orderedObjects.add(new NotificationLifecycleObject(FlowConstruct.class));
-        orderedObjects.add(new NotificationLifecycleObject(Initialisable.class));
         setOrderedLifecycleObjects(orderedObjects);
         setIgnoredObjectTypes(new Class[]{Component.class, MessageSource.class, InterceptingMessageProcessor.class, OutboundRouter.class, MuleContext.class});
     }

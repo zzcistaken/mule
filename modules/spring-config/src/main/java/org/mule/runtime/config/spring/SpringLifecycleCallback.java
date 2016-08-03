@@ -40,7 +40,7 @@ class SpringLifecycleCallback extends RegistryLifecycleCallback<SpringRegistry>
     }
 
     @Override
-    protected Collection<?> lookupObjectsForLifecycle(LifecycleObject lo)
+    protected Collection<Object> doLookupObjectForLifecycle(LifecycleObject lo)
     {
         Map<String, Object> objects = getSpringRegistry().lookupEntriesForLifecycle(lo.getType());
 
@@ -54,7 +54,7 @@ class SpringLifecycleCallback extends RegistryLifecycleCallback<SpringRegistry>
         Iterable<DependencyNode> orderedNodes = new TreeTraverser<DependencyNode>()
         {
             @Override
-            public Iterable children(DependencyNode node)
+            public Iterable<DependencyNode> children(DependencyNode node)
             {
                 return node.getChilds();
             }
@@ -82,7 +82,7 @@ class SpringLifecycleCallback extends RegistryLifecycleCallback<SpringRegistry>
 
     private void addDependency(DependencyNode parent, String key, Object object)
     {
-        addDependency(parent, key, object, new HashSet<String>());
+        addDependency(parent, key, object, new HashSet<>());
     }
 
     private void addDependency(DependencyNode parent, String key, Object object, Set<String> processedKeys)

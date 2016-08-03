@@ -138,8 +138,6 @@ public class HttpListenerProvider implements CachedConnectionProvider<Server>, I
     @Override
     public void initialise() throws InitialisationException
     {
-        initialiseIfNeeded(connectionManager);
-
         if (port == null)
         {
             port = protocol.getDefaultPort();

@@ -10,9 +10,9 @@ import org.mule.runtime.api.service.Service;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.agent.Agent;
 import org.mule.runtime.core.api.component.Component;
-import org.mule.runtime.core.api.config.Config;
 import org.mule.runtime.core.api.construct.FlowConstruct;
 import org.mule.runtime.core.api.lifecycle.Initialisable;
+import org.mule.runtime.core.api.lifecycle.LifecycleManager;
 import org.mule.runtime.core.api.lifecycle.Startable;
 import org.mule.runtime.core.api.lifecycle.Stoppable;
 import org.mule.runtime.core.api.processor.InterceptingMessageProcessor;
@@ -30,20 +30,20 @@ import java.util.Set;
 
 /**
  * The Stop phase for the Management context LifecycleManager. Calling {@link MuleContext#stop()}
- * with initiate this phase via the {@link org.mule.runtime.core.api.lifecycle.LifecycleManager}.
+ * with initiate this phase via the {@link LifecycleManager}.
  *
  *
  * The MuleContextDisposePhase defines the lifecycle behaviour when the Mule context is stopped.  The MuleContext is associated
  * with one or more registries that inherit the lifecycle of the MuleContext.
  *
- * This phase is responsible for disposing objects. Any object that implements {@link org.mule.runtime.core.api.lifecycle.Stoppable} will
- * have its {@link org.mule.runtime.core.api.lifecycle.Stoppable#stop()} ()} method called.  Objects are initialised in the order based on type:
- * {@link org.mule.runtime.core.api.construct.FlowConstruct}, {@link org.mule.runtime.core.api.agent.Agent} followed
- * by any other object that implements {@link org.mule.runtime.core.api.lifecycle.Stoppable}.
+ * This phase is responsible for disposing objects. Any object that implements {@link Stoppable} will
+ * have its {@link Stoppable#stop()} ()} method called.  Objects are initialised in the order based on type:
+ * {@link org.mule.runtime.core.api.construct.FlowConstruct}, {@link Agent} followed
+ * by any other object that implements {@link Stoppable}.
  *
- * @see org.mule.runtime.core.api.MuleContext
- * @see org.mule.runtime.core.api.lifecycle.LifecycleManager
- * @see org.mule.runtime.core.api.lifecycle.Stoppable
+ * @see MuleContext
+ * @see LifecycleManager
+ * @see Stoppable
  *
  * @since 3.0
  */
@@ -58,13 +58,12 @@ public class MuleContextStopPhase extends DefaultLifecyclePhase
     {
         super(Stoppable.PHASE_NAME, Stoppable.class, Startable.PHASE_NAME);
 
-        Set<LifecycleObject> stopOrderedObjects = new LinkedHashSet<LifecycleObject>();
+        Set<LifecycleObject> stopOrderedObjects = new LinkedHashSet<>();
         // Stop in the opposite order to start
         stopOrderedObjects.add(new NotificationLifecycleObject(FlowConstruct.class));
         stopOrderedObjects.add(new NotificationLifecycleObject(Agent.class));
         stopOrderedObjects.add(new NotificationLifecycleObject(LegacyConnector.class));
         stopOrderedObjects.add(new NotificationLifecycleObject(ConfigurationProvider.class));
-        stopOrderedObjects.add(new NotificationLifecycleObject(Config.class));
         stopOrderedObjects.add(new NotificationLifecycleObject(QueueManager.class));
         stopOrderedObjects.add(new NotificationLifecycleObject(Stoppable.class));
 

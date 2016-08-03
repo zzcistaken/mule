@@ -10,7 +10,6 @@ import org.mule.runtime.api.service.Service;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.agent.Agent;
 import org.mule.runtime.core.api.component.Component;
-import org.mule.runtime.core.api.config.Config;
 import org.mule.runtime.core.api.construct.FlowConstruct;
 import org.mule.runtime.core.api.el.ExpressionLanguage;
 import org.mule.runtime.core.api.el.ExpressionLanguageExtension;
@@ -85,14 +84,13 @@ public class SpringRegistryLifecycleManager extends RegistryLifecycleManager
             initOrderedObjects.add(new NotificationLifecycleObject(ExpressionLanguageExtension.class));
             initOrderedObjects.add(new NotificationLifecycleObject(ExpressionLanguage.class));
             initOrderedObjects.add(new NotificationLifecycleObject(ExpressionManager.class));
-            initOrderedObjects.add(new NotificationLifecycleObject(ConfigurationProvider.class));
-            initOrderedObjects.add(new NotificationLifecycleObject(Config.class));
             initOrderedObjects.add(new NotificationLifecycleObject(QueueManager.class));
             initOrderedObjects.add(new NotificationLifecycleObject(LegacyConnector.class));
             initOrderedObjects.add(new NotificationLifecycleObject(Agent.class));
             initOrderedObjects.add(new NotificationLifecycleObject(SecurityManager.class));
+            initOrderedObjects.add(new NotificationLifecycleObject(Initialisable.class, ConfigurationProvider.class, FlowConstruct.class));
+            initOrderedObjects.add(new NotificationLifecycleObject(ConfigurationProvider.class));
             initOrderedObjects.add(new NotificationLifecycleObject(FlowConstruct.class));
-            initOrderedObjects.add(new NotificationLifecycleObject(Initialisable.class));
             setOrderedLifecycleObjects(initOrderedObjects);
 
             setIgnoredObjectTypes(new Class[] {

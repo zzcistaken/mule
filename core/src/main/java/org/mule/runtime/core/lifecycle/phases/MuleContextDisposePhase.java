@@ -6,14 +6,15 @@
  */
 package org.mule.runtime.core.lifecycle.phases;
 
+import org.mule.runtime.core.DefaultMuleContext;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.agent.Agent;
 import org.mule.runtime.core.api.component.Component;
-import org.mule.runtime.core.api.config.Config;
 import org.mule.runtime.core.api.construct.FlowConstruct;
 import org.mule.runtime.core.api.lifecycle.Disposable;
 import org.mule.runtime.core.api.lifecycle.Initialisable;
 import org.mule.runtime.core.api.lifecycle.LifecycleException;
+import org.mule.runtime.core.api.lifecycle.LifecycleManager;
 import org.mule.runtime.core.api.lifecycle.LifecyclePhase;
 import org.mule.runtime.core.api.processor.InterceptingMessageProcessor;
 import org.mule.runtime.core.api.routing.OutboundRouter;
@@ -37,22 +38,22 @@ import javax.annotation.PreDestroy;
 /**
  * Objects are disposed of via the Registry since the Registry manages the creation/initialisation of the objects it
  * must also take care of disposing them. However, a user may want to initiate a dispose via the
- * {@link org.mule.runtime.core.DefaultMuleContext} so the dispose Lifecycle phase for the
- * {@link org.mule.runtime.core.DefaultMuleContext} needs to call dispose on the Registry.
+ * {@link DefaultMuleContext} so the dispose Lifecycle phase for the
+ * {@link DefaultMuleContext} needs to call dispose on the Registry.
  *
  * The MuleContextDisposePhase defines the lifecycle behaviour when the Mule context is disposed. The MuleContext is
  * associated with one or more registries that inherit the lifecycle of the MuleContext.
  *
  * This phase is responsible for disposing objects. Any object that implements
- * {@link org.mule.runtime.core.api.lifecycle.Disposable} will have its
- * {@link org.mule.runtime.core.api.lifecycle.Disposable#dispose()} method called. Objects are initialised in the order
- * based on type: {@link org.mule.runtime.core.api.construct.FlowConstruct},
- * {@link org.mule.runtime.core.api.agent.Agent}, {@link org.mule.runtime.core.api.transport.Connector} followed by any other object
- * that implements {@link org.mule.runtime.core.api.lifecycle.Disposable}.
+ * {@link Disposable} will have its
+ * {@link Disposable#dispose()} method called. Objects are initialised in the order
+ * based on type: {@link FlowConstruct},
+ * {@link org.mule.runtime.core.api.agent.Agent} followed by any other object
+ * that implements {@link Disposable}.
  *
- * @see org.mule.runtime.core.api.MuleContext
- * @see org.mule.runtime.core.api.lifecycle.LifecycleManager
- * @see org.mule.runtime.core.api.lifecycle.Disposable
+ * @see MuleContext
+ * @see LifecycleManager
+ * @see Disposable
  *
  * @since 3.0
  */
@@ -68,7 +69,6 @@ public class MuleContextDisposePhase extends DefaultLifecyclePhase
         orderedObjects.add(new NotificationLifecycleObject(Agent.class));
         orderedObjects.add(new NotificationLifecycleObject(LegacyConnector.class));
         orderedObjects.add(new NotificationLifecycleObject(ConfigurationProvider.class));
-        orderedObjects.add(new NotificationLifecycleObject(Config.class));
         orderedObjects.add(new NotificationLifecycleObject(Disposable.class));
         orderedObjects.add(new NotificationLifecycleObject(Object.class));
 

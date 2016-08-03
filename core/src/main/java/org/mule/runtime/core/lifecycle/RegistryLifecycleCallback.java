@@ -18,6 +18,7 @@ import org.mule.runtime.core.lifecycle.phases.ContainerManagedLifecyclePhase;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
@@ -123,10 +124,18 @@ public class RegistryLifecycleCallback<T> implements LifecycleCallback<T>, HasLi
         }
     }
 
-    protected Collection<?> lookupObjectsForLifecycle(LifecycleObject lo)
+    protected final Collection<Object> lookupObjectsForLifecycle(LifecycleObject lo)
+    {
+        return doLookupObjectForLifecycle(lo).stream()
+                .filter(object -> !lo.getHierarchyExclusion().stream().anyMatch(excludedType -> excludedType.isInstance(object)))
+                .collect(Collectors.toList());
+    }
+
+    protected Collection<Object> doLookupObjectForLifecycle(LifecycleObject lo)
     {
         return registryLifecycleManager.getLifecycleObject().lookupObjectsForLifecycle(lo.getType());
     }
+
 
     @Override
     public void setLifecycleInterceptor(LifecycleInterceptor interceptor)

@@ -6,20 +6,33 @@
  */
 package org.mule.runtime.core.lifecycle;
 
+import static java.util.Arrays.asList;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.context.notification.ServerNotification;
 import org.mule.runtime.core.util.ClassUtils;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class LifecycleObject
 {
     
     private Class type;
+    private Set<Class<?>> hierarchyExclusion = new HashSet<>();
     private ServerNotification preNotification;
     private ServerNotification postNotification;
 
     public LifecycleObject(Class type)
     {
+        this(type, null);
+    }
+
+    public LifecycleObject(Class type, Class<?>... hierarchyExclusion)
+    {
         this.type = type;
+        if (hierarchyExclusion != null) {
+            this.hierarchyExclusion.addAll(asList(hierarchyExclusion));
+        }
     }
 
     public ServerNotification getPostNotification()
@@ -45,6 +58,11 @@ public class LifecycleObject
     public Class getType()
     {
         return type;
+    }
+
+    public Set<Class<?>> getHierarchyExclusion()
+    {
+        return hierarchyExclusion;
     }
 
     public void setType(Class type)

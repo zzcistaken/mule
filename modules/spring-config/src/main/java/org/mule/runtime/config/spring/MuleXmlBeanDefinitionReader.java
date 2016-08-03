@@ -7,8 +7,6 @@
 
 package org.mule.runtime.config.spring;
 
-import org.mule.runtime.config.spring.dsl.spring.BeanDefinitionFactory;
-
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.xml.BeanDefinitionDocumentReader;
@@ -17,8 +15,8 @@ import org.springframework.beans.factory.xml.XmlReaderContext;
 import org.w3c.dom.Document;
 
 /**
- * Customized version of {@link org.springframework.beans.factory.xml.XmlBeanDefinitionReader} in order to hook into spring and use the mule version of
- * {@link org.springframework.beans.factory.xml.BeanDefinitionDocumentReader} which allow us to parse the XML file
+ * Customized version of {@link XmlBeanDefinitionReader} in order to hook into spring and use the mule version of
+ * {@link BeanDefinitionDocumentReader} which allow us to parse the XML file
  * using the new parsing mechanism.
  *
  * @since 4.0
