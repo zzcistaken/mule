@@ -1606,6 +1606,8 @@
                             <!-- exclude inner classes -->
                             <exclude>**/*$*</exclude>
                         </excludes>
+                        <parallel>classes</parallel>
+                        <threadCount>4</threadCount>
                     </configuration>
                 </plugin>
                 <plugin>
