@@ -15,6 +15,7 @@ import org.mule.tck.size.SmallTest;
 import org.mule.test.heisenberg.extension.HeisenbergSource;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.function.Supplier;
 
 import org.hamcrest.Matchers;
 import org.junit.Rule;
@@ -35,7 +36,7 @@ public class DefaultSourceFactoryTestCase extends AbstractMuleTestCase {
   @Test
   public void nullType() {
     expectedException.expect(IllegalArgumentException.class);
-    new DefaultSourceFactory(null);
+    new DefaultSourceFactory((Supplier<Class<?>>) null);
   }
 
   @Test

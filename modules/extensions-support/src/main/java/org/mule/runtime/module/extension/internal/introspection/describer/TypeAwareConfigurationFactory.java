@@ -8,8 +8,9 @@ package org.mule.runtime.module.extension.internal.introspection.describer;
 
 import static org.mule.runtime.core.config.i18n.MessageFactory.createStaticMessage;
 import static org.mule.runtime.core.util.ClassUtils.withContextClassLoader;
-import static org.mule.runtime.core.util.Preconditions.checkArgument;
-import static org.mule.runtime.module.extension.internal.util.IntrospectionUtils.checkInstantiable;
+
+import java.util.function.Supplier;
+
 import org.mule.runtime.core.api.MuleRuntimeException;
 import org.mule.runtime.extension.api.introspection.config.ConfigurationFactory;
 
@@ -21,8 +22,10 @@ import org.mule.runtime.extension.api.introspection.config.ConfigurationFactory;
  */
 final class TypeAwareConfigurationFactory implements ConfigurationFactory {
 
-  private final Class<?> configurationType;
-  private final ClassLoader extensionClassLoader;
+  private final Supplier<Class<?>> classSupplier;
+
+  //private final Class<?> configurationType;
+  //private final ClassLoader extensionClassLoader;
 
   /**
    * Creates an instance of a given {@code configurationType} on each invocation to {@link #newInstance()}.
@@ -31,12 +34,18 @@ final class TypeAwareConfigurationFactory implements ConfigurationFactory {
    * @param extensionClassLoader the {@link ClassLoader} on which the extension is loaded
    * @throws IllegalArgumentException if the type is {@code null} or doesn't have a default public constructor
    */
-  TypeAwareConfigurationFactory(Class<?> configurationType, ClassLoader extensionClassLoader) {
-    checkArgument(configurationType != null, "configuration type cannot be null");
-    checkArgument(extensionClassLoader != null, "extensionClassLoader type cannot be null");
-    checkInstantiable(configurationType);
-    this.configurationType = configurationType;
-    this.extensionClassLoader = extensionClassLoader;
+  //TypeAwareConfigurationFactory(Class<?> configurationType, ClassLoader extensionClassLoader) {
+  //  checkArgument(configurationType != null, "configuration type cannot be null");
+  //  checkArgument(extensionClassLoader != null, "extensionClassLoader type cannot be null");
+  //  checkInstantiable(configurationType);
+  //  this.configurationType = configurationType;
+  //  this.extensionClassLoader = extensionClassLoader;
+  //}
+
+
+
+  public TypeAwareConfigurationFactory(Supplier<Class<?>> classSupplier) {
+    this.classSupplier = classSupplier;
   }
 
   /**
@@ -44,11 +53,12 @@ final class TypeAwareConfigurationFactory implements ConfigurationFactory {
    */
   @Override
   public Object newInstance() {
+    final Class<?> configType = classSupplier.get();
     try {
-      return withContextClassLoader(extensionClassLoader, configurationType::newInstance);
+      return withContextClassLoader(Thread.currentThread().getContextClassLoader(), configType::newInstance);
     } catch (Exception e) {
       throw new MuleRuntimeException(createStaticMessage("Could not instantiate configuration of type "
-          + configurationType.getName()), e);
+          + configType.getName()), e);
     }
   }
 
@@ -57,6 +67,6 @@ final class TypeAwareConfigurationFactory implements ConfigurationFactory {
    */
   @Override
   public Class<?> getObjectType() {
-    return configurationType;
+    return classSupplier.get();
   }
 }

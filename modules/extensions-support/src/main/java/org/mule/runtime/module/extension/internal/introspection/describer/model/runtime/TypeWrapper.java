@@ -15,6 +15,7 @@ import org.mule.runtime.module.extension.internal.util.IntrospectionUtils;
 import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 /**
  * Wrapper for {@link Class} that provide utility methods to facilitate the introspection of a {@link Class}
@@ -25,16 +26,8 @@ public class TypeWrapper implements Type {
 
   private final Class<?> aClass;
 
-  TypeWrapper(Class<?> aClass) {
+  public TypeWrapper(Class<?> aClass) {
     this.aClass = aClass;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public Annotation[] getAnnotations() {
-    return aClass.getAnnotations();
   }
 
   /**
@@ -58,7 +51,10 @@ public class TypeWrapper implements Type {
    */
   @Override
   public List<FieldElement> getFields() {
-    return IntrospectionUtils.getFields(aClass).stream().map(FieldWrapper::new).collect(toList());
+    return IntrospectionUtils.getFields(aClass)
+        .stream()
+        .map(FieldWrapper::new)
+        .collect(toList());
   }
 
   /**
@@ -66,7 +62,10 @@ public class TypeWrapper implements Type {
    */
   @Override
   public List<FieldElement> getAnnotatedFields(Class<? extends Annotation> annotation) {
-    return getFields().stream().filter(field -> field.isAnnotatedWith(annotation)).collect(toList());
+    return getFields()
+        .stream()
+        .filter(field -> field.isAnnotatedWith(annotation))
+        .collect(toList());
   }
 
   /**
@@ -75,5 +74,35 @@ public class TypeWrapper implements Type {
   @Override
   public Class<?> getDeclaredClass() {
     return aClass;
+  }
+
+  @Override
+  public String getClassName() {
+    return aClass.getCanonicalName();
+  }
+
+  @Override
+  public Supplier<Class<?>> getClassSupplier() {
+    return () -> aClass;
+  }
+
+  public boolean isAssignableFrom(Type type) {
+    final String className = type.getClassName();
+    try {
+      final Class<?> aClass = Class.forName(className);
+      return this.aClass.isAssignableFrom(aClass);
+    } catch (ClassNotFoundException e) {
+      return false;
+    }
+  }
+
+  public boolean isAssignableTo(Type type) {
+    final String className = type.getClassName();
+    try {
+      final Class<?> aClass = Class.forName(className);
+      return aClass.isAssignableFrom(this.aClass);
+    } catch (ClassNotFoundException e) {
+      return false;
+    }
   }
 }

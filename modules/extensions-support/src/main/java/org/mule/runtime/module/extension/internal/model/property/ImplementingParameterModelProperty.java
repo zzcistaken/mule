@@ -6,11 +6,10 @@
  */
 package org.mule.runtime.module.extension.internal.model.property;
 
-import static org.mule.runtime.core.util.Preconditions.checkArgument;
-
 import org.mule.runtime.extension.api.introspection.EnrichableModel;
 import org.mule.runtime.extension.api.introspection.ModelProperty;
 import org.mule.runtime.extension.api.introspection.parameter.ParameterModel;
+import org.mule.runtime.module.extension.internal.introspection.describer.model.ParameterElement;
 
 import java.lang.reflect.Parameter;
 
@@ -22,6 +21,7 @@ import java.lang.reflect.Parameter;
 public final class ImplementingParameterModelProperty implements ModelProperty {
 
   private final Parameter parameter;
+  private final ParameterElement element;
 
   /**
    * Creates a new instance referencing the given {@code parameter}
@@ -29,8 +29,9 @@ public final class ImplementingParameterModelProperty implements ModelProperty {
    * @param parameter a {@link Parameter} which defines the owning {@link ParameterModel}
    * @throws IllegalArgumentException if {@code parameter} is {@code null}
    */
-  public ImplementingParameterModelProperty(Parameter parameter) {
-    checkArgument(parameter != null, "parameter cannot be null");
+  public ImplementingParameterModelProperty(Parameter parameter, ParameterElement element) {
+    this.element = element;
+    //checkArgument(parameter != null, "parameter cannot be null");
     this.parameter = parameter;
   }
 
@@ -39,6 +40,10 @@ public final class ImplementingParameterModelProperty implements ModelProperty {
    */
   public Parameter getParameter() {
     return parameter;
+  }
+
+  public ParameterElement parameterElement() {
+    return element;
   }
 
   /**

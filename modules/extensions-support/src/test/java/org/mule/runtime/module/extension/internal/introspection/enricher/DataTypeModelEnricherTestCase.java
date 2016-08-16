@@ -32,6 +32,7 @@ import org.mule.runtime.extension.api.introspection.declaration.fluent.Extension
 import org.mule.runtime.extension.api.introspection.declaration.fluent.ExtensionDeclarer;
 import org.mule.runtime.extension.api.introspection.declaration.fluent.OperationDeclaration;
 import org.mule.runtime.extension.api.introspection.declaration.fluent.ParameterDeclaration;
+import org.mule.runtime.module.extension.internal.introspection.describer.model.runtime.MethodWrapper;
 import org.mule.runtime.module.extension.internal.model.property.ImplementingMethodModelProperty;
 import org.mule.runtime.module.extension.internal.model.property.ImplementingTypeModelProperty;
 import org.mule.tck.junit4.AbstractMuleTestCase;
@@ -80,7 +81,7 @@ public class DataTypeModelEnricherTestCase extends AbstractMuleTestCase {
     when(annotatedOperation.getModelProperty(ImplementingTypeModelProperty.class)).thenReturn(Optional.empty());
     when(notAnnotatedOperation.getModelProperty(ImplementingTypeModelProperty.class)).thenReturn(Optional.empty());
     when(annotatedOperation.getModelProperty(ImplementingMethodModelProperty.class))
-        .thenReturn(Optional.of(new ImplementingMethodModelProperty(method)));
+        .thenReturn(Optional.of(new ImplementingMethodModelProperty(method, new MethodWrapper(method))));
     when(notAnnotatedOperation.getModelProperty(ImplementingMethodModelProperty.class)).thenReturn(Optional.empty());
   }
 
@@ -104,7 +105,8 @@ public class DataTypeModelEnricherTestCase extends AbstractMuleTestCase {
   @Test(expected = IllegalModelDefinitionException.class)
   public void voidOperation() {
     when(annotatedOperation.getModelProperty(ImplementingMethodModelProperty.class))
-        .thenReturn(Optional.of(new ImplementingMethodModelProperty(getVoidAnnotatedMethod())));
+        .thenReturn(Optional
+            .of(new ImplementingMethodModelProperty(getVoidAnnotatedMethod(), new MethodWrapper(getVoidAnnotatedMethod()))));
     enricher.enrich(describingContext);
   }
 

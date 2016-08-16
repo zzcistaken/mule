@@ -36,6 +36,7 @@ public interface ExtensionParameter extends WithType, WithAnnotations, Named, Wi
    * @return A {@code boolean} indicating whether the parameter should be advertised and added as a {@link ParameterModel} in the
    *         {@link ExtensionModel}
    */
+  //TODO REVIEW
   default boolean shouldBeAdvertised() {
     return !(IMPLICIT_ARGUMENT_TYPES.contains(getType().getDeclaredClass())
         || (isAnnotatedWith(UseConfig.class) || isAnnotatedWith(Connection.class)) || isAnnotatedWith(ParameterGroup.class));

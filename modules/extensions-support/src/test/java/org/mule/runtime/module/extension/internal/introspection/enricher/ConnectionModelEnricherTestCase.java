@@ -37,6 +37,7 @@ import org.mule.runtime.extension.api.introspection.declaration.type.ExtensionsT
 import org.mule.runtime.extension.api.runtime.InterceptorFactory;
 import org.mule.runtime.extension.api.runtime.source.Source;
 import org.mule.runtime.module.extension.internal.exception.IllegalOperationModelDefinitionException;
+import org.mule.runtime.module.extension.internal.introspection.describer.model.runtime.MethodWrapper;
 import org.mule.runtime.module.extension.internal.model.property.ConnectivityModelProperty;
 import org.mule.runtime.module.extension.internal.model.property.ImplementingMethodModelProperty;
 import org.mule.runtime.module.extension.internal.model.property.ImplementingTypeModelProperty;
@@ -89,9 +90,12 @@ public class ConnectionModelEnricherTestCase extends AbstractMuleTestCase {
   private ImplementingTypeModelProperty notConnectedSourceImplementingTypeModelProperty =
       new ImplementingTypeModelProperty(NotConnectedSource.class);
   private ImplementingMethodModelProperty connectedImplementingModelProperty =
-      new ImplementingMethodModelProperty(Operations.class.getMethod(CONNECTED_OPERATION, TransactionalConnection.class));
+      new ImplementingMethodModelProperty(Operations.class.getMethod(CONNECTED_OPERATION, TransactionalConnection.class),
+                                          new MethodWrapper(Operations.class.getMethod(CONNECTED_OPERATION,
+                                                                                       TransactionalConnection.class)));
   private ImplementingMethodModelProperty notConnectedImplementingModelProperty =
-      new ImplementingMethodModelProperty(Operations.class.getMethod(NOT_CONNECTED_OPERATION));
+      new ImplementingMethodModelProperty(Operations.class.getMethod(NOT_CONNECTED_OPERATION),
+                                          new MethodWrapper(Operations.class.getMethod(NOT_CONNECTED_OPERATION)));
   private ModelEnricher enricher = new ConnectionModelEnricher();
   private ClassTypeLoader typeLoader;
 

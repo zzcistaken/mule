@@ -23,35 +23,34 @@ public class TypeAwareConfigurationFactoryTestCase extends AbstractMuleTestCase 
 
   @Test
   public void instantiate() {
-    instantiator = new TypeAwareConfigurationFactory(Apple.class, Apple.class.getClassLoader());
+    instantiator = new TypeAwareConfigurationFactory(() -> Apple.class);
     Object object = instantiator.newInstance();
     assertThat(object, instanceOf(Apple.class));
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void noDefaultConstructor() {
-    instantiator = new TypeAwareConfigurationFactory(TypeAwareConfigurationFactory.class,
-                                                     TypeAwareConfigurationFactory.class.getClassLoader());
+    instantiator = new TypeAwareConfigurationFactory(() -> TypeAwareConfigurationFactory.class);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void nullType() {
-    instantiator = new TypeAwareConfigurationFactory(null, getClass().getClassLoader());
+    instantiator = new TypeAwareConfigurationFactory(() -> null);
   }
 
 
   @Test(expected = IllegalArgumentException.class)
   public void nullClassLoader() {
-    instantiator = new TypeAwareConfigurationFactory(Apple.class, null);
+    instantiator = new TypeAwareConfigurationFactory(() -> Apple.class);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void interfaceType() {
-    instantiator = new TypeAwareConfigurationFactory(MuleMessage.class, getClass().getClassLoader());
+    instantiator = new TypeAwareConfigurationFactory(() -> MuleMessage.class);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void abstractClass() {
-    instantiator = new TypeAwareConfigurationFactory(AbstractMuleTestCase.class, getClass().getClassLoader());
+    instantiator = new TypeAwareConfigurationFactory(() -> AbstractMuleTestCase.class);
   }
 }

@@ -12,12 +12,14 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.junit.Assert.assertThat;
+
 import org.mule.runtime.api.connection.ConnectionProvider;
 import org.mule.runtime.extension.api.exception.IllegalModelDefinitionException;
 import org.mule.runtime.extension.api.introspection.connection.ConnectionProviderFactory;
-import org.mule.test.petstore.extension.SimplePetStoreConnectionProvider;
+import org.mule.runtime.module.extension.internal.introspection.describer.model.runtime.ConnectionProviderTypeWrapper;
 import org.mule.tck.junit4.AbstractMuleTestCase;
 import org.mule.tck.size.SmallTest;
+import org.mule.test.petstore.extension.SimplePetStoreConnectionProvider;
 
 import org.junit.Test;
 
@@ -25,7 +27,7 @@ import org.junit.Test;
 public class DefaultConnectionProviderFactoryTestCase extends AbstractMuleTestCase {
 
   private ConnectionProviderFactory factory =
-      new DefaultConnectionProviderFactory<>(SimplePetStoreConnectionProvider.class,
+      new DefaultConnectionProviderFactory<>(new ConnectionProviderTypeWrapper(SimplePetStoreConnectionProvider.class),
                                              SimplePetStoreConnectionProvider.class.getClassLoader());
 
   @Test
@@ -45,11 +47,12 @@ public class DefaultConnectionProviderFactoryTestCase extends AbstractMuleTestCa
 
   @Test(expected = IllegalModelDefinitionException.class)
   public void notProviderClass() {
-    new DefaultConnectionProviderFactory<>(Object.class, getClass().getClassLoader());
+    new DefaultConnectionProviderFactory<>(new ConnectionProviderTypeWrapper(Object.class), getClass().getClassLoader());
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void notInstantiable() {
-    new DefaultConnectionProviderFactory<>(ConnectionProvider.class, ConnectionProvider.class.getClassLoader());
+    new DefaultConnectionProviderFactory<>(new ConnectionProviderTypeWrapper(ConnectionProvider.class),
+                                           ConnectionProvider.class.getClassLoader());
   }
 }

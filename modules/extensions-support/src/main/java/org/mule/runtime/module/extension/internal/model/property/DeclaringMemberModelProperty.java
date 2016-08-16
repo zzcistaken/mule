@@ -10,6 +10,7 @@ import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.introspection.config.ConfigurationModel;
 import org.mule.runtime.extension.api.introspection.ModelProperty;
 import org.mule.runtime.extension.api.introspection.parameter.ParameterModel;
+import org.mule.runtime.module.extension.internal.introspection.describer.model.FieldElement;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -29,9 +30,11 @@ import java.lang.reflect.Field;
 public final class DeclaringMemberModelProperty implements ModelProperty {
 
   private final Field declaringField;
+  private final FieldElement fieldElement;
 
-  public DeclaringMemberModelProperty(Field declaringField) {
+  public DeclaringMemberModelProperty(Field declaringField, FieldElement fieldElement) {
     this.declaringField = declaringField;
+    this.fieldElement = fieldElement;
   }
 
   /**
@@ -41,6 +44,10 @@ public final class DeclaringMemberModelProperty implements ModelProperty {
    */
   public Field getDeclaringField() {
     return declaringField;
+  }
+
+  public FieldElement getFieldElement() {
+    return fieldElement;
   }
 
   /**

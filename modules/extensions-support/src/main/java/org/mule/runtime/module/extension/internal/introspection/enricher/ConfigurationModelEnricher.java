@@ -17,9 +17,8 @@ import org.mule.runtime.extension.api.introspection.declaration.fluent.SourceDec
 import org.mule.runtime.extension.api.introspection.declaration.spi.ModelEnricher;
 import org.mule.runtime.extension.api.introspection.declaration.type.ExtensionsTypeLoaderFactory;
 import org.mule.runtime.module.extension.internal.introspection.describer.model.ExtensionParameter;
+import org.mule.runtime.module.extension.internal.introspection.describer.model.SourceElement;
 import org.mule.runtime.module.extension.internal.introspection.describer.model.WithParameters;
-import org.mule.runtime.module.extension.internal.introspection.describer.model.runtime.MethodWrapper;
-import org.mule.runtime.module.extension.internal.introspection.describer.model.runtime.ParameterizableTypeWrapper;
 import org.mule.runtime.module.extension.internal.model.property.ConfigTypeModelProperty;
 import org.mule.runtime.module.extension.internal.model.property.ConnectivityModelProperty;
 import org.mule.runtime.module.extension.internal.model.property.ImplementingMethodModelProperty;
@@ -49,14 +48,13 @@ public class ConfigurationModelEnricher extends AbstractAnnotatedModelEnricher {
         @Override
         public void onOperation(OperationDeclaration declaration) {
           declaration.getModelProperty(ImplementingMethodModelProperty.class)
-              .ifPresent(implementingProperty -> contribute(declaration, new MethodWrapper(implementingProperty.getMethod())));
+              .ifPresent(implementingProperty -> contribute(declaration, implementingProperty.getMethodElement()));
         }
 
         @Override
         public void onSource(SourceDeclaration declaration) {
           declaration.getModelProperty(ImplementingTypeModelProperty.class)
-              .ifPresent(implementingProperty -> contribute(declaration,
-                                                            new ParameterizableTypeWrapper(implementingProperty.getType())));
+              .ifPresent(implementingProperty -> contribute(declaration, (SourceElement) implementingProperty.getTypeEle()));
         }
       }.walk(describingContext.getExtensionDeclarer().getDeclaration());
     }

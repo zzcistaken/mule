@@ -9,6 +9,8 @@ package org.mule.runtime.module.extension.internal.introspection.describer.model
 import org.mule.runtime.extension.api.annotation.ParameterGroup;
 import org.mule.runtime.module.extension.internal.introspection.describer.model.ExtensionParameter;
 import org.mule.runtime.module.extension.internal.introspection.describer.model.MethodElement;
+import org.mule.runtime.module.extension.internal.introspection.describer.model.Type;
+import org.springframework.core.ResolvableType;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -16,8 +18,6 @@ import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import org.springframework.core.ResolvableType;
 
 /**
  * Wrapper for {@link Method} that provide utility methods to facilitate the introspection of a {@link Method}
@@ -88,14 +88,6 @@ public final class MethodWrapper implements MethodElement {
    * {@inheritDoc}
    */
   @Override
-  public Annotation[] getAnnotations() {
-    return method.getAnnotations();
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
   public <A extends Annotation> Optional<A> getAnnotation(Class<A> annotationClass) {
     return Optional.ofNullable(method.getAnnotation(annotationClass));
   }
@@ -106,5 +98,10 @@ public final class MethodWrapper implements MethodElement {
   @Override
   public Class<?> getReturnType() {
     return ResolvableType.forMethodReturnType(method).getRawClass();
+  }
+
+  @Override
+  public Type getReturnTypeWrapper() {
+    return new TypeWrapper(ResolvableType.forMethodReturnType(method).getRawClass());
   }
 }

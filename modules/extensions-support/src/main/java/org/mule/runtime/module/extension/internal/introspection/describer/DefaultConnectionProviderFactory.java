@@ -8,43 +8,48 @@ package org.mule.runtime.module.extension.internal.introspection.describer;
 
 import static org.mule.runtime.core.config.i18n.MessageFactory.createStaticMessage;
 import static org.mule.runtime.core.util.ClassUtils.withContextClassLoader;
-import static org.mule.runtime.module.extension.internal.util.IntrospectionUtils.checkInstantiable;
+
 import org.mule.runtime.api.connection.ConnectionProvider;
 import org.mule.runtime.core.api.MuleRuntimeException;
 import org.mule.runtime.extension.api.exception.IllegalModelDefinitionException;
 import org.mule.runtime.extension.api.introspection.connection.ConnectionProviderFactory;
 import org.mule.runtime.module.extension.internal.exception.IllegalConnectionProviderModelDefinitionException;
+import org.mule.runtime.module.extension.internal.introspection.describer.model.ConnectionProviderElement;
+import org.mule.runtime.module.extension.internal.introspection.describer.model.runtime.TypeWrapper;
 
 
 /**
- * Creates instances of {@link ConnectionProvider} based on a {@link #providerClass}
+ * Creates instances of {@link ConnectionProvider} based on a {@link #}
  *
  * @param <Connection> the generic type for the connections that the created {@link ConnectionProvider providers} produce
  * @since 4.0
  */
 final class DefaultConnectionProviderFactory<Connection> implements ConnectionProviderFactory<Connection> {
 
-  private final Class<? extends ConnectionProvider> providerClass;
+  private ConnectionProviderElement providerType;
+  //private final Class<? extends ConnectionProvider> providerClass;
   private final ClassLoader extensionClassLoader;
 
   /**
    * Creates a new instance which creates {@link ConnectionProvider} instances of the given {@code providerClass}
    *
-   * @param providerClass the {@link Class} of the created {@link ConnectionProvider providers}
    * @param extensionClassLoader the {@link ClassLoader} on which the extension is loaded
    * @throws IllegalModelDefinitionException if {@code providerClass} doesn't implement the {@link ConnectionProvider} interface
    * @throws IllegalArgumentException if {@code providerClass} is not an instantiable type
    */
-  DefaultConnectionProviderFactory(Class<?> providerClass, ClassLoader extensionClassLoader) {
+  DefaultConnectionProviderFactory(ConnectionProviderElement providerType, ClassLoader extensionClassLoader) {
+    this.providerType = providerType;
+
     this.extensionClassLoader = extensionClassLoader;
-    if (!ConnectionProvider.class.isAssignableFrom(providerClass)) {
+
+    if (!providerType.isAssignableTo(new TypeWrapper(ConnectionProvider.class))) {
       throw new IllegalConnectionProviderModelDefinitionException(String
           .format("Class '%s' was specified as a connection provider but it doesn't implement the '%s' interface",
-                  providerClass.getName(), ConnectionProvider.class.getName()));
+                  providerType.getName(), ConnectionProvider.class.getName()));
     }
 
-    checkInstantiable(providerClass);
-    this.providerClass = (Class<? extends ConnectionProvider>) providerClass;
+    //checkInstantiable(providerClass);
+    //this.providerClass = (Class<? extends ConnectionProvider>) providerClass;
   }
 
   /**
@@ -53,10 +58,11 @@ final class DefaultConnectionProviderFactory<Connection> implements ConnectionPr
   @Override
   public ConnectionProvider<Connection> newInstance() {
     try {
-      return (ConnectionProvider) withContextClassLoader(extensionClassLoader, providerClass::newInstance);
+      final Class<?> connectionClass = providerType.getClassSupplier().get();
+      return (ConnectionProvider) withContextClassLoader(extensionClassLoader, connectionClass::newInstance);
     } catch (Exception e) {
       throw new MuleRuntimeException(createStaticMessage("Could not create connection provider of type "
-          + providerClass.getName()), e);
+          + providerType.getClassName()), e);
     }
   }
 
@@ -65,6 +71,6 @@ final class DefaultConnectionProviderFactory<Connection> implements ConnectionPr
    */
   @Override
   public Class<? extends ConnectionProvider> getObjectType() {
-    return providerClass;
+    return (Class<? extends ConnectionProvider>) providerType.getClassSupplier().get();
   }
 }

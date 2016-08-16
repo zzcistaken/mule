@@ -19,4 +19,11 @@ public interface ExtensionElement extends ParameterizableTypeElement, ComponentE
    * {@inheritDoc}
    */
   List<ConfigurationElement> getConfigurations();
+
+  //default String getVersion(){
+  //  final Optional<Extension> annotation = getAnnotation(Extension.class);
+  //  return annotation.isPresent() ? : annotation.get().
+  //}
+  //
+  //String getVendor();
 }

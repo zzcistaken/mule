@@ -8,6 +8,9 @@ package org.mule.runtime.module.extension.internal.model.property;
 
 import org.mule.runtime.extension.api.introspection.EnrichableModel;
 import org.mule.runtime.extension.api.introspection.ModelProperty;
+import org.mule.runtime.module.extension.internal.introspection.describer.model.Type;
+
+import java.util.function.Supplier;
 
 /**
  * An immutable model property which indicates that the owning {@link EnrichableModel} was derived from a given {@link #type}
@@ -16,7 +19,10 @@ import org.mule.runtime.extension.api.introspection.ModelProperty;
  */
 public final class ImplementingTypeModelProperty implements ModelProperty {
 
-  private final Class<?> type;
+  private Supplier<Class<?>> classSupplier;
+  private Class<?> type;
+  private String className;
+  private Type typeElement;
 
   /**
    * Creates a new instance referencing the given {@code type}
@@ -27,11 +33,20 @@ public final class ImplementingTypeModelProperty implements ModelProperty {
     this.type = type;
   }
 
+  public ImplementingTypeModelProperty(Type type) {
+
+    typeElement = type;
+  }
+
   /**
    * @return a {@link Class} which defines the owning {@link EnrichableModel}
    */
   public Class<?> getType() {
-    return type;
+    return typeElement.getClassSupplier().get();
+  }
+
+  public Type getTypeEle() {
+    return typeElement;
   }
 
   /**

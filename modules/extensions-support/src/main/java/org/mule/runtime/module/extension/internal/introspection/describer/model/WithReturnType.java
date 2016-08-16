@@ -17,4 +17,6 @@ interface WithReturnType {
    * @return the return type {@link Class} of the implementer component
    */
   Class<?> getReturnType();
+
+  Type getReturnTypeWrapper();
 }

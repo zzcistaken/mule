@@ -19,9 +19,10 @@ import java.util.List;
  *
  * @since 4.0
  */
-class ConnectionProviderTypeWrapper<T> extends TypeWrapper implements ConnectionProviderElement, ParameterizableTypeElement {
+public class ConnectionProviderTypeWrapper<T> extends TypeWrapper
+    implements ConnectionProviderElement, ParameterizableTypeElement {
 
-  ConnectionProviderTypeWrapper(Class<T> aClass) {
+  public ConnectionProviderTypeWrapper(Class<T> aClass) {
     super(aClass);
   }
 

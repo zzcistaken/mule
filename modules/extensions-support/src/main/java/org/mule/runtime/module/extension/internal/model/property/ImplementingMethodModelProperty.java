@@ -6,9 +6,9 @@
  */
 package org.mule.runtime.module.extension.internal.model.property;
 
-import static org.mule.runtime.core.util.Preconditions.checkArgument;
 import org.mule.runtime.extension.api.introspection.ModelProperty;
 import org.mule.runtime.extension.api.introspection.operation.OperationModel;
+import org.mule.runtime.module.extension.internal.introspection.describer.model.MethodElement;
 
 import java.lang.reflect.Method;
 
@@ -20,6 +20,7 @@ import java.lang.reflect.Method;
 public final class ImplementingMethodModelProperty implements ModelProperty {
 
   private final Method method;
+  private final MethodElement element;
 
   /**
    * Creates a new instance referencing the given {@code method}
@@ -27,8 +28,9 @@ public final class ImplementingMethodModelProperty implements ModelProperty {
    * @param method a {@link Method} which defines the owning {@link OperationModel}
    * @throws IllegalArgumentException if {@code method} is {@code null}
    */
-  public ImplementingMethodModelProperty(Method method) {
-    checkArgument(method != null, "method cannot be null");
+  public ImplementingMethodModelProperty(Method method, MethodElement element) {
+    this.element = element;
+    //checkArgument(method != null, "method cannot be null");
     this.method = method;
   }
 
@@ -37,6 +39,10 @@ public final class ImplementingMethodModelProperty implements ModelProperty {
    */
   public Method getMethod() {
     return method;
+  }
+
+  public MethodElement getMethodElement() {
+    return element;
   }
 
   /**

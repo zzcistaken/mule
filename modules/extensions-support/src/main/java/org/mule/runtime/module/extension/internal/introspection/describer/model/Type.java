@@ -9,6 +9,8 @@ package org.mule.runtime.module.extension.internal.introspection.describer.model
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * A generic contract for any kind of component that is based on a Class
@@ -27,11 +29,22 @@ public interface Type extends WithAnnotations, WithName, WithAlias {
    * @return A list of {@link FieldElement} that represent the list of {@link Field} that the {@link Type} declares and are
    *         annotated with the given annotation
    */
-  List<FieldElement> getAnnotatedFields(Class<? extends Annotation> annotation);
+  default List<FieldElement> getAnnotatedFields(Class<? extends Annotation> annotation) {
+    return getFields().stream().filter(fieldElement -> fieldElement.isAnnotatedWith(annotation)).collect(Collectors.toList());
+  }
 
   /**
    * @return the class that {@link Type} represents
    */
   // TODO MULE-10137 - Adapt logic to AST
   Class getDeclaredClass();
+
+  String getClassName();
+
+  Supplier<Class<?>> getClassSupplier();
+
+  boolean isAssignableFrom(Type type);
+
+  boolean isAssignableTo(Type type);
+
 }

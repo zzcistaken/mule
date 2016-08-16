@@ -7,13 +7,15 @@
 package org.mule.runtime.module.extension.internal.runtime.executor;
 
 import static org.mule.runtime.core.config.i18n.MessageFactory.createStaticMessage;
-import static org.mule.runtime.core.util.Preconditions.checkArgument;
+
 import org.mule.runtime.core.api.MuleRuntimeException;
 import org.mule.runtime.extension.api.introspection.operation.OperationModel;
 import org.mule.runtime.extension.api.runtime.operation.OperationExecutor;
 import org.mule.runtime.extension.api.runtime.operation.OperationExecutorFactory;
+import org.mule.runtime.module.extension.internal.introspection.describer.model.MethodElement;
 
 import java.lang.reflect.Method;
+import java.util.function.Supplier;
 
 /**
  * An implementation of {@link OperationExecutorFactory} which produces instances of {@link ReflectiveMethodOperationExecutor}.
@@ -23,28 +25,47 @@ import java.lang.reflect.Method;
  */
 public final class ReflectiveOperationExecutorFactory<T> implements OperationExecutorFactory {
 
-  private final Class<T> implementationClass;
-  private final Method operationMethod;
+  private MethodElement operationMethod;
+  // private final Class<T> implementationClass;
+  // private final Method operationMethod;
+  private Supplier<Class<?>> classSupplier;
+  //
+  //public ReflectiveOperationExecutorFactory(Class<T> implementationClass, Method operationMethod) {
+  //  checkArgument(implementationClass != null, "implementationClass cannot be null");
+  //  checkArgument(operationMethod != null, "operationMethod cannot be null");
+  //
+  //  // this.implementationClass = implementationClass;
+  //  // this.operationMethod = operationMethod;
+  //
+  //}
 
-  public ReflectiveOperationExecutorFactory(Class<T> implementationClass, Method operationMethod) {
-    checkArgument(implementationClass != null, "implementationClass cannot be null");
-    checkArgument(operationMethod != null, "operationMethod cannot be null");
-
-    this.implementationClass = implementationClass;
+  public ReflectiveOperationExecutorFactory(Supplier<Class<?>> classSupplier, MethodElement operationMethod) {
+    this.classSupplier = classSupplier;
     this.operationMethod = operationMethod;
+    // checkArgument(implementationClass != null, "implementationClass cannot be null");
+    // checkArgument(operationMethod != null, "operationMethod cannot be null");
+
+    // this.implementationClass = implementationClass;
+    // this.operationMethod = operationMethod;
 
   }
 
   @Override
   public OperationExecutor createExecutor(OperationModel operationModel) {
     Object delegate;
+    final Method declaredMethod;
     try {
-      delegate = implementationClass.newInstance();
+      Class<?>[] methodParameters =
+          (Class<?>[]) operationMethod.getParameters().stream().map(param -> param.getType().getClassSupplier().get()).toArray();
+      final Class<?> operationClass = classSupplier.get();
+      declaredMethod = operationClass.getDeclaredMethod(operationMethod.getName(), methodParameters);
+
+      delegate = operationClass.newInstance();
     } catch (Exception e) {
       throw new MuleRuntimeException(createStaticMessage("Could not create instance of operation class "
-          + implementationClass.getName()), e);
+          + ""), e);
     }
 
-    return new ReflectiveMethodOperationExecutor(operationModel, operationMethod, delegate);
+    return new ReflectiveMethodOperationExecutor(operationModel, declaredMethod, delegate);
   }
 }

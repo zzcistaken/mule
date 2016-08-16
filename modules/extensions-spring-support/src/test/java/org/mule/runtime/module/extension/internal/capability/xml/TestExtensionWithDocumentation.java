@@ -18,6 +18,11 @@ import org.mule.runtime.extension.api.annotation.param.Optional;
 @Xml(namespaceLocation = "namespaceLocation", namespace = "documentation")
 public class TestExtensionWithDocumentation {
 
+
+  public String sayHi(String name) {
+    return "Hi " + name;
+  }
+
   /**
    * Config parameter
    */

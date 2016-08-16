@@ -52,7 +52,7 @@ public class TestDocumentedExtensionOperations {
    * @param value test value
    */
   @Ignore
-  public void ignoreOperationShouldBeIgnored(String value) {
+  public void ignoreOperationShouldBeIgnored(String value, SomePojo pojo) {
 
   }
 

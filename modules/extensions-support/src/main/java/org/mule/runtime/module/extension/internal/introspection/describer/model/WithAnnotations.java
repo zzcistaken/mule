@@ -6,8 +6,6 @@
  */
 package org.mule.runtime.module.extension.internal.introspection.describer.model;
 
-import static java.util.Arrays.stream;
-
 import java.lang.annotation.Annotation;
 import java.util.Optional;
 
@@ -17,11 +15,6 @@ import java.util.Optional;
  * @since 4.0
  */
 public interface WithAnnotations {
-
-  /**
-   * @return the array of annotations that the {@link WithAnnotations} component is annotated with
-   */
-  Annotation[] getAnnotations();
 
   /**
    * Retrieves an annotation of the {@link WithAnnotations} component
@@ -37,6 +30,6 @@ public interface WithAnnotations {
    * @return A {@code boolean} indicating if the {@link WithAnnotations} element is annotated with the given {@code annotation}
    */
   default boolean isAnnotatedWith(Class<? extends Annotation> annotation) {
-    return stream(getAnnotations()).anyMatch(foundAnnotation -> foundAnnotation.annotationType().isAssignableFrom(annotation));
+    return getAnnotation(annotation).isPresent();
   }
 }

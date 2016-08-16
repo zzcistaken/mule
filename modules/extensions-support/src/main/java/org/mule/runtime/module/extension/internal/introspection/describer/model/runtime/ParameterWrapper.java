@@ -8,15 +8,14 @@ package org.mule.runtime.module.extension.internal.introspection.describer.model
 
 import static java.lang.String.format;
 
-import org.mule.metadata.api.ClassTypeLoader;
-import org.mule.metadata.api.model.MetadataType;
-import org.mule.runtime.module.extension.internal.introspection.describer.model.ParameterElement;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.Optional;
 
+import org.mule.metadata.api.ClassTypeLoader;
+import org.mule.metadata.api.model.MetadataType;
+import org.mule.runtime.module.extension.internal.introspection.describer.model.ParameterElement;
 import org.springframework.core.ResolvableType;
 
 /**
@@ -57,14 +56,6 @@ public final class ParameterWrapper implements ParameterElement {
   @Override
   public MetadataType getMetadataType(ClassTypeLoader typeLoader) {
     return typeLoader.load(ResolvableType.forMethodParameter(owner, index).getType());
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public Annotation[] getAnnotations() {
-    return parameter.getAnnotations();
   }
 
   /**
