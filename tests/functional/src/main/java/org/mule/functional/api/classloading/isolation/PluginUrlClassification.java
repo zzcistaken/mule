@@ -22,6 +22,7 @@ public class PluginUrlClassification {
   private final List<URL> urls;
   private final String name;
   private final List<Class> exportClasses;
+  private final String artifactId;
 
   /**
    * Creates an instance of the classification.
@@ -29,11 +30,13 @@ public class PluginUrlClassification {
    * @param name a {@link String} representing the name of the plugin
    * @param urls list of {@link URL}s that would be used to create the {@link java.net.URLClassLoader}
    * @param exportClasses list of {@link Class}es that would be used for exporting as extra classes to the plugin
+   * @param artifactId the Maven artifactId that the plugin belongs to
    */
-  public PluginUrlClassification(String name, List<URL> urls, List<Class> exportClasses) {
+  public PluginUrlClassification(String name, List<URL> urls, List<Class> exportClasses, String artifactId) {
     this.name = name;
     this.urls = urls;
     this.exportClasses = exportClasses;
+    this.artifactId = artifactId;
   }
 
   public List<URL> getUrls() {
@@ -46,5 +49,9 @@ public class PluginUrlClassification {
 
   public List<Class> getExportClasses() {
     return exportClasses;
+  }
+
+  public String getArtifactId() {
+    return artifactId;
   }
 }

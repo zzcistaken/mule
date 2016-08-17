@@ -20,13 +20,13 @@ import static org.mule.runtime.core.util.PropertiesUtils.loadProperties;
 import org.mule.functional.api.classloading.isolation.ArtifactUrlClassification;
 import org.mule.functional.api.classloading.isolation.ClassPathClassifier;
 import org.mule.functional.api.classloading.isolation.ClassPathClassifierContext;
-import org.mule.functional.api.classloading.isolation.PluginUrlClassification;
-import org.mule.functional.classloading.isolation.classpath.MavenArtifactToClassPathUrlsResolver;
-import org.mule.functional.api.classloading.isolation.MavenMultiModuleArtifactMapping;
 import org.mule.functional.api.classloading.isolation.Configuration;
 import org.mule.functional.api.classloading.isolation.DependenciesFilter;
 import org.mule.functional.api.classloading.isolation.DependencyResolver;
+import org.mule.functional.api.classloading.isolation.MavenMultiModuleArtifactMapping;
+import org.mule.functional.api.classloading.isolation.PluginUrlClassification;
 import org.mule.functional.api.classloading.isolation.TransitiveDependenciesFilter;
+import org.mule.functional.classloading.isolation.classpath.MavenArtifactToClassPathUrlsResolver;
 import org.mule.functional.junit4.ExtensionsTestInfrastructureDiscoverer;
 import org.mule.runtime.core.DefaultMuleContext;
 import org.mule.runtime.core.api.lifecycle.InitialisationException;
@@ -98,8 +98,8 @@ public class DefaultClassPathClassifier implements ClassPathClassifier {
     ExtendedClassPathClassifierContext extendedClassPathClassifierContext =
         new ExtendedClassPathClassifierContext(context, artifactToClassPathUrlResolver);
 
-    List<URL> appUrls = buildAppUrls(extendedClassPathClassifierContext);
     List<PluginUrlClassification> pluginUrlClassifications = buildPluginsUrlClassification(extendedClassPathClassifierContext);
+    List<URL> appUrls = buildAppUrls(extendedClassPathClassifierContext, pluginUrlClassifications);
     List<URL> containerUrls = buildContainerUrls(extendedClassPathClassifierContext, appUrls, pluginUrlClassifications);
 
     return new ArtifactUrlClassification(containerUrls, pluginUrlClassifications, appUrls);
@@ -109,15 +109,30 @@ public class DefaultClassPathClassifier implements ClassPathClassifier {
    * Builds the list of {@link URL}s for the application classification. Test scope is what mostly drives this classification.
    *
    * @param extendedContext {@link ExtendedClassPathClassifierContext} that holds the data needed for classifying the artifacts
+   * @param pluginUrlClassifications {@link List} of {@link PluginUrlClassification} classified for plugins
    * @return a {@link List} of {@link URL}s that would be the one used for the application class loader.
    */
-  protected List<URL> buildAppUrls(final ExtendedClassPathClassifierContext extendedContext) {
+  protected List<URL> buildAppUrls(final ExtendedClassPathClassifierContext extendedContext,
+                                   List<PluginUrlClassification> pluginUrlClassifications) {
     // rootArtifactTestClassesFolder is not present in the dependency graph, so here is the only place were we must add it
     // manually breaking the original order that came from class path
     List<URL> appURLs = extendedContext.getClassificationContext().getClassPathURLs().stream()
         .filter(url -> url.getFile()
             .equals(extendedContext.getClassificationContext().getRootArtifactTestClassesFolder().getAbsolutePath() + separator))
         .collect(toList());
+
+    // if the rootArtifact was not classified as plugin it would have to be the case of a simple application that needs to have
+    // rootArtifactClassesFolder in the application class loader
+    boolean isRootArtifactPlugin = pluginUrlClassifications.stream().filter(pluginUrlClassification -> pluginUrlClassification
+        .getArtifactId().equals(extendedContext.getRootArtifact().getArtifactId())).findFirst()
+        .isPresent();
+    if (!isRootArtifactPlugin) {
+      appURLs.addAll(extendedContext.getClassificationContext().getClassPathURLs().stream()
+          .filter(url -> url.getFile()
+              .equals(extendedContext.getClassificationContext().getRootArtifactClassesFolder().getAbsolutePath() + separator))
+          .collect(toList()));
+    }
+
     new DependencyResolver(new Configuration()
         .setMavenDependencyGraph(extendedContext.getClassificationContext().getDependencyGraph())
         .selectDependencies(new DependenciesFilter().match(dependency -> dependency.isTestScope()
@@ -177,12 +192,23 @@ public class DefaultClassPathClassifier implements ClassPathClassifier {
       logger.debug("There are no extensions in the classpath, exportClasses would be ignored");
     }
 
-    if (!isRootArtifactIdAnExtension && extendedContext.getClassificationContext().getRootArtifactClassesFolder().exists()) {
+    if (!isRootArtifactIdAnExtension && isPluginRootArtifact(extendedContext)) {
       logger
           .debug("Current maven artifact that holds the test class is not an extension, so a plugin class loader would be create with its compile dependencies");
       pluginClassifications.add(pluginClassPathClassification(extendedContext));
     }
     return pluginClassifications;
+  }
+
+  /**
+   * Checks if the rootArtifact is a plugin
+   * @param extendedContext {@link ExtendedClassPathClassifierContext} that holds the data needed for classifying the artifacts
+   * @return true if it has to be classified as a plugin, otherwise false
+   */
+  private boolean isPluginRootArtifact(ExtendedClassPathClassifierContext extendedContext) {
+    File rootArtifactClassesFolder = extendedContext.getClassificationContext().getRootArtifactClassesFolder();
+    return rootArtifactClassesFolder.exists()
+        && new File(new File(rootArtifactClassesFolder, "META-INF"), "mule-module.properties").exists();
   }
 
   /**
@@ -355,7 +381,7 @@ public class DefaultClassPathClassifier implements ClassPathClassifier {
                 .getLocation().getPath().equals(extension.getProtectionDomain().getCodeSource().getLocation().getPath()))
             .collect(toList());
 
-    return new PluginUrlClassification(extension.getName(), extensionURLs, exportClassesForExtension);
+    return new PluginUrlClassification(extension.getName(), extensionURLs, exportClassesForExtension, extensionMavenArtifactId);
   }
 
   /**
@@ -387,7 +413,7 @@ public class DefaultClassPathClassifier implements ClassPathClassifier {
         .collect(toList());
 
     return new PluginUrlClassification(extendedContext.getRootArtifact().getArtifactId(), Lists.newArrayList(urls),
-                                       exportClassesForExtension);
+                                       exportClassesForExtension, extendedContext.getRootArtifact().getArtifactId());
   }
 
 }
