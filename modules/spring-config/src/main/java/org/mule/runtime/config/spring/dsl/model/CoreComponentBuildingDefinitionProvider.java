@@ -8,6 +8,7 @@
 package org.mule.runtime.config.spring.dsl.model;
 
 import static java.lang.Boolean.parseBoolean;
+import static java.lang.String.format;
 import static java.lang.String.valueOf;
 import static java.util.Arrays.asList;
 import static java.util.Optional.ofNullable;
@@ -69,6 +70,9 @@ import org.mule.runtime.config.spring.factories.ScatterGatherRouterFactoryBean;
 import org.mule.runtime.config.spring.factories.SubflowMessageProcessorChainFactoryBean;
 import org.mule.runtime.config.spring.factories.TransactionalMessageProcessorsFactoryBean;
 import org.mule.runtime.config.spring.factories.WatermarkFactoryBean;
+import org.mule.runtime.config.spring.parsers.specific.FilterDefinitionParser;
+import org.mule.runtime.config.spring.parsers.specific.FilterRefDefinitionParser;
+import org.mule.runtime.config.spring.parsers.specific.RegExFilterDefinitionParser;
 import org.mule.runtime.config.spring.util.SpringBeanLookup;
 import org.mule.runtime.core.api.EncryptionStrategy;
 import org.mule.runtime.core.api.MuleContext;
@@ -133,8 +137,17 @@ import org.mule.runtime.core.routing.RoundRobin;
 import org.mule.runtime.core.routing.ScatterGatherRouter;
 import org.mule.runtime.core.routing.UntilSuccessful;
 import org.mule.runtime.core.routing.WireTap;
+import org.mule.runtime.core.routing.filters.EqualsFilter;
+import org.mule.runtime.core.routing.filters.ExceptionTypeFilter;
+import org.mule.runtime.core.routing.filters.ExpressionFilter;
+import org.mule.runtime.core.routing.filters.MessagePropertyFilter;
 import org.mule.runtime.core.routing.filters.NotWildcardFilter;
+import org.mule.runtime.core.routing.filters.PayloadTypeFilter;
+import org.mule.runtime.core.routing.filters.RegExFilter;
 import org.mule.runtime.core.routing.filters.WildcardFilter;
+import org.mule.runtime.core.routing.filters.logic.AndFilter;
+import org.mule.runtime.core.routing.filters.logic.NotFilter;
+import org.mule.runtime.core.routing.filters.logic.OrFilter;
 import org.mule.runtime.core.routing.outbound.MulticastingRouter;
 import org.mule.runtime.core.routing.requestreply.SimpleAsyncRequestReplyRequester;
 import org.mule.runtime.core.source.StartableCompositeMessageSource;
@@ -178,13 +191,18 @@ import org.mule.runtime.core.transformer.simple.RemovePropertyTransformer;
 import org.mule.runtime.core.transformer.simple.SerializableToByteArray;
 import org.mule.runtime.core.transformer.simple.SetPayloadMessageProcessor;
 import org.mule.runtime.core.transformer.simple.StringAppendTransformer;
+import org.mule.runtime.core.util.StringUtils;
+
+import com.google.common.collect.ImmutableMap;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 
 /**
  * {@link org.mule.runtime.config.spring.dsl.api.ComponentBuildingDefinition} definitions for the components provided by the core
@@ -230,6 +248,14 @@ public class CoreComponentBuildingDefinitionProvider implements ComponentBuildin
   private static final String ALL = "all";
   private static final String POLL = "poll";
   private static final String REQUEST_REPLY = "request-reply";
+
+  private Map<String, Integer> regExFlagsMapping = ImmutableMap.<String, Integer>builder()
+      .put("CANON_EQ", Integer.valueOf(Pattern.CANON_EQ))
+      .put("CASE_INSENSITIVE", Integer.valueOf(Pattern.CASE_INSENSITIVE))
+      .put("DOTALL", Integer.valueOf(Pattern.DOTALL))
+      .put("MULTILINE", Integer.valueOf(Pattern.MULTILINE))
+      .put("UNICODE_CASE", Integer.valueOf(Pattern.UNICODE_CASE))
+      .build();
 
   private static ComponentBuildingDefinition.Builder baseDefinition =
       new ComponentBuildingDefinition.Builder().withNamespace(CORE_NAMESPACE_NAME);
@@ -545,8 +571,101 @@ public class CoreComponentBuildingDefinitionProvider implements ComponentBuildin
     componentBuildingDefinitions.addAll(getTransformersBuildingDefinitions());
     componentBuildingDefinitions.addAll(getComponentsDefinitions());
     componentBuildingDefinitions.addAll(getEntryPointResolversDefinitions());
+    componentBuildingDefinitions.addAll(getFiltersDefinitions());
 
     return componentBuildingDefinitions;
+  }
+
+  private List<ComponentBuildingDefinition> getFiltersDefinitions() {
+    List<ComponentBuildingDefinition> definitions = new LinkedList<>();
+
+    definitions.add(baseDefinition.copy()
+        .withIdentifier("and-filter")
+        .withTypeDefinition(fromType(AndFilter.class))
+        .withConstructorParameterDefinition(fromChildCollectionConfiguration(Filter.class).build())
+        .build());
+
+    definitions.add(baseDefinition.copy()
+        .withIdentifier("or-filter")
+        .withTypeDefinition(fromType(OrFilter.class))
+        .withConstructorParameterDefinition(fromChildCollectionConfiguration(Filter.class).build())
+        .build());
+
+    definitions.add(baseDefinition.copy()
+        .withIdentifier("not-filter")
+        .withTypeDefinition(fromType(NotFilter.class))
+        .withConstructorParameterDefinition(fromChildCollectionConfiguration(Filter.class).build())
+        .build());
+
+    definitions.add(baseDefinition.copy()
+        .withIdentifier("regex-filter")
+        .withTypeDefinition(fromType(RegExFilter.class))
+        .withSetterParameterDefinition("flags", fromSimpleParameter("flags", value -> {
+          String flags = (String) value;
+          int combinedFlags = 0;
+          String[] flagStrings = StringUtils.split(flags, ',');
+          for (String flagString : flagStrings) {
+            Integer flag = regExFlagsMapping.get(flagString);
+            if (flag == null) {
+              String message =
+                  format("Invalid flag '%1s'. Must be one of %2s", flagString, regExFlagsMapping.keySet().toString());
+              throw new IllegalArgumentException(message);
+            }
+            combinedFlags = combinedFlags | flag.intValue();
+          }
+          return Integer.valueOf(combinedFlags);
+        }).build())
+        .withSetterParameterDefinition("pattern", fromSimpleParameter("pattern").build())
+        .withSetterParameterDefinition("value", fromSimpleParameter("value").build())
+        .build());
+
+    definitions.add(baseDefinition.copy()
+        .withIdentifier("not-filter")
+        .withTypeDefinition(fromType(ExceptionTypeFilter.class))
+        .withConstructorParameterDefinition(fromSimpleParameter("expectedType", stringToClassConverter()).build())
+        .build());
+
+    definitions.add(baseDefinition.copy()
+        .withIdentifier("message-property-filter")
+        .withTypeDefinition(fromType(MessagePropertyFilter.class))
+        .withConstructorParameterDefinition(fromSimpleParameter("pattern").build())
+        .withSetterParameterDefinition("value", fromSimpleParameter("value").build())
+        .withSetterParameterDefinition("scope", fromSimpleParameter("scope").build())
+        .withSetterParameterDefinition("caseSensitive", fromSimpleParameter("caseSensitive").build())
+        .build());
+
+    definitions.add(baseDefinition.copy()
+        .withIdentifier("payload-type-filter")
+        .withTypeDefinition(fromType(PayloadTypeFilter.class))
+        .withConstructorParameterDefinition(fromSimpleParameter("expectedType", stringToClassConverter()).build())
+        .build());
+
+    definitions.add(baseDefinition.copy()
+        .withIdentifier("wildcard-filter")
+        .withTypeDefinition(fromType(WildcardFilter.class))
+        .withSetterParameterDefinition("caseSensitive", fromSimpleParameter("caseSensitive").build())
+        .withSetterParameterDefinition("pattern", fromSimpleParameter("pattern").build())
+        .build());
+
+    definitions.add(baseDefinition.copy()
+        .withIdentifier("equals-filter")
+        .withTypeDefinition(fromType(EqualsFilter.class))
+        .withSetterParameterDefinition("pattern", fromSimpleParameter("pattern").build())
+        .build());
+
+    definitions.add(baseDefinition.copy()
+        .withIdentifier("expression-filter")
+        .withTypeDefinition(fromType(ExpressionFilter.class))
+        .withConstructorParameterDefinition(fromSimpleParameter("expression").build())
+        .withSetterParameterDefinition("nullReturnsTrue", fromSimpleParameter("nullReturnsTrue").build())
+        .build());
+
+    definitions.add(baseDefinition.copy()
+        .withIdentifier("custom-filter")
+        .withTypeDefinition(fromConfigurationAttribute(CLASS_ATTRIBUTE))
+        .build());
+
+    return definitions;
   }
 
   private List<ComponentBuildingDefinition> getTransformersBuildingDefinitions() {
@@ -1155,5 +1274,6 @@ public class CoreComponentBuildingDefinitionProvider implements ComponentBuildin
     return transactionManagerBaseDefinition.copy().withIdentifier(transactionManagerName)
         .withTypeDefinition(fromType(transactionManagerClass));
   }
+
 
 }
