@@ -50,7 +50,7 @@ public class FtpDeleteTestCase extends FtpConnectorTestCase {
   @Test
   public void deleteReadFile() throws Exception {
     assertThat(testHarness.fileExists(HELLO_PATH), is(true));
-    flowRunner("delete").withFlowVariable("delete", HELLO_PATH).run();
+    flowRunner("readAndDelete").withFlowVariable("delete", HELLO_PATH).run();
 
     assertThat(testHarness.fileExists(HELLO_PATH), is(false));
   }
