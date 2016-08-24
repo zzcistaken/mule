@@ -6,8 +6,10 @@
  */
 package org.mule.extension.ftp;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mule.extension.FtpTestHarness.HELLO_WORLD;
 import org.mule.extension.FtpTestHarness;
 
 public class FtpMoveTestCase extends FtpCopyTestCase {
@@ -28,7 +30,7 @@ public class FtpMoveTestCase extends FtpCopyTestCase {
 
   @Override
   protected void assertCopy(String target) throws Exception {
-    super.assertCopy(target);
-    assertThat(testHarness.fileExists(sourcePath), is(false));
+    assertThat(testHarness.fileExists(sourcePath), is(true));
+    assertThat(readPathAsString(target), equalTo(HELLO_WORLD));
   }
 }

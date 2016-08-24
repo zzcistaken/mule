@@ -9,6 +9,7 @@ package org.mule.extension.ftp;
 import static java.lang.String.format;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.extension.FtpTestHarness.HELLO_WORLD;
 import org.mule.extension.FtpTestHarness;
@@ -208,6 +209,7 @@ public class FtpCopyTestCase extends FtpConnectorTestCase {
   }
 
   protected void assertCopy(String target) throws Exception {
+    assertThat(testHarness.fileExists(sourcePath), is(true));
     assertThat(readPathAsString(target), equalTo(HELLO_WORLD));
   }
 
