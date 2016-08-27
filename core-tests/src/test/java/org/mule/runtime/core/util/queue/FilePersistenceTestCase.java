@@ -7,6 +7,7 @@
 package org.mule.runtime.core.util.queue;
 
 import static org.mockito.Mockito.when;
+
 import org.mule.runtime.core.DefaultMuleContext;
 import org.mule.runtime.core.api.config.MuleConfiguration;
 
@@ -23,6 +24,7 @@ public class FilePersistenceTestCase extends AbstractTransactionQueueManagerTest
   protected TransactionalQueueManager createQueueManager() throws Exception {
     TransactionalQueueManager mgr = new TransactionalQueueManager();
     MuleConfiguration mockConfiguration = Mockito.mock(MuleConfiguration.class);
+    when(mockConfiguration.getDefaultQueueTimeout()).thenReturn(200);
     when(mockConfiguration.getWorkingDirectory()).thenReturn(temporaryFolder.getRoot().getAbsolutePath());
     when(mockConfiguration.getMaxQueueTransactionFilesSizeInMegabytes()).thenReturn(100);
     ((DefaultMuleContext) muleContext).setMuleConfiguration(mockConfiguration);

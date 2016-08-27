@@ -12,6 +12,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
 import org.mule.runtime.core.util.concurrent.Latch;
 import org.mule.tck.junit4.AbstractMuleContextTestCase;
 
@@ -574,6 +575,7 @@ public abstract class AbstractTransactionQueueManagerTestCase extends AbstractMu
       final Latch putExecutionLatch = new Latch();
       Thread putExecutionThread = new Thread(new Runnable() {
 
+        @Override
         public void run() {
           try {
             QueueSession s = mgr.getQueueSession();
@@ -649,6 +651,7 @@ public abstract class AbstractTransactionQueueManagerTestCase extends AbstractMu
       final Latch takeExecutionLatch = new Latch();
       final Thread takeExecutionThread = new Thread(new Runnable() {
 
+        @Override
         public void run() {
           try {
             takeExecutionLatch.release();
@@ -681,7 +684,7 @@ public abstract class AbstractTransactionQueueManagerTestCase extends AbstractMu
     QueueSession s = mgr.getQueueSession();
     Queue q = s.getQueue("warmRecoverQueue");
 
-    int toPopulate = 500;
+    int toPopulate = 50;
 
     // Populate queue
     Random rnd = new Random();
@@ -706,7 +709,7 @@ public abstract class AbstractTransactionQueueManagerTestCase extends AbstractMu
     Queue q = s.getQueue("warmRecoverQueue");
     mgr.start();
 
-    int toPopulate = 500;
+    int toPopulate = 50;
 
     // Populate queue
     Random rnd = new Random();

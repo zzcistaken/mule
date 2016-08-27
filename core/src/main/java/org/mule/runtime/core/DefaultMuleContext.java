@@ -13,17 +13,6 @@ import static org.mule.runtime.core.api.config.MuleProperties.OBJECT_TRANSACTION
 import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.startIfNeeded;
 import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.stopIfNeeded;
 
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-
-import javax.resource.spi.work.WorkListener;
-import javax.transaction.TransactionManager;
-import javax.xml.namespace.QName;
-
 import org.mule.runtime.config.spring.DefaultCustomizationService;
 import org.mule.runtime.core.api.CustomizationService;
 import org.mule.runtime.core.api.Injector;
@@ -92,6 +81,18 @@ import org.mule.runtime.core.util.concurrent.Latch;
 import org.mule.runtime.core.util.lock.LockFactory;
 import org.mule.runtime.core.util.queue.QueueManager;
 import org.mule.runtime.extension.api.ExtensionManager;
+
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+
+import javax.resource.spi.work.WorkListener;
+import javax.transaction.TransactionManager;
+import javax.xml.namespace.QName;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

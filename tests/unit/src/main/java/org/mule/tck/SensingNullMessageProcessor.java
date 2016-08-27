@@ -8,8 +8,6 @@ package org.mule.tck;
 
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 
-import java.util.concurrent.ExecutorService;
-
 import org.mule.runtime.api.execution.CompletionHandler;
 import org.mule.runtime.core.DefaultMuleEvent;
 import org.mule.runtime.core.VoidMuleEvent;
@@ -25,6 +23,8 @@ import org.mule.runtime.core.util.ObjectUtils;
 import org.mule.runtime.core.util.StringUtils;
 import org.mule.runtime.core.util.concurrent.Latch;
 import org.mule.runtime.core.util.concurrent.NamedThreadFactory;
+
+import java.util.concurrent.ExecutorService;
 
 public class SensingNullMessageProcessor extends AbstractNonBlockingMessageProcessor implements MessageProcessor, Disposable {
 

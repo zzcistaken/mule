@@ -18,17 +18,6 @@ import static org.mockito.Mockito.when;
 import static org.mule.runtime.core.DefaultMuleEvent.getCurrentEvent;
 import static org.mule.runtime.core.DefaultMuleEvent.setCurrentEvent;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.lang.RandomStringUtils;
-import org.hamcrest.Matcher;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
 import org.mule.runtime.core.MessageExchangePattern;
 import org.mule.runtime.core.TransformationService;
 import org.mule.runtime.core.api.MuleEvent;
@@ -41,6 +30,18 @@ import org.mule.runtime.core.processor.BlockingProcessorExecutor;
 import org.mule.tck.SensingNullMessageProcessor;
 import org.mule.tck.junit4.AbstractMuleContextTestCase;
 import org.mule.tck.size.SmallTest;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.lang.RandomStringUtils;
+import org.hamcrest.Matcher;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 @SmallTest
 @RunWith(MockitoJUnitRunner.class)
