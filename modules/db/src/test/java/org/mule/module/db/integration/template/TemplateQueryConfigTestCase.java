@@ -8,7 +8,6 @@
 package org.mule.module.db.integration.template;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import org.mule.module.db.internal.domain.param.InputQueryParam;
 import org.mule.module.db.internal.domain.query.QueryTemplate;
@@ -129,23 +128,6 @@ public class TemplateQueryConfigTestCase extends FunctionalTestCase
         assertTrue(queryTemplate.isDynamic());
         assertEquals("SELECT * FROM PLANET WHERE POSITION = #[position]", queryTemplate.getSqlText());
         assertEquals(0, queryTemplate.getInputParams().size());
-    }
-
-    @Test
-    public void usesNullDefaultParamValue() throws Exception
-    {
-        Object queryTemplateBean = muleContext.getRegistry().get("testNullParamsQuery");
-
-        QueryTemplate queryTemplate = (QueryTemplate) queryTemplateBean;
-
-        assertFalse(queryTemplate.isDynamic());
-        assertEquals("SELECT * FROM PLANET WHERE POSITION = ?", queryTemplate.getSqlText());
-        assertEquals(1, queryTemplate.getInputParams().size());
-        InputQueryParam param1 = queryTemplate.getInputParams().get(0);
-        assertEquals(UnknownDbType.getInstance(), param1.getType());
-        assertEquals("position", param1.getName());
-        assertEquals(null, param1.getValue());
-        assertEquals(1, param1.getIndex());
     }
 
     @Test

@@ -8,6 +8,7 @@
     <flow name="unresolvedNamedParam">
         <db:select>
             <db:parameterized-query>select * from Planet where name = :name</db:parameterized-query>
+            <db:in-param name="name" value="#[payload]"/>
             <db:in-param name="wrongName" value="#[payload]"/>
         </db:select>
     </flow>

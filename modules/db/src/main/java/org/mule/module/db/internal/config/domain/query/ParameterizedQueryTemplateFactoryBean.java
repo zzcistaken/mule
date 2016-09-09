@@ -8,6 +8,7 @@
 package org.mule.module.db.internal.config.domain.query;
 
 import static org.apache.commons.collections.CollectionUtils.find;
+import static org.apache.commons.lang.StringUtils.isEmpty;
 import org.mule.module.db.internal.domain.param.DefaultInOutQueryParam;
 import org.mule.module.db.internal.domain.param.DefaultInputQueryParam;
 import org.mule.module.db.internal.domain.param.DefaultOutputQueryParam;
@@ -56,7 +57,14 @@ public class ParameterizedQueryTemplateFactoryBean implements FactoryBean<QueryT
 
             if (param == null)
             {
-                resolvedParams.add(templateParam);
+                if (isEmpty(templateParam.getName()))
+                {
+                    resolvedParams.add(templateParam);
+                }
+                else
+                {
+                    throw new IllegalArgumentException("Queries using named parameters must declare every named parameter as in/out/in-out parameter. Missing declaration for parameter: " + templateParam.getName());
+                }
             }
             else
             {
