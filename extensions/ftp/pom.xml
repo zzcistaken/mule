@@ -19,6 +19,7 @@
 
     <properties>
         <formatterConfigPath>../../formatter.xml</formatterConfigPath>
+        <pluginDependencies>mule-module-file-extension-common-${project.version}</pluginDependencies>
     </properties>
 
     <dependencies>

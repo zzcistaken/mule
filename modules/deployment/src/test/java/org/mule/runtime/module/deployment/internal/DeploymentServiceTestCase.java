@@ -1546,6 +1546,32 @@ public class DeploymentServiceTestCase extends AbstractMuleTestCase {
     executeApplicationFlow("main");
   }
 
+  @Override
+  public int getTestTimeoutSecs() {
+    return 120000;
+  }
+
+  @Test
+  public void deploysApplicationWithPluginDependingOnPlugin2() throws Exception {
+
+    addArchive(appsDir, new File("/Users/pablokraan/Downloads/fileApp/fileApp.zip").toURI().toURL(), "fileApp.zip");
+    //addArchive(appsDir, new File("/Users/pablokraan/devel/workspaces/muleFull-4.x3/mule/modules/file-extension-common/target/mule-module-file-4.0-SNAPSHOT.zip").toURI().toURL(), "mule-module-file");
+    //ArtifactPluginFileBuilder dependantPlugin =
+    //  new ArtifactPluginFileBuilder("dependantPlugin").configuredWith(EXPORTED_CLASS_PACKAGES_PROPERTY, "org.foo.echo")
+    //    .containingClass("org/foo/echo/Plugin3Echo.clazz").dependingOn(echoPlugin.getId());
+    //
+    //final TestArtifactDescriptor artifactFileBuilder = new ApplicationFileBuilder("plugin-depending-on-plugin-app")
+    //  .definedBy("plugin-depending-on-plugin-app-config.xml").containingPlugin(echoPlugin).containingPlugin(dependantPlugin);
+    //addPackedAppFromBuilder(artifactFileBuilder);
+
+    startDeployment();
+
+    assertDeploymentSuccess(applicationDeploymentListener, "fileApp");
+    //
+    //executeApplicationFlow("main");
+    //Thread.sleep(getTestTimeoutSecs());
+  }
+
   @Test
   public void failsToDeployApplicationWithMissingPluginDependencyOnPlugin() throws Exception {
 
