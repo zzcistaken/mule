@@ -164,7 +164,7 @@ public class DefaultMuleApplication implements Application {
     try {
       ArtifactContextBuilder artifactBuilder =
           new ArtifactContextBuilder().setArtifactProperties(descriptor.getAppProperties()).setArtifactType(APP)
-              .setArtifactInstallationDirectory(descriptor.getArtifactLocation()) //TODO consolidate getArtifactLocation with getRoot
+              .setArtifactInstallationDirectory(descriptor.getArtifactLocation())
               .setConfigurationFiles(descriptor.getAbsoluteResourcePaths()).setDefaultEncoding(descriptor.getEncoding())
               .setArtifactPlugins(artifactPlugins).setExecutionClassloader(deploymentClassLoader.getClassLoader())
               .setEnableLazyInit(lazy).setServiceRepository(serviceRepository);
@@ -192,7 +192,12 @@ public class DefaultMuleApplication implements Application {
     doInit(true);
   }
 
-  protected void setMuleContext(final MuleContext muleContext) throws NotificationException {
+  protected void setArtifactContext(final ArtifactContext artifactContext) throws NotificationException {
+    this.artifactContext = artifactContext;
+    setMuleContext(this.artifactContext.getMuleContext());
+  }
+
+  private void setMuleContext(final MuleContext muleContext) throws NotificationException {
     statusListener = new MuleContextNotificationListener<MuleContextNotification>() {
 
       @Override

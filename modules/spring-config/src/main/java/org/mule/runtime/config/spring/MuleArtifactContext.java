@@ -303,10 +303,10 @@ public class MuleArtifactContext extends AbstractXmlApplicationContext implement
     List<String> createdComponentModels = new ArrayList<>();
     applicationModel.executeOnEveryMuleComponentTree(componentModel -> {
       if (!mustBeRoot || componentModel.isRoot()) {
-        if (componentModel.getIdentifier().getName().equals("mule")) //TODO this check should not be needed.
-        {
-          return;
-        }
+        //if (componentModel.getIdentifier().getName().equals("mule")) //TODO this check should not be needed.
+        //{
+        //  return;
+        //}
         if (componentModel.getNameAttribute() != null) {
           createdComponentModels.add(componentModel.getNameAttribute());
         }

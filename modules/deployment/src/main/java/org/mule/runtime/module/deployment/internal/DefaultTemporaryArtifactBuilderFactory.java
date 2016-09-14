@@ -72,12 +72,6 @@ public class DefaultTemporaryArtifactBuilderFactory implements TemporaryArtifact
       private List<Class<? extends ConnectivityTestingStrategy>> connectivityTestingStrategyTypes = new ArrayList<>();
 
       @Override
-      public TemporaryArtifactBuilder addConnectivityTestingStrategyType(Class<? extends ConnectivityTestingStrategy> connectionTestingServiceType) {
-        connectivityTestingStrategyTypes.add(connectionTestingServiceType);
-        return this;
-      }
-
-      @Override
       public TemporaryArtifactBuilder addArtifactPluginFile(File artifactPluginFile) {
         artifactPluginFiles.add(artifactPluginFile);
         return this;

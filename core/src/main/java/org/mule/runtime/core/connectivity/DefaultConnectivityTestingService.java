@@ -7,6 +7,7 @@
 package org.mule.runtime.core.connectivity;
 
 import static java.lang.String.format;
+import static java.util.Collections.emptyList;
 import static org.mule.runtime.api.connection.ConnectionExceptionCode.UNKNOWN;
 import static org.mule.runtime.api.connection.ConnectionValidationResult.failure;
 import static org.mule.runtime.core.config.i18n.I18nMessageFactory.createStaticMessage;
@@ -24,6 +25,7 @@ import org.mule.runtime.core.api.registry.ServiceRegistry;
 import org.mule.runtime.core.registry.SpiServiceRegistry;
 
 import java.util.Collection;
+import java.util.Collections;
 
 import javax.inject.Inject;
 
@@ -50,10 +52,6 @@ public class DefaultConnectivityTestingService implements ConnectivityTestingSer
       if (connectivityTestingStrategy instanceof MuleContextAware) {
         ((MuleContextAware) connectivityTestingStrategy).setMuleContext(muleContext);
       }
-    }
-
-    if (connectivityTestingStrategies.isEmpty()) {
-      throw new MuleRuntimeException(createStaticMessage(NO_CONNECTIVITY_TESTING_STRATEGY_FOUND));
     }
   }
 

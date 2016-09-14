@@ -49,4 +49,8 @@ public class ArtifactContext {
   public ConnectivityTestingService getConnectivityTestingService() {
     return muleArtifactContext.getConnectivityTestingService();
   }
+
+  public void setMuleContext(MuleContext muleContext) {
+    this.muleContext = muleContext;
+  }
 }

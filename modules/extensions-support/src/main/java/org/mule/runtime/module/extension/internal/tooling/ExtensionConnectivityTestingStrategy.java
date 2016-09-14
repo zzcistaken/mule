@@ -7,6 +7,7 @@
 package org.mule.runtime.module.extension.internal.tooling;
 
 import static org.mule.runtime.api.connection.ConnectionValidationResult.failure;
+import static org.mule.runtime.core.config.i18n.I18nMessageFactory.createStaticMessage;
 import static org.mule.runtime.module.extension.internal.util.MuleExtensionUtils.getInitialiserEvent;
 import org.mule.runtime.api.connection.ConnectionExceptionCode;
 import org.mule.runtime.api.connection.ConnectionProvider;
@@ -14,7 +15,6 @@ import org.mule.runtime.api.connection.ConnectionValidationResult;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.MuleRuntimeException;
 import org.mule.runtime.core.api.context.MuleContextAware;
-import org.mule.runtime.core.config.i18n.CoreMessages;
 import org.mule.runtime.extension.api.runtime.ConfigurationInstance;
 import org.mule.runtime.extension.api.runtime.ConfigurationProvider;
 import org.mule.runtime.module.extension.internal.runtime.resolver.ConnectionProviderResolver;
@@ -68,7 +68,7 @@ public class ExtensionConnectivityTestingStrategy implements ConnectivityTesting
         if (configurationInstance.getConnectionProvider().isPresent()) {
           return validateConnectionOverConnectionProvider(configurationInstance.getConnectionProvider().get());
         } else {
-          throw new MuleRuntimeException(CoreMessages.createStaticMessage("The component does not support connectivity testing"));
+          throw new MuleRuntimeException(createStaticMessage("The component does not support connectivity testing"));
         }
       }
     } catch (Exception e) {

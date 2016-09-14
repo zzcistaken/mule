@@ -43,7 +43,6 @@ public class DefaultConnectivityTestingService implements ConnectivityTestingSer
    *
    * @throws MuleRuntimeException
    */
-  //TODO consolidate
   @Override
   public ConnectionValidationResult testConnection(String identifier) {
     checkArgument(identifier != null, "identifier cannot be null");
@@ -58,22 +57,6 @@ public class DefaultConnectivityTestingService implements ConnectivityTestingSer
         throw new MuleRuntimeException(e);
       }
     }
-    Object connectivityTestingObject = temporaryArtifact.getMuleContext().getRegistry().get(identifier);
-    if (connectivityTestingObject == null) {
-      throw new ConnectivityTestingObjectNotFoundException(createStaticMessage("It was not possible to find an object to do connectivity testing"));
-    }
-    Collection<ConnectivityTestingStrategy> connectivityTestingStrategies =
-        temporaryArtifact.getMuleContext().getRegistry().lookupObjects(ConnectivityTestingStrategy.class);
-    for (ConnectivityTestingStrategy connectivityTestingStrategy : connectivityTestingStrategies) {
-      if (connectivityTestingStrategy.accepts(connectivityTestingObject)) {
-        try {
-          return connectivityTestingStrategy.testConnectivity(connectivityTestingObject);
-        } catch (Exception e) {
-          return failure(e.getMessage(), UNKNOWN, e);
-        }
-      }
-    }
-    throw new UnsupportedConnectivityTestingObjectException(createStaticMessage("Could not do connectivity testing over object of type "
-        + connectivityTestingObject.getClass().getName()));
+    return temporaryArtifact.getConnectivityTestingService().testConnection(identifier);
   }
 }

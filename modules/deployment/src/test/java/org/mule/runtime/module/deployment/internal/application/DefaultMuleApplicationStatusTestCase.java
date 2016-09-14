@@ -18,6 +18,7 @@ import static org.mule.runtime.core.context.notification.MuleContextNotification
 import org.mule.runtime.core.context.notification.MuleContextNotification;
 import org.mule.runtime.module.deployment.api.application.ApplicationStatus;
 import org.mule.runtime.module.deployment.internal.MuleApplicationClassLoader;
+import org.mule.runtime.module.deployment.internal.artifact.ArtifactContext;
 import org.mule.runtime.module.deployment.internal.descriptor.ApplicationDescriptor;
 import org.mule.runtime.module.service.ServiceRepository;
 import org.mule.tck.junit4.AbstractMuleContextTestCase;
@@ -44,10 +45,12 @@ public class DefaultMuleApplicationStatusTestCase extends AbstractMuleContextTes
   @Override
   protected void doSetUp() throws Exception {
     MuleApplicationClassLoader parentArtifactClassLoader = mock(MuleApplicationClassLoader.class);
+    ArtifactContext mockArtifactContext = mock(ArtifactContext.class);
+    when(mockArtifactContext.getMuleContext()).thenReturn(muleContext);
     application =
         new DefaultMuleApplication(null, parentArtifactClassLoader, Collections.emptyList(), null,
                                    mock(ServiceRepository.class), appLocation);
-    application.setMuleContext(muleContext);
+    application.setArtifactContext(mockArtifactContext);
   }
 
   @Test
