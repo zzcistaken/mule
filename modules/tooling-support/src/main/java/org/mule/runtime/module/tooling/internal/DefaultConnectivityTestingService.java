@@ -14,12 +14,11 @@ import org.mule.runtime.api.connection.ConnectionValidationResult;
 import org.mule.runtime.core.api.MuleRuntimeException;
 import org.mule.runtime.core.api.config.ConfigurationException;
 import org.mule.runtime.core.api.lifecycle.InitialisationException;
-import org.mule.runtime.core.util.Preconditions;
-import org.mule.runtime.module.tooling.api.artifact.TemporaryArtifact;
-import org.mule.runtime.module.tooling.api.connectivity.ConnectivityTestingService;
-import org.mule.runtime.module.tooling.api.connectivity.ConnectivityTestingStrategy;
-import org.mule.runtime.module.tooling.api.connectivity.ConnectivityTestingObjectNotFoundException;
-import org.mule.runtime.module.tooling.api.connectivity.UnsupportedConnectivityTestingObjectException;
+import org.mule.runtime.module.deployment.internal.connectivity.artifact.TemporaryArtifact;
+import org.mule.runtime.core.api.connectivity.ConnectivityTestingService;
+import org.mule.runtime.core.api.connectivity.ConnectivityTestingStrategy;
+import org.mule.runtime.core.api.connectivity.ConnectivityTestingObjectNotFoundException;
+import org.mule.runtime.core.api.connectivity.UnsupportedConnectivityTestingObjectException;
 
 import java.util.Collection;
 
@@ -44,6 +43,7 @@ public class DefaultConnectivityTestingService implements ConnectivityTestingSer
    *
    * @throws MuleRuntimeException
    */
+  //TODO consolidate
   @Override
   public ConnectionValidationResult testConnection(String identifier) {
     checkArgument(identifier != null, "identifier cannot be null");
@@ -67,7 +67,7 @@ public class DefaultConnectivityTestingService implements ConnectivityTestingSer
     for (ConnectivityTestingStrategy connectivityTestingStrategy : connectivityTestingStrategies) {
       if (connectivityTestingStrategy.accepts(connectivityTestingObject)) {
         try {
-          return connectivityTestingStrategy.testConnectivity(connectivityTestingObject);
+          return connectivityTestingStrategy.validateConnectivity(connectivityTestingObject);
         } catch (Exception e) {
           return failure(e.getMessage(), UNKNOWN, e);
         }

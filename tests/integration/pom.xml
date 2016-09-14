@@ -80,6 +80,16 @@
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.mule.modules</groupId>
+            <artifactId>mule-module-ftp</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.tests</groupId>
+            <artifactId>mule-vegan-extension</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <!-- Test jars -->
         <!-- some tests reference cxf test classes -->

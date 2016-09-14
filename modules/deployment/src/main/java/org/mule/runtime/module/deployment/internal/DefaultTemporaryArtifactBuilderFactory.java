@@ -12,18 +12,20 @@ import org.mule.runtime.config.spring.dsl.api.config.ArtifactConfiguration;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.MuleException;
 import org.mule.runtime.core.api.MuleRuntimeException;
+import org.mule.runtime.core.api.connectivity.ConnectivityTestingService;
 import org.mule.runtime.core.api.context.notification.MuleContextListener;
 import org.mule.runtime.core.util.UUID;
 import org.mule.runtime.module.deployment.internal.application.ArtifactPlugin;
 import org.mule.runtime.module.deployment.internal.application.DefaultArtifactPlugin;
+import org.mule.runtime.module.deployment.internal.artifact.ArtifactContext;
 import org.mule.runtime.module.deployment.internal.artifact.ArtifactMuleContextBuilder;
 import org.mule.runtime.module.artifact.classloader.MuleDeployableArtifactClassLoader;
+import org.mule.runtime.module.deployment.internal.connectivity.artifact.TemporaryArtifact;
+import org.mule.runtime.module.deployment.internal.connectivity.artifact.TemporaryArtifactBuilder;
+import org.mule.runtime.module.deployment.internal.connectivity.artifact.TemporaryArtifactBuilderFactory;
 import org.mule.runtime.module.deployment.internal.plugin.ArtifactPluginDescriptor;
 import org.mule.runtime.module.reboot.MuleContainerBootstrapUtils;
-import org.mule.runtime.module.tooling.api.artifact.TemporaryArtifact;
-import org.mule.runtime.module.tooling.api.artifact.TemporaryArtifactBuilderFactory;
-import org.mule.runtime.module.tooling.api.artifact.TemporaryArtifactBuilder;
-import org.mule.runtime.module.tooling.api.connectivity.ConnectivityTestingStrategy;
+import org.mule.runtime.core.api.connectivity.ConnectivityTestingStrategy;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,6 +44,7 @@ import org.slf4j.LoggerFactory;
 public class DefaultTemporaryArtifactBuilderFactory implements TemporaryArtifactBuilderFactory {
 
   private final MuleArtifactResourcesRegistry muleArtifactResourcesRegistry;
+  private ArtifactContext artifactContext;
 
   /**
    * Creates a {@code TemporaryToolingArtifactBuilderFactory}
@@ -142,7 +145,8 @@ public class DefaultTemporaryArtifactBuilderFactory implements TemporaryArtifact
 
             @Override
             public void start() throws MuleException {
-              this.muleContext = artifactMuleContextBuilder.build();
+              artifactContext = artifactMuleContextBuilder.build();
+              this.muleContext = artifactContext.getMuleContext();
               muleContext.start();
             }
 
@@ -152,6 +156,11 @@ public class DefaultTemporaryArtifactBuilderFactory implements TemporaryArtifact
                 return false;
               }
               return muleContext.isStarted();
+            }
+
+            @Override
+            public ConnectivityTestingService getConnectivityTestingService() {
+              return artifactContext.getMuleArtifactContext().getConnectivityTestingService();
             }
 
             @Override
