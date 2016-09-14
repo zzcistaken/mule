@@ -53,13 +53,12 @@ public class DefaultToolingService implements ToolingService {
    * {@inheritDoc}
    */
   @Override
-  public Application createApplication(File applicationLocation) throws IOException
-  {
-      Application application = artifactResourcesRegistry.getApplicationFactory().createArtifact(applicationLocation);
-      application.install();
-      application.lazyInit();
-      application.start();
-      return application;
+  public Application createApplication(File applicationLocation) throws IOException {
+    Application application = artifactResourcesRegistry.getApplicationFactory().createArtifact(applicationLocation);
+    application.install();
+    application.lazyInit();
+    application.start();
+    return application;
   }
 
 }

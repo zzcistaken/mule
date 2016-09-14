@@ -11,8 +11,7 @@ package org.mule.runtime.config.spring;
  *
  * @since 4.0
  */
-public interface LazyComponentInitializer
-{
+public interface LazyComponentInitializer {
 
   /**
    * Calling this method guarantees that the requested component from the configuration

@@ -46,8 +46,7 @@ import java.util.Map;
  *
  * @since 4.0
  */
-public class ArtifactContextBuilder
-{
+public class ArtifactContextBuilder {
 
   protected static final String EXECUTION_CLASSLOADER_WAS_NOT_SET = "Execution classloader was not set";
   protected static final String MULE_CONTEXT_ARTIFACT_PROPERTIES_CANNOT_BE_NULL =
@@ -240,7 +239,8 @@ public class ArtifactContextBuilder
         builders.add(new ApplicationExtensionsManagerConfigurationBuilder(artifactPlugins));
         builders.add(createConfigurationBuilderFromApplicationProperties());
         SpringXmlConfigurationBuilder mainBuilder =
-            new SpringXmlConfigurationBuilder(configurationFiles, artifactConfiguration, artifactProperties, artifactType, enableLazyInit);
+            new SpringXmlConfigurationBuilder(configurationFiles, artifactConfiguration, artifactProperties, artifactType,
+                                              enableLazyInit);
         mainBuilder.addServiceConfigurator(new ContainerServicesMuleContextConfigurator(serviceRepository));
         if (parentContext != null) {
           mainBuilder.setParentContext(parentContext);
