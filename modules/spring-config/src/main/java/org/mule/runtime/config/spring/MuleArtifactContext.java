@@ -16,6 +16,8 @@ import static org.mule.runtime.config.spring.parsers.generic.AutoIdUtils.uniqueV
 import static org.mule.runtime.core.api.config.MuleProperties.OBJECT_CONNECTIVITY_TESTING_SERVICE;
 import static org.mule.runtime.core.api.config.MuleProperties.OBJECT_MULE_CONFIGURATION;
 import static org.mule.runtime.core.api.config.MuleProperties.OBJECT_MULE_CONTEXT;
+import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.initialiseIfNeeded;
+import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.startIfNeeded;
 import static org.mule.runtime.core.config.i18n.I18nMessageFactory.createStaticMessage;
 import static org.mule.runtime.core.exception.ErrorTypeLocatorFactory.createDefaultErrorTypeLocator;
 import static org.mule.runtime.core.exception.ErrorTypeRepositoryFactory.createDefaultErrorTypeRepository;
@@ -101,7 +103,8 @@ import org.w3c.dom.Document;
  * <code>MuleArtifactContext</code> is a simple extension application context that allows resources to be loaded from the
  * Classpath of file system using the MuleBeanDefinitionReader.
  */
-public class MuleArtifactContext extends AbstractXmlApplicationContext implements LazyComponentResolver {
+public class MuleArtifactContext extends AbstractXmlApplicationContext implements LazyComponentInitializer
+{
 
   private static final ThreadLocal<MuleContext> currentMuleContext = new ThreadLocal<>();
   public static final String INNER_BEAN_PREFIX = "(inner bean)";
@@ -331,11 +334,16 @@ public class MuleArtifactContext extends AbstractXmlApplicationContext implement
                                                           }, null);
       }
     });
+    applyLifecycle(createdComponentModels);
+  }
+
+  private void applyLifecycle(List<String> createdComponentModels)
+  {
     if (muleContext.isInitialised()) {
       for (String createdComponentModelName : createdComponentModels) {
         Object object = muleContext.getRegistry().get(createdComponentModelName);
         try {
-          LifecycleUtils.initialiseIfNeeded(object, true, muleContext);
+          initialiseIfNeeded(object, true, muleContext);
         } catch (InitialisationException e) {
           throw new RuntimeException(e);
         }
@@ -345,7 +353,7 @@ public class MuleArtifactContext extends AbstractXmlApplicationContext implement
       for (String createdComponentModelName : createdComponentModels) {
         Object object = muleContext.getRegistry().get(createdComponentModelName);
         try {
-          LifecycleUtils.startIfNeeded(object);
+          startIfNeeded(object);
         } catch (MuleException e) {
           throw new RuntimeException(e);
         }
@@ -486,13 +494,10 @@ public class MuleArtifactContext extends AbstractXmlApplicationContext implement
     if (muleContext.getRegistry().get(componentName) != null) {
       return;
     }
-    MinimalApplicationModelGenerator minimalApplicationModelGenerator =
-        new MinimalApplicationModelGenerator(this.applicationModel, componentBuildingDefinitionRegistry);
+    MinimalApplicationModelGenerator minimalApplicationModelGenerator = new MinimalApplicationModelGenerator(this.applicationModel, componentBuildingDefinitionRegistry);
     ApplicationModel minimalApplicationModel;
     if (!componentName.contains("/")) {
-      minimalApplicationModel =
-          minimalApplicationModelGenerator
-              .getMinimalModelByName(componentName);
+      minimalApplicationModel = minimalApplicationModelGenerator.getMinimalModelByName(componentName);
     } else {
       minimalApplicationModel = minimalApplicationModelGenerator.getMinimalModelByPath(componentName);
     }
@@ -500,8 +505,7 @@ public class MuleArtifactContext extends AbstractXmlApplicationContext implement
   }
 
   public ConnectivityTestingService getConnectivityTestingService() {
-    ConnectivityTestingService connectivityTestingService =
-        muleContext.getRegistry().lookupObject(OBJECT_CONNECTIVITY_TESTING_SERVICE);
+    ConnectivityTestingService connectivityTestingService = muleContext.getRegistry().lookupObject(OBJECT_CONNECTIVITY_TESTING_SERVICE);
     if (enableLazyInit) {
       return new LazyConnectivityTestingService(this, connectivityTestingService);
     }

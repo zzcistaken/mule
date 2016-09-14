@@ -18,7 +18,7 @@ public interface DescriptorParser<D extends DeployableArtifactDescriptor> {
    * Parses an artifact descriptor and creates a {@link DeployableArtifactDescriptor} with
    * the information from the descriptor.
    *
-   * @param artifactLocation the location of the artifact. This is the folder where the artifact content is located.
+   * @param artifactLocation the location of the artifact. This is the folder where the artifact content is stored.
    * @param descriptor file that contains the descriptor content
    * @param artifactName name of the artifact
    * @return a descriptor with all the information of the descriptor file.

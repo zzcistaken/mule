@@ -21,6 +21,9 @@ import java.util.Properties;
  */
 public class DomainDescriptorParser implements DescriptorParser<DomainDescriptor> {
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public DomainDescriptor parse(File location, File descriptor, String artifactName) throws IOException {
     final Properties properties = loadProperties(new FileInputStream(descriptor));

@@ -27,6 +27,9 @@ public class PropertiesDescriptorParser implements DescriptorParser<ApplicationD
   protected static final String PROPERTY_CONFIG_RESOURCES = "config.resources";
   protected static final String PROPERTY_LOG_CONFIG_FILE = "log.configFile";
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public ApplicationDescriptor parse(File location, File descriptor, String artifactName) throws IOException {
     final Properties properties = PropertiesUtils.loadProperties(new FileInputStream(descriptor));

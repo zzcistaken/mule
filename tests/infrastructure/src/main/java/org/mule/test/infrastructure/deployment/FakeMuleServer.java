@@ -405,6 +405,9 @@ public class FakeMuleServer {
     }
   }
 
+  /**
+   * @return repository server to download artifacts. To configure it use system properties from {@link RepositoryServiceFactory}.
+   */
   public RepositoryService getRepositoryService() {
     return repositoryService;
   }

@@ -38,12 +38,12 @@ public class TestDomainWrapper implements Domain {
 
   @Override
   public File getLocation() {
-    return null;
+    return delegate.getLocation();
   }
 
   @Override
   public ConnectivityTestingService getConnectivityTestingService() {
-    return null;
+    return delegate.getConnectivityTestingService();
   }
 
   @Override
@@ -58,7 +58,7 @@ public class TestDomainWrapper implements Domain {
 
   @Override
   public void lazyInit() {
-
+    delegate.lazyInit();
   }
 
   @Override

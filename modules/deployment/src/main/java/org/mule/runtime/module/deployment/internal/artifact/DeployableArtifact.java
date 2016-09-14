@@ -58,8 +58,14 @@ public interface DeployableArtifact<D extends DeployableArtifactDescriptor> exte
    */
   MuleContext getMuleContext();
 
+  /**
+   * @return the directory where the artifact content is stored.
+   */
   File getLocation();
 
+  /**
+   * @return a service to test connection over configuration components.
+   */
   ConnectivityTestingService getConnectivityTestingService();
 
 }

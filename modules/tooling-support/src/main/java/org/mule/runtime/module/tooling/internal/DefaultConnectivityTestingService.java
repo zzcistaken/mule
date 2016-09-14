@@ -67,7 +67,7 @@ public class DefaultConnectivityTestingService implements ConnectivityTestingSer
     for (ConnectivityTestingStrategy connectivityTestingStrategy : connectivityTestingStrategies) {
       if (connectivityTestingStrategy.accepts(connectivityTestingObject)) {
         try {
-          return connectivityTestingStrategy.validateConnectivity(connectivityTestingObject);
+          return connectivityTestingStrategy.testConnectivity(connectivityTestingObject);
         } catch (Exception e) {
           return failure(e.getMessage(), UNKNOWN, e);
         }

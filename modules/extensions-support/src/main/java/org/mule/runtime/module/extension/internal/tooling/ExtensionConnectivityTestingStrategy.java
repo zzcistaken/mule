@@ -28,7 +28,6 @@ import javax.inject.Inject;
  *
  * @since 4.0
  */
-//TODO this should not be mule context aware. This should probably be a kind of registry bootstrap so it's goes through the usual classloading cycle of mule
 public class ExtensionConnectivityTestingStrategy implements ConnectivityTestingStrategy, MuleContextAware {
 
   @Inject
@@ -56,7 +55,7 @@ public class ExtensionConnectivityTestingStrategy implements ConnectivityTesting
    * {@inheritDoc}
    */
   @Override
-  public ConnectionValidationResult validateConnectivity(Object connectivityTestingObject) {
+  public ConnectionValidationResult testConnectivity(Object connectivityTestingObject) {
     try {
       if (connectivityTestingObject instanceof ConnectionProviderResolver) {
         ConnectionProvider connectionProvider =

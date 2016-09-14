@@ -6,8 +6,20 @@
  */
 package org.mule.runtime.config.spring;
 
-public interface LazyComponentResolver {
+/**
+ * Initializer for the creation of lazy resources.
+ *
+ * @since 4.0
+ */
+public interface LazyComponentInitializer
+{
 
+  /**
+   * Calling this method guarantees that the requested component from the configuration
+   * will be created.
+   *
+   * @param componentIdentifier the identier of the configuration component.
+   */
   void initializeComponent(String componentIdentifier);
 
 }

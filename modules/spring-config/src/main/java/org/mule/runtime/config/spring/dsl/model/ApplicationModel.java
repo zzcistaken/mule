@@ -666,6 +666,12 @@ public class ApplicationModel {
     return muleComponentModels.get(0);
   }
 
+  /**
+   * Find a named component configuration.
+   *
+   * @param name the expected value for the name attribute configuration.
+   * @return the component if present, if not, an empty {@link Optional}
+   */
   public Optional<ComponentModel> findNamedComponent(String name) {
     Optional<ComponentModel> requestedComponentModelOptional = empty();
     for (ComponentModel muleComponentModel : muleComponentModels) {

@@ -14,21 +14,28 @@ import org.mule.runtime.config.spring.dsl.model.NoSuchComponentModelException;
 import org.mule.runtime.core.api.connectivity.ConnectivityTestingObjectNotFoundException;
 import org.mule.runtime.core.api.connectivity.ConnectivityTestingService;
 
+/**
+ * {@link ConnectivityTestingService} implementation that creates the required
+ * components before doing test connectivity.
+ *
+ * This guarantees that if the application has been created lazily, the requested
+ * components exists before the execution of the actual {@link ConnectivityTestingService}.
+ */
 public class LazyConnectivityTestingService implements ConnectivityTestingService {
 
-  private final LazyComponentResolver lazyComponentResolver;
+  private final LazyComponentInitializer lazyComponentInitializer;
   private final ConnectivityTestingService connectivityTestingService;
 
-  public LazyConnectivityTestingService(LazyComponentResolver lazyComponentResolver,
+  public LazyConnectivityTestingService(LazyComponentInitializer lazyComponentInitializer,
                                         ConnectivityTestingService connectivityTestingService) {
-    this.lazyComponentResolver = lazyComponentResolver;
+    this.lazyComponentInitializer = lazyComponentInitializer;
     this.connectivityTestingService = connectivityTestingService;
   }
 
   @Override
   public ConnectionValidationResult testConnection(String identifier) {
     try {
-      lazyComponentResolver.initializeComponent(identifier);
+      lazyComponentInitializer.initializeComponent(identifier);
     } catch (NoSuchComponentModelException e) {
       throw new ConnectivityTestingObjectNotFoundException(identifier);
     } catch (Exception e) {

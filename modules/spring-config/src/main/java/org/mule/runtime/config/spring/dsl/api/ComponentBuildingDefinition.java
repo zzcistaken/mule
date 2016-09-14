@@ -134,6 +134,9 @@ public class ComponentBuildingDefinition {
     return named;
   }
 
+  /**
+   * @return the complete list of {@link AttributeDefinition}s
+   */
   public List<AttributeDefinition> getAttributesDefinitions() {
     return concat(setterParameterDefinitions.stream().map(SetterAttributeDefinition::getAttributeDefinition),
                   constructorAttributeDefinition.stream()).collect(Collectors.toList());

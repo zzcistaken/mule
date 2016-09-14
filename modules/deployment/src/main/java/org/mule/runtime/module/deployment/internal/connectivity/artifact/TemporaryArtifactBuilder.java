@@ -19,14 +19,6 @@ import java.io.File;
 public interface TemporaryArtifactBuilder {
 
   /**
-   * Allows to configure a {@code ConnectivityTestingStrategy} that can be used for connectivity testing.
-   *
-   * @param connectionTestingServiceType class that creates instance of {@code ConnectivityTestingStrategy}
-   * @return the builder
-   */
-  TemporaryArtifactBuilder addConnectivityTestingStrategyType(Class<? extends ConnectivityTestingStrategy> connectionTestingServiceType);
-
-  /**
    * Allows to add an extensions to be used in the tooling artifact. The file type must be zip and be an extension.
    *
    * @param artifactPluginFile a file pointer to an extension file

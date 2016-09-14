@@ -37,6 +37,9 @@ public interface TemporaryArtifact extends Startable, Disposable {
    */
   boolean isStarted();
 
+  /**
+   * @return connectivity testing service to test connection over configuration components
+   */
   ConnectivityTestingService getConnectivityTestingService();
 
   /**

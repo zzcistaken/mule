@@ -17,6 +17,11 @@ import java.io.File;
  */
 public class EmptyApplicationDescriptor extends ApplicationDescriptor {
 
+  /**
+   * Creates an {@link ApplicationDescriptor} with the default values.
+   *
+   * @param appLocation the directory where the application content is stored.
+   */
   public EmptyApplicationDescriptor(File appLocation) {
     super(appLocation.getName());
     setConfigResources(new String[] {MuleServer.DEFAULT_CONFIGURATION});

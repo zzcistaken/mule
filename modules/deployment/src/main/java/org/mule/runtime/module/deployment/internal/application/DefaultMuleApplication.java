@@ -38,7 +38,7 @@ import org.mule.runtime.module.deployment.api.application.ApplicationStatus;
 import org.mule.runtime.module.deployment.api.domain.Domain;
 import org.mule.runtime.module.deployment.internal.MuleDeploymentService;
 import org.mule.runtime.module.deployment.internal.artifact.ArtifactContext;
-import org.mule.runtime.module.deployment.internal.artifact.ArtifactMuleContextBuilder;
+import org.mule.runtime.module.deployment.internal.artifact.ArtifactContextBuilder;
 import org.mule.runtime.module.deployment.internal.artifact.MuleContextDeploymentListener;
 import org.mule.runtime.module.deployment.internal.descriptor.ApplicationDescriptor;
 import org.mule.runtime.module.deployment.internal.domain.DomainRepository;
@@ -162,8 +162,8 @@ public class DefaultMuleApplication implements Application {
     }
 
     try {
-      ArtifactMuleContextBuilder artifactBuilder =
-          new ArtifactMuleContextBuilder().setArtifactProperties(descriptor.getAppProperties()).setArtifactType(APP)
+      ArtifactContextBuilder artifactBuilder =
+          new ArtifactContextBuilder().setArtifactProperties(descriptor.getAppProperties()).setArtifactType(APP)
               .setArtifactInstallationDirectory(descriptor.getArtifactLocation()) //TODO consolidate getArtifactLocation with getRoot
               .setConfigurationFiles(descriptor.getAbsoluteResourcePaths()).setDefaultEncoding(descriptor.getEncoding())
               .setArtifactPlugins(artifactPlugins).setExecutionClassloader(deploymentClassLoader.getClassLoader())
@@ -245,7 +245,7 @@ public class DefaultMuleApplication implements Application {
 
   @Override
   public ConnectivityTestingService getConnectivityTestingService() {
-    return artifactContext.getMuleArtifactContext().getConnectivityTestingService();
+    return artifactContext.getConnectivityTestingService();
   }
 
   @Override

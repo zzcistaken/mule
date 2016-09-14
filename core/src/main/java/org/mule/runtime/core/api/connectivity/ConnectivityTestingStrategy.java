@@ -26,7 +26,7 @@ public interface ConnectivityTestingStrategy {
    * @return a {@code ConnectionValidationResult} describing the test connectivity result.
    * @param connectivityTestingObject object over the one connectivity testing must be done
    */
-  ConnectionValidationResult validateConnectivity(Object connectivityTestingObject);
+  ConnectionValidationResult testConnectivity(Object connectivityTestingObject);
 
   /**
    * Determines if this {@code ConnectivityTestingStrategy} must be applied over the provided object.

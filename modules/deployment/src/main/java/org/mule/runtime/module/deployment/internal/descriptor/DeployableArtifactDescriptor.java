@@ -56,10 +56,16 @@ public class DeployableArtifactDescriptor extends ArtifactDescriptor {
     this.sharedRuntimeLibs = sharedRuntimeLibs;
   }
 
+  /**
+   * @param location the directory where the artifact content is stored.
+   */
   public void setArtifactLocation(File location) {
     this.location = location;
   }
 
+  /**
+   * @return the directory where the artifact content is stored.
+     */
   public File getArtifactLocation() {
     return this.location;
   }

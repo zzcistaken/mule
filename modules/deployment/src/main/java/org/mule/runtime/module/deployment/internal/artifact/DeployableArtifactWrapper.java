@@ -26,8 +26,7 @@ import java.io.IOException;
  * may load custom classes for an application, which must be executed with deployment (app) classloader in the context, and not
  * Mule system classloader.
  */
-public class DeployableArtifactWrapper<T extends DeployableArtifact<D>, D extends DeployableArtifactDescriptor>
-    implements DeployableArtifact<D> {
+public class DeployableArtifactWrapper<T extends DeployableArtifact<D>, D extends DeployableArtifactDescriptor> implements DeployableArtifact<D> {
 
   private T delegate;
 

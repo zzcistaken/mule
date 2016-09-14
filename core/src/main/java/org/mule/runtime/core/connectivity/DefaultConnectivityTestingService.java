@@ -27,6 +27,9 @@ import java.util.Collection;
 
 import javax.inject.Inject;
 
+/**
+ * {@inheritDoc}
+ */
 public class DefaultConnectivityTestingService implements ConnectivityTestingService, Initialisable {
 
   protected static final String NO_CONNECTIVITY_TESTING_STRATEGY_FOUND =
@@ -54,6 +57,9 @@ public class DefaultConnectivityTestingService implements ConnectivityTestingSer
     }
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public ConnectionValidationResult testConnection(String identifier) {
     Object connectivityTestingObject = muleContext.getRegistry().get(identifier);
@@ -63,7 +69,7 @@ public class DefaultConnectivityTestingService implements ConnectivityTestingSer
     for (ConnectivityTestingStrategy connectivityTestingStrategy : connectivityTestingStrategies) {
       if (connectivityTestingStrategy.accepts(connectivityTestingObject)) {
         try {
-          return connectivityTestingStrategy.validateConnectivity(connectivityTestingObject);
+          return connectivityTestingStrategy.testConnectivity(connectivityTestingObject);
         } catch (Exception e) {
           return failure(e.getMessage(), UNKNOWN, e);
         }

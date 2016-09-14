@@ -18,7 +18,7 @@ import org.mule.runtime.core.util.UUID;
 import org.mule.runtime.module.deployment.internal.application.ArtifactPlugin;
 import org.mule.runtime.module.deployment.internal.application.DefaultArtifactPlugin;
 import org.mule.runtime.module.deployment.internal.artifact.ArtifactContext;
-import org.mule.runtime.module.deployment.internal.artifact.ArtifactMuleContextBuilder;
+import org.mule.runtime.module.deployment.internal.artifact.ArtifactContextBuilder;
 import org.mule.runtime.module.artifact.classloader.MuleDeployableArtifactClassLoader;
 import org.mule.runtime.module.deployment.internal.connectivity.artifact.TemporaryArtifact;
 import org.mule.runtime.module.deployment.internal.connectivity.artifact.TemporaryArtifactBuilder;
@@ -64,7 +64,7 @@ public class DefaultTemporaryArtifactBuilderFactory implements TemporaryArtifact
 
       private Logger logger = LoggerFactory.getLogger(TemporaryArtifactBuilder.class);
 
-      private ArtifactMuleContextBuilder artifactMuleContextBuilder;
+      private ArtifactContextBuilder artifactContextBuilder;
       private MuleDeployableArtifactClassLoader temporaryContextClassLoader;
       private ArtifactConfiguration artifactConfiguration;
       private List<File> artifactPluginFiles = new ArrayList<>();
@@ -135,7 +135,7 @@ public class DefaultTemporaryArtifactBuilderFactory implements TemporaryArtifact
                                                                              artifactClassLoader))
               .collect(toList());
 
-          artifactMuleContextBuilder = new ArtifactMuleContextBuilder().setArtifactType(DOMAIN)
+          artifactContextBuilder = new ArtifactContextBuilder().setArtifactType(DOMAIN)
               .setArtifactPlugins(artifactPlugins).setExecutionClassloader(temporaryContextClassLoader)
               .setArtifactConfiguration(artifactConfiguration).setMuleContextListener(createMuleContextListener());
 
@@ -145,7 +145,7 @@ public class DefaultTemporaryArtifactBuilderFactory implements TemporaryArtifact
 
             @Override
             public void start() throws MuleException {
-              artifactContext = artifactMuleContextBuilder.build();
+              artifactContext = artifactContextBuilder.build();
               this.muleContext = artifactContext.getMuleContext();
               muleContext.start();
             }
@@ -160,7 +160,7 @@ public class DefaultTemporaryArtifactBuilderFactory implements TemporaryArtifact
 
             @Override
             public ConnectivityTestingService getConnectivityTestingService() {
-              return artifactContext.getMuleArtifactContext().getConnectivityTestingService();
+              return artifactContext.getConnectivityTestingService();
             }
 
             @Override

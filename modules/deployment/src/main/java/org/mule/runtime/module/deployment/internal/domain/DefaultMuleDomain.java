@@ -9,10 +9,6 @@ package org.mule.runtime.module.deployment.internal.domain;
 import static org.mule.runtime.core.config.bootstrap.ArtifactType.DOMAIN;
 import static org.mule.runtime.core.util.ClassUtils.withContextClassLoader;
 import static org.mule.runtime.core.util.SplashScreen.miniSplash;
-import org.mule.runtime.api.connection.ConnectionValidationResult;
-import org.mule.runtime.api.metadata.MetadataKeysContainer;
-import org.mule.runtime.api.metadata.descriptor.TypeMetadataDescriptor;
-import org.mule.runtime.api.metadata.resolving.MetadataResult;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.MuleException;
 import org.mule.runtime.core.api.MuleRuntimeException;
@@ -30,7 +26,7 @@ import org.mule.runtime.module.deployment.api.domain.Domain;
 import org.mule.runtime.module.deployment.internal.MuleDeploymentService;
 import org.mule.runtime.module.deployment.internal.application.NullDeploymentListener;
 import org.mule.runtime.module.deployment.internal.artifact.ArtifactContext;
-import org.mule.runtime.module.deployment.internal.artifact.ArtifactMuleContextBuilder;
+import org.mule.runtime.module.deployment.internal.artifact.ArtifactContextBuilder;
 import org.mule.runtime.module.deployment.internal.artifact.MuleContextDeploymentListener;
 import org.mule.runtime.module.deployment.internal.descriptor.DomainDescriptor;
 import org.mule.runtime.module.artifact.classloader.ArtifactClassLoader;
@@ -96,7 +92,7 @@ public class DefaultMuleDomain implements Domain {
 
   @Override
   public ConnectivityTestingService getConnectivityTestingService() {
-    return artifactContext.getMuleArtifactContext().getConnectivityTestingService();
+    return artifactContext.getConnectivityTestingService();
   }
 
   @Override
@@ -110,6 +106,16 @@ public class DefaultMuleDomain implements Domain {
 
   @Override
   public void init() {
+    doInit(false);
+  }
+
+  @Override
+  public void lazyInit() {
+    doInit(true);
+  }
+
+  public void doInit(boolean lazy)
+  {
     if (logger.isInfoEnabled()) {
       logger.info(miniSplash(String.format("Initializing domain '%s'", getArtifactName())));
     }
@@ -118,10 +124,11 @@ public class DefaultMuleDomain implements Domain {
       if (this.configResourceFile != null) {
         validateConfigurationFileDoNotUsesCoreNamespace();
 
-        ArtifactMuleContextBuilder artifactBuilder = new ArtifactMuleContextBuilder().setArtifactName(getArtifactName())
-            .setExecutionClassloader(deploymentClassLoader.getClassLoader())
-            .setArtifactInstallationDirectory(new File(MuleContainerBootstrapUtils.getMuleDomainsDir(), getArtifactName()))
-            .setConfigurationFiles(new String[] {this.configResourceFile.getAbsolutePath()}).setArtifactType(DOMAIN);
+        ArtifactContextBuilder artifactBuilder = new ArtifactContextBuilder().setArtifactName(getArtifactName())
+                .setExecutionClassloader(deploymentClassLoader.getClassLoader())
+                .setArtifactInstallationDirectory(new File(MuleContainerBootstrapUtils.getMuleDomainsDir(), getArtifactName()))
+                .setConfigurationFiles(new String[] {this.configResourceFile.getAbsolutePath()}).setArtifactType(DOMAIN)
+                .setEnableLazyInit(lazy);
 
         if (deploymentListener != null) {
           artifactBuilder.setMuleContextListener(new MuleContextDeploymentListener(getArtifactName(), deploymentListener));
@@ -133,11 +140,6 @@ public class DefaultMuleDomain implements Domain {
       logger.error(null, ExceptionUtils.getRootCause(e));
       throw new DeploymentInitException(CoreMessages.createStaticMessage(ExceptionUtils.getRootCauseMessage(e)), e);
     }
-  }
-
-  @Override
-  public void lazyInit() {
-    //TODO implement
   }
 
   private void validateConfigurationFileDoNotUsesCoreNamespace() throws FileNotFoundException {
