@@ -166,9 +166,6 @@
                 <include>org.mule.common:mule-common</include>
                 <include>org.mule.mvel:mule-mvel2</include>
             </includes>
-            <excludes>
-                <exclude>*:zip:*</exclude>
-            </excludes>
         </dependencySet>
 
         <!-- 3rd-party libraries -->

@@ -9,8 +9,7 @@ package org.mule.test.module.http.functional;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
 
-@ArtifactClassLoaderRunnerConfig(plugins = {"org.mule.modules:mule-module-sockets", "org.mule.modules:mule-module-http-ext"},
-    providedInclusions = "org.mule.modules:mule-module-sockets")
+@ArtifactClassLoaderRunnerConfig(plugins = {"org.mule.modules:mule-module-http-ext"})
 public abstract class AbstractHttpTestCase extends MuleArtifactFunctionalTestCase {
 
   protected static final int DEFAULT_TIMEOUT = 1000;

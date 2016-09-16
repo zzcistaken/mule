@@ -51,6 +51,7 @@
             <artifactId>mule-module-sockets</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
+            <classifier>mule-plugin</classifier>
         </dependency>
         <dependency>
             <groupId>org.mule.modules</groupId>
@@ -134,6 +135,4 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
-
 </project>

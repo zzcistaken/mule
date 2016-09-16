@@ -608,8 +608,8 @@
             <artifactId>mule-module-xml</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <!-- TODO MULE-9705 CXF needs to access these classes  -->
         <dependency>
-            <!-- TODO MULE-9705 remove this when http is fully migrated to the extension -->
             <groupId>org.mule.modules</groupId>
             <artifactId>mule-module-http</artifactId>
             <version>${project.version}</version>
@@ -626,6 +626,7 @@
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
+        <!-- TODO MULE-9705 -->
         <dependency>
             <groupId>org.mule.modules</groupId>
             <artifactId>mule-module-scripting</artifactId>
