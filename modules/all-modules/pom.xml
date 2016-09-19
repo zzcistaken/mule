@@ -17,11 +17,6 @@
     <dependencies>
         <dependency>
             <groupId>org.mule.modules</groupId>
-            <artifactId>mule-module-cxf</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.mule.modules</groupId>
             <artifactId>mule-module-builders</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -108,11 +103,6 @@
         <dependency>
             <groupId>org.mule.modules</groupId>
             <artifactId>mule-module-tooling-support</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.mule.modules</groupId>
-            <artifactId>mule-module-ws</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

@@ -137,8 +137,6 @@
                 <include>org.mule.modules:mule-module-service</include>
                 <include>org.mule.modules:mule-module-container</include>
                 <include>org.mule.modules:mule-module-builders</include>
-                <!-- TODO MULE-9705 CXF needs to access sockets-ext and http-ext classes but cannot be added as mule modules -->
-                <!--<include>org.mule.modules:mule-module-cxf</include>-->
                 <include>org.mule.modules:mule-module-extensions-support</include>
                 <include>org.mule.modules:mule-module-extensions-spring-support</include>
                 <include>org.mule.modules:mule-module-http</include>
@@ -158,7 +156,6 @@
                 <include>org.mule.modules:mule-module-tls</include>
                 <include>org.mule.modules:mule-module-tomcat</include>
                 <include>org.mule.modules:mule-module-tooling-support</include>
-                <include>org.mule.modules:mule-module-ws</include>
                 <include>org.mule.modules:mule-module-xml</include>
                 <include>org.mule.transports:mule-transport-sockets</include>
 
@@ -197,7 +194,6 @@
                 <exclude>org.mule.modules:mule-modules-all</exclude>
                 <exclude>org.mule.modules:mule-module-artifact</exclude>
                 <exclude>org.mule.modules:mule-module-builders</exclude>
-                <exclude>org.mule.modules:mule-module-cxf</exclude>
                 <exclude>org.mule.modules:mule-module-extensions-support</exclude>
                 <exclude>org.mule.modules:mule-module-extensions-spring-support</exclude>
                 <exclude>org.mule.modules:mule-module-http</exclude>
@@ -225,7 +221,6 @@
                 <exclude>org.mule.modules:mule-module-tls</exclude>
                 <exclude>org.mule.modules:mule-module-tomcat</exclude>
                 <exclude>org.mule.modules:mule-module-tooling-support</exclude>
-                <exclude>org.mule.modules:mule-module-ws</exclude>
                 <exclude>org.mule.modules:mule-module-xml</exclude>
                 <exclude>org.mule.transports:mule-transport-sockets</exclude>
 
