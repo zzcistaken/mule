@@ -33,8 +33,8 @@ public class CxfComponentExceptionStrategyTestCase extends FunctionalTestCase {
 
   private static final String CUSTOM_SOAP_FAULT = "<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">"
       + "<soap:Body>" + "<soap:Fault>" + "<faultcode>soap:Server</faultcode>" + "<faultstring>Cxf Exception Message</faultstring>"
-      + "<detail>" + "<ns1:CustomFault xmlns:ns1=\"http://testmodels.cxf.module.runtime.mule.org/\">"
-      + "<ns2:description xmlns:ns2=\"http://testmodels.cxf.module.runtime.mule.org\">%s</ns2:description>" + "</ns1:CustomFault>"
+      + "<detail>" + "<ns1:CustomFault xmlns:ns1=\"http://testmodels.cxf.module.compatibility.mule.org/\">"
+      + "<ns2:description xmlns:ns2=\"http://testmodels.cxf.module.compatibility.mule.org\">%s</ns2:description>" + "</ns1:CustomFault>"
       + "</detail>" + "</soap:Fault>" + "</soap:Body>" + "</soap:Envelope>";
 
   @Rule
