@@ -30,8 +30,8 @@
 
     <flow name="greeter-service">
         <http:listener config-ref="httpConfig2" path="artistRegistry"/>
-        <cxf:jaxws-service serviceClass="org.mule.runtime.module.cxf.testmodels.artistregistry.ArtistRegistryWebServices" />
-        <component class="org.mule.runtime.module.cxf.testmodels.artistregistry.ArtistRegistry"/>
+        <cxf:jaxws-service serviceClass="org.mule.compatibility.module.cxf.testmodels.artistregistry.ArtistRegistryWebServices" />
+        <component class="org.mule.compatibility.module.cxf.testmodels.artistregistry.ArtistRegistry"/>
     </flow>
 
 </mule>

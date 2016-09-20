@@ -30,12 +30,10 @@ import org.mule.runtime.core.config.i18n.I18nMessageFactory;
 import org.mule.runtime.core.exception.MessagingException;
 import org.mule.runtime.core.management.stats.FlowConstructStatistics;
 import org.mule.runtime.core.message.OutputHandler;
-import org.mule.runtime.module.cxf.CxfConfiguration;
-import org.mule.runtime.module.cxf.CxfConstants;
-import org.mule.runtime.module.cxf.CxfOutboundMessageProcessor;
-import org.mule.runtime.module.cxf.support.DelegatingOutputStream;
-import org.mule.runtime.module.cxf.transport.MuleUniversalConduit;
-import org.mule.runtime.module.cxf.transport.MuleUniversalTransport;
+import org.mule.compatibility.module.cxf.CxfConfiguration;
+import org.mule.compatibility.module.cxf.CxfConstants;
+import org.mule.compatibility.module.cxf.CxfOutboundMessageProcessor;
+import org.mule.compatibility.module.cxf.support.DelegatingOutputStream;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

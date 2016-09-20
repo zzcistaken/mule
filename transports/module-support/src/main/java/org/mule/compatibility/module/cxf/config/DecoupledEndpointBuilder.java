@@ -13,8 +13,8 @@ import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.MuleException;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.construct.Flow;
-import org.mule.runtime.module.cxf.CxfInboundMessageProcessor;
-import org.mule.runtime.module.cxf.CxfOutboundMessageProcessor;
+import org.mule.compatibility.module.cxf.CxfInboundMessageProcessor;
+import org.mule.compatibility.module.cxf.CxfOutboundMessageProcessor;
 
 import java.util.ArrayList;
 import java.util.List;

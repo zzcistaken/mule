@@ -7,8 +7,6 @@
 package org.mule.compatibility.module.cxf.builder;
 
 
-import org.mule.runtime.module.cxf.builder.AbstractOutboundMessageProcessorBuilder;
-
 import javax.xml.namespace.QName;
 
 import org.apache.cxf.endpoint.Client;

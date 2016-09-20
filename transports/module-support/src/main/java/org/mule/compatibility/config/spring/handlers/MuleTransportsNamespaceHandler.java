@@ -54,7 +54,7 @@ import org.mule.runtime.config.spring.parsers.specific.SecurityFilterDefinitionP
 import org.mule.runtime.config.spring.parsers.specific.ThreadingProfileDefinitionParser;
 import org.mule.runtime.core.api.config.MuleProperties;
 import org.mule.runtime.core.exception.DefaultMessagingExceptionStrategy;
-import org.mule.runtime.module.cxf.CxfConstants;
+import org.mule.compatibility.module.cxf.CxfConstants;
 import org.mule.runtime.module.http.internal.filter.HttpBasicAuthenticationFilter;
 
 public class MuleTransportsNamespaceHandler extends AbstractMuleNamespaceHandler {

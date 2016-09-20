@@ -281,21 +281,21 @@
 
     <flow name="asyncService">
         <http:listener path="/services/oneway" config-ref="listenerConfig" allowedMethods="POST" />
-        <cxf:jaxws-service serviceClass="org.mule.runtime.module.cxf.testmodels.AsyncService"/>
+        <cxf:jaxws-service serviceClass="org.mule.compatibility.module.cxf.testmodels.AsyncService"/>
 
         <component>
             <singleton-object
-                class="org.mule.runtime.module.cxf.testmodels.AsyncService" />
+                class="org.mule.compatibility.module.cxf.testmodels.AsyncService" />
         </component>
     </flow>
 
     <flow name="asyncServiceWithSoapAction">
         <http:listener path="/services/onewayWithSoapAction" config-ref="listenerConfig" allowedMethods="POST" />
-        <cxf:jaxws-service serviceClass="org.mule.runtime.module.cxf.testmodels.AsyncServiceWithSoapAction"/>
+        <cxf:jaxws-service serviceClass="org.mule.compatibility.module.cxf.testmodels.AsyncServiceWithSoapAction"/>
 
         <component>
             <singleton-object
-                class="org.mule.runtime.module.cxf.testmodels.AsyncServiceWithSoapAction" />
+                class="org.mule.compatibility.module.cxf.testmodels.AsyncServiceWithSoapAction" />
         </component>
     </flow>
 

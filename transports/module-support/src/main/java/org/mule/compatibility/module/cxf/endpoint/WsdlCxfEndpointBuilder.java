@@ -15,7 +15,7 @@ import org.mule.compatibility.module.cxf.builder.WsdlClientMessageProcessorBuild
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.lifecycle.InitialisationException;
 import org.mule.runtime.core.api.processor.Processor;
-import org.mule.runtime.module.cxf.config.FlowConfiguringMessageProcessor;
+import org.mule.compatibility.module.cxf.config.FlowConfiguringMessageProcessor;
 
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -8,7 +8,6 @@ package org.mule.compatibility.module.cxf;
 
 import org.mule.runtime.core.api.message.InternalMessage;
 import org.mule.runtime.core.util.StringUtils;
-import org.mule.runtime.module.cxf.HttpRequestPropertyManager;
 import org.mule.runtime.module.http.api.HttpConstants;
 
 public class HttpTransportRequestPropertyManager extends HttpRequestPropertyManager {
