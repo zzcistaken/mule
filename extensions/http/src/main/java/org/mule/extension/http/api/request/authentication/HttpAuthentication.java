@@ -6,7 +6,7 @@
  */
 package org.mule.extension.http.api.request.authentication;
 
-import org.mule.extension.http.internal.request.HttpRequestBuilder;
+import org.mule.extension.http.api.request.builder.HttpRequestBuilder;
 import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.MuleException;
 

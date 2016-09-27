@@ -18,6 +18,7 @@ import static org.mule.runtime.extension.api.annotation.param.display.Placement.
 import static org.mule.runtime.extension.api.introspection.parameter.ExpressionSupport.NOT_SUPPORTED;
 import static org.mule.runtime.module.http.api.HttpConstants.Protocols.HTTP;
 import static org.mule.runtime.module.http.api.HttpConstants.Protocols.HTTPS;
+
 import org.mule.extension.http.api.request.authentication.HttpAuthentication;
 import org.mule.extension.http.api.request.client.HttpClient;
 import org.mule.extension.http.api.request.proxy.ProxyConfig;
@@ -191,7 +192,7 @@ public class HttpRequesterProvider implements CachedConnectionProvider<HttpClien
       initialiseIfNeeded(tlsContextFactory);
     }
     if (authentication != null) {
-      initialiseIfNeeded(authentication);
+      initialiseIfNeeded(authentication, muleContext);
     }
 
     verifyConnectionsParameters();
