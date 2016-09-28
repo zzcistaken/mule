@@ -11,7 +11,6 @@ import static java.lang.String.format;
 import static java.util.Collections.emptySet;
 import static org.apache.commons.io.FileUtils.listFiles;
 import static org.mule.runtime.container.api.MuleFoldersUtil.PLUGINS_FOLDER;
-import static org.mule.runtime.container.api.MuleFoldersUtil.getAppClassesFolder;
 import static org.mule.runtime.container.api.MuleFoldersUtil.getAppLibFolder;
 import static org.mule.runtime.container.api.MuleFoldersUtil.getAppSharedPluginLibsFolder;
 import static org.mule.runtime.core.util.Preconditions.checkArgument;
@@ -21,13 +20,9 @@ import org.mule.runtime.core.util.PropertiesUtils;
 import org.mule.runtime.deployment.model.api.application.ApplicationDescriptor;
 import org.mule.runtime.deployment.model.api.plugin.ArtifactPluginDescriptor;
 import org.mule.runtime.deployment.model.api.plugin.ArtifactPluginRepository;
-import org.mule.runtime.module.artifact.classloader.ArtifactClassLoaderFilter;
-import org.mule.runtime.module.artifact.classloader.DefaultArtifactClassLoaderFilter;
+import org.mule.runtime.deployment.model.internal.ArtifactClassloaderFilterFactory;
 import org.mule.runtime.module.artifact.descriptor.ArtifactDescriptorCreateException;
 import org.mule.runtime.module.artifact.descriptor.ArtifactDescriptorFactory;
-import org.mule.runtime.module.artifact.util.FileJarExplorer;
-import org.mule.runtime.module.artifact.util.JarExplorer;
-import org.mule.runtime.module.artifact.util.JarInfo;
 import org.mule.runtime.module.deployment.internal.plugin.ArtifactPluginDescriptorLoader;
 import org.mule.runtime.module.reboot.MuleContainerBootstrapUtils;
 
@@ -93,7 +88,7 @@ public class ApplicationDescriptorFactory implements ArtifactDescriptorFactory<A
       desc.setPlugins(plugins);
       desc.setRuntimeLibs(findLibraries(appName));
       desc.setSharedRuntimeLibs(findSharedLibraries(appName));
-      desc.setClassLoaderFilter(createApplicationClassLoaderFilter(desc));
+      desc.setClassLoaderFilter(new ArtifactClassloaderFilterFactory().create(desc));
     } catch (IOException e) {
       throw new ArtifactDescriptorCreateException("Unable to create application descriptor", e);
     }
@@ -107,39 +102,6 @@ public class ApplicationDescriptorFactory implements ArtifactDescriptorFactory<A
 
   private URL[] findSharedLibraries(String appName) throws MalformedURLException {
     return findJars(getAppSharedPluginLibsFolder(appName)).toArray(new URL[0]);
-  }
-
-  private ArtifactClassLoaderFilter createApplicationClassLoaderFilter(ApplicationDescriptor descriptor) {
-    final JarInfo librariesInfo = findExportedResources(descriptor.getSharedRuntimeLibs());
-    final JarInfo classesInfo;
-    try {
-      final File appClassesFolder = getAppClassesFolder(descriptor.getName());
-      if (appClassesFolder.exists()) {
-        classesInfo = findExportedResources(appClassesFolder.toURI().toURL());
-      } else {
-        classesInfo = new JarInfo(emptySet(), emptySet());
-      }
-    } catch (MalformedURLException e) {
-      throw new RuntimeException("Cannot read application classes folder", e);
-    }
-    librariesInfo.getPackages().addAll(classesInfo.getPackages());
-    librariesInfo.getResources().addAll(classesInfo.getResources());
-
-    return new DefaultArtifactClassLoaderFilter(librariesInfo.getPackages(), librariesInfo.getResources());
-  }
-
-  private JarInfo findExportedResources(URL... libraries) {
-    Set<String> packages = new HashSet<>();
-    Set<String> resources = new HashSet<>();
-    final JarExplorer jarExplorer = new FileJarExplorer();
-
-    for (URL library : libraries) {
-      final JarInfo jarInfo = jarExplorer.explore(library);
-      packages.addAll(jarInfo.getPackages());
-      resources.addAll(jarInfo.getResources());
-    }
-
-    return new JarInfo(packages, resources);
   }
 
   private List<URL> findJars(File dir) throws MalformedURLException {

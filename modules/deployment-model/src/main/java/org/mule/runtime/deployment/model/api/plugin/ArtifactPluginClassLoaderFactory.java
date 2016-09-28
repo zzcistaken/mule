@@ -31,9 +31,13 @@ public class ArtifactPluginClassLoaderFactory implements ArtifactClassLoaderFact
    */
   @Override
   public ArtifactClassLoader create(ArtifactClassLoader parent, ArtifactPluginDescriptor descriptor) {
-    URL[] urls = new URL[descriptor.getRuntimeLibs().length + 1];
-    urls[0] = descriptor.getRuntimeClassesDir();
-    arraycopy(descriptor.getRuntimeLibs(), 0, urls, 1, descriptor.getRuntimeLibs().length);
+    URL[] urls = descriptor.getRuntimeLibs();
+
+    if (descriptor.getRuntimeClassesDir() != null) {
+      urls = new URL[descriptor.getRuntimeLibs().length + 1];
+      urls[0] = descriptor.getRuntimeClassesDir();
+      arraycopy(descriptor.getRuntimeLibs(), 0, urls, 1, descriptor.getRuntimeLibs().length);
+    }
 
     Map<String, ClassLoaderLookupStrategy> pluginsLookupPolicies = new HashMap<>();
     for (ArtifactPluginDescriptor dependencyPluginDescriptor : descriptor.getArtifactPluginDescriptors()) {
