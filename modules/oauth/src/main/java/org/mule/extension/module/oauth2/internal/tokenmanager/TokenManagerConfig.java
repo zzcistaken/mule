@@ -69,6 +69,7 @@ public class TokenManagerConfig implements Initialisable, MuleContextAware {
       return;
     }
     if (objectStore == null) {
+      System.out.println(name);
       objectStore = (ListableObjectStore) ((MuleObjectStoreManager) muleContext.getObjectStoreManager())
           .getUserObjectStore("token-manager-store-" + this.name, true);
     }

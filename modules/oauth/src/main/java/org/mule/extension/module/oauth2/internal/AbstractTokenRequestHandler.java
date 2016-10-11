@@ -22,6 +22,8 @@ import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.module.http.api.client.HttpRequestOptions;
 import org.mule.runtime.module.http.api.client.HttpRequestOptionsBuilder;
 
+import java.util.function.Function;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +42,7 @@ public abstract class AbstractTokenRequestHandler implements MuleContextAware {
    */
   @Parameter
   @Optional
-  private String refreshTokenWhen;
+  private Function<Event, String> refreshTokenWhen;
 
   /**
    * The oauth authentication server url to get access to the token. Mule, after receiving the authentication code from the oauth
@@ -54,11 +56,11 @@ public abstract class AbstractTokenRequestHandler implements MuleContextAware {
   /**
    * @param refreshTokenWhen expression to use to determine if the response from a request to the API requires a new token
    */
-  public void setRefreshTokenWhen(String refreshTokenWhen) {
+  public void setRefreshTokenWhen(Function<Event, String> refreshTokenWhen) {
     this.refreshTokenWhen = refreshTokenWhen;
   }
 
-  public String getRefreshTokenWhen() {
+  public Function<Event, String> getRefreshTokenWhen() {
     return refreshTokenWhen;
   }
 

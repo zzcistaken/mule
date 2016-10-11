@@ -11,31 +11,41 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static java.lang.String.format;
+import static org.apache.commons.lang.StringUtils.EMPTY;
 import static org.hamcrest.core.Is.isA;
-import static org.mule.runtime.core.util.StringUtils.EMPTY;
-import static org.mule.tck.MuleTestUtils.testWithSystemProperty;
+import static org.mule.functional.junit4.matchers.ThrowableRootCauseMatcher.hasRootCause;
 
-import org.mule.extension.module.oauth2.internal.TokenNotFoundException;
-import org.mule.functional.junit4.ApplicationContextBuilder;
-import org.mule.tck.junit4.AbstractMuleTestCase;
+import org.mule.extension.module.oauth2.api.TokenNotFoundException;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
+import org.mule.test.module.oauth2.AbstractOAuthAuthorizationTestCase;
+import org.mule.test.runner.RunnerDelegateTo;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.function.Consumer;
 
+import org.hamcrest.Matcher;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.runners.Parameterized;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
-public class ClientCredentialsFailureTestCase extends AbstractMuleTestCase {
+@RunnerDelegateTo(Parameterized.class)
+public class ClientCredentialsFailureTestCase extends AbstractOAuthAuthorizationTestCase {
 
   private static final String TOKEN_PATH = "/tokenUrl";
   private static final String TOKEN_PATH_PROPERTY_NAME = "token.url";
 
-  private DynamicPort dynamicPort = new DynamicPort("port");
+  @ClassRule
+  public static DynamicPort dynamicPort = new DynamicPort("port");
 
+  @Rule
+  public SystemProperty tokenPathProp;
   @Rule
   public SystemProperty clientId = new SystemProperty("client.id", "ndli93xdws2qoe6ms1d389vl6bxquv3e");
   @Rule
@@ -45,27 +55,33 @@ public class ClientCredentialsFailureTestCase extends AbstractMuleTestCase {
   @Rule
   public WireMockRule wireMockRule = new WireMockRule(wireMockConfig().port(dynamicPort.getNumber()));
 
-  @Test
-  public void tokenUrlFailsDuringAppStartup() throws Exception {
-    testWithSystemProperty(TOKEN_PATH_PROPERTY_NAME, "http://unkownhost:9999" + TOKEN_PATH, () -> {
-      ApplicationContextBuilder applicationContextBuilder = new ApplicationContextBuilder()
-          .setApplicationResources(new String[] {"client-credentials/client-credentials-minimal-config.xml"});
-      expectedException.expectCause(isA(IOException.class));
-      applicationContextBuilder.build();
-    });
+  @Override
+  protected String getConfigFile() {
+    return "client-credentials/client-credentials-minimal-config.xml";
+  }
+
+  @Parameterized.Parameters(name = "{0}")
+  public static Collection<Object[]> parameters() {
+    return Arrays.asList(new Object[] {"tokenUrlFailsDuringAppStartup", (Consumer<WireMockRule>) wireMockRule -> {
+    },
+        format("http://localhost:%s%s", dynamicPort.getNumber() - 1, TOKEN_PATH),
+        hasRootCause(isA(IOException.class))},
+                         new Object[] {"accessTokenNotRetrieve", (Consumer<WireMockRule>) wireMockRule -> wireMockRule
+                             .stubFor(post(urlEqualTo(TOKEN_PATH)).willReturn(aResponse().withBody(EMPTY))),
+                             format("http://localhost:%s%s", dynamicPort.getNumber(), TOKEN_PATH),
+                             hasRootCause(isA(TokenNotFoundException.class))});
+  }
+
+  public ClientCredentialsFailureTestCase(String name, Consumer<WireMockRule> wireMockConfigurer, String tokenPath,
+                                          Matcher<? extends Throwable> expectedCauseMatcher) {
+    wireMockConfigurer.accept(wireMockRule);
+    tokenPathProp = new SystemProperty(TOKEN_PATH_PROPERTY_NAME, tokenPath);
+    expectedException.expectCause(expectedCauseMatcher);
   }
 
   @Test
-  public void accessTokenNotRetrieve() throws Exception {
-    wireMockRule.stubFor(post(urlEqualTo(TOKEN_PATH)).willReturn(aResponse().withBody(EMPTY)));
-    testWithSystemProperty(TOKEN_PATH_PROPERTY_NAME, format("http://localhost:%s%s", wireMockRule.port(), TOKEN_PATH),
-                           () -> {
-                             ApplicationContextBuilder applicationContextBuilder =
-                                 new ApplicationContextBuilder().setApplicationResources(new String[] {
-                                     "client-credentials/client-credentials-minimal-config.xml"});
-                             expectedException.expectCause(isA(TokenNotFoundException.class));
-                             applicationContextBuilder.build();
-                           });
+  public void runTest() {
+    // Nothing to do here since the test subject is run during the setup.
   }
 
 }

@@ -7,6 +7,7 @@
 package org.mule.extension.module.oauth2.internal;
 
 import org.mule.extension.http.api.request.authentication.HttpAuthentication;
+import org.mule.extension.module.oauth2.api.TokenNotFoundException;
 import org.mule.extension.module.oauth2.internal.authorizationcode.DefaultAuthorizationCodeGrantType;
 import org.mule.extension.module.oauth2.internal.authorizationcode.state.ResourceOwnerOAuthContext;
 import org.mule.extension.module.oauth2.internal.clientcredentials.ClientCredentialsGrantType;
@@ -31,7 +32,7 @@ import org.mule.runtime.extension.api.annotation.dsl.xml.Xml;
 @SubTypeMapping(baseType = HttpAuthentication.class,
     subTypes = {DefaultAuthorizationCodeGrantType.class, ClientCredentialsGrantType.class})
 @Xml(namespaceLocation = "http://www.mulesoft.org/schema/mule/oauth2", namespace = "oauth2")
-@Export(classes = {TokenManagerConfig.class, ResourceOwnerOAuthContext.class})
+@Export(classes = {TokenManagerConfig.class, ResourceOwnerOAuthContext.class, TokenNotFoundException.class})
 public class OAuthExtension {
 
   @Parameter

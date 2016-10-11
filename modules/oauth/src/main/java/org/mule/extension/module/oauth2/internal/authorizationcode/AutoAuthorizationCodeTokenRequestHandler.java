@@ -24,10 +24,10 @@ import static org.mule.runtime.module.http.api.HttpConstants.RequestProperties.H
 import static org.mule.runtime.module.http.api.HttpConstants.ResponseProperties.HTTP_STATUS_PROPERTY;
 import static org.mule.runtime.module.http.api.HttpHeaders.Names.LOCATION;
 
+import org.mule.extension.module.oauth2.api.TokenNotFoundException;
 import org.mule.extension.module.oauth2.internal.MuleEventLogger;
 import org.mule.extension.module.oauth2.internal.OAuthConstants;
 import org.mule.extension.module.oauth2.internal.StateDecoder;
-import org.mule.extension.module.oauth2.internal.TokenNotFoundException;
 import org.mule.extension.module.oauth2.internal.TokenResponseProcessor;
 import org.mule.extension.module.oauth2.internal.authorizationcode.state.ResourceOwnerOAuthContext;
 import org.mule.runtime.core.api.DefaultMuleException;
@@ -123,9 +123,9 @@ public class AutoAuthorizationCodeTokenRequestHandler extends AbstractAuthorizat
         responseMessage = String.format("Failure calling token url %s. Exception message is %s", getTokenUrl(), e2.getMessage());
       } catch (TokenNotFoundException e3) {
         logger.error(String.format("Could not extract access token from token URL. Access token is %s, Refresh token is %s",
-                                   e3.getTokenResponseProcessor().getAccessToken(),
-                                   StringUtils.isBlank(e3.getTokenResponseProcessor().getRefreshToken()) ? "(Not issued)"
-                                       : e3.getTokenResponseProcessor().getRefreshToken()));
+                                   e3.getTokenResponseAccessToken(),
+                                   StringUtils.isBlank(e3.getTokenResponseRefreshToken()) ? "(Not issued)"
+                                       : e3.getTokenResponseRefreshToken()));
         muleEventLogger.logContent(e3.getTokenUrlResponse());
         authorizationStatus = TOKEN_NOT_FOUND_STATUS;
         statusCodeToReturn = INTERNAL_SERVER_ERROR.getStatusCode();
@@ -202,7 +202,7 @@ public class AutoAuthorizationCodeTokenRequestHandler extends AbstractAuthorizat
   private TokenResponseProcessor processTokenUrlResponse(Event tokenUrlResponse)
       throws TokenNotFoundException, TransformerException {
     final TokenResponseProcessor tokenResponseProcessor = TokenResponseProcessor
-        .createAuthorizationCodeProcessor(tokenResponseConfiguration, getMuleContext().getExpressionLanguage());
+        .createAuthorizationCodeProcessor(tokenResponseConfiguration);
     tokenResponseProcessor.process(tokenUrlResponse);
 
     if (logger.isDebugEnabled()) {
@@ -212,7 +212,8 @@ public class AutoAuthorizationCodeTokenRequestHandler extends AbstractAuthorizat
     }
 
     if (!tokenResponseContentIsValid(tokenResponseProcessor)) {
-      throw new TokenNotFoundException(tokenUrlResponse, tokenResponseProcessor);
+      throw new TokenNotFoundException(tokenUrlResponse, tokenResponseProcessor.getAccessToken(),
+                                       tokenResponseProcessor.getRefreshToken());
     }
     return tokenResponseProcessor;
   }

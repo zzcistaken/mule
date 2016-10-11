@@ -8,8 +8,6 @@ package org.mule.extension.module.oauth2.internal;
 
 import org.mule.extension.module.oauth2.internal.authorizationcode.TokenResponseConfiguration;
 import org.mule.runtime.core.api.Event;
-import org.mule.runtime.core.api.Event.Builder;
-import org.mule.runtime.core.api.el.ExpressionLanguage;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,55 +22,37 @@ public class TokenResponseProcessor {
 
   protected Logger logger = LoggerFactory.getLogger(getClass());
   private final TokenResponseConfiguration tokenResponseConfiguration;
-  private final ExpressionLanguage expressionLanguage;
   private final boolean retrieveRefreshToken;
   private String accessToken;
   private String refreshToken;
   private String expiresIn;
   private Map<String, Object> customResponseParameters;
 
-  public static TokenResponseProcessor createAuthorizationCodeProcessor(final TokenResponseConfiguration tokenResponseConfiguration,
-                                                                        final ExpressionLanguage expressionLanguage) {
-    return new TokenResponseProcessor(tokenResponseConfiguration, expressionLanguage, true);
+  public static TokenResponseProcessor createAuthorizationCodeProcessor(final TokenResponseConfiguration tokenResponseConfiguration) {
+    return new TokenResponseProcessor(tokenResponseConfiguration, true);
   }
 
-  public static TokenResponseProcessor createClientCredentialsProcessor(final TokenResponseConfiguration tokenResponseConfiguration,
-                                                                        final ExpressionLanguage expressionLanguage) {
-    return new TokenResponseProcessor(tokenResponseConfiguration, expressionLanguage, false);
-  }
-
-  private TokenResponseProcessor(final TokenResponseConfiguration tokenResponseConfiguration,
-                                 final ExpressionLanguage expressionLanguage, boolean retrieveRefreshToken) {
+  private TokenResponseProcessor(final TokenResponseConfiguration tokenResponseConfiguration, boolean retrieveRefreshToken) {
     this.tokenResponseConfiguration = tokenResponseConfiguration;
-    this.expressionLanguage = expressionLanguage;
     this.retrieveRefreshToken = retrieveRefreshToken;
   }
 
   public void process(Event muleEvent) {
-    Builder builder = Event.builder(muleEvent);
-    accessToken = expressionLanguage.parse("#[" + tokenResponseConfiguration.getAccessToken() + "]", muleEvent, builder, null);
-    muleEvent = builder.build();
+    accessToken = tokenResponseConfiguration.getAccessToken().apply(muleEvent);
     accessToken = isEmpty(accessToken) ? null : accessToken;
     if (accessToken == null) {
       logger.error("Could not extract access token from token URL. Expressions used to retrieve access token was "
           + tokenResponseConfiguration.getAccessToken());
     }
     if (retrieveRefreshToken) {
-      builder = Event.builder(muleEvent);
-      refreshToken =
-          expressionLanguage.parse("#[" + tokenResponseConfiguration.getRefreshToken() + "]", muleEvent, builder, null);
-      muleEvent = builder.build();
+      refreshToken = tokenResponseConfiguration.getRefreshToken().apply(muleEvent);
       refreshToken = isEmpty(refreshToken) ? null : refreshToken;
     }
-    builder = Event.builder(muleEvent);
-    expiresIn = expressionLanguage.parse("#[" + tokenResponseConfiguration.getExpiresIn() + "]", muleEvent, builder, null);
-    muleEvent = builder.build();
+    expiresIn = tokenResponseConfiguration.getExpiresIn().apply(muleEvent);
     customResponseParameters = new HashMap<>();
     for (ParameterExtractor parameterExtractor : tokenResponseConfiguration.getParameterExtractors()) {
-      builder = Event.builder(muleEvent);
       customResponseParameters.put(parameterExtractor.getParamName(),
-                                   expressionLanguage.evaluate(parameterExtractor.getValue(), muleEvent, builder, null));
-      muleEvent = builder.build();
+                                   parameterExtractor.getValue().apply(muleEvent));
     }
   }
 

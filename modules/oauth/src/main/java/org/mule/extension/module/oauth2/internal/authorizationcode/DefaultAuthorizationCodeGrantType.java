@@ -28,7 +28,6 @@ import org.mule.runtime.core.api.MuleRuntimeException;
 import org.mule.runtime.core.api.lifecycle.Initialisable;
 import org.mule.runtime.core.api.lifecycle.InitialisationException;
 import org.mule.runtime.core.api.lifecycle.Startable;
-import org.mule.runtime.core.util.StringUtils;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.Parameter;
 import org.mule.runtime.extension.api.annotation.param.Optional;
@@ -37,6 +36,8 @@ import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.mule.runtime.extension.api.annotation.param.display.Placement;
 import org.mule.runtime.module.http.api.HttpHeaders;
 import org.mule.runtime.module.http.internal.domain.request.HttpRequestBuilder;
+
+import java.util.function.Function;
 
 import javax.inject.Inject;
 
@@ -201,7 +202,7 @@ public class DefaultAuthorizationCodeGrantType extends AbstractGrantType
     return externalCallbackUrl;
   }
 
-  private String getRefreshTokenWhen() {
+  private Function<Event, String> getRefreshTokenWhen() {
     return tokenRequestHandler.getRefreshTokenWhen();
   }
 
@@ -308,8 +309,8 @@ public class DefaultAuthorizationCodeGrantType extends AbstractGrantType
   }
 
   protected boolean evaluateShouldRetry(final Event firstAttemptResponseEvent) {
-    if (!StringUtils.isBlank(getRefreshTokenWhen())) {
-      final Object value = muleContext.getExpressionLanguage().evaluate(getRefreshTokenWhen(), firstAttemptResponseEvent, null);
+    if (getRefreshTokenWhen() != null) {
+      final Object value = Boolean.valueOf(getRefreshTokenWhen().apply(firstAttemptResponseEvent));
       if (!(value instanceof Boolean)) {
         throw new MuleRuntimeException(createStaticMessage("Expression %s should return a boolean but return %s",
                                                            getRefreshTokenWhen(), value));

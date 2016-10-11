@@ -67,4 +67,5 @@ public abstract class AbstractClientCredentialsBasicTestCase extends AbstractOAu
     wireMockRule.verify(postRequestedFor(urlEqualTo(RESOURCE_PATH))
         .withHeader(AUTHORIZATION, equalTo(buildAuthorizationHeaderContent(NEW_ACCESS_TOKEN))));
   }
+
 }

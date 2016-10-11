@@ -30,13 +30,14 @@ import org.mule.runtime.core.api.context.MuleContextAware;
 import org.mule.runtime.core.api.lifecycle.Initialisable;
 import org.mule.runtime.core.api.lifecycle.InitialisationException;
 import org.mule.runtime.core.api.lifecycle.Startable;
-import org.mule.runtime.core.util.StringUtils;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.Parameter;
 import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.mule.runtime.extension.api.annotation.param.display.Placement;
 import org.mule.runtime.module.http.internal.domain.request.HttpRequestBuilder;
+
+import java.util.function.Function;
 
 /**
  * Authorization element for client credentials oauth grant type
@@ -60,7 +61,6 @@ public class ClientCredentialsGrantType extends AbstractGrantType implements Ini
    * process the request to retrieve an access token from the oauth authentication server.
    */
   @Parameter
-  @Optional
   @Alias("tokenRequest")
   private ClientCredentialsTokenRequestHandler tokenRequestHandler;
 
@@ -131,7 +131,7 @@ public class ClientCredentialsGrantType extends AbstractGrantType implements Ini
     initialiseIfNeeded(tokenRequestHandler, muleContext);
   }
 
-  private String getRefreshTokenWhen() {
+  private Function<Event, String> getRefreshTokenWhen() {
     return tokenRequestHandler.getRefreshTokenWhen();
   }
 
@@ -178,8 +178,8 @@ public class ClientCredentialsGrantType extends AbstractGrantType implements Ini
 
   // TODO this is repeated in DefaultAuthorizationCodeGrantType
   protected boolean evaluateShouldRetry(final Event firstAttemptResponseEvent) {
-    if (!StringUtils.isBlank(getRefreshTokenWhen())) {
-      final Object value = muleContext.getExpressionLanguage().evaluate(getRefreshTokenWhen(), firstAttemptResponseEvent, null);
+    if (getRefreshTokenWhen() != null) {
+      final Object value = Boolean.valueOf(getRefreshTokenWhen().apply(firstAttemptResponseEvent));
       if (!(value instanceof Boolean)) {
         throw new MuleRuntimeException(createStaticMessage("Expression %s should return a boolean but return %s",
                                                            getRefreshTokenWhen(), value));
