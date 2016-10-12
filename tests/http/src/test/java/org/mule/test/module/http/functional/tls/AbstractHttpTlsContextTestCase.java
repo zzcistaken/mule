@@ -30,13 +30,13 @@ public abstract class AbstractHttpTlsContextTestCase extends AbstractHttpTestCas
   private static final String keyPassword = "changeit";
   private static final String protocol = "TLSv1.2";
 
-  protected static HttpResponse executeGetRequest(String url) throws IOException, GeneralSecurityException {
+  public static HttpResponse executeGetRequest(String url) throws IOException, GeneralSecurityException {
     HttpClient client = getSecureClient();
     HttpGet getMethod = new HttpGet(url);
     return client.execute(getMethod);
   }
 
-  private static HttpClient getSecureClient() throws IOException, GeneralSecurityException {
+  public static HttpClient getSecureClient() throws IOException, GeneralSecurityException {
     HttpClient secureClient;
     secureClient = HttpClients.custom()
         .setSslcontext(getSslContext())
@@ -44,7 +44,7 @@ public abstract class AbstractHttpTlsContextTestCase extends AbstractHttpTestCas
     return secureClient;
   }
 
-  private static SSLContext getSslContext() throws IOException, GeneralSecurityException {
+  public static SSLContext getSslContext() throws IOException, GeneralSecurityException {
     SSLContext customSslContext;
     File keyStore = FileUtils.getFile(FileUtils.getResourcePath(keyStorePath, AbstractHttpTlsContextTestCase.class));
     File trustStore = FileUtils.getFile(FileUtils.getResourcePath(trustStorePath, AbstractHttpTlsContextTestCase.class));

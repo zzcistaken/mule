@@ -10,7 +10,9 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.module.http.api.HttpConstants.Methods.POST;
-
+import static org.mule.test.module.http.functional.matcher.HttpResponseContentStringMatcher.contentValue;
+import static org.mule.test.module.http.functional.matcher.HttpResponseStatusCodeMatcher.hasStatusCode;
+import static org.mule.test.module.http.functional.tls.AbstractHttpTlsContextTestCase.executeGetRequest;
 import org.mule.runtime.api.metadata.DataType;
 import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.message.InternalMessage;
@@ -23,6 +25,9 @@ import org.mule.test.module.http.functional.AbstractHttpTestCase;
 
 import java.io.IOException;
 
+import org.apache.http.HttpResponse;
+import org.hamcrest.CoreMatchers;
+import org.hamcrest.MatcherAssert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -40,6 +45,8 @@ public class HttpRestrictedCiphersAndProtocolsTestCase extends AbstractHttpTestC
   public DynamicPort port2 = new DynamicPort("port2");
   @Rule
   public DynamicPort port3 = new DynamicPort("port3");
+  @Rule
+  public DynamicPort port4 = new DynamicPort("port4");
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
   @Rule
@@ -93,8 +100,14 @@ public class HttpRestrictedCiphersAndProtocolsTestCase extends AbstractHttpTestC
 
   @Test
   public void failsWithProtocolMismatch() throws Exception {
-    expectedException.expectCause(isA(IOException.class));
-    flowRunner("12Client1Server").withPayload(TEST_PAYLOAD).run();
+    // expectedException.expectCause(isA(IOException.class));
+    // Event eventResponse = flowRunner("12Client1Server").withPayload(TEST_PAYLOAD).run();
+
+    HttpResponse response = executeGetRequest(String.format("https://localhost:%s/test", port4.getValue()));
+
+    MatcherAssert.assertThat(response, hasStatusCode(500));
+    MatcherAssert.assertThat(response, contentValue(CoreMatchers.is("ok")));
+
   }
 
   @Test
