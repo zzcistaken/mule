@@ -30,6 +30,7 @@ import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.module.oauth2.AbstractOAuthAuthorizationTestCase;
 import org.mule.test.module.oauth2.asserter.AuthorizationRequestAsserter;
 import org.mule.test.module.oauth2.asserter.OAuthContextFunctionAsserter;
+import org.mule.test.runner.RunnerDelegateTo;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -40,12 +41,11 @@ import java.util.List;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import com.github.tomakehurst.wiremock.verification.LoggedRequest;
 
-@RunWith(Parameterized.class)
+@RunnerDelegateTo(Parameterized.class)
 public class AuthorizationCodeFullConfigTestCase extends AbstractOAuthAuthorizationTestCase {
 
   public final String CUSTOM_RESPONSE_PARAMETER1_VALUE = "token-resp-value1";

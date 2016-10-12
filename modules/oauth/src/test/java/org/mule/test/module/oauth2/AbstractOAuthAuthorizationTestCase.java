@@ -35,7 +35,8 @@ import org.junit.Rule;
 import com.github.tomakehurst.wiremock.client.RequestPatternBuilder;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
-@ArtifactClassLoaderRunnerConfig(plugins = {"org.mule.modules:mule-module-http-ext"})
+@ArtifactClassLoaderRunnerConfig(plugins = {"org.mule.modules:mule-module-sockets", "org.mule.modules:mule-module-http-ext"},
+    providedInclusions = "org.mule.modules:mule-module-sockets")
 public abstract class AbstractOAuthAuthorizationTestCase extends MuleArtifactFunctionalTestCase {
 
   public static final int REQUEST_TIMEOUT = 5000;

@@ -7,21 +7,19 @@
 package org.mule.extension.module.oauth2.internal.clientcredentials;
 
 import static java.lang.String.format;
-import static org.mule.extension.http.api.HttpConstants.HttpStatus.FORBIDDEN;
-import static org.mule.extension.http.api.HttpConstants.HttpStatus.UNAUTHORIZED;
 import static org.mule.extension.http.api.HttpHeaders.Names.AUTHORIZATION;
 import static org.mule.extension.http.internal.HttpConnector.TLS;
 import static org.mule.extension.http.internal.HttpConnector.TLS_CONFIGURATION;
 import static org.mule.extension.module.oauth2.internal.authorizationcode.state.ResourceOwnerOAuthContext.DEFAULT_RESOURCE_OWNER_ID;
 import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.initialiseIfNeeded;
 import static org.mule.runtime.core.config.i18n.I18nMessageFactory.createStaticMessage;
+import static org.mule.runtime.module.http.api.HttpConstants.Protocols.HTTPS;
 
-import org.mule.extension.http.api.HttpResponseAttributes;
 import org.mule.extension.module.oauth2.api.RequestAuthenticationException;
 import org.mule.extension.module.oauth2.internal.AbstractGrantType;
 import org.mule.extension.module.oauth2.internal.tokenmanager.TokenManagerConfig;
-import org.mule.runtime.api.message.Attributes;
 import org.mule.runtime.api.tls.TlsContextFactory;
+import org.mule.runtime.api.tls.TlsContextFactoryBuilder;
 import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.MuleException;
@@ -30,14 +28,19 @@ import org.mule.runtime.core.api.context.MuleContextAware;
 import org.mule.runtime.core.api.lifecycle.Initialisable;
 import org.mule.runtime.core.api.lifecycle.InitialisationException;
 import org.mule.runtime.core.api.lifecycle.Startable;
-import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.Parameter;
+import org.mule.runtime.extension.api.annotation.ParameterGroup;
 import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.mule.runtime.extension.api.annotation.param.display.Placement;
 import org.mule.runtime.module.http.internal.domain.request.HttpRequestBuilder;
+import org.mule.runtime.module.tls.api.DefaultTlsContextFactoryBuilder;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.function.Function;
+
+import javax.inject.Inject;
 
 /**
  * Authorization element for client credentials oauth grant type
@@ -61,28 +64,21 @@ public class ClientCredentialsGrantType extends AbstractGrantType implements Ini
    * process the request to retrieve an access token from the oauth authentication server.
    */
   @Parameter
-  @Alias("tokenRequest")
+  @ParameterGroup
   private ClientCredentialsTokenRequestHandler tokenRequestHandler;
-
-  private MuleContext muleContext;
-
-  /**
-   * The token manager configuration to use for this grant type.
-   */
-  @Parameter
-  @Optional
-  @Alias("tokenManager-ref")
-  private TokenManagerConfig tokenManager;
 
   /**
    * References a TLS config that will be used to receive incoming HTTP request and do HTTP request during the OAuth dance.
    */
   @Parameter
   @Optional
-  @Alias("tlsContext-ref")
   @DisplayName(TLS_CONFIGURATION)
   @Placement(tab = TLS, group = TLS_CONFIGURATION)
   private TlsContextFactory tlsContextFactory;
+
+  @Inject
+  @DefaultTlsContextFactoryBuilder
+  private TlsContextFactoryBuilder defaultTlsContextFactoryBuilder;
 
   public void setClientId(final String clientId) {
     this.clientId = clientId;
@@ -126,13 +122,32 @@ public class ClientCredentialsGrantType extends AbstractGrantType implements Ini
     }
     tokenRequestHandler.setApplicationCredentials(this);
     tokenRequestHandler.setTokenManager(tokenManager);
+
+    String protocol;
+    try {
+      final URL tokenUrl = new URL(tokenRequestHandler.getTokenUrl());
+      protocol = tokenUrl.getProtocol();
+    } catch (MalformedURLException e) {
+      throw new InitialisationException(e, this);
+    }
+
+    if (protocol.equals(HTTPS.getScheme()) && tlsContextFactory == null) {
+      // MULE-9480
+      initialiseIfNeeded(defaultTlsContextFactoryBuilder);
+      tlsContextFactory = defaultTlsContextFactoryBuilder.buildDefault();
+    }
+    if (tlsContextFactory != null) {
+      initialiseIfNeeded(tlsContextFactory);
+    }
+
     if (tlsContextFactory != null) {
       tokenRequestHandler.setTlsContextFactory(tlsContextFactory);
     }
     initialiseIfNeeded(tokenRequestHandler, muleContext);
   }
 
-  private Function<Event, String> getRefreshTokenWhen() {
+  @Override
+  protected Function<Event, String> getRefreshTokenWhen() {
     return tokenRequestHandler.getRefreshTokenWhen();
   }
 
@@ -177,33 +192,13 @@ public class ClientCredentialsGrantType extends AbstractGrantType implements Ini
     return shouldRetryRequest;
   }
 
-  // TODO this is repeated in DefaultAuthorizationCodeGrantType
-  protected boolean evaluateShouldRetry(final Event firstAttemptResponseEvent) {
-    if (getRefreshTokenWhen() != null) {
-      final Object value = Boolean.valueOf(getRefreshTokenWhen().apply(firstAttemptResponseEvent));
-      if (!(value instanceof Boolean)) {
-        throw new MuleRuntimeException(createStaticMessage("Expression %s should return a boolean but return %s",
-                                                           getRefreshTokenWhen(), value));
-      }
-      return (Boolean) value;
-    } else {
-      final Attributes attributes = firstAttemptResponseEvent.getMessage().getAttributes();
-      if (attributes instanceof HttpResponseAttributes) {
-        return ((HttpResponseAttributes) attributes).getStatusCode() == UNAUTHORIZED.getStatusCode()
-            || ((HttpResponseAttributes) attributes).getStatusCode() == FORBIDDEN.getStatusCode();
-      } else {
-        return false;
-      }
-    }
-  }
-
   public void setTokenManager(TokenManagerConfig tokenManager) {
     this.tokenManager = tokenManager;
   }
 
   @Override
   public void setMuleContext(MuleContext context) {
-    this.muleContext = context;
+    super.setMuleContext(context);
     tokenRequestHandler.setMuleContext(context);
   }
 }

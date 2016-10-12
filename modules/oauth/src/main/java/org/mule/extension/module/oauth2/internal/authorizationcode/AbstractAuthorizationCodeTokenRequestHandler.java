@@ -107,12 +107,11 @@ public abstract class AbstractAuthorizationCodeTokenRequestHandler extends Abstr
         throw new DefaultMuleException(e);
       }
     } else if (getOauthConfig().getLocalCallbackConfig() != null) {
-      // TODO fix me!
-      // flowName =
-      // flowName + getOauthConfig().getLocalCallbackConfig().getName() + "_" + getOauthConfig().getLocalCallbackConfigPath();
-      // httpListenerBuilder
-      // .setListenerConfig(getOauthConfig().getLocalCallbackConfig())
-      // .setPath(getOauthConfig().getLocalCallbackConfigPath());
+      flowName =
+          flowName + getOauthConfig().getLocalCallbackConfig().getName() + "_" + getOauthConfig().getLocalCallbackConfigPath();
+      httpListenerBuilder
+          .setListenerConfig(getOauthConfig().getLocalCallbackConfig())
+          .setPath(getOauthConfig().getLocalCallbackConfigPath());
     }
 
     final Flow redirectUrlFlow =

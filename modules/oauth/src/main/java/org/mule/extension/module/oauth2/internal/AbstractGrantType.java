@@ -6,13 +6,63 @@
  */
 package org.mule.extension.module.oauth2.internal;
 
+import static org.mule.extension.http.api.HttpConstants.HttpStatus.FORBIDDEN;
+import static org.mule.extension.http.api.HttpConstants.HttpStatus.UNAUTHORIZED;
+import static org.mule.runtime.core.config.i18n.I18nMessageFactory.createStaticMessage;
+
+import org.mule.extension.http.api.HttpResponseAttributes;
+import org.mule.extension.module.oauth2.internal.tokenmanager.TokenManagerConfig;
+import org.mule.runtime.api.message.Attributes;
+import org.mule.runtime.core.api.Event;
+import org.mule.runtime.core.api.MuleContext;
+import org.mule.runtime.core.api.MuleRuntimeException;
+import org.mule.runtime.core.api.context.MuleContextAware;
+import org.mule.runtime.core.api.lifecycle.Initialisable;
+import org.mule.runtime.core.api.lifecycle.Startable;
+import org.mule.runtime.extension.api.annotation.Alias;
+import org.mule.runtime.extension.api.annotation.Parameter;
+import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.module.http.api.HttpAuthentication;
+
+import java.util.function.Function;
 
 /**
  * Common interface for all grant types must extend this interface.
  */
 public abstract class AbstractGrantType
-    implements HttpAuthentication, org.mule.extension.http.api.request.authentication.HttpAuthentication, ApplicationCredentials {
+    implements HttpAuthentication, org.mule.extension.http.api.request.authentication.HttpAuthentication, ApplicationCredentials,
+    Initialisable, Startable, MuleContextAware {
+
+  protected MuleContext muleContext;
+
+  /**
+   * The token manager configuration to use for this grant type.
+   */
+  @Parameter
+  @Optional
+  @Alias("tokenManager-ref")
+  protected TokenManagerConfig tokenManager;
+
+  protected abstract Function<Event, String> getRefreshTokenWhen();
+
+  protected boolean evaluateShouldRetry(final Event firstAttemptResponseEvent) {
+    if (getRefreshTokenWhen() != null) {
+      final Object value = Boolean.valueOf(getRefreshTokenWhen().apply(firstAttemptResponseEvent));
+      if (!(value instanceof Boolean)) {
+        throw new MuleRuntimeException(createStaticMessage("Expression %s should return a boolean but return %s",
+                                                           getRefreshTokenWhen(), value));
+      }
+      return (Boolean) value;
+    } else {
+      final Attributes attributes = firstAttemptResponseEvent.getMessage().getAttributes();
+      if (attributes instanceof HttpResponseAttributes) {
+        return ((HttpResponseAttributes) attributes).getStatusCode() == UNAUTHORIZED.getStatusCode()
+            || ((HttpResponseAttributes) attributes).getStatusCode() == FORBIDDEN.getStatusCode();
+      } else {
+        return false;
+      }
+    }
+  }
 
   /**
    * @param accessToken an ouath access token
@@ -22,4 +72,8 @@ public abstract class AbstractGrantType
     return "Bearer " + accessToken;
   }
 
+  @Override
+  public void setMuleContext(MuleContext context) {
+    this.muleContext = context;
+  }
 }

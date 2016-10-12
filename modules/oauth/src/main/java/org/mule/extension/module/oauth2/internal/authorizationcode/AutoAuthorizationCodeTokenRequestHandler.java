@@ -12,7 +12,9 @@ import static org.mule.extension.module.oauth2.internal.OAuthConstants.CLIENT_SE
 import static org.mule.extension.module.oauth2.internal.OAuthConstants.CODE_PARAMETER;
 import static org.mule.extension.module.oauth2.internal.OAuthConstants.GRANT_TYPE_AUTHENTICATION_CODE;
 import static org.mule.extension.module.oauth2.internal.OAuthConstants.GRANT_TYPE_PARAMETER;
+import static org.mule.extension.module.oauth2.internal.OAuthConstants.GRANT_TYPE_REFRESH_TOKEN;
 import static org.mule.extension.module.oauth2.internal.OAuthConstants.REDIRECT_URI_PARAMETER;
+import static org.mule.extension.module.oauth2.internal.OAuthConstants.REFRESH_TOKEN_PARAMETER;
 import static org.mule.extension.module.oauth2.internal.OAuthConstants.STATE_PARAMETER;
 import static org.mule.extension.module.oauth2.internal.authorizationcode.state.ResourceOwnerOAuthContext.DEFAULT_RESOURCE_OWNER_ID;
 import static org.mule.runtime.module.http.api.HttpConstants.HttpStatus.BAD_REQUEST;
@@ -26,9 +28,7 @@ import static org.mule.runtime.module.http.api.HttpHeaders.Names.LOCATION;
 
 import org.mule.extension.module.oauth2.api.TokenNotFoundException;
 import org.mule.extension.module.oauth2.internal.MuleEventLogger;
-import org.mule.extension.module.oauth2.internal.OAuthConstants;
 import org.mule.extension.module.oauth2.internal.StateDecoder;
-import org.mule.extension.module.oauth2.internal.TokenResponseProcessor;
 import org.mule.extension.module.oauth2.internal.authorizationcode.state.ResourceOwnerOAuthContext;
 import org.mule.runtime.core.api.DefaultMuleException;
 import org.mule.runtime.core.api.Event;
@@ -56,12 +56,7 @@ public class AutoAuthorizationCodeTokenRequestHandler extends AbstractAuthorizat
   public static final int TOKEN_URL_CALL_FAILED_STATUS = 200;
   public static final int TOKEN_NOT_FOUND_STATUS = 201;
   public static final int FAILURE_PROCESSING_REDIRECT_URL_REQUEST_STATUS = 300;
-  private TokenResponseConfiguration tokenResponseConfiguration = new TokenResponseConfiguration();
   private MuleEventLogger muleEventLogger;
-
-  public void setTokenResponseConfiguration(final TokenResponseConfiguration tokenResponseConfiguration) {
-    this.tokenResponseConfiguration = tokenResponseConfiguration;
-  }
 
   /**
    * Starts the http listener for the redirect url callback. This will create a flow with an endpoint on the provided OAuth
@@ -104,9 +99,9 @@ public class AutoAuthorizationCodeTokenRequestHandler extends AbstractAuthorizat
 
         logResourceOwnerOAuthContextBeforeUpdate(resourceOwnerOAuthContext);
 
-        TokenResponseProcessor tokenResponseProcessor = processTokenUrlResponse(tokenUrlResponse);
+        TokenResponse tokenResponse = processTokenUrlResponse(tokenUrlResponse);
 
-        updateResourceOwnerState(resourceOwnerOAuthContext, decodedState, tokenResponseProcessor);
+        updateResourceOwnerState(resourceOwnerOAuthContext, decodedState, tokenResponse);
         getOauthConfig().getUserOAuthContext().updateResourceOwnerOAuthContext(resourceOwnerOAuthContext);
       } catch (NoAuthorizationCodeException e1) {
         logger.error("Could not extract authorization code from OAuth provider HTTP request done to the redirect URL");
@@ -169,12 +164,8 @@ public class AutoAuthorizationCodeTokenRequestHandler extends AbstractAuthorizat
     return authorizationCode;
   }
 
-  private boolean tokenResponseContentIsValid(TokenResponseProcessor tokenResponseProcessor) {
-    return tokenResponseProcessor.getAccessToken() != null;
-  }
-
   private Event setMapPayloadWithTokenRequestParameters(final Event event, final String authorizationCode) {
-    final HashMap<String, String> formData = new HashMap<>();
+    final Map<String, String> formData = new HashMap<>();
     formData.put(CODE_PARAMETER, authorizationCode);
     formData.put(CLIENT_ID_PARAMETER, getOauthConfig().getClientId());
     formData.put(CLIENT_SECRET_PARAMETER, getOauthConfig().getClientSecret());
@@ -184,11 +175,11 @@ public class AutoAuthorizationCodeTokenRequestHandler extends AbstractAuthorizat
   }
 
   private Event setMapPayloadWithRefreshTokenRequestParameters(final Event event, final String refreshToken) {
-    final HashMap<String, String> formData = new HashMap<>();
-    formData.put(OAuthConstants.REFRESH_TOKEN_PARAMETER, refreshToken);
+    final Map<String, String> formData = new HashMap<>();
+    formData.put(REFRESH_TOKEN_PARAMETER, refreshToken);
     formData.put(CLIENT_ID_PARAMETER, getOauthConfig().getClientId());
     formData.put(CLIENT_SECRET_PARAMETER, getOauthConfig().getClientSecret());
-    formData.put(GRANT_TYPE_PARAMETER, OAuthConstants.GRANT_TYPE_REFRESH_TOKEN);
+    formData.put(GRANT_TYPE_PARAMETER, GRANT_TYPE_REFRESH_TOKEN);
     formData.put(REDIRECT_URI_PARAMETER, getOauthConfig().getExternalCallbackUrl());
     return Event.builder(event).message(InternalMessage.builder(event.getMessage()).payload(formData).build()).build();
   }
@@ -199,39 +190,35 @@ public class AutoAuthorizationCodeTokenRequestHandler extends AbstractAuthorizat
     }
   }
 
-  private TokenResponseProcessor processTokenUrlResponse(Event tokenUrlResponse)
+  private TokenResponse processTokenUrlResponse(Event tokenUrlResponse)
       throws TokenNotFoundException, TransformerException {
-    final TokenResponseProcessor tokenResponseProcessor = TokenResponseProcessor
-        .createAuthorizationCodeProcessor(tokenResponseConfiguration);
-    tokenResponseProcessor.process(tokenUrlResponse);
+    TokenResponse tokenResponse = processTokenResponse(tokenUrlResponse, true);
 
     if (logger.isDebugEnabled()) {
       logger.debug("Retrieved access token, refresh token and expires from token url are: %s, %s, %s",
-                   tokenResponseProcessor.getAccessToken(), tokenResponseProcessor.getRefreshToken(),
-                   tokenResponseProcessor.getExpiresIn());
+                   tokenResponse.getAccessToken(), tokenResponse.getRefreshToken(), tokenResponse.getExpiresIn());
     }
 
-    if (!tokenResponseContentIsValid(tokenResponseProcessor)) {
-      throw new TokenNotFoundException(tokenUrlResponse, tokenResponseProcessor.getAccessToken(),
-                                       tokenResponseProcessor.getRefreshToken());
+    if (!tokenResponseContentIsValid(tokenResponse)) {
+      throw new TokenNotFoundException(tokenUrlResponse, tokenResponse.getAccessToken(), tokenResponse.getRefreshToken());
     }
-    return tokenResponseProcessor;
+    return tokenResponse;
   }
 
   private void updateResourceOwnerState(ResourceOwnerOAuthContext resourceOwnerOAuthContext, String newState,
-                                        TokenResponseProcessor tokenResponseProcessor) {
-    resourceOwnerOAuthContext.setAccessToken(tokenResponseProcessor.getAccessToken());
-    if (tokenResponseProcessor.getRefreshToken() != null) {
-      resourceOwnerOAuthContext.setRefreshToken(tokenResponseProcessor.getRefreshToken());
+                                        TokenResponse tokenResponse) {
+    resourceOwnerOAuthContext.setAccessToken(tokenResponse.getAccessToken());
+    if (tokenResponse.getRefreshToken() != null) {
+      resourceOwnerOAuthContext.setRefreshToken(tokenResponse.getRefreshToken());
     }
-    resourceOwnerOAuthContext.setExpiresIn(tokenResponseProcessor.getExpiresIn());
+    resourceOwnerOAuthContext.setExpiresIn(tokenResponse.getExpiresIn());
 
     // State may be null because there's no state or because this was called after refresh token.
     if (newState != null) {
       resourceOwnerOAuthContext.setState(newState);
     }
 
-    final Map<String, Object> customResponseParameters = tokenResponseProcessor.getCustomResponseParameters();
+    final Map<String, Object> customResponseParameters = tokenResponse.getCustomResponseParameters();
     for (String paramName : customResponseParameters.keySet()) {
       final Object paramValue = customResponseParameters.get(paramName);
       if (paramValue != null) {
@@ -271,8 +258,8 @@ public class AutoAuthorizationCodeTokenRequestHandler extends AbstractAuthorizat
       final Event refreshTokenResponse = invokeTokenUrl(muleEvent);
 
       logResourceOwnerOAuthContextBeforeUpdate(resourceOwnerOAuthContext);
-      TokenResponseProcessor tokenResponseProcessor = processTokenUrlResponse(refreshTokenResponse);
-      updateResourceOwnerState(resourceOwnerOAuthContext, null, tokenResponseProcessor);
+      TokenResponse tokenResponse = processTokenUrlResponse(refreshTokenResponse);
+      updateResourceOwnerState(resourceOwnerOAuthContext, null, tokenResponse);
     } catch (TokenNotFoundException e) {
       throw new MuleRuntimeException(CoreMessages
           .createStaticMessage("Access token was not found from the refresh token oauth call"), e);

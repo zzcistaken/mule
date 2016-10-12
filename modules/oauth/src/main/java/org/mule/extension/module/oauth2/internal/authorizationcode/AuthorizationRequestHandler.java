@@ -15,9 +15,11 @@ import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.Event.Builder;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.MuleException;
+import org.mule.runtime.core.api.context.MuleContextAware;
 import org.mule.runtime.core.api.message.InternalMessage;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.construct.Flow;
+import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.Parameter;
 import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.module.http.api.listener.HttpListener;
@@ -30,8 +32,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
  * Handles the call to the localAuthorizationUrl and redirects the user to the oauth authentication server authorization url so
  * the user can grant access to the resources to the mule application.
  */
-public class AuthorizationRequestHandler {
+public class AuthorizationRequestHandler implements MuleContextAware {
 
   public static final String REDIRECT_STATUS_CODE = "302";
   public static final String OAUTH_STATE_ID_FLOW_VAR_NAME = "resourceOwnerId";
@@ -50,6 +50,7 @@ public class AuthorizationRequestHandler {
    * Scope required by this application to execute. Scopes define permissions over resources.
    */
   @Parameter
+  @Optional
   private String scopes;
 
   /**
@@ -57,6 +58,7 @@ public class AuthorizationRequestHandler {
    * to the redirectUrl.
    */
   @Parameter
+  @Optional
   private String state;
 
   /**
@@ -77,36 +79,13 @@ public class AuthorizationRequestHandler {
    */
   @Parameter
   @Optional
+  @Alias("custom-parameters")
   private Map<String, String> customParameters = new HashMap<>();
+
   private HttpListener listener;
 
-  @Inject
   private MuleContext muleContext;
   private AuthorizationCodeGrantType oauthConfig;
-
-  public void setScopes(final String scopes) {
-    this.scopes = scopes;
-  }
-
-  public void setState(final String state) {
-    this.state = state;
-  }
-
-  public void setLocalAuthorizationUrl(final String localAuthorizationUrl) {
-    this.localAuthorizationUrl = localAuthorizationUrl;
-  }
-
-  public void setAuthorizationUrl(final String authorizationUrl) {
-    this.authorizationUrl = authorizationUrl;
-  }
-
-  public Map<String, String> getCustomParameters() {
-    return customParameters;
-  }
-
-  public void setCustomParameters(final Map<String, String> customParameters) {
-    this.customParameters = customParameters;
-  }
 
   public void init() throws MuleException {
     try {
@@ -161,5 +140,10 @@ public class AuthorizationRequestHandler {
 
   public AuthorizationCodeGrantType getOauthConfig() {
     return oauthConfig;
+  }
+
+  @Override
+  public void setMuleContext(MuleContext context) {
+    this.muleContext = context;
   }
 }

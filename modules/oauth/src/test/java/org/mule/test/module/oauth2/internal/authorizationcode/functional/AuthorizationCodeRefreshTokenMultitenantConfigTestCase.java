@@ -6,6 +6,8 @@
  */
 package org.mule.test.module.oauth2.internal.authorizationcode.functional;
 
+import static org.mule.extension.module.oauth2.internal.tokenmanager.TokenManagerConfig.defaultTokenManagerConfigIndex;
+
 import org.mule.extension.module.oauth2.internal.authorizationcode.state.ConfigOAuthContext;
 import org.mule.extension.module.oauth2.internal.authorizationcode.state.ResourceOwnerOAuthContext;
 import org.mule.extension.module.oauth2.internal.tokenmanager.TokenManagerConfig;
@@ -34,7 +36,8 @@ public class AuthorizationCodeRefreshTokenMultitenantConfigTestCase extends Abst
 
   @Test
   public void afterFailureDoRefreshTokenWithCustomValueWithResourceOwnerId() throws Exception {
-    final TokenManagerConfig tokenManagerConfig = muleContext.getRegistry().lookupObject(MULTITENANT_OAUTH_CONFIG);
+    final TokenManagerConfig tokenManagerConfig =
+        muleContext.getRegistry().get("default-token-manager-config-" + (defaultTokenManagerConfigIndex.get() - 1));
     final ConfigOAuthContext configOAuthContext = tokenManagerConfig.getConfigOAuthContext();
 
     final ResourceOwnerOAuthContext contextForResourceOwnerTony = configOAuthContext.getContextForResourceOwner(USER_ID_TONY);

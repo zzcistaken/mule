@@ -8,6 +8,7 @@ package org.mule.test.module.oauth2.internal.authorizationcode.functional;
 
 import static java.lang.String.format;
 import static java.lang.String.valueOf;
+import static org.apache.commons.lang.StringUtils.EMPTY;
 import static org.apache.http.client.fluent.Request.Get;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.nullValue;
@@ -17,17 +18,16 @@ import static org.mule.extension.module.oauth2.internal.OAuthConstants.STATE_PAR
 import static org.mule.extension.module.oauth2.internal.authorizationcode.AutoAuthorizationCodeTokenRequestHandler.NO_AUTHORIZATION_CODE_STATUS;
 import static org.mule.extension.module.oauth2.internal.authorizationcode.AutoAuthorizationCodeTokenRequestHandler.TOKEN_NOT_FOUND_STATUS;
 import static org.mule.extension.module.oauth2.internal.authorizationcode.AutoAuthorizationCodeTokenRequestHandler.TOKEN_URL_CALL_FAILED_STATUS;
-import static org.mule.runtime.core.util.StringUtils.EMPTY;
 import static org.mule.runtime.module.http.api.HttpConstants.HttpStatus.BAD_REQUEST;
 import static org.mule.runtime.module.http.api.HttpConstants.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.mule.runtime.module.http.internal.HttpParser.appendQueryParam;
 import static org.mule.tck.MuleTestUtils.testWithSystemProperty;
 
-import org.mule.extension.module.oauth2.internal.StateEncoder;
 import org.mule.extension.module.oauth2.internal.authorizationcode.state.ResourceOwnerOAuthContext;
 import org.mule.extension.module.oauth2.internal.tokenmanager.TokenManagerConfig;
 import org.mule.functional.functional.FlowAssert;
 import org.mule.tck.junit4.rule.DynamicPort;
+import org.mule.test.module.oauth2.internal.StateEncoder;
 
 import java.io.IOException;
 
