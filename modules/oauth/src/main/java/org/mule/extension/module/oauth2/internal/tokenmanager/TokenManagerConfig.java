@@ -49,7 +49,9 @@ public class TokenManagerConfig implements Initialisable, MuleContextAware {
    */
   @Parameter
   @Optional
+  @Alias("objectStore-ref")
   private ListableObjectStore objectStore;
+
   private ConfigOAuthContext configOAuthContext;
 
   private boolean initialised;

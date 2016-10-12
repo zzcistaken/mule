@@ -79,6 +79,7 @@ public class ClientCredentialsGrantType extends AbstractGrantType implements Ini
    */
   @Parameter
   @Optional
+  @Alias("tlsContext-ref")
   @DisplayName(TLS_CONFIGURATION)
   @Placement(tab = TLS, group = TLS_CONFIGURATION)
   private TlsContextFactory tlsContextFactory;

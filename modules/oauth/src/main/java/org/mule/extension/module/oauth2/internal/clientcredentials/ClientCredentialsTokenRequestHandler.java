@@ -29,12 +29,12 @@ import org.mule.runtime.core.api.lifecycle.Initialisable;
 import org.mule.runtime.core.api.lifecycle.InitialisationException;
 import org.mule.runtime.core.api.message.InternalMessage;
 import org.mule.runtime.core.construct.Flow;
+import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.Parameter;
 import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.UseConfig;
 import org.mule.runtime.module.http.api.HttpHeaders;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +45,7 @@ import org.apache.commons.codec.binary.Base64;
 /**
  * Handler for calling the token url, parsing the response and storing the oauth context data.
  */
+@Alias("token-request")
 public class ClientCredentialsTokenRequestHandler extends AbstractTokenRequestHandler implements Initialisable {
 
   /**
@@ -73,7 +74,9 @@ public class ClientCredentialsTokenRequestHandler extends AbstractTokenRequestHa
   @Optional(defaultValue = EXPIRATION_TIME_EXPRESSION)
   private Function<Event, String> responseExpiresIn;
 
-  private List<ParameterExtractor> parameterExtractors = Collections.emptyList();
+  @Parameter
+  @Alias("custom-parameter-extractors")
+  private List<ParameterExtractor> parameterExtractors;
 
   @UseConfig
   private TokenManagerConfig tokenManager;

@@ -12,8 +12,10 @@ import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static java.lang.String.format;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
+import static org.mule.extension.module.oauth2.internal.authorizationcode.state.ResourceOwnerOAuthContext.DEFAULT_RESOURCE_OWNER_ID;
 import static org.mule.runtime.module.http.api.HttpConstants.Protocols.HTTPS;
 
 import org.mule.extension.module.oauth2.internal.authorizationcode.state.ResourceOwnerOAuthContext;
@@ -26,11 +28,9 @@ import org.mule.test.runner.RunnerDelegateTo;
 
 import com.google.common.collect.ImmutableMap;
 
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.hamcrest.core.Is;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
@@ -44,8 +44,7 @@ public class ClientCredentialsFullConfigTestCase extends AbstractOAuthAuthorizat
   private static final String NEW_ACCESS_TOKEN = "abcdefghjkl";
   @Rule
   public SystemProperty tokenUrl =
-      new SystemProperty("token.url",
-                         String.format("%s://localhost:%d" + TOKEN_PATH, getProtocol(), oauthHttpsServerPort.getNumber()));
+      new SystemProperty("token.url", format("%s://localhost:%d" + TOKEN_PATH, getProtocol(), oauthHttpsServerPort.getNumber()));
   @Rule
   public SystemProperty customTokenResponseParameter1Name = new SystemProperty("custom.param.extractor1", "token-resp-param1");
   @Rule
@@ -58,14 +57,14 @@ public class ClientCredentialsFullConfigTestCase extends AbstractOAuthAuthorizat
     return configFile;
   }
 
-  public ClientCredentialsFullConfigTestCase(String configFile) {
+  public ClientCredentialsFullConfigTestCase(String name, String configFile) {
     this.configFile = configFile;
   }
 
-  @Parameterized.Parameters
+  @Parameterized.Parameters(name = "{0}")
   public static Collection<Object[]> parameters() {
-    return Arrays.asList(new Object[] {"client-credentials/client-credentials-full-config-tls-global.xml"},
-                         new Object[] {"client-credentials/client-credentials-full-config-tls-nested.xml"});
+    return Arrays.asList(new Object[] {"global", "client-credentials/client-credentials-full-config-tls-global.xml"},
+                         new Object[] {"nested", "client-credentials/client-credentials-full-config-tls-nested.xml"});
   }
 
   @Override
@@ -83,8 +82,8 @@ public class ClientCredentialsFullConfigTestCase extends AbstractOAuthAuthorizat
     SimpleMemoryObjectStore objectStore = muleContext.getRegistry().get("customObjectStore");
     assertThat(objectStore.allKeys().isEmpty(), is(false));
     ResourceOwnerOAuthContext resourceOwnerOAuthContext =
-        (ResourceOwnerOAuthContext) objectStore.retrieve(ResourceOwnerOAuthContext.DEFAULT_RESOURCE_OWNER_ID);
-    assertThat(resourceOwnerOAuthContext.getAccessToken(), Is.<Serializable>is(ACCESS_TOKEN));
+        (ResourceOwnerOAuthContext) objectStore.retrieve(DEFAULT_RESOURCE_OWNER_ID);
+    assertThat(resourceOwnerOAuthContext.getAccessToken(), is(ACCESS_TOKEN));
   }
 
   @Test
