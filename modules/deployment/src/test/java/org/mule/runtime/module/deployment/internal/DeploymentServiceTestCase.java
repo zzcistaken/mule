@@ -1108,7 +1108,8 @@ public class DeploymentServiceTestCase extends AbstractMuleTestCase {
     domainManager.addDomain(createDefaultDomain());
 
     TestApplicationFactory appFactory =
-        createTestApplicationFactory(new MuleApplicationClassLoaderFactory(new DefaultNativeLibraryFinderFactory()),
+        createTestApplicationFactory(new MuleApplicationClassLoaderFactory(new DefaultNativeLibraryFinderFactory(),
+                                                                           new DefaultArtifactClassLoaderManager()),
                                      domainManager, mock(ServiceRepository.class, RETURNS_DEEP_STUBS));
     appFactory.setFailOnStopApplication(true);
 
@@ -1134,7 +1135,8 @@ public class DeploymentServiceTestCase extends AbstractMuleTestCase {
     domainManager.addDomain(createDefaultDomain());
 
     TestApplicationFactory appFactory =
-        createTestApplicationFactory(new MuleApplicationClassLoaderFactory(new DefaultNativeLibraryFinderFactory()),
+        createTestApplicationFactory(new MuleApplicationClassLoaderFactory(new DefaultNativeLibraryFinderFactory(),
+                                                                           new DefaultArtifactClassLoaderManager()),
                                      domainManager, mock(ServiceRepository.class, RETURNS_DEEP_STUBS));
     appFactory.setFailOnDisposeApplication(true);
     deploymentService.setAppFactory(appFactory);

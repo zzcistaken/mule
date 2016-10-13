@@ -429,5 +429,7 @@ public interface MuleContext extends Lifecycle {
    * @return locator for accessing runtime object created by the mule configuration.
    */
   ConfigurationComponentLocator getConfigurationComponentLocator();
+
+  void setObjectSerializer(ObjectSerializer objectSerializer);
 }
 

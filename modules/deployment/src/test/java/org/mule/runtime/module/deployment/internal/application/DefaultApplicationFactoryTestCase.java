@@ -27,6 +27,7 @@ import org.mule.runtime.deployment.model.internal.application.ApplicationClassLo
 import org.mule.runtime.deployment.model.internal.application.MuleApplicationClassLoader;
 import org.mule.runtime.module.artifact.classloader.ArtifactClassLoader;
 import org.mule.runtime.module.artifact.classloader.ArtifactClassLoaderFilter;
+import org.mule.runtime.module.artifact.classloader.ArtifactClassLoaderRepository;
 import org.mule.runtime.module.artifact.classloader.ClassLoaderLookupPolicy;
 import org.mule.runtime.module.artifact.classloader.DefaultArtifactClassLoaderFilter;
 import org.mule.runtime.module.deployment.internal.domain.DomainRepository;
@@ -56,9 +57,11 @@ public class DefaultApplicationFactoryTestCase extends AbstractMuleTestCase {
   private final ArtifactPluginRepository applicationPluginRepository = mock(ArtifactPluginRepository.class);
   private final ApplicationDescriptorFactory applicationDescriptorFactory = mock(ApplicationDescriptorFactory.class);
   private final ServiceRepository serviceRepository = mock(ServiceRepository.class);
+  private final ArtifactClassLoaderRepository artifactClassLoaderRepository = mock(ArtifactClassLoaderRepository.class);
   private final DefaultApplicationFactory applicationFactory =
       new DefaultApplicationFactory(applicationClassLoaderBuilderFactory, applicationDescriptorFactory,
-                                    applicationPluginRepository, domainRepository, serviceRepository);
+                                    applicationPluginRepository, domainRepository, serviceRepository,
+                                    artifactClassLoaderRepository);
 
   @Rule
   public TemporaryFolder muleHome = new SystemPropertyTemporaryFolder(MuleProperties.MULE_HOME_DIRECTORY_PROPERTY);

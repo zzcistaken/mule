@@ -28,6 +28,7 @@ public class TemporaryArtifactClassLoaderFactory implements DeployableArtifactCl
   public ArtifactClassLoader create(String artifactId, ArtifactClassLoader parent, ArtifactDescriptor descriptor,
                                     List<ArtifactClassLoader> artifactPluginClassLoaders) {
     //TODO(pablo.kraan): serialization - ppas the artifactId
+    //TODO(pablo.kraan): serialization - should track this artifact CL?
     return new MuleDeployableArtifactClassLoader(null, descriptor, new URL[0], parent.getClassLoader(),
                                                  parent.getClassLoaderLookupPolicy(), artifactPluginClassLoaders);
   }

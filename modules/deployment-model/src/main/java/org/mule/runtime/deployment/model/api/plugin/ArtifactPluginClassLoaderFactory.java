@@ -8,6 +8,7 @@
 package org.mule.runtime.deployment.model.api.plugin;
 
 import static java.lang.System.arraycopy;
+import org.mule.runtime.module.artifact.classloader.ArtifactClassLoaderManager;
 import org.mule.runtime.module.artifact.classloader.ArtifactClassLoader;
 import org.mule.runtime.module.artifact.classloader.ArtifactClassLoaderFactory;
 import org.mule.runtime.module.artifact.classloader.ClassLoaderLookupPolicy;
@@ -23,6 +24,12 @@ import java.util.Set;
  * Creates {@link ArtifactClassLoader} for application or domain plugin descriptors.
  */
 public class ArtifactPluginClassLoaderFactory implements ArtifactClassLoaderFactory<ArtifactPluginDescriptor> {
+
+  private final ArtifactClassLoaderManager artifactClassLoaderManager;
+
+  public ArtifactPluginClassLoaderFactory(ArtifactClassLoaderManager artifactClassLoaderManager) {
+    this.artifactClassLoaderManager = artifactClassLoaderManager;
+  }
 
   /**
    *
@@ -52,7 +59,13 @@ public class ArtifactPluginClassLoaderFactory implements ArtifactClassLoaderFact
 
     final ClassLoaderLookupPolicy lookupPolicy = parent.getClassLoaderLookupPolicy().extend(pluginsLookupPolicies);
 
-    return new MuleArtifactClassLoader(artifactId, descriptor, urls, parent.getClassLoader(), lookupPolicy);
+    final MuleArtifactClassLoader muleArtifactClassLoader =
+        new MuleArtifactClassLoader(artifactId, descriptor, urls, parent.getClassLoader(), lookupPolicy);
+
+    artifactClassLoaderManager.add(muleArtifactClassLoader);
+    muleArtifactClassLoader.addShutdownListener(() -> artifactClassLoaderManager.remove(artifactId));
+
+    return muleArtifactClassLoader;
   }
 
   private ClassLoaderLookupStrategy getClassLoaderLookupStrategy(ArtifactPluginDescriptor descriptor,

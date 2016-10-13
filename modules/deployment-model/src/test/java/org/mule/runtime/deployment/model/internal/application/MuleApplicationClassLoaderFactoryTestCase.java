@@ -83,7 +83,8 @@ public class MuleApplicationClassLoaderFactoryTestCase extends AbstractMuleTestC
   public void createsClassLoader() throws Exception {
     final NativeLibraryFinderFactory nativeLibraryFinderFactory = mock(NativeLibraryFinderFactory.class);
 
-    MuleApplicationClassLoaderFactory classLoaderFactory = new MuleApplicationClassLoaderFactory(nativeLibraryFinderFactory);
+    MuleApplicationClassLoaderFactory classLoaderFactory =
+        new MuleApplicationClassLoaderFactory(nativeLibraryFinderFactory, null);
 
     final ApplicationDescriptor descriptor = new ApplicationDescriptor(APP_NAME);
     descriptor.setDomain(DOMAIN_NAME);

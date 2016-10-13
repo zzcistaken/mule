@@ -56,7 +56,8 @@ public class MuleArtifactResourcesRegistry {
     domainManager = new DefaultDomainManager();
     domainClassLoaderFactory = new DomainClassLoaderFactory(containerClassLoader.getClassLoader());
     domainFactory = new DefaultDomainFactory(domainClassLoaderFactory, domainManager, containerClassLoader);
-    artifactPluginClassLoaderFactory = new ArtifactPluginClassLoaderFactory();
+    final DefaultArtifactClassLoaderManager artifactClassLoaderManager = new DefaultArtifactClassLoaderManager();
+    artifactPluginClassLoaderFactory = new ArtifactPluginClassLoaderFactory(artifactClassLoaderManager);
     final ArtifactPluginDescriptorFactory artifactPluginDescriptorFactory =
         new ArtifactPluginDescriptorFactory(new ArtifactClassLoaderFilterFactory());
     artifactPluginRepository = new DefaultArtifactPluginRepository(artifactPluginDescriptorFactory);
@@ -64,7 +65,7 @@ public class MuleArtifactResourcesRegistry {
     final ApplicationDescriptorFactory applicationDescriptorFactory =
         new ApplicationDescriptorFactory(artifactPluginDescriptorLoader, artifactPluginRepository);
     MuleApplicationClassLoaderFactory applicationClassLoaderFactory =
-        new MuleApplicationClassLoaderFactory(new DefaultNativeLibraryFinderFactory());
+        new MuleApplicationClassLoaderFactory(new DefaultNativeLibraryFinderFactory(), artifactClassLoaderManager);
     ApplicationClassLoaderBuilderFactory applicationClassLoaderBuilderFactory =
         new ApplicationClassLoaderBuilderFactory(applicationClassLoaderFactory, artifactPluginRepository,
                                                  artifactPluginClassLoaderFactory);
@@ -73,7 +74,8 @@ public class MuleArtifactResourcesRegistry {
                                                                                                     new ServiceClassLoaderFactory()),
                                                             new ReflectionServiceResolver(new ReflectionServiceProviderResolutionHelper())));
     applicationFactory = new DefaultApplicationFactory(applicationClassLoaderBuilderFactory, applicationDescriptorFactory,
-                                                       artifactPluginRepository, domainManager, serviceManager);
+                                                       artifactPluginRepository, domainManager, serviceManager,
+                                                       artifactClassLoaderManager);
     temporaryArtifactClassLoaderBuilderFactory =
         new TemporaryArtifactClassLoaderBuilderFactory(artifactPluginRepository, null);
   }
@@ -141,4 +143,5 @@ public class MuleArtifactResourcesRegistry {
   public MuleServiceManager getServiceManager() {
     return serviceManager;
   }
+
 }

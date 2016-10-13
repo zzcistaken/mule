@@ -34,6 +34,7 @@ import org.mule.runtime.deployment.model.api.application.ApplicationStatus;
 import org.mule.runtime.deployment.model.api.domain.Domain;
 import org.mule.runtime.deployment.model.api.plugin.ArtifactPlugin;
 import org.mule.runtime.module.artifact.classloader.ArtifactClassLoader;
+import org.mule.runtime.module.artifact.classloader.ArtifactClassLoaderRepository;
 import org.mule.runtime.module.artifact.classloader.DisposableClassLoader;
 import org.mule.runtime.module.artifact.classloader.MuleDeployableArtifactClassLoader;
 import org.mule.runtime.module.artifact.classloader.RegionClassLoader;
@@ -62,6 +63,7 @@ public class DefaultMuleApplication implements Application {
   private final DomainRepository domainRepository;
   private final List<ArtifactPlugin> artifactPlugins;
   private final ServiceRepository serviceRepository;
+  private final ArtifactClassLoaderRepository artifactClassLoaderRepository;
   private final File location;
   private ApplicationStatus status;
 
@@ -73,19 +75,21 @@ public class DefaultMuleApplication implements Application {
   public DefaultMuleApplication(String artifactId, ApplicationDescriptor descriptor,
                                 MuleDeployableArtifactClassLoader deploymentClassLoader,
                                 List<ArtifactPlugin> artifactPlugins, DomainRepository domainRepository,
-                                ServiceRepository serviceRepository, File location) {
+                                ServiceRepository serviceRepository, ArtifactClassLoaderRepository artifactClassLoaderRepository,
+                                File location) {
     this.artifactId = artifactId;
     this.descriptor = descriptor;
     this.domainRepository = domainRepository;
     this.serviceRepository = serviceRepository;
+    this.artifactClassLoaderRepository = artifactClassLoaderRepository;
     this.deploymentListener = new NullDeploymentListener();
     this.artifactPlugins = artifactPlugins;
     this.location = location;
+    this.deploymentClassLoader = deploymentClassLoader;
     updateStatusFor(NotInLifecyclePhase.PHASE_NAME);
     if (deploymentClassLoader == null) {
       throw new IllegalArgumentException("Classloader cannot be null");
     }
-    this.deploymentClassLoader = deploymentClassLoader;
   }
 
   public void setDeploymentListener(DeploymentListener deploymentListener) {
@@ -175,7 +179,8 @@ public class DefaultMuleApplication implements Application {
               .setArtifactName(descriptor.getName()).setArtifactInstallationDirectory(descriptor.getArtifactLocation())
               .setConfigurationFiles(descriptor.getAbsoluteResourcePaths()).setDefaultEncoding(descriptor.getEncoding())
               .setArtifactPlugins(artifactPlugins).setExecutionClassloader(deploymentClassLoader.getClassLoader())
-              .setEnableLazyInit(lazy).setServiceRepository(serviceRepository);
+              .setEnableLazyInit(lazy).setServiceRepository(serviceRepository)
+              .setArtifactClassLoaderRepository(artifactClassLoaderRepository);
 
       Domain domain = domainRepository.getDomain(descriptor.getDomain());
       if (domain.getMuleContext() != null) {

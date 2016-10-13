@@ -12,6 +12,7 @@ import static org.mule.runtime.module.artifact.classloader.ClassLoaderLookupStra
 import org.mule.runtime.deployment.model.api.application.ApplicationDescriptor;
 import org.mule.runtime.deployment.model.api.plugin.ArtifactPluginDescriptor;
 import org.mule.runtime.deployment.model.internal.nativelib.NativeLibraryFinderFactory;
+import org.mule.runtime.module.artifact.classloader.ArtifactClassLoaderManager;
 import org.mule.runtime.module.artifact.classloader.ArtifactClassLoader;
 import org.mule.runtime.module.artifact.classloader.ClassLoaderLookupPolicy;
 import org.mule.runtime.module.artifact.classloader.ClassLoaderLookupStrategy;
@@ -34,9 +35,12 @@ public class MuleApplicationClassLoaderFactory implements DeployableArtifactClas
 
   private final Logger logger = LoggerFactory.getLogger(getClass());
   private final NativeLibraryFinderFactory nativeLibraryFinderFactory;
+  private final ArtifactClassLoaderManager artifactClassLoaderManager;
 
-  public MuleApplicationClassLoaderFactory(NativeLibraryFinderFactory nativeLibraryFinderFactory) {
+  public MuleApplicationClassLoaderFactory(NativeLibraryFinderFactory nativeLibraryFinderFactory,
+                                           ArtifactClassLoaderManager artifactClassLoaderManager) {
     this.nativeLibraryFinderFactory = nativeLibraryFinderFactory;
+    this.artifactClassLoaderManager = artifactClassLoaderManager;
   }
 
   @Override
@@ -46,9 +50,16 @@ public class MuleApplicationClassLoaderFactory implements DeployableArtifactClas
 
     final ClassLoaderLookupPolicy classLoaderLookupPolicy = getApplicationClassLoaderLookupPolicy(parent, descriptor);
 
-    return new MuleApplicationClassLoader(artifactId, descriptor, parent.getClassLoader(),
-                                          nativeLibraryFinderFactory.create(descriptor.getName()), urls,
-                                          classLoaderLookupPolicy, artifactPluginClassLoaders);
+    final MuleApplicationClassLoader muleApplicationClassLoader =
+        new MuleApplicationClassLoader(artifactId, descriptor, parent.getClassLoader(),
+                                       nativeLibraryFinderFactory.create(descriptor.getName()), urls,
+                                       classLoaderLookupPolicy, artifactPluginClassLoaders);
+
+    artifactClassLoaderManager.add(muleApplicationClassLoader);
+    muleApplicationClassLoader.addShutdownListener(() -> artifactClassLoaderManager.remove(artifactId));
+
+
+    return muleApplicationClassLoader;
   }
 
   private ClassLoaderLookupPolicy getApplicationClassLoaderLookupPolicy(ArtifactClassLoader parent,

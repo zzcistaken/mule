@@ -31,6 +31,7 @@ import org.mule.runtime.core.api.context.notification.SecurityNotificationListen
 import org.mule.runtime.core.api.context.notification.TransactionNotificationListener;
 import org.mule.runtime.core.api.exception.SystemExceptionHandler;
 import org.mule.runtime.core.api.lifecycle.LifecycleManager;
+import org.mule.runtime.core.api.serialization.ObjectSerializer;
 import org.mule.runtime.core.client.DefaultLocalMuleClient;
 import org.mule.runtime.core.config.DefaultMuleConfiguration;
 import org.mule.runtime.core.config.ImmutableThreadingProfile;
@@ -96,6 +97,7 @@ public class DefaultMuleContextBuilder implements MuleContextBuilder {
   protected BootstrapServiceDiscoverer bootstrapDiscoverer;
 
   protected ClassLoader executionClassLoader;
+  private ObjectSerializer objectSerializer;
 
   /**
    * {@inheritDoc}
@@ -122,14 +124,23 @@ public class DefaultMuleContextBuilder implements MuleContextBuilder {
     muleContext
         .setBootstrapServiceDiscoverer(injectMuleContextIfRequired(getBootstrapPropertiesServiceDiscoverer(), muleContext));
 
-    JavaObjectSerializer defaultObjectSerializer = new JavaObjectSerializer();
-    defaultObjectSerializer.setMuleContext(muleContext);
-    muleContext.setObjectSerializer(defaultObjectSerializer);
+    if (objectSerializer == null) {
+      objectSerializer = createDefaultObjectSerializer(muleContext);
+    }
+    muleContext.setObjectSerializer(objectSerializer);
+
     ErrorTypeRepository defaultErrorTypeRepository = createDefaultErrorTypeRepository();
     muleContext.setErrorTypeRepository(defaultErrorTypeRepository);
     muleContext.setErrorTypeLocator(createDefaultErrorTypeLocator(defaultErrorTypeRepository));
 
     return muleContext;
+  }
+
+  private ObjectSerializer createDefaultObjectSerializer(DefaultMuleContext muleContext) {
+    JavaObjectSerializer defaultObjectSerializer = new JavaObjectSerializer();
+    defaultObjectSerializer.setMuleContext(muleContext);
+
+    return defaultObjectSerializer;
   }
 
   protected SystemExceptionHandler createExceptionListener(DefaultMuleContext muleContext) {
@@ -147,6 +158,11 @@ public class DefaultMuleContextBuilder implements MuleContextBuilder {
   @Override
   public void setMuleConfiguration(MuleConfiguration config) {
     this.config = config;
+  }
+
+  @Override
+  public void setObjectSerializer(ObjectSerializer objectSerializer) {
+    this.objectSerializer = objectSerializer;
   }
 
   @Override

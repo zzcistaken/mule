@@ -12,6 +12,7 @@ import static java.util.stream.Stream.concat;
 import static org.mule.runtime.core.config.i18n.I18nMessageFactory.createStaticMessage;
 import static org.mule.runtime.core.util.Preconditions.checkArgument;
 import org.mule.runtime.deployment.model.api.plugin.ArtifactPlugin;
+import org.mule.runtime.module.artifact.classloader.ArtifactClassLoaderRepository;
 import org.mule.runtime.module.deployment.internal.plugin.DefaultArtifactPlugin;
 import org.mule.runtime.module.artifact.classloader.MuleDeployableArtifactClassLoader;
 import org.mule.runtime.deployment.model.api.DeploymentException;
@@ -40,23 +41,27 @@ public class DefaultApplicationFactory implements ArtifactFactory<Application> {
   private final ApplicationClassLoaderBuilderFactory applicationClassLoaderBuilderFactory;
   private final ArtifactPluginRepository artifactPluginRepository;
   private final ServiceRepository serviceRepository;
+  private final ArtifactClassLoaderRepository artifactClassLoaderRepository;
   protected DeploymentListener deploymentListener;
 
   public DefaultApplicationFactory(ApplicationClassLoaderBuilderFactory applicationClassLoaderBuilderFactory,
                                    ApplicationDescriptorFactory applicationDescriptorFactory,
                                    ArtifactPluginRepository artifactPluginRepository, DomainRepository domainRepository,
-                                   ServiceRepository serviceRepository) {
+                                   ServiceRepository serviceRepository,
+                                   ArtifactClassLoaderRepository artifactClassLoaderRepository) {
     checkArgument(applicationClassLoaderBuilderFactory != null, "Application classloader builder factory cannot be null");
     checkArgument(applicationDescriptorFactory != null, "Application descriptor factory cannot be null");
     checkArgument(artifactPluginRepository != null, "Artifact plugin repository cannot be null");
     checkArgument(domainRepository != null, "Domain repository cannot be null");
     checkArgument(serviceRepository != null, "Service repository cannot be null");
+    checkArgument(artifactClassLoaderRepository != null, "ArtifactClassLoaderRepository cannot be null");
 
     this.applicationClassLoaderBuilderFactory = applicationClassLoaderBuilderFactory;
     this.applicationDescriptorFactory = applicationDescriptorFactory;
     this.artifactPluginRepository = artifactPluginRepository;
     this.domainRepository = domainRepository;
     this.serviceRepository = serviceRepository;
+    this.artifactClassLoaderRepository = artifactClassLoaderRepository;
   }
 
   public void setDeploymentListener(DeploymentListener deploymentListener) {
@@ -102,7 +107,7 @@ public class DefaultApplicationFactory implements ArtifactFactory<Application> {
     final String artifactId = domain.getArtifactId() + "/app/" + descriptor.getName();
     DefaultMuleApplication delegate =
         new DefaultMuleApplication(artifactId, descriptor, applicationClassLoader, artifactPlugins, domainRepository,
-                                   serviceRepository,
+                                   serviceRepository, artifactClassLoaderRepository,
                                    descriptor.getArtifactLocation());
 
     if (deploymentListener != null) {

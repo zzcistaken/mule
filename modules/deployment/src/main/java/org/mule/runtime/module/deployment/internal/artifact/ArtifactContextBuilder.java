@@ -23,8 +23,11 @@ import org.mule.runtime.core.api.context.MuleContextBuilder;
 import org.mule.runtime.core.api.context.notification.MuleContextListener;
 import org.mule.runtime.core.api.lifecycle.InitialisationException;
 import org.mule.runtime.core.config.bootstrap.ArtifactType;
+import org.mule.runtime.core.config.builders.AbstractConfigurationBuilder;
 import org.mule.runtime.core.config.builders.SimpleConfigurationBuilder;
 import org.mule.runtime.core.context.DefaultMuleContextFactory;
+import org.mule.runtime.core.serialization.internal.JavaObjectSerializer;
+import org.mule.runtime.module.artifact.classloader.ArtifactClassLoaderRepository;
 import org.mule.runtime.module.deployment.internal.application.ApplicationExtensionsManagerConfigurationBuilder;
 import org.mule.runtime.module.deployment.internal.application.ApplicationMuleContextBuilder;
 import org.mule.runtime.deployment.model.api.plugin.ArtifactPlugin;
@@ -55,6 +58,7 @@ public class ArtifactContextBuilder {
   protected static final String ONLY_APPLICATIONS_ARE_ALLOWED_TO_HAVE_A_PARENT_CONTEXT =
       "Only applications are allowed to have a parent context";
   protected static final String SERVICE_REPOSITORY_CANNOT_BE_NULL = "serviceRepository cannot be null";
+  protected static final String ARTIFACT_CLASSLOADER_REPOSITORY_CANNOT_BE_NULL = "artifactClassLoaderRepository cannot be null";
 
   private List<ArtifactPlugin> artifactPlugins = new ArrayList<>();
   private ArtifactType artifactType = APP;
@@ -70,6 +74,7 @@ public class ArtifactContextBuilder {
   private String defaultEncoding;
   private ServiceRepository serviceRepository = Collections::emptyList;
   private boolean enableLazyInit;
+  private ArtifactClassLoaderRepository artifactClassLoaderRepository;
 
   /**
    * The {@code ArtifactType} defines the set of services that will be available in the {@code MuleContext}. For instance
@@ -210,6 +215,12 @@ public class ArtifactContextBuilder {
     return this;
   }
 
+  public ArtifactContextBuilder setArtifactClassLoaderRepository(ArtifactClassLoaderRepository artifactClassLoaderRepository) {
+    checkArgument(artifactClassLoaderRepository != null, ARTIFACT_CLASSLOADER_REPOSITORY_CANNOT_BE_NULL);
+    this.artifactClassLoaderRepository = artifactClassLoaderRepository;
+    return this;
+  }
+
   /**
    * Allows to lazily create the artifact resources.
    *
@@ -236,6 +247,17 @@ public class ArtifactContextBuilder {
     try {
       return withContextClassLoader(executionClassLoader, () -> {
         List<ConfigurationBuilder> builders = new LinkedList<>();
+        builders.add(new AbstractConfigurationBuilder() {
+
+          @Override
+          protected void doConfigure(MuleContext muleContext) throws Exception {
+            //TODO(pablo.kraan): serialization - create a new serializer with the ArtifactClassLoaderRepository
+            final JavaObjectSerializer objectSerializer = new JavaObjectSerializer();
+            objectSerializer.setMuleContext(muleContext);
+            muleContext.setObjectSerializer(objectSerializer);
+          }
+        });
+
         builders.add(new ArtifactBootstrapServiceDiscovererConfigurationBuilder(artifactPlugins));
         builders.add(new ApplicationExtensionsManagerConfigurationBuilder(artifactPlugins));
         builders.add(createConfigurationBuilderFromApplicationProperties());
