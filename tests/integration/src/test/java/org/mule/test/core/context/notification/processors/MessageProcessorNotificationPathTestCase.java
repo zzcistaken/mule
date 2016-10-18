@@ -19,6 +19,7 @@ import org.mule.test.AbstractIntegrationTestCase;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
@@ -76,6 +77,7 @@ public class MessageProcessorNotificationPathTestCase extends AbstractIntegratio
     testFlowPaths("idempotent-secure-hash-msg-filter", "/0", "/1");
   }
 
+  @Ignore("MULE-10708 - ignoring for now since paths will change")
   @Test
   public void flowRefs() throws Exception {
     testFlowPaths("subflow", "/0", "/1", "/1/subflow-call/subprocessors/0", "/1/subflow-call/subprocessors/1");

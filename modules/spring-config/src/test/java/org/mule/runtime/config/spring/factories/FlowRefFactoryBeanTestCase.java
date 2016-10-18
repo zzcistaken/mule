@@ -16,6 +16,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -34,6 +35,7 @@ import org.mule.runtime.core.api.el.ExpressionLanguage;
 import org.mule.runtime.core.api.lifecycle.Disposable;
 import org.mule.runtime.core.api.lifecycle.Initialisable;
 import org.mule.runtime.core.api.lifecycle.InitialisationException;
+import org.mule.runtime.core.api.lifecycle.Lifecycle;
 import org.mule.runtime.core.api.lifecycle.LifecycleUtils;
 import org.mule.runtime.core.api.processor.MessageProcessorChain;
 import org.mule.runtime.core.api.processor.Processor;
@@ -47,6 +49,7 @@ import java.util.Arrays;
 
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Answers;
 import org.mockito.MockSettings;
@@ -109,7 +112,7 @@ public class FlowRefFactoryBeanTestCase extends AbstractMuleContextTestCase {
     assertThat(targetSubFlow, not(equalTo(getFlowRefProcessor(flowRefFactoryBean))));
     assertThat(targetSubFlow, not(equalTo(getFlowRefProcessor(flowRefFactoryBean))));
 
-    verifyProcess(flowRefFactoryBean, targetSubFlow, 0);
+    verifyProcess(flowRefFactoryBean, targetSubFlow, 1);
   }
 
   @Test
@@ -184,11 +187,11 @@ public class FlowRefFactoryBeanTestCase extends AbstractMuleContextTestCase {
 
   private Processor getFlowRefProcessor(FlowRefFactoryBean factoryBean) throws Exception {
     Processor processor = factoryBean.getObject();
-    setMuleContextIfNeeded(processor, muleContext);
+    LifecycleUtils.initialiseIfNeeded(processor, muleContext, targetFlow);
     return processor;
   }
 
-  @Test(expected = MessagingException.class)
+  @Test(expected = MuleRuntimeException.class)
   public void dynamicFlowRefDoesNotExist() throws Exception {
     when(expressionLanguage.isExpression(anyString())).thenReturn(true);
     when(expressionLanguage.parse(eq(DYNAMIC_NON_EXISTANT), any(Event.class), any(FlowConstruct.class))).thenReturn("other");
@@ -201,7 +204,6 @@ public class FlowRefFactoryBeanTestCase extends AbstractMuleContextTestCase {
     flowRefFactoryBean.setName(name);
     flowRefFactoryBean.setApplicationContext(applicationContext);
     flowRefFactoryBean.setMuleContext(muleContext);
-    flowRefFactoryBean.initialise();
     return flowRefFactoryBean;
   }
 
@@ -226,12 +228,12 @@ public class FlowRefFactoryBeanTestCase extends AbstractMuleContextTestCase {
     assertSame(result, getFlowRefProcessor(flowRefFactoryBean).process(testEvent()));
     assertSame(result, getFlowRefProcessor(flowRefFactoryBean).process(testEvent()));
 
-    verify(applicationContext).getBean(anyString());
+    verify(applicationContext, atLeastOnce()).getBean(anyString());
 
     verify(target, times(2)).process(any(Event.class));
+
     verify((Initialisable) target, times(lifecycleRounds)).initialise();
 
-    flowRefFactoryBean.dispose();
     verify((Disposable) target, times(lifecycleRounds)).dispose();
   }
 

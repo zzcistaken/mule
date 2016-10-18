@@ -40,6 +40,7 @@ import org.junit.Test;
 
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 
+@Ignore("MULE-10708 - ignoring for now since paths will change")
 public class ProcessorsTraceTestCase extends AbstractIntegrationTestCase {
 
   public static class ProcessorsTraceAsserter implements Processor {
