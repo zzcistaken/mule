@@ -34,6 +34,7 @@ import org.mule.api.expression.ExpressionManager;
 import org.mule.api.lifecycle.Disposable;
 import org.mule.api.lifecycle.Initialisable;
 import org.mule.api.lifecycle.InitialisationException;
+import org.mule.api.lifecycle.LifecycleException;
 import org.mule.api.lifecycle.LifecycleManager;
 import org.mule.api.lifecycle.Startable;
 import org.mule.api.lifecycle.Stoppable;
@@ -312,7 +313,21 @@ public class DefaultMuleContext implements MuleContext
         overridePollingController();
         overrideClusterConfiguration();
 
-        fireNotification(new MuleContextNotification(this, MuleContextNotification.CONTEXT_STARTED));
+        SystemExceptionHandler originalExceptionListener = this.exceptionListener;
+        try
+        {
+            this.exceptionListener = new DelayedStartSystemExceptionHandler(this.exceptionListener);
+            fireNotification(new MuleContextNotification(this, MuleContextNotification.CONTEXT_STARTED));
+            LifecycleException startError = ((DelayedStartSystemExceptionHandler) exceptionListener).getLifecycleException();
+            if (startError != null)
+            {
+                throw startError;
+            }
+        }
+        finally
+        {
+            exceptionListener = originalExceptionListener;
+        }
 
         startLatch.release();
 
@@ -890,6 +905,43 @@ public class DefaultMuleContext implements MuleContext
     public void setExceptionListener(SystemExceptionHandler exceptionListener)
     {
         this.exceptionListener = exceptionListener;
+    }
+
+    private static class DelayedStartSystemExceptionHandler implements SystemExceptionHandler
+    {
+
+        private final SystemExceptionHandler delegate;
+        private volatile LifecycleException lifeCycleError;
+
+        public DelayedStartSystemExceptionHandler(SystemExceptionHandler delegate)
+        {
+            this.delegate = delegate;
+        }
+
+        @Override
+        public void handleException(Exception exception, RollbackSourceCallback rollbackMethod)
+        {
+            if (exception instanceof LifecycleException && lifeCycleError == null)
+            {
+               lifeCycleError = (LifecycleException) exception;
+            }
+            delegate.handleException(exception, rollbackMethod);
+        }
+
+        @Override
+        public void handleException(Exception exception)
+        {
+            if (exception instanceof LifecycleException && lifeCycleError == null)
+            {
+                lifeCycleError = (LifecycleException) exception;
+            }
+            delegate.handleException(exception);
+        }
+
+        public LifecycleException getLifecycleException()
+        {
+            return lifeCycleError;
+        }
     }
 
     @Override

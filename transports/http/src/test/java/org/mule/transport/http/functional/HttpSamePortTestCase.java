@@ -30,7 +30,6 @@ public class HttpSamePortTestCase
     @Test
     public void twoApplicationCannotUseSamePort() throws Throwable
     {
-        //TODO(pablo.kraan): startup - fix this test
         MuleContext firstMuleContext = null;
         MuleContext secondMuleContext = null;
         try

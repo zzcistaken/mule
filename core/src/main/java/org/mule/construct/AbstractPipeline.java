@@ -22,6 +22,7 @@ import org.mule.api.context.notification.MuleContextNotificationListener;
 import org.mule.api.endpoint.InboundEndpoint;
 import org.mule.api.exception.MessagingExceptionHandlerAcceptor;
 import org.mule.api.lifecycle.LifecycleException;
+import org.mule.api.lifecycle.Startable;
 import org.mule.api.processor.DefaultMessageProcessorPathElement;
 import org.mule.api.processor.InterceptingMessageProcessor;
 import org.mule.api.processor.MessageProcessor;
@@ -480,7 +481,7 @@ public abstract class AbstractPipeline extends AbstractFlowConstruct implements 
         super.doDispose();
     }
 
-    public class DelayedMessageSourceStart implements MuleContextNotificationListener<MuleContextNotification>
+    public static class DelayedMessageSourceStart implements MuleContextNotificationListener<MuleContextNotification>
     {
         private MessageSource messageSource;
 
@@ -492,17 +493,20 @@ public abstract class AbstractPipeline extends AbstractFlowConstruct implements 
             int action = notification.getAction();
             switch(action) {
                 case CONTEXT_STARTED:
-                    AbstractPipeline.this.logger.info("Delayed starting of message source " + this.messageSource);
+                    //AbstractPipeline.this.logger.info("Delayed starting of message source " + this.messageSource);
 
                     try {
-                        AbstractPipeline.this.startIfStartable(this.messageSource);
-                    } catch (MuleException var4) {
-                        AbstractPipeline.this.logger.error("Error delayed starting of message source: " + this.messageSource, var4);
-                        muleContext.getExceptionListener().handleException(var4);
+                        if (messageSource instanceof Startable)
+                        {
+                            ((Startable) messageSource).start();
+                        }
+                    } catch (MuleException e) {
+                        //AbstractPipeline.this.logger.error("Error delayed starting of message source: " + this.messageSource, e);
+                        notification.getMuleContext().getExceptionListener().handleException(e);
                     }
                     break;
                 case CONTEXT_STOPPING:
-                    AbstractPipeline.this.muleContext.unregisterListener(this);
+                    notification.getMuleContext().unregisterListener(this);
             }
 
         }

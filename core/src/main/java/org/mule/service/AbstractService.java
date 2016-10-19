@@ -44,6 +44,7 @@ import org.mule.api.source.ClusterizableMessageSource;
 import org.mule.api.source.MessageSource;
 import org.mule.component.simple.PassThroughComponent;
 import org.mule.config.i18n.CoreMessages;
+import org.mule.construct.AbstractPipeline;
 import org.mule.execution.ErrorHandlingExecutionTemplate;
 import org.mule.lifecycle.EmptyLifecycleCallback;
 import org.mule.lifecycle.processor.ProcessIfStartedWaitIfPausedMessageProcessor;
@@ -363,7 +364,14 @@ public abstract class AbstractService extends AbstractAnnotatedObject implements
         startIfStartable(component);
         startIfStartable(messageProcessorChain);
 
-        startIfStartable(messageSource);
+        if (muleContext.isStarted())
+        {
+            startIfStartable(this.messageSource);
+        }
+        else {
+            AbstractPipeline.DelayedMessageSourceStart delayedMessageSourceStart = new AbstractPipeline.DelayedMessageSourceStart(this.messageSource);
+            this.muleContext.getNotificationManager().addListener(delayedMessageSourceStart);
+        }
         if (asyncReplyMessageSource.getEndpoints().size() > 0)
         {
             asyncReplyMessageSource.start();

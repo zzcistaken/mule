@@ -18,7 +18,6 @@ public class WatermarkInvalidSelectorExpressionTestCase
     @Test(expected = LifecycleException.class)
     public void invalidSelectorExpression() throws Exception
     {
-        //TODO(pablo.kraan): startup - fix this test
         ApplicationContextBuilder builder = new ApplicationContextBuilder();
         builder.setApplicationResources(new String[] {"org/mule/test/integration/watermark/watermark-invalid-selector-expression-config.xml"});
         builder.build();

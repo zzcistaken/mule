@@ -18,7 +18,6 @@ public class WatermarkInvalidExpressionTestCase
     @Test(expected = LifecycleException.class)
     public void invalidUpdateExpression() throws Exception
     {
-        //TODO(pablo.kraan): startup - fix this test
         ApplicationContextBuilder builder = new ApplicationContextBuilder();
         builder.setApplicationResources(new String[] {"org/mule/test/integration/watermark/watermark-invalid-expression-config.xml"});
         builder.build();
