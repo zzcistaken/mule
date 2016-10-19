@@ -40,6 +40,7 @@ public class HttpsInvalidKeystoreTestCase extends FunctionalTestCase implements 
     @Test
     public void startingSslMessageReceiverWithoutKeystoreShouldThrowConnectException() throws Exception
     {
+        //TODO(pablo.kraan): startup - fix this test
         TestExceptionStrategy exceptionListener = new TestExceptionStrategy();
         exceptionListener.setExceptionCallback(this);
 

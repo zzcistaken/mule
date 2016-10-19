@@ -251,6 +251,7 @@ public class FlowTestCase extends AbstractFlowConstuctTestCase
     }
 
     @Test
+    //TODO(pablo.kraan): startup - fix this test
     public void testFailStartingMessageSourceOnLifecycleShouldStopStartedPipelineProcesses() throws Exception
     {
         MessageSource mockMessageSource = mock(MessageSource.class, withSettings().extraInterfaces(Startable.class, Stoppable.class));

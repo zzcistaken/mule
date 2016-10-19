@@ -117,6 +117,8 @@ public class DefaultHttpCallbackTestCase extends AbstractMuleContextTestCase
     public void withOldHttpTransport() throws Exception
     {
         callback = createCallback(newOldHttpTransport());
+        // Needs to start the context in order to start the HTTP endpoint
+        muleContext.start();
         sendCallbackRequest();
     }
 
@@ -136,6 +138,7 @@ public class DefaultHttpCallbackTestCase extends AbstractMuleContextTestCase
         listenerConfig.setHost("localhost");
         listenerConfig.setMuleContext(muleContext);
         muleContext.getRegistry().registerObject("callbackConfig", listenerConfig);
+        muleContext.start();
 
         listenerConfig.start();
 

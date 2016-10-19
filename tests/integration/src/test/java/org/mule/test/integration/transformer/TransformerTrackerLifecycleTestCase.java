@@ -34,6 +34,7 @@ public class TransformerTrackerLifecycleTestCase extends AbstractServiceAndFlowT
     @Test
     public void testLifecycle() throws Exception
     {
+        //TODO(pablo.kraan): startup - fix this test
         final MuleMessage result = muleContext.getClient().send("vm://EchoService.In", "foo", null);
 
         final LifecycleTrackerTransformer ltt = (LifecycleTrackerTransformer) result.getPayload();

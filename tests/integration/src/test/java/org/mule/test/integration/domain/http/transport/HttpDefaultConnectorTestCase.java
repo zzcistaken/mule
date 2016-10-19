@@ -30,6 +30,7 @@ public class HttpDefaultConnectorTestCase extends AbstractMuleTestCase
     @Test
     public void defaultHttpConnectorIsNotShared() throws Exception
     {
+        //TODO(pablo.kraan): startup - fix this test
         MuleContext domainContext = null;
         MuleContext firstApp = null;
         MuleContext secondApp = null;

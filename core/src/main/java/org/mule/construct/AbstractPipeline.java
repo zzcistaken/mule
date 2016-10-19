@@ -6,6 +6,8 @@
  */
 package org.mule.construct;
 
+import static org.mule.context.notification.MuleContextNotification.CONTEXT_STARTED;
+import static org.mule.context.notification.MuleContextNotification.CONTEXT_STOPPING;
 import static org.mule.util.NotificationUtils.buildPathResolver;
 import org.mule.api.GlobalNameableObject;
 import org.mule.api.MessagingException;
@@ -356,13 +358,19 @@ public abstract class AbstractPipeline extends AbstractFlowConstruct implements 
         canProcessMessage = true;
         try
         {
-            AbstractPipeline.DelayedMessageSourceStart delayedMessageSourceStart = new AbstractPipeline.DelayedMessageSourceStart(this.messageSource);
-            this.muleContext.getNotificationManager().addListener(delayedMessageSourceStart);
+            if (muleContext.isStarted())
+            {
+                startIfStartable(this.messageSource);
+            }
+            else {
+                DelayedMessageSourceStart delayedMessageSourceStart = new DelayedMessageSourceStart(this.messageSource);
+                this.muleContext.getNotificationManager().addListener(delayedMessageSourceStart);
+            }
         }
         catch(Exception e)
         {
             // If the messageSource couldn't be started we would need to stop the pipeline (if possible) in order to leave
-            // its LifeciclyManager also as initialise phase so the flow can be disposed later
+            // its LifecycleManager also as initialise phase so the flow can be disposed later
             doStop();
             throw e;
         }
@@ -483,16 +491,17 @@ public abstract class AbstractPipeline extends AbstractFlowConstruct implements 
         public void onNotification(MuleContextNotification notification) {
             int action = notification.getAction();
             switch(action) {
-                case 104:
+                case CONTEXT_STARTED:
                     AbstractPipeline.this.logger.info("Delayed starting of message source " + this.messageSource);
 
                     try {
                         AbstractPipeline.this.startIfStartable(this.messageSource);
                     } catch (MuleException var4) {
                         AbstractPipeline.this.logger.error("Error delayed starting of message source: " + this.messageSource, var4);
+                        muleContext.getExceptionListener().handleException(var4);
                     }
                     break;
-                case 105:
+                case CONTEXT_STOPPING:
                     AbstractPipeline.this.muleContext.unregisterListener(this);
             }
 

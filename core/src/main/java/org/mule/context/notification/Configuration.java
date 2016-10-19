@@ -6,22 +6,23 @@
  */
 package org.mule.context.notification;
 
+import static org.mule.context.notification.ServerNotificationManager.toClass;
 import org.mule.api.context.notification.ServerNotification;
 import org.mule.api.context.notification.ServerNotificationListener;
 import org.mule.config.i18n.CoreMessages;
+import org.mule.construct.AbstractPipeline;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import static org.mule.context.notification.ServerNotificationManager.toClass;
 
 /**
  * This acts as a synchronized collection. No call blocks and all are synchronized.
@@ -32,7 +33,7 @@ class Configuration
     protected static Log logger = LogFactory.getLog(Configuration.class);
     private Map<Class<? extends ServerNotificationListener>, Set<Class<? extends ServerNotification>>> interfaceToTypes =
             new HashMap<Class<? extends ServerNotificationListener>, Set<Class<? extends ServerNotification>>>(); // map from interface to collection of events
-    private Set<ListenerSubscriptionPair> listenerSubscriptionPairs = new HashSet<ListenerSubscriptionPair>();
+    private Set<ListenerSubscriptionPair> listenerSubscriptionPairs = new LinkedHashSet<>();
     private Set<Class<? extends ServerNotificationListener>> disabledInterfaces = new HashSet<Class<? extends ServerNotificationListener>>();
     private Set<Class<? extends ServerNotification>> disabledNotificationTypes = new HashSet<Class<? extends ServerNotification>>();
     private volatile boolean dirty = true;
@@ -78,7 +79,17 @@ class Configuration
     synchronized void addListenerSubscriptionPair(ListenerSubscriptionPair pair)
     {
         dirty = true;
-        if (!listenerSubscriptionPairs.add(pair))
+        if (pair.getListener() instanceof AbstractPipeline.DelayedMessageSourceStart)
+        {
+            final LinkedHashSet<ListenerSubscriptionPair> newSet = new LinkedHashSet<>();
+            newSet.add(pair);
+            newSet.addAll(listenerSubscriptionPairs);
+            listenerSubscriptionPairs = newSet;
+        //    if (!this.listenerSubscriptionPairs.add(pair))
+        //{
+        //    logger.warn(CoreMessages.notificationListenerSubscriptionAlreadyRegistered(pair));
+        //}
+        } else if (!listenerSubscriptionPairs.add(pair))
         {
             logger.warn(CoreMessages.notificationListenerSubscriptionAlreadyRegistered(pair));
         }
