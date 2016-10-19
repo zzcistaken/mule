@@ -7,7 +7,6 @@
 package org.mule.construct;
 
 import static org.mule.util.NotificationUtils.buildPathResolver;
-
 import org.mule.api.GlobalNameableObject;
 import org.mule.api.MessagingException;
 import org.mule.api.MuleContext;
@@ -17,6 +16,7 @@ import org.mule.api.config.MuleConfiguration;
 import org.mule.api.config.MuleProperties;
 import org.mule.api.construct.FlowConstructInvalidException;
 import org.mule.api.construct.Pipeline;
+import org.mule.api.context.notification.MuleContextNotificationListener;
 import org.mule.api.endpoint.InboundEndpoint;
 import org.mule.api.exception.MessagingExceptionHandlerAcceptor;
 import org.mule.api.lifecycle.LifecycleException;
@@ -35,6 +35,7 @@ import org.mule.api.source.MessageSource;
 import org.mule.api.source.NonBlockingMessageSource;
 import org.mule.config.i18n.CoreMessages;
 import org.mule.construct.flow.DefaultFlowProcessingStrategy;
+import org.mule.context.notification.MuleContextNotification;
 import org.mule.context.notification.PipelineMessageNotification;
 import org.mule.exception.ChoiceMessagingExceptionStrategy;
 import org.mule.exception.RollbackMessagingExceptionStrategy;
@@ -46,7 +47,6 @@ import org.mule.processor.strategy.AsynchronousProcessingStrategy;
 import org.mule.processor.strategy.NonBlockingProcessingStrategy;
 import org.mule.processor.strategy.SynchronousProcessingStrategy;
 import org.mule.source.ClusterizableMessageSourceWrapper;
-import org.mule.transport.ConnectException;
 import org.mule.util.NotificationUtils;
 import org.mule.util.NotificationUtils.PathResolver;
 
@@ -356,14 +356,10 @@ public abstract class AbstractPipeline extends AbstractFlowConstruct implements 
         canProcessMessage = true;
         try
         {
-            startIfStartable(messageSource);
+            AbstractPipeline.DelayedMessageSourceStart delayedMessageSourceStart = new AbstractPipeline.DelayedMessageSourceStart(this.messageSource);
+            this.muleContext.getNotificationManager().addListener(delayedMessageSourceStart);
         }
-        // Let connection exceptions bubble up to trigger the reconnection strategy.
-        catch (ConnectException ce)
-        {
-            throw ce;
-        }
-        catch(MuleException e)
+        catch(Exception e)
         {
             // If the messageSource couldn't be started we would need to stop the pipeline (if possible) in order to leave
             // its LifeciclyManager also as initialise phase so the flow can be disposed later
@@ -476,4 +472,30 @@ public abstract class AbstractPipeline extends AbstractFlowConstruct implements 
         super.doDispose();
     }
 
+    public class DelayedMessageSourceStart implements MuleContextNotificationListener<MuleContextNotification>
+    {
+        private MessageSource messageSource;
+
+        public DelayedMessageSourceStart(MessageSource messageSource) {
+            this.messageSource = messageSource;
+        }
+
+        public void onNotification(MuleContextNotification notification) {
+            int action = notification.getAction();
+            switch(action) {
+                case 104:
+                    AbstractPipeline.this.logger.info("Delayed starting of message source " + this.messageSource);
+
+                    try {
+                        AbstractPipeline.this.startIfStartable(this.messageSource);
+                    } catch (MuleException var4) {
+                        AbstractPipeline.this.logger.error("Error delayed starting of message source: " + this.messageSource, var4);
+                    }
+                    break;
+                case 105:
+                    AbstractPipeline.this.muleContext.unregisterListener(this);
+            }
+
+        }
+    }
 }
