@@ -363,7 +363,7 @@ public abstract class AbstractService extends AbstractAnnotatedObject implements
         startIfStartable(component);
         startIfStartable(messageProcessorChain);
 
-        startIfStartable(messageSource);
+        //startIfStartable(messageSource);
         if (asyncReplyMessageSource.getEndpoints().size() > 0)
         {
             asyncReplyMessageSource.start();

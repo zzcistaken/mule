@@ -42,6 +42,8 @@ import org.mule.api.registry.RegistrationException;
 import org.mule.api.registry.Registry;
 import org.mule.api.security.SecurityManager;
 import org.mule.api.serialization.ObjectSerializer;
+import org.mule.api.service.Service;
+import org.mule.api.source.MessageSource;
 import org.mule.api.store.ListableObjectStore;
 import org.mule.api.store.ObjectStoreManager;
 import org.mule.api.util.StreamCloserService;
@@ -51,6 +53,7 @@ import org.mule.config.DefaultMuleConfiguration;
 import org.mule.config.NullClusterConfiguration;
 import org.mule.config.bootstrap.ArtifactType;
 import org.mule.config.i18n.CoreMessages;
+import org.mule.construct.Flow;
 import org.mule.context.notification.MuleContextNotification;
 import org.mule.context.notification.NotificationException;
 import org.mule.context.notification.ServerNotificationManager;
@@ -63,6 +66,7 @@ import org.mule.management.stats.AllStatistics;
 import org.mule.management.stats.ProcessingTimeWatcher;
 import org.mule.registry.DefaultRegistryBroker;
 import org.mule.registry.MuleRegistryHelper;
+import org.mule.transport.ConnectException;
 import org.mule.transport.DefaultPollingController;
 import org.mule.transport.PollingController;
 import org.mule.util.ApplicationShutdownSplashScreen;
@@ -311,6 +315,35 @@ public class DefaultMuleContext implements MuleContext
         getLifecycleManager().fireLifecycle(Startable.PHASE_NAME);
         overridePollingController();
         overrideClusterConfiguration();
+
+        for (Flow flow : this.getRegistry().lookupObjects(Flow.class)) {
+            if (flow.isStarted()) {
+                MessageSource messageSource = flow.getMessageSource();
+                if (messageSource instanceof Startable)
+                {
+                    try {
+                        ((Startable) messageSource).start();
+                    }
+                    catch (ConnectException e)
+                    {
+                       exceptionListener.handleException(e);
+                    }
+                }
+            }
+        }
+
+        for (Service service : this.getRegistry().lookupObjects(Service.class)) {
+            if (service.isStarted()) {
+                MessageSource messageSource = service.getMessageSource();
+                if (messageSource instanceof Startable) {
+                    try {
+                        ((Startable) messageSource).start();
+                    } catch (ConnectException e) {
+                        exceptionListener.handleException(e);
+                    }
+                }
+            }
+        }
 
         fireNotification(new MuleContextNotification(this, MuleContextNotification.CONTEXT_STARTED));
 
