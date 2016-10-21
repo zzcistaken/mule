@@ -9,7 +9,6 @@ package org.mule;
 import static org.mule.api.config.MuleProperties.OBJECT_EXPRESSION_LANGUAGE;
 import static org.mule.api.config.MuleProperties.OBJECT_POLLING_CONTROLLER;
 import static org.mule.api.config.MuleProperties.OBJECT_TRANSACTION_MANAGER;
-
 import org.mule.api.Injector;
 import org.mule.api.MuleContext;
 import org.mule.api.MuleException;
@@ -19,6 +18,7 @@ import org.mule.api.client.LocalMuleClient;
 import org.mule.api.config.MuleConfiguration;
 import org.mule.api.config.MuleProperties;
 import org.mule.api.config.ThreadingProfile;
+import org.mule.api.construct.Pipeline;
 import org.mule.api.context.MuleContextAware;
 import org.mule.api.context.WorkManager;
 import org.mule.api.context.notification.FlowTraceManager;
@@ -53,7 +53,6 @@ import org.mule.config.DefaultMuleConfiguration;
 import org.mule.config.NullClusterConfiguration;
 import org.mule.config.bootstrap.ArtifactType;
 import org.mule.config.i18n.CoreMessages;
-import org.mule.construct.Flow;
 import org.mule.context.notification.MuleContextNotification;
 import org.mule.context.notification.NotificationException;
 import org.mule.context.notification.ServerNotificationManager;
@@ -316,9 +315,9 @@ public class DefaultMuleContext implements MuleContext
         overridePollingController();
         overrideClusterConfiguration();
 
-        for (Flow flow : this.getRegistry().lookupObjects(Flow.class)) {
-            if (flow.isStarted()) {
-                MessageSource messageSource = flow.getMessageSource();
+        for (Pipeline pipeline : this.getRegistry().lookupObjects(Pipeline.class)) {
+            if (pipeline.getLifecycleState().isStarted()) {
+                MessageSource messageSource = pipeline.getMessageSource();
                 if (messageSource instanceof Startable)
                 {
                     try {
