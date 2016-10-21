@@ -23,7 +23,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.withSettings;
 import static org.mule.MessageExchangePattern.REQUEST_RESPONSE;
-
 import org.mule.MessageExchangePattern;
 import org.mule.api.MuleEvent;
 import org.mule.api.MuleException;
@@ -253,6 +252,9 @@ public class FlowTestCase extends AbstractFlowConstuctTestCase
     @Test
     public void testFailStartingMessageSourceOnLifecycleShouldStopStartedPipelineProcesses() throws Exception
     {
+        //TODO(pablo.kraan): startup - starting the flow before starting the flow
+        muleContext.start();
+
         MessageSource mockMessageSource = mock(MessageSource.class, withSettings().extraInterfaces(Startable.class, Stoppable.class));
         doThrow(new LifecycleException(mock(Message.class), "Error starting component")).when(((Startable) mockMessageSource)).start();
         flow.setMessageSource(mockMessageSource);
@@ -274,5 +276,7 @@ public class FlowTestCase extends AbstractFlowConstuctTestCase
 
         verify((Startable) mockMessageSource, times(1)).start();
         verify((Stoppable) mockMessageSource, times(1)).stop();
+        //TODO(pablo.kraan): startup - is not good that the state of the flow continues to be started isntead of stopped
+        //assertThat(flow.getLifecycleState().isStopped(), is(true));
     }
 }

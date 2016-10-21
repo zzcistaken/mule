@@ -34,6 +34,7 @@ import org.mule.api.expression.ExpressionManager;
 import org.mule.api.lifecycle.Disposable;
 import org.mule.api.lifecycle.Initialisable;
 import org.mule.api.lifecycle.InitialisationException;
+import org.mule.api.lifecycle.LifecycleException;
 import org.mule.api.lifecycle.LifecycleManager;
 import org.mule.api.lifecycle.Startable;
 import org.mule.api.lifecycle.Stoppable;
@@ -65,6 +66,7 @@ import org.mule.management.stats.AllStatistics;
 import org.mule.management.stats.ProcessingTimeWatcher;
 import org.mule.registry.DefaultRegistryBroker;
 import org.mule.registry.MuleRegistryHelper;
+import org.mule.service.Pausable;
 import org.mule.transport.ConnectException;
 import org.mule.transport.DefaultPollingController;
 import org.mule.transport.PollingController;
@@ -315,29 +317,31 @@ public class DefaultMuleContext implements MuleContext
         overridePollingController();
         overrideClusterConfiguration();
 
-        for (Pipeline pipeline : this.getRegistry().lookupObjects(Pipeline.class)) {
-            if (pipeline.getLifecycleState().isStarted()) {
+        for (Pipeline pipeline : this.getRegistry().lookupObjects(Pipeline.class))
+        {
+            if (pipeline.getLifecycleState().isStarted())
+            {
                 MessageSource messageSource = pipeline.getMessageSource();
-                if (messageSource instanceof Startable)
-                {
-                    try {
-                        ((Startable) messageSource).start();
-                    }
-                    catch (ConnectException e)
-                    {
-                       exceptionListener.handleException(e);
-                    }
-                }
+
+                startMessageSource(messageSource);
             }
         }
 
-        for (Service service : this.getRegistry().lookupObjects(Service.class)) {
-            if (service.isStarted()) {
+        for (Service service : this.getRegistry().lookupObjects(Service.class))
+        {
+            if (service.isStarted() || service.isPaused())
+            {
                 MessageSource messageSource = service.getMessageSource();
-                if (messageSource instanceof Startable) {
-                    try {
-                        ((Startable) messageSource).start();
-                    } catch (ConnectException e) {
+                startMessageSource(messageSource);
+
+                if (service.isPaused() && messageSource instanceof Pausable)
+                {
+                    try
+                    {
+                        ((Pausable) messageSource).pause();
+                    }
+                    catch (Exception e)
+                    {
                         exceptionListener.handleException(e);
                     }
                 }
@@ -352,6 +356,29 @@ public class DefaultMuleContext implements MuleContext
         {
             SplashScreen startupScreen = buildStartupSplash();
             logger.info(startupScreen.toString());
+        }
+    }
+
+    private void startMessageSource(MessageSource messageSource) throws LifecycleException
+    {
+        if (messageSource instanceof Startable)
+        {
+            try
+            {
+                ((Startable) messageSource).start();
+            }
+            catch (ConnectException e)
+            {
+                exceptionListener.handleException(e);
+            }
+            catch (LifecycleException le)
+            {
+                throw le;
+            }
+            catch (Exception e)
+            {
+                throw new LifecycleException(e, messageSource);
+            }
         }
     }
 
@@ -878,8 +905,8 @@ public class DefaultMuleContext implements MuleContext
     protected SplashScreen buildStartupSplash()
     {
         SplashScreen startupScreen = config.isContainerMode()
-                                         ? new ApplicationStartupSplashScreen()
-                                         : new ServerStartupSplashScreen();
+                                     ? new ApplicationStartupSplashScreen()
+                                     : new ServerStartupSplashScreen();
         startupScreen.setHeader(this);
         startupScreen.setFooter(this);
         return startupScreen;
@@ -888,8 +915,8 @@ public class DefaultMuleContext implements MuleContext
     protected SplashScreen buildShutdownSplash()
     {
         SplashScreen shutdownScreen = config.isContainerMode()
-                                         ? new ApplicationShutdownSplashScreen()
-                                         : new ServerShutdownSplashScreen();
+                                      ? new ApplicationShutdownSplashScreen()
+                                      : new ServerShutdownSplashScreen();
         shutdownScreen.setHeader(this);
         return shutdownScreen;
     }
@@ -981,7 +1008,7 @@ public class DefaultMuleContext implements MuleContext
             defaultExceptionStrategy = getRegistry().lookupObject(config.getDefaultExceptionStrategyName());
             if (defaultExceptionStrategy == null)
             {
-                throw new MuleRuntimeException(CoreMessages.createStaticMessage(String.format("No global exception strategy named %s",config.getDefaultExceptionStrategyName())));
+                throw new MuleRuntimeException(CoreMessages.createStaticMessage(String.format("No global exception strategy named %s", config.getDefaultExceptionStrategyName())));
             }
         }
         else
