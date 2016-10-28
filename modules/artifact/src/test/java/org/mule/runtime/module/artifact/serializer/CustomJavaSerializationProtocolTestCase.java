@@ -75,6 +75,7 @@ public class CustomJavaSerializationProtocolTestCase extends AbstractSerializerP
     final MuleArtifactClassLoader artifactClassLoader =
         new MuleArtifactClassLoader(ARTIFACT_ID, new ArtifactDescriptor(ARTIFACT_NAME), urls, getClass().getClassLoader(),
                                     lookupPolicy);
+    when(classLoaderRepository.getId(artifactClassLoader)).thenReturn(ARTIFACT_ID);
     when(classLoaderRepository.find(ARTIFACT_ID)).thenReturn(artifactClassLoader);
 
     final Class<?> echoTestClass = artifactClassLoader.loadClass(SERIALIZABLE_CLASS);

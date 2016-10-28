@@ -71,7 +71,8 @@ public class MuleArtifactResourcesRegistry {
     this.domainClassLoaderFactory = trackDeployableArtifactClassLoaderFactory(
                                                                               new DomainClassLoaderFactory(containerClassLoader
                                                                                   .getClassLoader()));
-    domainFactory = new DefaultDomainFactory(this.domainClassLoaderFactory, domainManager, containerClassLoader);
+    domainFactory =
+        new DefaultDomainFactory(this.domainClassLoaderFactory, domainManager, containerClassLoader, artifactClassLoaderManager);
     this.artifactPluginClassLoaderFactory = trackArtifactClassLoaderFactory(new ArtifactPluginClassLoaderFactory());
     final ArtifactPluginDescriptorFactory artifactPluginDescriptorFactory =
         new ArtifactPluginDescriptorFactory(new ArtifactClassLoaderFilterFactory());
