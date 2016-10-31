@@ -28,10 +28,12 @@ public class DefaultArtifactClassLoaderManagerTestCase extends AbstractMuleTestC
   public void registersArtifactClassLoader() throws Exception {
     ArtifactClassLoader artifactClassLoader = mock(ArtifactClassLoader.class);
     when(artifactClassLoader.getArtifactId()).thenReturn(ARTIFACT_ID);
+    ClassLoader expectedClassLoader = getClass().getClassLoader();
+    when(artifactClassLoader.getClassLoader()).thenReturn(expectedClassLoader);
 
     manager.register(artifactClassLoader);
 
-    assertThat(manager.find(ARTIFACT_ID), is(artifactClassLoader));
+    assertThat(manager.find(ARTIFACT_ID), is(expectedClassLoader));
   }
 
   @Test
