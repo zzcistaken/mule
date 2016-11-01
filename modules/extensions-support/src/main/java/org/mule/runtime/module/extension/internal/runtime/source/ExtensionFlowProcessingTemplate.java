@@ -9,11 +9,14 @@ package org.mule.runtime.module.extension.internal.runtime.source;
 import org.mule.runtime.core.execution.CompletionHandler;
 import org.mule.runtime.api.message.MuleEvent;
 import org.mule.runtime.core.api.Event;
+import org.mule.runtime.api.meta.model.source.SourceModel;
 import org.mule.runtime.core.exception.MessagingException;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.execution.AsyncResponseFlowProcessingPhaseTemplate;
 import org.mule.runtime.core.execution.ResponseCompletionCallback;
+import org.mule.runtime.core.policy.OperationPolicyInstance;
+import org.mule.runtime.dsl.api.component.ComponentIdentifier;
 
 final class ExtensionFlowProcessingTemplate implements AsyncResponseFlowProcessingPhaseTemplate {
 
@@ -42,6 +45,16 @@ final class ExtensionFlowProcessingTemplate implements AsyncResponseFlowProcessi
   @Override
   public void sendResponseToClient(Event event, ResponseCompletionCallback responseCompletionCallback)
       throws MuleException {
+    //for (OperationPolicyInstance policyInstance : muleEvent.getPolicyInstances())
+    //{
+    //  ComponentIdentifier componentIdentifier = new ComponentIdentifier.Builder().withNamespace("httpn").withNamespace(sourceModel.getName()).build();
+    //  if (policyInstance.getOperationPolicy().appliesToSource(componentIdentifier))
+    //  {
+    //    //TODO fix.
+    //    muleEvent = policyInstance.processSource(muleEvent, null);
+    //  }
+    //}
+    //final org.mule.runtime.core.api.Event resultEvent = muleEvent;
     ExtensionSourceExceptionCallback exceptionCallback =
         new ExtensionSourceExceptionCallback(responseCompletionCallback, event, completionHandler::onFailure);
     runAndNotify(() -> completionHandler.onCompletion(event, exceptionCallback), this.event, responseCompletionCallback);

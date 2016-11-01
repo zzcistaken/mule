@@ -14,6 +14,7 @@ import static org.mule.runtime.module.extension.internal.util.MuleExtensionUtils
 import static org.mule.runtime.module.extension.internal.util.MuleExtensionUtils.toActionCode;
 import org.mule.runtime.api.meta.model.ComponentModel;
 import org.mule.runtime.api.meta.model.ExtensionModel;
+import org.mule.runtime.api.meta.model.operation.OperationModel;
 import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.transaction.TransactionConfig;
@@ -44,8 +45,8 @@ public class DefaultExecutionContext<M extends ComponentModel> implements Execut
   private final Map<String, Object> parameters;
   private final Map<String, Object> variables = new HashMap<>();
   private final M componentModel;
-  private final Event event;
   private final MuleContext muleContext;
+  private Event event;
   private Optional<TransactionConfig> transactionConfig = null;
   private Supplier<Optional<TransactionConfig>> transactionConfigSupplier;
 
@@ -186,6 +187,12 @@ public class DefaultExecutionContext<M extends ComponentModel> implements Execut
   @Override
   public MuleContext getMuleContext() {
     return muleContext;
+  }
+
+  @Override
+  public void setEvent(Event event)
+  {
+    this.event = event;
   }
 
   /**

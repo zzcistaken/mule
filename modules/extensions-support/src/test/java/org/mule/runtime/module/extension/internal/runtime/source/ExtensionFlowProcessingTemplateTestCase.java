@@ -62,7 +62,8 @@ public class ExtensionFlowProcessingTemplateTestCase extends AbstractMuleTestCas
 
   @Before
   public void before() {
-    template = new ExtensionFlowProcessingTemplate(event, messageProcessor, completionHandler);
+    //TODO fix
+    template = new ExtensionFlowProcessingTemplate(event, messageProcessor, null, completionHandler);
   }
 
   @Test

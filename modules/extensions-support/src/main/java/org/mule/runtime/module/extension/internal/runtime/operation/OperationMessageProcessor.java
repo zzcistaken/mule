@@ -7,11 +7,11 @@
 package org.mule.runtime.module.extension.internal.runtime.operation;
 
 import static java.lang.String.format;
+import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.disposeIfNeeded;
 import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.initialiseIfNeeded;
 import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.startIfNeeded;
 import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.stopIfNeeded;
-import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 import static org.mule.runtime.core.el.mvel.MessageVariableResolverFactory.FLOW_VARS;
 import static org.mule.runtime.core.util.ClassUtils.withContextClassLoader;
 import static org.mule.runtime.core.util.StringUtils.isBlank;
@@ -20,6 +20,7 @@ import static org.mule.runtime.module.extension.internal.util.MuleExtensionUtils
 import static org.mule.runtime.module.extension.internal.util.MuleExtensionUtils.getInitialiserEvent;
 import static org.mule.runtime.module.extension.internal.util.MuleExtensionUtils.getOperationExecutorFactory;
 import static org.slf4j.LoggerFactory.getLogger;
+import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.api.meta.model.config.ConfigurationModel;
 import org.mule.runtime.api.meta.model.operation.OperationModel;
@@ -32,7 +33,6 @@ import org.mule.runtime.api.metadata.descriptor.TypeMetadataDescriptor;
 import org.mule.runtime.api.metadata.resolving.MetadataResult;
 import org.mule.runtime.core.api.DefaultMuleException;
 import org.mule.runtime.core.api.Event;
-import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.core.api.lifecycle.InitialisationException;
 import org.mule.runtime.core.api.lifecycle.Lifecycle;
 import org.mule.runtime.core.api.processor.Processor;
@@ -41,6 +41,8 @@ import org.mule.runtime.extension.api.runtime.ConfigurationInstance;
 import org.mule.runtime.extension.api.runtime.ConfigurationProvider;
 import org.mule.runtime.extension.api.runtime.operation.OperationExecutor;
 import org.mule.runtime.extension.api.runtime.operation.OperationExecutorFactory;
+import org.mule.runtime.extension.api.runtime.operation.OperationParameter;
+import org.mule.runtime.extension.api.runtime.operation.OperationParametersResolver;
 import org.mule.runtime.module.extension.internal.manager.ExtensionManagerAdapter;
 import org.mule.runtime.module.extension.internal.metadata.EntityMetadataMediator;
 import org.mule.runtime.module.extension.internal.model.property.OperationExecutorModelProperty;
@@ -53,6 +55,7 @@ import org.mule.runtime.module.extension.internal.runtime.LazyOperationContext;
 import org.mule.runtime.module.extension.internal.runtime.ParameterValueResolver;
 import org.mule.runtime.module.extension.internal.runtime.resolver.ResolverSet;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -60,16 +63,15 @@ import org.slf4j.Logger;
 /**
  * A {@link Processor} capable of executing extension operations.
  * <p>
- * It obtains a configuration instance, evaluate all the operation parameters and executes a {@link OperationModel} by
- * using a {@link #operationExecutor}. This message processor is capable of serving the execution of any {@link OperationModel} of
- * any {@link ExtensionModel}.
+ * It obtains a configuration instance, evaluate all the operation parameters and executes a {@link OperationModel} by using a
+ * {@link #operationExecutor}. This message processor is capable of serving the execution of any {@link OperationModel} of any
+ * {@link ExtensionModel}.
  * <p>
- * A {@link #operationExecutor} is obtained by testing the {@link OperationModel} for a
- * {@link OperationExecutorModelProperty} through which a {@link OperationExecutorFactory} is obtained.
- * Models with no such property cannot be used with this class. The obtained {@link OperationExecutor} serve all invocations
- * of {@link #process(Event)} on {@code this} instance but will not be shared with other instances of
- * {@link OperationMessageProcessor}. All the {@link Lifecycle} events that {@code this} instance receives will be propagated to
- * the {@link #operationExecutor}.
+ * A {@link #operationExecutor} is obtained by testing the {@link OperationModel} for a {@link OperationExecutorModelProperty}
+ * through which a {@link OperationExecutorFactory} is obtained. Models with no such property cannot be used with this class. The
+ * obtained {@link OperationExecutor} serve all invocations of {@link #process(Event)} on {@code this} instance but will not be
+ * shared with other instances of {@link OperationMessageProcessor}. All the {@link Lifecycle} events that {@code this} instance
+ * receives will be propagated to the {@link #operationExecutor}.
  * <p>
  * The {@link #operationExecutor} is executed directly but by the means of a {@link DefaultExecutionMediator}
  *
@@ -86,9 +88,11 @@ public class OperationMessageProcessor extends ExtensionComponent implements Pro
   private final ResolverSet resolverSet;
   private final String target;
   private final EntityMetadataMediator entityMetadataMediator;
+  private final List<OperationParameter> operationParameters;
 
   private ExecutionMediator executionMediator;
   private OperationExecutor operationExecutor;
+  private OperationParametersResolver operationParametersResolver;
   protected ReturnDelegate returnDelegate;
 
   public OperationMessageProcessor(ExtensionModel extensionModel,
@@ -96,13 +100,14 @@ public class OperationMessageProcessor extends ExtensionComponent implements Pro
                                    ConfigurationProvider configurationProvider,
                                    String target,
                                    ResolverSet resolverSet,
-                                   ExtensionManagerAdapter extensionManager) {
+                                   ExtensionManagerAdapter extensionManager, List<OperationParameter> operationParameters) {
     super(extensionModel, operationModel, configurationProvider, extensionManager);
     this.extensionModel = extensionModel;
     this.operationModel = operationModel;
     this.resolverSet = resolverSet;
     this.target = target;
     this.entityMetadataMediator = new EntityMetadataMediator(operationModel);
+    this.operationParameters = operationParameters;
   }
 
   @Override
@@ -149,6 +154,7 @@ public class OperationMessageProcessor extends ExtensionComponent implements Pro
   @Override
   protected void doInitialise() throws InitialisationException {
     returnDelegate = createReturnDelegate();
+    //operationParametersResolver = getOperationParametersResolverFactory(operationModel).createResolver(operationModel);
     operationExecutor = getOperationExecutorFactory(operationModel).createExecutor(operationModel);
     executionMediator = createExecutionMediator();
     initialiseIfNeeded(operationExecutor, true, muleContext);

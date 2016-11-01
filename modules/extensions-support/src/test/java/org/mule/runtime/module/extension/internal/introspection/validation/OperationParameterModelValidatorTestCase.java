@@ -27,7 +27,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 @SmallTest
 @RunWith(MockitoJUnitRunner.class)
-public class OperationParametersModelValidatorTestCase extends AbstractMuleTestCase {
+public class OperationParameterModelValidatorTestCase extends AbstractMuleTestCase {
 
   public static final String EXTENSION_NAME = "extension";
   public static final String OPERATION_NAME = "operation";

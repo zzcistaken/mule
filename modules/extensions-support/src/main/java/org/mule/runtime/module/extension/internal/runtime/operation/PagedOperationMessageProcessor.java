@@ -23,6 +23,8 @@ import org.mule.runtime.module.extension.internal.runtime.ExecutionContextAdapte
 import org.mule.runtime.module.extension.internal.runtime.resolver.ResolverSet;
 import org.mule.runtime.module.extension.internal.runtime.streaming.PagingProviderProducer;
 
+import java.util.Collections;
+
 /**
  * A specialization of {@link OperationMessageProcessor} which also implements {@link InterceptingMessageProcessor}.
  *
@@ -36,7 +38,7 @@ public class PagedOperationMessageProcessor extends OperationMessageProcessor {
                                         String target,
                                         ResolverSet resolverSet,
                                         ExtensionManagerAdapter extensionManager) {
-    super(extensionModel, operationModel, configurationProvider, target, resolverSet, extensionManager);
+    super(extensionModel, operationModel, configurationProvider, target, resolverSet, extensionManager, Collections.emptyList());
   }
 
   @Override

@@ -29,6 +29,8 @@ import org.mule.runtime.module.extension.internal.runtime.InterceptingExecutionM
 import org.mule.runtime.module.extension.internal.runtime.ExecutionContextAdapter;
 import org.mule.runtime.module.extension.internal.runtime.resolver.ResolverSet;
 
+import java.util.Collections;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +52,7 @@ public class InterceptingOperationMessageProcessor extends OperationMessageProce
                                                ConfigurationProvider configurationProvider, String target,
                                                ResolverSet resolverSet,
                                                ExtensionManagerAdapter extensionManager) {
-    super(extensionModel, operationModel, configurationProvider, target, resolverSet, extensionManager);
+    super(extensionModel, operationModel, configurationProvider, target, resolverSet, extensionManager, Collections.emptyList());
   }
 
   @Override

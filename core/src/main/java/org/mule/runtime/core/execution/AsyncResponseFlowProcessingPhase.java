@@ -11,12 +11,18 @@ import static org.mule.runtime.core.context.notification.ConnectorMessageNotific
 import static org.mule.runtime.core.context.notification.ConnectorMessageNotification.MESSAGE_RESPONSE;
 import static org.mule.runtime.core.execution.TransactionalErrorHandlingExecutionTemplate.createMainExecutionTemplate;
 
+import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.core.exception.MessagingException;
 import org.mule.runtime.core.api.Event;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.core.api.exception.MessagingExceptionHandler;
 import org.mule.runtime.core.api.source.MessageSource;
+import org.mule.runtime.core.policy.OperationPolicy;
+import org.mule.runtime.core.policy.OperationPolicyInstance;
 import org.mule.runtime.core.transaction.MuleTransactionConfig;
+import org.mule.runtime.dsl.api.component.ComponentIdentifier;
+
+import java.util.Collection;
 
 import javax.resource.spi.work.Work;
 import javax.resource.spi.work.WorkException;
@@ -65,6 +71,9 @@ public class AsyncResponseFlowProcessingPhase
             final Event response = transactionTemplate.execute(() -> {
               Event muleEvent = template.getEvent();
               fireNotification(messageSource, muleEvent, messageProcessContext.getFlowConstruct(), MESSAGE_RECEIVED);
+              Collection<OperationPolicy> operationPolicies =
+                  messageProcessContext.getFlowConstruct().getMuleContext().getRegistry().lookupObjects(OperationPolicy.class);
+              muleEvent = executePolicies(operationPolicies, messageProcessContext.getMessageSource(), muleEvent);
               return template.routeEvent(muleEvent);
             });
             fireNotification(messageSource, response, messageProcessContext.getFlowConstruct(), MESSAGE_RESPONSE);
@@ -88,6 +97,22 @@ public class AsyncResponseFlowProcessingPhase
     } else {
       flowExecutionWork.run();
     }
+  }
+
+  private Event executePolicies(Collection<OperationPolicy> operationPolicies, MessageSource messageSource, Event muleEvent)
+          throws MuleException
+  {
+    //TODO get the component identifier from the MessageSource
+    ComponentIdentifier sourceIdentifier = new ComponentIdentifier.Builder().withNamespace("httpn").withName("listener").build();
+    for (OperationPolicy operationPolicy : operationPolicies) {
+      if (operationPolicy.appliesToSource(sourceIdentifier)) {
+        OperationPolicyInstance policyInstance = operationPolicy.createSourcePolicyInstance(sourceIdentifier);
+        //TODO fix
+        muleEvent = policyInstance.processSource(muleEvent, null);
+        muleEvent = Event.builder(muleEvent).attachPolicyInstance(policyInstance).build();
+      }
+    }
+    return muleEvent;
   }
 
   private ResponseCompletionCallback createSendFailureResponseCompletationCallback(final PhaseResultNotifier phaseResultNotifier) {
