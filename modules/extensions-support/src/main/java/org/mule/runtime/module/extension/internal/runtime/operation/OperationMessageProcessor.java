@@ -21,9 +21,12 @@ import static org.mule.runtime.module.extension.internal.util.MuleExtensionUtils
 import static org.mule.runtime.module.extension.internal.util.MuleExtensionUtils.getOperationExecutorFactory;
 import static org.slf4j.LoggerFactory.getLogger;
 import org.mule.runtime.api.exception.MuleException;
+import org.mule.runtime.api.exception.MuleRuntimeException;
+import org.mule.runtime.api.message.MuleEvent;
 import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.api.meta.model.config.ConfigurationModel;
 import org.mule.runtime.api.meta.model.operation.OperationModel;
+import org.mule.runtime.api.meta.model.parameter.ParameterModel;
 import org.mule.runtime.api.metadata.EntityMetadataProvider;
 import org.mule.runtime.api.metadata.MetadataContext;
 import org.mule.runtime.api.metadata.MetadataKey;
@@ -37,6 +40,8 @@ import org.mule.runtime.core.api.lifecycle.InitialisationException;
 import org.mule.runtime.core.api.lifecycle.Lifecycle;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.exception.MessagingException;
+import org.mule.runtime.core.policy.OperationPolicyInstance;
+import org.mule.runtime.dsl.api.component.ComponentIdentifier;
 import org.mule.runtime.extension.api.runtime.ConfigurationInstance;
 import org.mule.runtime.extension.api.runtime.ConfigurationProvider;
 import org.mule.runtime.extension.api.runtime.operation.OperationExecutor;
@@ -53,10 +58,16 @@ import org.mule.runtime.module.extension.internal.runtime.ExecutionMediator;
 import org.mule.runtime.module.extension.internal.runtime.ExtensionComponent;
 import org.mule.runtime.module.extension.internal.runtime.LazyOperationContext;
 import org.mule.runtime.module.extension.internal.runtime.ParameterValueResolver;
+import org.mule.runtime.module.extension.internal.runtime.resolver.ExtensionResolverSetVisitor;
 import org.mule.runtime.module.extension.internal.runtime.resolver.ResolverSet;
+import org.mule.runtime.module.extension.internal.runtime.resolver.ResolverSetResult;
+import org.mule.runtime.module.extension.internal.runtime.resolver.ValueResolver;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 
 import org.slf4j.Logger;
 
@@ -81,7 +92,7 @@ public class OperationMessageProcessor extends ExtensionComponent implements Pro
 
   private static final Logger LOGGER = getLogger(OperationMessageProcessor.class);
   static final String INVALID_TARGET_MESSAGE =
-      "Flow '%s' defines an invalid usage of operation '%s' which uses %s as target";
+          "Flow '%s' defines an invalid usage of operation '%s' which uses %s as target";
 
   private final ExtensionModel extensionModel;
   private final OperationModel operationModel;
@@ -112,19 +123,86 @@ public class OperationMessageProcessor extends ExtensionComponent implements Pro
 
   @Override
   public Event process(Event event) throws MuleException {
-    return (Event) withContextClassLoader(getExtensionClassLoader(), () -> {
+    return withContextClassLoader(getExtensionClassLoader(), () -> {
       Optional<ConfigurationInstance> configuration = getConfiguration(event);
       ExecutionContextAdapter operationContext = createExecutionContext(configuration, event);
-      return doProcess(event, operationContext);
+      ResolverSetResult resolverSetResult = this.resolverSet.resolve(event);
+
+      //TODO at this point we need to know which are the set of parameters that come from the configuration including those with
+      //default values which most likely are expressions like #[payload]. For each of this parameters we must:
+      // - Evaluate the values if they are expressions
+      // - Convert the parameters values to the expected value types
+      // - Correlate the parameter with it's configuration attribute in the config so we can report any error back to the user or display the values when doing debugging
+      // - Assign the value to each parameter so we can call back to the "operation mechanism" to actually invoke the operation
+
+      List<ResolvedOperationParameter> resolvedOperationParameters = new ArrayList<ResolvedOperationParameter>();
+      resolverSetResult.asMap()
+              .entrySet().stream().forEach( (entry) -> {
+        ParameterModel foundParameterModel = operationModel.getParameterModels().stream()
+                .filter(parameterModel -> parameterModel.getName().equals(entry.getKey()))
+                .findAny().get();
+        //if (foundParameterModel.isContent()) {
+          resolvedOperationParameters.add(new ResolvedOperationParameter(entry.getKey(), entry.getValue(), foundParameterModel));
+        //}
+      });
+
+      //TODO this may not be needed for now.
+      //List<ResolvedOperationParameter> resolvedOperationParameters = resolveParameters(event);
+      Function<Event, Event> executeOperationFunction = (policyEvent) -> {
+        try
+        {
+          MuleEvent muleEvent = doProcess(policyEvent, operationContext);
+          Event resultEvent = (Event) muleEvent;
+          return resultEvent;
+        }
+        catch (MuleException e)
+        {
+          throw new MuleRuntimeException(e);
+        }
+      };
+      Event resultEvent = null;
+      boolean policyApplied = false;
+      for (OperationPolicyInstance policyInstance : event.getPolicyInstances()) {
+        ComponentIdentifier componentIdentifier = new ComponentIdentifier.Builder()
+                .withName(operationModel.getName())
+                .withNamespace("httpn")
+                .build();
+        if (policyInstance.getOperationPolicy().appliesToOperation(componentIdentifier)) {
+          policyApplied = true;
+          resultEvent = policyInstance.processOperation(
+                  event, executeOperationFunction);
+
+        }
+      }
+      if (!policyApplied) {
+        resultEvent = executeOperationFunction.apply(event);
+      }
+      return resultEvent;
     }, MuleException.class, e -> {
       throw new DefaultMuleException(e);
     });
   }
 
+  private void convert(Map<String, ValueResolver> parameters)
+  {
+    ExtensionResolverSetVisitor extensionResolverSetVisitor = new ExtensionResolverSetVisitor();
+    for (String paramName : parameters.keySet())
+    {
+      ValueResolver valueResolver = parameters.get(paramName);
+      valueResolver.accept(extensionResolverSetVisitor.createVisitor(paramName));
+    }
+  }
+
+  private List<ResolvedOperationParameter> resolveParameters(Event event)
+  {
+    return null;
+  }
+
   protected org.mule.runtime.api.message.MuleEvent doProcess(Event event, ExecutionContextAdapter operationContext)
       throws MuleException {
     Object result = executeOperation(operationContext, event);
-    return returnDelegate.asReturnValue(result, operationContext);
+    MuleEvent resultEvent = returnDelegate.asReturnValue(result, operationContext);
+    return resultEvent;
   }
 
   private Object executeOperation(ExecutionContextAdapter operationContext, Event event) throws MuleException {
@@ -228,10 +306,10 @@ public class OperationMessageProcessor extends ExtensionComponent implements Pro
     if (!configurationModel.getOperationModel(operationModel.getName()).isPresent() &&
         !configurationProvider.getExtensionModel().getOperationModel(operationModel.getName()).isPresent()) {
       throw new IllegalOperationException(format(
-                                                 "Flow '%s' defines an usage of operation '%s' which points to configuration '%s'. "
-                                                     + "The selected config does not support that operation.",
-                                                 flowConstruct.getName(), operationModel.getName(),
-                                                 configurationProvider.getName()));
+              "Flow '%s' defines an usage of operation '%s' which points to configuration '%s'. "
+              + "The selected config does not support that operation.",
+              flowConstruct.getName(), operationModel.getName(),
+              configurationProvider.getName()));
     }
   }
 

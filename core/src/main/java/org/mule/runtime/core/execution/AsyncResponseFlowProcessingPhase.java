@@ -17,7 +17,7 @@ import org.mule.runtime.core.api.Event;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.core.api.exception.MessagingExceptionHandler;
 import org.mule.runtime.core.api.source.MessageSource;
-import org.mule.runtime.core.policy.OperationPolicy;
+import org.mule.runtime.core.policy.Policy;
 import org.mule.runtime.core.policy.OperationPolicyInstance;
 import org.mule.runtime.core.transaction.MuleTransactionConfig;
 import org.mule.runtime.dsl.api.component.ComponentIdentifier;
@@ -71,8 +71,8 @@ public class AsyncResponseFlowProcessingPhase
             final Event response = transactionTemplate.execute(() -> {
               Event muleEvent = template.getEvent();
               fireNotification(messageSource, muleEvent, messageProcessContext.getFlowConstruct(), MESSAGE_RECEIVED);
-              Collection<OperationPolicy> operationPolicies =
-                  messageProcessContext.getFlowConstruct().getMuleContext().getRegistry().lookupObjects(OperationPolicy.class);
+              Collection<Policy> operationPolicies =
+                  messageProcessContext.getFlowConstruct().getMuleContext().getRegistry().lookupObjects(Policy.class);
               muleEvent = executePolicies(operationPolicies, messageProcessContext.getMessageSource(), muleEvent);
               return template.routeEvent(muleEvent);
             });
@@ -99,14 +99,14 @@ public class AsyncResponseFlowProcessingPhase
     }
   }
 
-  private Event executePolicies(Collection<OperationPolicy> operationPolicies, MessageSource messageSource, Event muleEvent)
+  private Event executePolicies(Collection<Policy> operationPolicies, MessageSource messageSource, Event muleEvent)
           throws MuleException
   {
     //TODO get the component identifier from the MessageSource
     ComponentIdentifier sourceIdentifier = new ComponentIdentifier.Builder().withNamespace("httpn").withName("listener").build();
-    for (OperationPolicy operationPolicy : operationPolicies) {
-      if (operationPolicy.appliesToSource(sourceIdentifier)) {
-        OperationPolicyInstance policyInstance = operationPolicy.createSourcePolicyInstance(sourceIdentifier);
+    for (Policy policy : operationPolicies) {
+      if (policy.appliesToSource(sourceIdentifier)) {
+        OperationPolicyInstance policyInstance = policy.createSourcePolicyInstance(sourceIdentifier);
         //TODO fix
         muleEvent = policyInstance.processSource(muleEvent, null);
         muleEvent = Event.builder(muleEvent).attachPolicyInstance(policyInstance).build();

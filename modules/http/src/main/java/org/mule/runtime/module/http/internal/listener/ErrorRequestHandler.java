@@ -6,6 +6,7 @@
  */
 package org.mule.runtime.module.http.internal.listener;
 
+import org.mule.runtime.api.message.Message;
 import org.mule.runtime.module.http.internal.domain.InputStreamHttpEntity;
 import org.mule.runtime.module.http.internal.domain.request.HttpRequestContext;
 import org.mule.runtime.module.http.internal.listener.async.HttpResponseReadyCallback;
@@ -13,19 +14,23 @@ import org.mule.runtime.module.http.internal.listener.async.RequestHandler;
 import org.mule.runtime.module.http.internal.listener.async.ResponseStatusCallback;
 
 import java.io.ByteArrayInputStream;
+import java.nio.charset.Charset;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ErrorRequestHandler implements RequestHandler {
 
+  private final Charset encoding;
   private Logger logger = LoggerFactory.getLogger(getClass());
 
   private int statusCode;
   private String reasonPhrase;
   private String entityFormat;
 
-  public ErrorRequestHandler(int statusCode, String reasonPhrase, String entityFormat) {
+  public ErrorRequestHandler(Charset encoding, int statusCode, String reasonPhrase, String entityFormat)
+  {
+    this.encoding = encoding;
     this.statusCode = statusCode;
     this.reasonPhrase = reasonPhrase;
     this.entityFormat = entityFormat;
@@ -51,5 +56,12 @@ public class ErrorRequestHandler implements RequestHandler {
                                      @Override
                                      public void responseSendSuccessfully() {}
                                    });
+  }
+
+  @Override
+  public Message createMessage(HttpRequestContext requestContext) throws HttpRequestParsingException
+  {
+    return HttpRequestToMuleEvent.transform(requestContext, encoding, false,
+                                            new ListenerPath(requestContext.getRequest().getPath(), ""));
   }
 }

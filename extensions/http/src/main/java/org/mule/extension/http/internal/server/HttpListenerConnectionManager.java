@@ -7,6 +7,7 @@
 package org.mule.extension.http.internal.server;
 
 
+import static org.mule.runtime.core.util.SystemUtils.getDefaultEncoding;
 import org.mule.extension.http.internal.listener.grizzly.GrizzlyServerManager;
 import org.mule.extension.http.internal.listener.server.HttpServerConfiguration;
 import org.mule.extension.http.internal.listener.server.HttpServerFactory;
@@ -22,6 +23,7 @@ import org.mule.runtime.core.api.lifecycle.Initialisable;
 import org.mule.runtime.core.api.lifecycle.InitialisationException;
 import org.mule.runtime.core.config.i18n.CoreMessages;
 import org.mule.runtime.core.util.NetworkUtils;
+import org.mule.runtime.core.util.SystemUtils;
 import org.mule.runtime.core.util.concurrent.ThreadNameHelper;
 import org.mule.runtime.module.http.internal.listener.HttpListenerRegistry;
 import org.mule.runtime.module.http.internal.listener.HttpServerManager;
@@ -47,7 +49,7 @@ public class HttpListenerConnectionManager implements HttpServerFactory, Initial
       "A server in port(%s) already exists for ip(%s) or one overlapping it (0.0.0.0).";
   private static final String LISTENER_THREAD_NAME_PREFIX = "http.listener";
 
-  private HttpListenerRegistry httpListenerRegistry = new HttpListenerRegistry();
+  private HttpListenerRegistry httpListenerRegistry;
   private HttpServerManager httpServerManager;
 
   private MuleContext muleContext;
@@ -59,6 +61,7 @@ public class HttpListenerConnectionManager implements HttpServerFactory, Initial
       return;
     }
 
+    httpListenerRegistry = new HttpListenerRegistry(getDefaultEncoding(muleContext));
     Collection<TcpServerSocketProperties> tcpServerSocketPropertiesBeans =
         muleContext.getRegistry().lookupObjects(TcpServerSocketProperties.class);
     TcpServerSocketProperties tcpServerSocketProperties = new TcpServerSocketProperties();

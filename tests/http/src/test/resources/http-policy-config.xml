@@ -12,6 +12,10 @@
         <httpn:listener-connection host="localhost" port="${proxyPort}"/>
     </httpn:listener-config>
 
+    <httpn:listener-config name="fakeConfig">
+        <httpn:listener-connection host="localhost" port="${httpPort}"/>
+    </httpn:listener-config>
+
     <httpn:request-config name="requestConfig">
         <httpn:request-connection host="localhost" port="${httpPort}"/>
     </httpn:request-config>
@@ -29,6 +33,14 @@
             <httpn:request-builder queryParams="#[message.getAttributes().getQueryParams()]" headers="#[message.getAttributes().getHeaders()]"/>
         </httpn:request>
     </flow>
+
+
+    <flow name="fakeSever">
+        <httpn:listener config-ref="fakeConfig" path="/*" responseStreamingMode="AUTO" parseRequest="false"/>
+
+        <logger message="Fake service"/>
+    </flow>
+
 
     <http-policy:policy>
         <http-policy:source>

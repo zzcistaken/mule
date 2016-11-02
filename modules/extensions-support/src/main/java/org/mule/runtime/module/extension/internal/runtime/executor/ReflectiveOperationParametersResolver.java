@@ -24,17 +24,17 @@ public class ReflectiveOperationParametersResolver implements OperationParameter
   }
 
   @Override
-    public List<OperationParameter> resolveParameters(Map<String, Object> parameters)
-    {
-        ArrayList<OperationParameter> operationParameters = new ArrayList<>();
-        parameters.forEach((name, configValue) -> {
-            ParameterModel foundParameterModel = operationModel.getParameterModels().stream()
-                    .filter(parameterModel -> parameterModel.getName().equals(name))
-                    .findAny()
-                    .orElseThrow(() -> new IllegalStateException("No parameter model for configuration attribute with name: " + name));
-            //TODO resolve null from the method
-            operationParameters.add(new OperationParameter(null, configValue != null ? configValue : foundParameterModel.getDefaultValue(), name));
-        });
-        return operationParameters;
-    }
+  public List<OperationParameter> resolveParameters(Map<String, Object> parameters) {
+    ArrayList<OperationParameter> operationParameters = new ArrayList<>();
+    parameters.forEach((name, configValue) -> {
+      ParameterModel foundParameterModel = operationModel.getParameterModels().stream()
+          .filter(parameterModel -> parameterModel.getName().equals(name))
+          .findAny()
+          .orElseThrow(() -> new IllegalStateException("No parameter model for configuration attribute with name: " + name));
+      // TODO resolve null from the method
+      operationParameters
+          .add(new OperationParameter(null, configValue != null ? configValue : foundParameterModel.getDefaultValue(), name));
+    });
+    return operationParameters;
+  }
 }

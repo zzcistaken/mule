@@ -8,7 +8,7 @@ package org.mule.runtime.core.policy;
 
 import org.mule.runtime.dsl.api.component.ComponentIdentifier;
 
-public interface OperationPolicy {
+public interface Policy {
 
   boolean appliesToSource(ComponentIdentifier sourceIdentifier);
 

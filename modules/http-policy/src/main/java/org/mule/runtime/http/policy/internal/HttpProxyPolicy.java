@@ -8,13 +8,13 @@ package org.mule.runtime.http.policy.internal;
 
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.core.api.Event;
-import org.mule.runtime.core.policy.OperationPolicy;
+import org.mule.runtime.core.policy.Policy;
 import org.mule.runtime.core.policy.OperationPolicyInstance;
 import org.mule.runtime.dsl.api.component.ComponentIdentifier;
 
 import java.util.function.Function;
 
-public class HttpProxyPolicy implements OperationPolicy
+public class HttpProxyPolicy implements Policy
 {
 
     private HttpRequest request;
@@ -49,7 +49,7 @@ public class HttpProxyPolicy implements OperationPolicy
     @Override
     public boolean appliesToOperation(ComponentIdentifier operationIdentifier)
     {
-        return operationIdentifier.toString().equals("http:requesrt");
+        return operationIdentifier.toString().equals("http:request");
     }
 
     @Override
@@ -57,6 +57,7 @@ public class HttpProxyPolicy implements OperationPolicy
     {
         return new OperationPolicyInstance()
         {
+
             @Override
             public Event processSource(Event sourceMessage, Function<Event, Event> next) throws MuleException
             {
@@ -72,7 +73,7 @@ public class HttpProxyPolicy implements OperationPolicy
             }
 
             @Override
-            public OperationPolicy getOperationPolicy()
+            public Policy getOperationPolicy()
             {
                 return HttpProxyPolicy.this;
             }

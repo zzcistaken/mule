@@ -265,6 +265,12 @@ public class HttpListener extends Source<Object, HttpRequestAttributes> {
         }
       }
 
+      @Override
+      public Message createMessage(HttpRequestContext requestContext) throws HttpRequestParsingException
+      {
+        return createMuleMessage(requestContext);
+      }
+
       private void sendErrorResponse(final HttpConstants.HttpStatus status, String message,
                                      HttpResponseReadyCallback responseCallback) {
         responseCallback.responseReady(new HttpResponseBuilder()

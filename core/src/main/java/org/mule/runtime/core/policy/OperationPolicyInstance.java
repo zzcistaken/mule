@@ -18,6 +18,6 @@ public interface OperationPolicyInstance extends Serializable {
 
   Event processOperation(Event eventBeforeOperation, Function<Event, Event> next) throws MuleException;
 
-  OperationPolicy getOperationPolicy();
+  Policy getOperationPolicy();
 
 }
