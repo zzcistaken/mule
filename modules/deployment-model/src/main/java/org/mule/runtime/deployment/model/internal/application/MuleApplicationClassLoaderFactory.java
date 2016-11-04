@@ -64,7 +64,7 @@ public class MuleApplicationClassLoaderFactory implements DeployableArtifactClas
     final Map<String, ClassLoaderLookupStrategy> pluginsLookupStrategies = new HashMap<>();
 
     for (ArtifactPluginDescriptor artifactPluginDescriptor : descriptor.getPlugins()) {
-      artifactPluginDescriptor.getClassLoaderFilter().getExportedClassPackages()
+      artifactPluginDescriptor.getClassLoaderModel().getExportedPackages()
           .forEach(p -> pluginsLookupStrategies.put(p, PARENT_FIRST));
     }
 

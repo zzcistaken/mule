@@ -152,7 +152,7 @@ public class ArtifactPluginDescriptorFactoryTestCase extends AbstractMuleTestCas
     public void assertPluginDescriptor(ArtifactPluginDescriptor pluginDescriptor) {
       assertThat(pluginDescriptor.getName(), equalTo(pluginFolder.getName()));
       try {
-        assertThat(pluginDescriptor.getRuntimeClassesDir(),
+        assertThat(pluginDescriptor.getClassLoaderModel().getUrls()[0],
                    equalTo(new File(pluginFolder, "classes").toURI().toURL()));
       } catch (MalformedURLException e) {
         throw new AssertionError("Can't compare classes dir", e);

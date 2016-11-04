@@ -12,12 +12,12 @@ import static org.mule.runtime.api.util.Preconditions.checkArgument;
 import static org.mule.runtime.core.util.PropertiesUtils.loadProperties;
 import static org.mule.runtime.module.artifact.classloader.DefaultArtifactClassLoaderFilter.EXPORTED_CLASS_PACKAGES_PROPERTY;
 import static org.mule.runtime.module.artifact.classloader.DefaultArtifactClassLoaderFilter.EXPORTED_RESOURCE_PROPERTY;
-
+import org.mule.runtime.deployment.model.api.plugin.ArtifactPluginDescriptor;
 import org.mule.runtime.module.artifact.classloader.ArtifactClassLoaderFilter;
 import org.mule.runtime.module.artifact.classloader.ClassLoaderFilterFactory;
 import org.mule.runtime.module.artifact.descriptor.ArtifactDescriptorCreateException;
 import org.mule.runtime.module.artifact.descriptor.ArtifactDescriptorFactory;
-import org.mule.runtime.deployment.model.api.plugin.ArtifactPluginDescriptor;
+import org.mule.runtime.module.artifact.descriptor.ClassLoaderModel.ClassLoaderModelBuilder;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -54,6 +54,8 @@ public class ArtifactPluginDescriptorFactory implements ArtifactDescriptorFactor
     final ArtifactPluginDescriptor descriptor = new ArtifactPluginDescriptor(pluginName);
     descriptor.setRootFolder(pluginFolder);
 
+    ClassLoaderModelBuilder classLoaderModelBuilder = new ClassLoaderModelBuilder();
+
     final File pluginPropsFile = new File(pluginFolder, PLUGIN_PROPERTIES);
     if (pluginPropsFile.exists()) {
       Properties props;
@@ -68,15 +70,20 @@ public class ArtifactPluginDescriptorFactory implements ArtifactDescriptorFactor
 
       final ArtifactClassLoaderFilter classLoaderFilter = classLoaderFilterFactory.create(exportedClasses, exportedResources);
       descriptor.setClassLoaderFilter(classLoaderFilter);
-
       String pluginDependencies = props.getProperty(PLUGIN_DEPENDENCIES);
       if (!isEmpty(pluginDependencies)) {
-        descriptor.setPluginDependencies(getPluginDependencies(pluginDependencies));
+        classLoaderModelBuilder.dependingOn(getPluginDependencies(pluginDependencies));
       }
+
+      //TODO(pablo.kraan): model - remove unused fields from descriptor
+
+      classLoaderModelBuilder.exportingPackages(classLoaderFilter.getExportedClassPackages())
+          .exportingResources(classLoaderFilter.getExportedResources());
+
     }
 
     try {
-      descriptor.setRuntimeClassesDir(new File(pluginFolder, "classes").toURI().toURL());
+      classLoaderModelBuilder.containing(new File(pluginFolder, "classes").toURI().toURL());
       final File libDir = new File(pluginFolder, "lib");
       URL[] urls = new URL[0];
       if (libDir.exists()) {
@@ -84,12 +91,15 @@ public class ArtifactPluginDescriptorFactory implements ArtifactDescriptorFactor
         urls = new URL[jars.length];
         for (int i = 0; i < jars.length; i++) {
           urls[i] = jars[i].toURI().toURL();
+          classLoaderModelBuilder.containing(urls[i]);
         }
       }
       descriptor.setRuntimeLibs(urls);
     } catch (MalformedURLException e) {
       throw new ArtifactDescriptorCreateException("Failed to create plugin descriptor " + pluginFolder);
     }
+
+    descriptor.setClassLoaderModel(classLoaderModelBuilder.build());
 
     return descriptor;
   }
