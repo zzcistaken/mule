@@ -95,14 +95,14 @@ public class ApplicationDescriptorFactory implements ArtifactDescriptorFactory<A
       desc.setPlugins(plugins);
       desc.setClassesFolder(getAppClassesFolder(desc));
       desc.setRuntimeLibs(findLibraries(desc));
-      desc.setSharedRuntimeLibs(findSharedLibraries(desc));
+      URL[] sharedLibraries = findSharedLibraries(desc);
 
-      List<URL> urls = getApplicationResourceUrls(desc);
+      List<URL> urls = getApplicationResourceUrls(desc, sharedLibraries);
       ClassLoaderModel.ClassLoaderModelBuilder classLoaderModelBuilder = new ClassLoaderModel.ClassLoaderModelBuilder();
       for (URL url : urls) {
         classLoaderModelBuilder.containing(url);
       }
-      JarInfo jarInfo = findApplicationResources(desc);
+      JarInfo jarInfo = findApplicationResources(desc, sharedLibraries);
       classLoaderModelBuilder.exportingPackages(jarInfo.getPackages())
           .exportingResources(jarInfo.getResources());
 
@@ -130,8 +130,8 @@ public class ApplicationDescriptorFactory implements ArtifactDescriptorFactory<A
     return MuleFoldersUtil.getAppSharedPluginLibsFolder(descriptor.getName());
   }
 
-  private JarInfo findApplicationResources(ApplicationDescriptor descriptor) {
-    final JarInfo librariesInfo = findExportedResources(descriptor.getSharedRuntimeLibs());
+  private JarInfo findApplicationResources(ApplicationDescriptor descriptor, URL[] sharedLibraries) {
+    final JarInfo librariesInfo = findExportedResources(sharedLibraries);
     final JarInfo classesInfo;
     try {
       final File appClassesFolder = getAppClassesFolder(descriptor);
@@ -268,7 +268,7 @@ public class ApplicationDescriptorFactory implements ArtifactDescriptorFactory<A
   }
 
 
-  private List<URL> getApplicationResourceUrls(ApplicationDescriptor descriptor) {
+  private List<URL> getApplicationResourceUrls(ApplicationDescriptor descriptor, URL[] sharedLibraries) {
     List<URL> urls = new LinkedList<>();
     try {
       urls.add(descriptor.getClassesFolder().toURI().toURL());
@@ -277,7 +277,7 @@ public class ApplicationDescriptorFactory implements ArtifactDescriptorFactory<A
         urls.add(url);
       }
 
-      for (URL url : descriptor.getSharedRuntimeLibs()) {
+      for (URL url : sharedLibraries) {
         urls.add(url);
       }
     } catch (IOException e) {

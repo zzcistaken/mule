@@ -44,6 +44,7 @@ public class MuleApplicationClassLoader extends MuleDeployableArtifactClassLoade
 
   @Override
   protected String[] getLocalResourceLocations() {
+    //TODO(pablo.kraan): model - can just use descriptor.classLoaderModel.getUrls.get(0)?
     ApplicationDescriptor applicationDescriptor = getArtifactDescriptor();
     return new String[] {applicationDescriptor.getClassesFolder().getAbsolutePath()};
   }

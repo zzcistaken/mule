@@ -124,8 +124,10 @@ public class ApplicationDescriptorFactoryTestCase extends AbstractMuleTestCase {
                                          applicationPluginRepository);
     ApplicationDescriptor desc = applicationDescriptorFactory.create(getAppFolder(APP_NAME));
 
-    assertThat(desc.getSharedRuntimeLibs().length, equalTo(1));
-    assertThat(desc.getSharedRuntimeLibs()[0].getFile(), equalTo(sharedLibFile.toString()));
+    assertThat(desc.getClassLoaderModel().getUrls().length, equalTo(2));
+    assertThat(desc.getClassLoaderModel().getUrls()[0].getFile(),
+               equalTo(MuleFoldersUtil.getAppClassesFolder(APP_NAME).toString()));
+    assertThat(desc.getClassLoaderModel().getUrls()[1].getFile(), equalTo(sharedLibFile.toString()));
     assertThat(desc.getClassLoaderModel().getExportedPackages(), contains("org.foo"));
     assertThat(desc.getClassLoaderModel().getExportedResources(), containsInAnyOrder("META-INF/MANIFEST.MF",
                                                                                      "README.txt"));

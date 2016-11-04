@@ -20,7 +20,6 @@ public class DeployableArtifactDescriptor extends ArtifactDescriptor {
 
   private boolean redeploymentEnabled = true;
   private URL[] runtimeLibs = new URL[0];
-  private URL[] sharedRuntimeLibs = new URL[0];
   private File location;
 
   /**
@@ -47,15 +46,6 @@ public class DeployableArtifactDescriptor extends ArtifactDescriptor {
 
   public void setRuntimeLibs(URL[] runtimeLibs) {
     this.runtimeLibs = runtimeLibs;
-  }
-
-  //TODO(pablo.kraan): model - need to remove sharedRuntimeLibs
-  public URL[] getSharedRuntimeLibs() {
-    return sharedRuntimeLibs;
-  }
-
-  public void setSharedRuntimeLibs(URL[] sharedRuntimeLibs) {
-    this.sharedRuntimeLibs = sharedRuntimeLibs;
   }
 
   /**

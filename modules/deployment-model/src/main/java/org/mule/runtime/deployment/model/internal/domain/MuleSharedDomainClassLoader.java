@@ -52,6 +52,8 @@ public class MuleSharedDomainClassLoader extends MuleArtifactClassLoader impleme
 
   @Override
   protected String[] getLocalResourceLocations() {
+    //TODO(pablo.kraan): model - not sure this is OK... is there any data on the domain' folder?
+    // Is OK to get domain configuration from the container's config?
     return new String[] {getDomainFolder(getArtifactDescriptor().getName()).getAbsolutePath(),
         MuleContainerBootstrapUtils.getMuleConfDir().getAbsolutePath()};
   }

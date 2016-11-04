@@ -101,6 +101,7 @@ public class ApplicationDescriptor extends DeployableArtifactDescriptor {
     return logConfigFile;
   }
 
+  //TODO(pablo.kraan): model - should use the classLaoderModel's dependencies instead?
   /**
    * @return the {@code ApplicationPluginDescriptor} that describe the plugins the application requires.
    */
