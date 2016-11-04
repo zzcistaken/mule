@@ -40,6 +40,7 @@ public class DeployableArtifactDescriptor extends ArtifactDescriptor {
     this.redeploymentEnabled = redeploymentEnabled;
   }
 
+  //TODO(pablo.kraan): model - need to remove runtimeLibs
   public URL[] getRuntimeLibs() {
     return runtimeLibs;
   }
@@ -48,6 +49,7 @@ public class DeployableArtifactDescriptor extends ArtifactDescriptor {
     this.runtimeLibs = runtimeLibs;
   }
 
+  //TODO(pablo.kraan): model - need to remove sharedRuntimeLibs
   public URL[] getSharedRuntimeLibs() {
     return sharedRuntimeLibs;
   }

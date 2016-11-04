@@ -122,6 +122,7 @@ public class ApplicationDescriptor extends DeployableArtifactDescriptor {
     this.classesFolder = classesFolder;
   }
 
+  //TODO(pablo.kraan): model - how can this field be removed? (same for domains)
   public File getClassesFolder() {
     return this.classesFolder;
   }

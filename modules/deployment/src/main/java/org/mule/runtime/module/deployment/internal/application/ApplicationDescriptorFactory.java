@@ -10,6 +10,7 @@ import static java.io.File.separator;
 import static java.lang.String.format;
 import static java.util.Collections.emptySet;
 import static org.apache.commons.io.FileUtils.listFiles;
+import static org.apache.commons.lang.SystemUtils.LINE_SEPARATOR;
 import static org.mule.runtime.container.api.MuleFoldersUtil.PLUGINS_FOLDER;
 import static org.mule.runtime.api.util.Preconditions.checkArgument;
 import static org.mule.runtime.deployment.model.api.application.ApplicationDescriptor.DEFAULT_APP_PROPERTIES_RESOURCE;
@@ -19,10 +20,9 @@ import org.mule.runtime.core.util.PropertiesUtils;
 import org.mule.runtime.deployment.model.api.application.ApplicationDescriptor;
 import org.mule.runtime.deployment.model.api.plugin.ArtifactPluginDescriptor;
 import org.mule.runtime.deployment.model.api.plugin.ArtifactPluginRepository;
-import org.mule.runtime.module.artifact.classloader.ArtifactClassLoaderFilter;
-import org.mule.runtime.module.artifact.classloader.DefaultArtifactClassLoaderFilter;
 import org.mule.runtime.module.artifact.descriptor.ArtifactDescriptorCreateException;
 import org.mule.runtime.module.artifact.descriptor.ArtifactDescriptorFactory;
+import org.mule.runtime.module.artifact.descriptor.ClassLoaderModel;
 import org.mule.runtime.module.artifact.util.FileJarExplorer;
 import org.mule.runtime.module.artifact.util.JarExplorer;
 import org.mule.runtime.module.artifact.util.JarInfo;
@@ -45,6 +45,8 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.apache.commons.io.filefilter.SuffixFileFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Creates artifact descriptor for application
@@ -52,6 +54,8 @@ import org.apache.commons.io.filefilter.SuffixFileFilter;
 public class ApplicationDescriptorFactory implements ArtifactDescriptorFactory<ApplicationDescriptor> {
 
   public static final String SYSTEM_PROPERTY_OVERRIDE = "-O";
+
+  private static final Logger logger = LoggerFactory.getLogger(ApplicationDescriptorFactory.class);
 
   private final ArtifactPluginRepository applicationPluginRepository;
   private final ArtifactPluginDescriptorLoader artifactPluginDescriptorLoader;
@@ -92,7 +96,17 @@ public class ApplicationDescriptorFactory implements ArtifactDescriptorFactory<A
       desc.setClassesFolder(getAppClassesFolder(desc));
       desc.setRuntimeLibs(findLibraries(desc));
       desc.setSharedRuntimeLibs(findSharedLibraries(desc));
-      desc.setClassLoaderFilter(createApplicationClassLoaderFilter(desc));
+
+      List<URL> urls = getApplicationResourceUrls(desc);
+      ClassLoaderModel.ClassLoaderModelBuilder classLoaderModelBuilder = new ClassLoaderModel.ClassLoaderModelBuilder();
+      for (URL url : urls) {
+        classLoaderModelBuilder.containing(url);
+      }
+      JarInfo jarInfo = findApplicationResources(desc);
+      classLoaderModelBuilder.exportingPackages(jarInfo.getPackages())
+          .exportingResources(jarInfo.getResources());
+
+      desc.setClassLoaderModel(classLoaderModelBuilder.build());
     } catch (IOException e) {
       throw new ArtifactDescriptorCreateException("Unable to create application descriptor", e);
     }
@@ -116,7 +130,7 @@ public class ApplicationDescriptorFactory implements ArtifactDescriptorFactory<A
     return MuleFoldersUtil.getAppSharedPluginLibsFolder(descriptor.getName());
   }
 
-  private ArtifactClassLoaderFilter createApplicationClassLoaderFilter(ApplicationDescriptor descriptor) {
+  private JarInfo findApplicationResources(ApplicationDescriptor descriptor) {
     final JarInfo librariesInfo = findExportedResources(descriptor.getSharedRuntimeLibs());
     final JarInfo classesInfo;
     try {
@@ -132,7 +146,7 @@ public class ApplicationDescriptorFactory implements ArtifactDescriptorFactory<A
     librariesInfo.getPackages().addAll(classesInfo.getPackages());
     librariesInfo.getResources().addAll(classesInfo.getResources());
 
-    return new DefaultArtifactClassLoaderFilter(librariesInfo.getPackages(), librariesInfo.getResources());
+    return librariesInfo;
   }
 
   protected File getAppClassesFolder(ApplicationDescriptor descriptor) {
@@ -190,7 +204,7 @@ public class ApplicationDescriptorFactory implements ArtifactDescriptorFactory<A
 
     boolean error = false;
     for (ArtifactPluginDescriptor plugin : plugins) {
-      for (String packageName : plugin.getClassLoaderFilter().getExportedClassPackages()) {
+      for (String packageName : plugin.getClassLoaderModel().getExportedPackages()) {
         List<String> exportedOn = exportedPackages.get(packageName);
 
         if (exportedOn == null) {
@@ -253,4 +267,40 @@ public class ApplicationDescriptorFactory implements ArtifactDescriptorFactory<A
     desc.setAppProperties(m);
   }
 
+
+  private List<URL> getApplicationResourceUrls(ApplicationDescriptor descriptor) {
+    List<URL> urls = new LinkedList<>();
+    try {
+      urls.add(descriptor.getClassesFolder().toURI().toURL());
+
+      for (URL url : descriptor.getRuntimeLibs()) {
+        urls.add(url);
+      }
+
+      for (URL url : descriptor.getSharedRuntimeLibs()) {
+        urls.add(url);
+      }
+    } catch (IOException e) {
+      throw new RuntimeException("Unable to create classloader for application", e);
+    }
+
+    if (!urls.isEmpty() && logger.isInfoEnabled()) {
+      logArtifactRuntimeUrls(descriptor, urls);
+    }
+
+    return urls;
+  }
+
+  private void logArtifactRuntimeUrls(ApplicationDescriptor descriptor, List<URL> urls) {
+    StringBuilder sb = new StringBuilder();
+    sb.append(String.format("[%s] Loading the following jars:%n", descriptor.getName()));
+    sb.append("=============================").append(LINE_SEPARATOR);
+
+    for (URL url : urls) {
+      sb.append(url).append(LINE_SEPARATOR);
+    }
+
+    sb.append("=============================").append(LINE_SEPARATOR);
+    logger.info(sb.toString());
+  }
 }
