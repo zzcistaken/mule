@@ -7,18 +7,35 @@
 package org.mule.runtime.http.policy.internal;
 
 import org.mule.runtime.api.exception.MuleException;
+import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.core.api.Event;
+import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.lifecycle.Initialisable;
 import org.mule.runtime.core.api.lifecycle.InitialisationException;
+import org.mule.runtime.core.api.lifecycle.LifecycleUtils;
+import org.mule.runtime.core.api.policy.PolicyOperationParametersTransformer;
 import org.mule.runtime.core.api.processor.MessageProcessorChain;
 import org.mule.runtime.core.api.processor.Processor;
+import org.mule.runtime.core.execution.FlowExecutionFunction;
+import org.mule.runtime.core.execution.CreateResponseParametersFunction;
+import org.mule.runtime.core.policy.PolicyManager;
 import org.mule.runtime.core.processor.chain.DefaultMessageProcessorChainBuilder;
+import org.mule.runtime.dsl.api.component.ComponentIdentifier;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
+
+import javax.inject.Inject;
 
 public abstract class AbstractPolicyChain implements Processor, Initialisable
 {
+
+    @Inject
+    private MuleContext muleContext;
+    @Inject
+    private PolicyManager policyManager;
 
     private List<Processor> processors;
     private MessageProcessorChain processorChain;
@@ -31,6 +48,7 @@ public abstract class AbstractPolicyChain implements Processor, Initialisable
     @Override
     public Event process(Event event) throws MuleException
     {
+        initialise();
         Event result = processorChain.process(event);
         return result;
     }
@@ -39,7 +57,7 @@ public abstract class AbstractPolicyChain implements Processor, Initialisable
         processors.stream()
                 .forEach(processor -> {
                     if (processor instanceof PolicyNextActionMessageProcessor) {
-                        ((PolicyNextActionMessageProcessor) processor).setNext(event -> next.apply(event));
+                        ((PolicyNextActionMessageProcessor) processor).setNext(event -> next.apply(event), null, null);
                     }
                 });
     }
@@ -47,6 +65,33 @@ public abstract class AbstractPolicyChain implements Processor, Initialisable
     @Override
     public final void initialise() throws InitialisationException
     {
+        LifecycleUtils.initialiseIfNeeded(processors, muleContext);
         processorChain = new DefaultMessageProcessorChainBuilder().chain(processors).build();
+        processorChain.setMuleContext(muleContext);
+        processorChain.initialise();
     }
+
+    public void replaceNext(final Event event, FlowExecutionFunction flowExecution, CreateResponseParametersFunction successExecutionCreateResponseParametersFunction, CreateResponseParametersFunction failedExecutionCreateResponseParametersFunction)
+    {
+        processors.stream()
+                .forEach(processor -> {
+                    if (processor instanceof PolicyNextActionMessageProcessor) {
+                        //TODO make this only in the first intialization
+                        ((PolicyNextActionMessageProcessor) processor).setTargetComponent(getTargetComponentIdentifier());
+                        ((PolicyNextActionMessageProcessor) processor).setNext(muleEvent -> {
+                            try
+                            {
+                                return flowExecution.execute(event);
+                            }
+                            catch (Exception e)
+                            {
+                                throw new MuleRuntimeException(e);
+                            }
+                        }, successExecutionCreateResponseParametersFunction, failedExecutionCreateResponseParametersFunction);
+                    }
+                });
+    }
+
+    abstract ComponentIdentifier getTargetComponentIdentifier();
+
 }

@@ -9,27 +9,50 @@ package org.mule.runtime.module.extension.internal.runtime.source;
 import org.mule.runtime.core.execution.CompletionHandler;
 import org.mule.runtime.api.message.MuleEvent;
 import org.mule.runtime.core.api.Event;
-import org.mule.runtime.api.meta.model.source.SourceModel;
 import org.mule.runtime.core.exception.MessagingException;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.execution.AsyncResponseFlowProcessingPhaseTemplate;
+import org.mule.runtime.core.execution.CreateResponseParametersFunction;
 import org.mule.runtime.core.execution.ResponseCompletionCallback;
-import org.mule.runtime.core.policy.OperationPolicyInstance;
-import org.mule.runtime.dsl.api.component.ComponentIdentifier;
+
+import java.util.Map;
+import java.util.Optional;
 
 final class ExtensionFlowProcessingTemplate implements AsyncResponseFlowProcessingPhaseTemplate {
 
   private final Event event;
   private final Processor messageProcessor;
   private final CompletionHandler<Event, MessagingException> completionHandler;
+  private final Optional<Object> messagePolicyDescriptor;
 
   ExtensionFlowProcessingTemplate(Event event,
                                   Processor messageProcessor,
-                                  CompletionHandler<Event, MessagingException> completionHandler) {
+                                  CompletionHandler<Event, MessagingException> completionHandler, Optional<Object> messagePolicyDescriptor) {
     this.event = event;
     this.messageProcessor = messageProcessor;
     this.completionHandler = completionHandler;
+    this.messagePolicyDescriptor = messagePolicyDescriptor;
+  }
+
+  public Optional<Object> getMessagePolicyDescriptor()
+  {
+    return messagePolicyDescriptor;
+  }
+
+  @Override
+  public CreateResponseParametersFunction getSuccessfulExecutionMessageCreationFunction()
+  {
+    if (completionHandler instanceof SourceAdapter.SourceCompletionHandler) {
+      return (event -> ((SourceAdapter.SourceCompletionHandler) completionHandler).createResponseParameters(event));
+    }
+    return null;
+  }
+
+  @Override
+  public CreateResponseParametersFunction getFailedExecutionMessageCreationFunction()
+  {
+    return null;
   }
 
   @Override
@@ -57,7 +80,15 @@ final class ExtensionFlowProcessingTemplate implements AsyncResponseFlowProcessi
     //final org.mule.runtime.core.api.Event resultEvent = muleEvent;
     ExtensionSourceExceptionCallback exceptionCallback =
         new ExtensionSourceExceptionCallback(responseCompletionCallback, event, completionHandler::onFailure);
-    runAndNotify(() -> completionHandler.onCompletion(event, exceptionCallback), this.event, responseCompletionCallback);
+    runAndNotify(() -> completionHandler.onCompletion(event, null, exceptionCallback), this.event, responseCompletionCallback);
+  }
+
+  @Override
+  public void sendResponseToClient(Event event, Map<String, Object> parameters, ResponseCompletionCallback responseCompletionCallback)
+          throws MuleException {
+    ExtensionSourceExceptionCallback exceptionCallback =
+            new ExtensionSourceExceptionCallback(responseCompletionCallback, event, completionHandler::onFailure);
+    runAndNotify(() -> completionHandler.onCompletion(event, parameters, exceptionCallback), this.event, responseCompletionCallback);
   }
 
   @Override

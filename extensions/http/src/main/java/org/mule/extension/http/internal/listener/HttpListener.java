@@ -26,6 +26,7 @@ import org.mule.extension.http.api.HttpStreamingType;
 import org.mule.extension.http.api.listener.builder.HttpListenerErrorResponseBuilder;
 import org.mule.extension.http.api.listener.builder.HttpListenerSuccessResponseBuilder;
 import org.mule.extension.http.internal.HttpMetadataResolver;
+import org.mule.extension.http.internal.listener.server.ExtensionRequestHandler;
 import org.mule.extension.http.internal.listener.server.HttpListenerConfig;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Error;
@@ -78,6 +79,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
+import javax.naming.OperationNotSupportedException;
 
 import org.slf4j.Logger;
 
@@ -238,7 +240,13 @@ public class HttpListener extends Source<Object, HttpRequestAttributes> {
   }
 
   private RequestHandler getRequestHandler(SourceCallback<Object, HttpRequestAttributes> sourceCallback) {
-    return new RequestHandler() {
+    return new ExtensionRequestHandler() {
+
+      @Override
+      public Result<Object, HttpRequestAttributes> createResult(HttpRequestContext requestContext) throws HttpRequestParsingException
+      {
+        return HttpListener.this.createResult(requestContext);
+      }
 
       @Override
       public void handleRequest(HttpRequestContext requestContext, HttpResponseReadyCallback responseCallback) {
@@ -268,7 +276,7 @@ public class HttpListener extends Source<Object, HttpRequestAttributes> {
       @Override
       public Message createMessage(HttpRequestContext requestContext) throws HttpRequestParsingException
       {
-        return createMuleMessage(requestContext);
+        throw new MuleRuntimeException(CoreMessages.createStaticMessage("operation not supported"));
       }
 
       private void sendErrorResponse(final HttpConstants.HttpStatus status, String message,

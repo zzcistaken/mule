@@ -8,16 +8,15 @@ package org.mule.runtime.core.policy;
 
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.core.api.Event;
+import org.mule.runtime.core.execution.FlowExecutionFunction;
+import org.mule.runtime.core.execution.CreateResponseParametersFunction;
 
 import java.io.Serializable;
 import java.util.function.Function;
 
 public interface OperationPolicyInstance extends Serializable {
 
-  Event processSource(Event sourceMessage, Function<Event, Event> next) throws MuleException;
+  Event process(Event eventBeforeOperation, Function<Event, Event> next) throws MuleException;
 
-  Event processOperation(Event eventBeforeOperation, Function<Event, Event> next) throws MuleException;
-
-  Policy getOperationPolicy();
-
+  Event process(Event event, FlowExecutionFunction flowExecution, CreateResponseParametersFunction successExecutionCreateResponseParametersFunction, CreateResponseParametersFunction failedExecutionCreateResponseParametersFunction);
 }

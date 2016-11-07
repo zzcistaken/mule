@@ -6,11 +6,13 @@
  */
 package org.mule.runtime.core.execution;
 
+import java.util.Map;
+
 /**
  * Base class which provides a simplified view of {@link CompletionHandler} for cases
  * in which the task to be completed is assumed to be blocking
  * <p>
- * The {@link #onCompletion(Object, ExceptionCallback)} method has a final implementation
+ * The {@link CompletionHandler#onCompletion(Object, Map, ExceptionCallback)} method has a final implementation
  * which delegates into {@link #doOnCompletion(Object)} and automatically catches any exception
  * and channels it through the {@link ExceptionCallback}
  *
@@ -21,12 +23,12 @@ public abstract class BlockingCompletionHandler<R, E extends Throwable> implemen
   /**
    * Delegates into {@link #doOnCompletion(Object)} and channels any thrown exceptions
    * through the {@code exceptionCallback}
-   *
-   * @param result            the result of processing
+   *  @param result            the result of processing
+   * @param parameters
    * @param exceptionCallback handles errors processing the {@code result}
    */
   @Override
-  public final void onCompletion(R result, ExceptionCallback<Throwable> exceptionCallback) {
+  public final void onCompletion(R result, Map<String, Object> parameters, ExceptionCallback<Throwable> exceptionCallback) {
     try {
       doOnCompletion(result);
     } catch (Exception e) {
@@ -35,7 +37,7 @@ public abstract class BlockingCompletionHandler<R, E extends Throwable> implemen
   }
 
   /**
-   * Provides a simplified view of the {@link #onCompletion(Object, ExceptionCallback)} contract
+   * Provides a simplified view of the {@link CompletionHandler#onCompletion(Object, Map, ExceptionCallback)} contract
    * that assumes that the operation is blocking, which makes it unnecessary to explicitly
    * channel exceptions to an {@link ExceptionCallback}
    *

@@ -60,7 +60,7 @@ public class DefaultExecutionContext<M extends ComponentModel> implements Execut
    */
   public DefaultExecutionContext(ExtensionModel extensionModel,
                                  Optional<ConfigurationInstance> configuration,
-                                 ResolverSetResult parameters,
+                                 Map<String, Object> parameters,
                                  M componentModel,
                                  Event event,
                                  MuleContext muleContext) {
@@ -69,7 +69,7 @@ public class DefaultExecutionContext<M extends ComponentModel> implements Execut
     this.configuration = configuration;
     this.event = event;
     this.componentModel = componentModel;
-    this.parameters = new HashMap<>(parameters.asMap());
+    this.parameters = parameters;
     this.muleContext = muleContext;
     transactionConfigSupplier = () -> {
       synchronized (this) {

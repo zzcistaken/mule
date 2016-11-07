@@ -11,6 +11,7 @@ import static org.mule.runtime.module.extension.internal.ExtensionProperties.SOU
 import static org.mule.runtime.module.extension.internal.util.MuleExtensionUtils.getInitialiserEvent;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.exception.MuleRuntimeException;
+import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.api.meta.model.source.SourceModel;
 import org.mule.runtime.core.api.Event;
@@ -26,6 +27,7 @@ import org.mule.runtime.module.extension.internal.runtime.resolver.ResolverSet;
 import org.mule.runtime.module.extension.internal.runtime.resolver.ResolverSetResult;
 
 import java.lang.reflect.Method;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -74,17 +76,21 @@ class ReflectiveSourceCallbackExecutor implements SourceCallbackExecutor {
    * {@inheritDoc}
    */
   @Override
-  public Object execute(Event event, SourceCallbackContext context) throws Exception {
-    return executor.execute(createExecutionContext(event, context));
+  public Object execute(Event event, Map<String, Object> parameters, SourceCallbackContext context) throws Exception {
+    return executor.execute(createExecutionContext(event, parameters, context));
   }
 
-  private ExecutionContext<SourceModel> createExecutionContext(Event event, SourceCallbackContext callbackContext) {
+  private ExecutionContext<SourceModel> createExecutionContext(Event event, Map<String, Object> parameters, SourceCallbackContext callbackContext) {
     if (event == null) {
       event = getInitialiserEvent(muleContext);
     }
-    final ResolverSetResult resolverSetResult;
+    final Map<String, Object> resolverSetResult;
     try {
-      resolverSetResult = parameters.resolve(event);
+      if (parameters == null) {
+        resolverSetResult = this.parameters.resolve(event).asMap();
+      } else {
+        resolverSetResult = parameters;
+      }
     } catch (MuleException e) {
       throw new MuleRuntimeException(createStaticMessage("Found exception trying to resolve parameters for source callback"), e);
     }

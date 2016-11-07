@@ -6,9 +6,12 @@
  */
 package org.mule.runtime.module.extension.internal.runtime.source;
 
+import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.Event;
 import org.mule.runtime.extension.api.runtime.source.Source;
 import org.mule.runtime.extension.api.runtime.source.SourceCallbackContext;
+
+import java.util.Map;
 
 /**
  * Invokes a {@link Source} callback
@@ -22,9 +25,13 @@ interface SourceCallbackExecutor {
    * Executes the callback
    *
    * @param event   the result {@link Event}
-   * @param context a {@link SourceCallbackContext}
-   * @return the callback's result
+   * @param parameters
+   *@param context a {@link SourceCallbackContext}  @return the callback's result
    * @throws Exception if anything goes wrong
    */
-  Object execute(Event event, SourceCallbackContext context) throws Exception;
+  Object execute(Event event, Map<String, Object> parameters, SourceCallbackContext context) throws Exception;
+
+  default Message createMessage(Event event) {
+    return null;
+  };
 }

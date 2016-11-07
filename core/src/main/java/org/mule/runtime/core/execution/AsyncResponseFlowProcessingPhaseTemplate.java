@@ -11,6 +11,9 @@ import org.mule.runtime.core.exception.MessagingException;
 import org.mule.runtime.core.api.Event;
 import org.mule.runtime.api.exception.MuleException;
 
+import java.util.Map;
+import java.util.Optional;
+
 /**
  * Template methods for {@link MessageSource} specific behavior during flow execution.
  */
@@ -46,6 +49,8 @@ public interface AsyncResponseFlowProcessingPhaseTemplate extends MessageProcess
    */
   void sendResponseToClient(Event event, ResponseCompletionCallback responseCompletionCallback) throws MuleException;
 
+  void sendResponseToClient(Event event, Map<String, Object> parameters, ResponseCompletionCallback responseCompletionCallback) throws MuleException;
+
 
   /**
    *
@@ -56,4 +61,9 @@ public interface AsyncResponseFlowProcessingPhaseTemplate extends MessageProcess
   void sendFailureResponseToClient(MessagingException exception, ResponseCompletionCallback responseCompletionCallback)
       throws MuleException;
 
+  Optional<Object> getMessagePolicyDescriptor();
+
+  CreateResponseParametersFunction getSuccessfulExecutionMessageCreationFunction();
+
+  CreateResponseParametersFunction getFailedExecutionMessageCreationFunction();
 }

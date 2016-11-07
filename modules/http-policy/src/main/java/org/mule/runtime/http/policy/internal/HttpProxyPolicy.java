@@ -7,16 +7,28 @@
 package org.mule.runtime.http.policy.internal;
 
 import org.mule.runtime.api.exception.MuleException;
+import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.core.api.Event;
+import org.mule.runtime.core.api.message.InternalMessage;
+import org.mule.runtime.core.api.policy.PolicyOperationParametersTransformer;
+import org.mule.runtime.core.execution.FlowExecutionFunction;
+import org.mule.runtime.core.execution.CreateResponseParametersFunction;
 import org.mule.runtime.core.policy.Policy;
 import org.mule.runtime.core.policy.OperationPolicyInstance;
+import org.mule.runtime.core.policy.PolicyManager;
 import org.mule.runtime.dsl.api.component.ComponentIdentifier;
 
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
+
+import javax.inject.Inject;
 
 public class HttpProxyPolicy implements Policy
 {
 
+    @Inject
+    private PolicyManager policyManager;
     private HttpRequest request;
     private HttpSource source;
 
@@ -41,41 +53,61 @@ public class HttpProxyPolicy implements Policy
     }
 
     @Override
-    public boolean appliesToSource(ComponentIdentifier sourceIdentifier)
-    {
-        return sourceIdentifier.toString().equals("http:listener");
-    }
-
-    @Override
-    public boolean appliesToOperation(ComponentIdentifier operationIdentifier)
-    {
-        return operationIdentifier.toString().equals("http:request");
-    }
-
-    @Override
-    public OperationPolicyInstance createSourcePolicyInstance(ComponentIdentifier operationIdentifier)
+    public OperationPolicyInstance createOperationPolicyInstance(String id, ComponentIdentifier sourceIdentifie )
     {
         return new OperationPolicyInstance()
         {
 
             @Override
-            public Event processSource(Event sourceMessage, Function<Event, Event> next) throws MuleException
-            {
-                source.replaceNext(next);
-                return source.process(sourceMessage);
-            }
-
-            @Override
-            public Event processOperation(Event eventBeforeOperation, Function<Event, Event> next) throws MuleException
+            public Event process(Event eventBeforeOperation, Function<Event, Event> next) throws MuleException
             {
                 request.replaceNext(next);
                 return request.process(eventBeforeOperation);
             }
 
             @Override
-            public Policy getOperationPolicy()
+            public Event process(Event event, FlowExecutionFunction flowExecution, CreateResponseParametersFunction successExecutionCreateResponseParametersFunction, CreateResponseParametersFunction failedExecutionCreateResponseParametersFunction)
             {
-                return HttpProxyPolicy.this;
+                return null;
+            }
+        };
+    }
+
+    @Override
+    public OperationPolicyInstance createSourcePolicyInstance(String id, final ComponentIdentifier sourceIdentifier)
+    {
+        return new OperationPolicyInstance()
+        {
+
+            @Override
+            public Event process(Event eventBeforeOperation, Function<Event, Event> next) throws MuleException
+            {
+                request.replaceNext(next);
+                return request.process(eventBeforeOperation);
+            }
+
+            @Override
+            public Event process(Event event, FlowExecutionFunction flowExecution, CreateResponseParametersFunction successExecutionCreateResponseParametersFunction, CreateResponseParametersFunction failedExecutionCreateResponseParametersFunction)
+            {
+                FlowExecutionFunction modifiedFlowExecutionFunction = (processEvent) -> {
+                    Event process = flowExecution.execute(event);
+                    Optional<PolicyOperationParametersTransformer> policyOperationParametersTransformer = policyManager.lookupOperationParametersTransformer(sourceIdentifier);
+                    if (policyOperationParametersTransformer.isPresent()) {
+                        Map<String, Object> responseParameters = successExecutionCreateResponseParametersFunction.createResponseParameters(process);
+                        return Event.builder(event).message((InternalMessage) policyOperationParametersTransformer.get().fromParametersToMessage(responseParameters)).build();
+                    } else {
+                        return Event.builder(event).message(process.getMessage()).build();
+                    }
+                };
+                source.replaceNext(event, modifiedFlowExecutionFunction, successExecutionCreateResponseParametersFunction, failedExecutionCreateResponseParametersFunction);
+                try
+                {
+                    return source.process(event);
+                }
+                catch (MuleException e)
+                {
+                    throw new MuleRuntimeException(e);
+                }
             }
         };
     }

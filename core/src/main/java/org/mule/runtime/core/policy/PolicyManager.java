@@ -6,9 +6,18 @@
  */
 package org.mule.runtime.core.policy;
 
+import org.mule.runtime.core.api.policy.PolicyOperationParametersTransformer;
+import org.mule.runtime.core.api.registry.RegistrationException;
+import org.mule.runtime.dsl.api.component.ComponentIdentifier;
+
+import java.util.Optional;
+
 public interface PolicyManager
 {
 
-    void registerPolicy(Policy policy);
+    Optional<Policy> lookupPolicy(ComponentIdentifier componentIdentifier, Optional<Object> messagePolicyDescriptor) throws RegistrationException;
+
+
+    Optional<PolicyOperationParametersTransformer> lookupOperationParametersTransformer(ComponentIdentifier componentIdentifier);
 
 }

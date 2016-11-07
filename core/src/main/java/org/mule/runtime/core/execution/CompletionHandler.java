@@ -6,6 +6,8 @@
  */
 package org.mule.runtime.core.execution;
 
+import java.util.Map;
+
 /**
  * Handles the result of asynchronous processing.
  *
@@ -20,11 +22,11 @@ public interface CompletionHandler<R, E extends Throwable> {
    * Exceptions found while processing the {@code result} are to be notified through
    * the {@code exceptionCallback}, which might (depending on {@code HandledCompletionExceptionResult})
    * produce a new value as the result of handling such error
-   *
-   * @param result            the result of processing
+   *  @param result            the result of processing
+   * @param parameters
    * @param exceptionCallback handles errors processing the {@code result}
    */
-  void onCompletion(R result, ExceptionCallback<Throwable> exceptionCallback);
+  void onCompletion(R result, Map<String, Object> parameters, ExceptionCallback<Throwable> exceptionCallback);
 
   /**
    * Invoked when a failure occurs during asynchronous processing

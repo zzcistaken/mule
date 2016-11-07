@@ -58,4 +58,14 @@ public abstract class HttpListenerResponseBuilder extends HttpMessageBuilder {
   public String getReasonPhrase() {
     return reasonPhrase;
   }
+
+  public void setStatusCode(Integer statusCode)
+  {
+    this.statusCode = statusCode;
+  }
+
+  public void setReasonPhrase(String reasonPhrase)
+  {
+    this.reasonPhrase = reasonPhrase;
+  }
 }

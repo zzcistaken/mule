@@ -18,6 +18,7 @@ import org.mule.runtime.core.api.message.InternalMessage;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.exception.MessagingException;
 import org.mule.runtime.core.execution.AsyncResponseFlowProcessingPhaseTemplate;
+import org.mule.runtime.core.execution.CreateResponseParametersFunction;
 import org.mule.runtime.core.execution.ResponseCompletionCallback;
 import org.mule.runtime.core.execution.ThrottlingPhaseTemplate;
 import org.mule.runtime.module.http.internal.domain.InputStreamHttpEntity;
@@ -80,6 +81,12 @@ public class HttpMessageProcessorTemplate implements AsyncResponseFlowProcessing
         new org.mule.runtime.module.http.internal.domain.response.HttpResponseBuilder();
     final HttpResponse httpResponse = buildResponse(event, responseBuilder, responseCompletationCallback);
     responseReadyCallback.responseReady(httpResponse, getResponseFailureCallback(responseCompletationCallback, event));
+  }
+
+  @Override
+  public void sendResponseToClient(Event event, Map<String, Object> parameters, ResponseCompletionCallback responseCompletionCallback) throws MuleException
+  {
+
   }
 
   protected HttpResponse buildErrorResponse() {
@@ -162,6 +169,24 @@ public class HttpMessageProcessorTemplate implements AsyncResponseFlowProcessing
         .message(InternalMessage.builder(errorMessage).payload(messagingException.getMessage()).build()).build();
     final HttpResponse response = errorResponseBuilder.build(failureResponseBuilder, event);
     responseReadyCallback.responseReady(response, getResponseFailureCallback(responseCompletationCallback, event));
+  }
+
+  @Override
+  public Optional<Object> getMessagePolicyDescriptor()
+  {
+    return null;
+  }
+
+  @Override
+  public CreateResponseParametersFunction getSuccessfulExecutionMessageCreationFunction()
+  {
+    return null;
+  }
+
+  @Override
+  public CreateResponseParametersFunction getFailedExecutionMessageCreationFunction()
+  {
+    return null;
   }
 
   private Message resolveErrorMessage(Event event) {

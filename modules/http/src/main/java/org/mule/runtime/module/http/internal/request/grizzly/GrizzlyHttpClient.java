@@ -256,7 +256,7 @@ public class GrizzlyHttpClient implements HttpClient {
 
     @Override
     public Response onCompleted(Response response) throws Exception {
-      completionHandler.onCompletion(createMuleResponse(response), this::onThrowable);
+      completionHandler.onCompletion(createMuleResponse(response), null, this::onThrowable);
       return null;
     }
 

@@ -53,7 +53,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 @SmallTest
 public class AsyncResponseFlowProcessingPhaseTestCase extends AbstractMuleTestCase {
 
-  private AsyncResponseFlowProcessingPhase phase = new AsyncResponseFlowProcessingPhase() {
+  private AsyncResponseFlowProcessingPhase phase = new AsyncResponseFlowProcessingPhase(null) {
 
     // We cannot mock this method since its protected
     @Override

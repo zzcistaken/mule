@@ -18,11 +18,11 @@ public class HttpResponseAttributes extends HttpAttributes {
   /**
    * HTTP status code of the response. Former 'http.status'.
    */
-  private final int statusCode;
+  private int statusCode;
   /**
    * HTTP reason phrase of the response. Former 'http.reason'.
    */
-  private final String reasonPhrase;
+  private String reasonPhrase;
 
   public HttpResponseAttributes(int statusCode, String reasonPhrase, ParameterMap headers) {
     super(headers);
@@ -38,4 +38,12 @@ public class HttpResponseAttributes extends HttpAttributes {
     return reasonPhrase;
   }
 
+  public void setStatusCode(int statusCode) {
+    this.statusCode = statusCode;
+  }
+
+  public void setReasonPhrase(String reasonPhrase)
+  {
+    this.reasonPhrase = reasonPhrase;
+  }
 }

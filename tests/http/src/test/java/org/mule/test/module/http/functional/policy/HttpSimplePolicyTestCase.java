@@ -15,6 +15,8 @@ import org.mule.test.module.http.functional.AbstractHttpTestCase;
 
 import java.util.Optional;
 
+import org.hamcrest.core.Is;
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -36,6 +38,7 @@ public class HttpSimplePolicyTestCase extends AbstractHttpTestCase
     @Test
     public void test() throws MuleException
     {
-        Either<Error, Optional<InternalMessage>> request = muleContext.getClient().request("http://localhost:" + proxyPort.getNumber() + "/", 10000);
+        Either<Error, Optional<InternalMessage>> request = muleContext.getClient().request("http://localhost:" + proxyPort.getNumber() + "/", 9999999);
+        Assert.assertThat(request.getRight().get().getPayload().getValue(), Is.is("newValue"));
     }
 }

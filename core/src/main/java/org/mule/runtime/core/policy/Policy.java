@@ -10,10 +10,8 @@ import org.mule.runtime.dsl.api.component.ComponentIdentifier;
 
 public interface Policy {
 
-  boolean appliesToSource(ComponentIdentifier sourceIdentifier);
+  OperationPolicyInstance createSourcePolicyInstance(String id, ComponentIdentifier sourceIdentifier);
 
-  boolean appliesToOperation(ComponentIdentifier operationIdentifier);
-
-  OperationPolicyInstance createSourcePolicyInstance(ComponentIdentifier operationIdentifier);
+  OperationPolicyInstance createOperationPolicyInstance(String id, ComponentIdentifier operationIdentifier);
 
 }

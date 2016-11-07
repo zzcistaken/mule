@@ -6,6 +6,8 @@
  */
 package org.mule.runtime.core.execution;
 
+import java.util.Map;
+
 /**
  * Ignores the result of asynchronous processing
  *
@@ -14,7 +16,7 @@ package org.mule.runtime.core.execution;
 public class NullCompletionHandler<R, E extends Throwable> implements CompletionHandler<R, E> {
 
   @Override
-  public void onCompletion(R result, ExceptionCallback<Throwable> exceptionCallback) {
+  public void onCompletion(R result, Map<String, Object> parameters, ExceptionCallback<Throwable> exceptionCallback) {
     // Nothing to do
   }
 

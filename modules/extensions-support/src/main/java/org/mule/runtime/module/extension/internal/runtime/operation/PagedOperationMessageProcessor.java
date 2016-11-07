@@ -11,6 +11,7 @@ import org.mule.runtime.api.meta.model.operation.OperationModel;
 import org.mule.runtime.core.api.Event;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.core.api.processor.InterceptingMessageProcessor;
+import org.mule.runtime.core.policy.PolicyManager;
 import org.mule.runtime.core.streaming.Consumer;
 import org.mule.runtime.core.streaming.ConsumerIterator;
 import org.mule.runtime.core.streaming.ListConsumer;
@@ -37,8 +38,9 @@ public class PagedOperationMessageProcessor extends OperationMessageProcessor {
                                         ConfigurationProvider configurationProvider,
                                         String target,
                                         ResolverSet resolverSet,
-                                        ExtensionManagerAdapter extensionManager) {
-    super(extensionModel, operationModel, configurationProvider, target, resolverSet, extensionManager, Collections.emptyList());
+                                        ExtensionManagerAdapter extensionManager,
+                                        PolicyManager policyManager) {
+    super(extensionModel, operationModel, configurationProvider, target, resolverSet, extensionManager, Collections.emptyList(), policyManager);
   }
 
   @Override

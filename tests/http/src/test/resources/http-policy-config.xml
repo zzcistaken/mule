@@ -12,12 +12,8 @@
         <httpn:listener-connection host="localhost" port="${proxyPort}"/>
     </httpn:listener-config>
 
-    <httpn:listener-config name="fakeConfig">
-        <httpn:listener-connection host="localhost" port="${httpPort}"/>
-    </httpn:listener-config>
-
     <httpn:request-config name="requestConfig">
-        <httpn:request-connection host="localhost" port="${httpPort}"/>
+        <httpn:request-connection host="google.com" port="80"/>
     </httpn:request-config>
 
     <flow name="proxyTemplate">
@@ -29,27 +25,27 @@
 
         <logger message="Logger in the flow with payload #[payload]"/>
 
-        <httpn:request config-ref="requestConfig" method="#[message.getAttributes().getMethod()]" path="/" parseResponse="false">
-            <httpn:request-builder queryParams="#[message.getAttributes().getQueryParams()]" headers="#[message.getAttributes().getHeaders()]"/>
+        <httpn:request config-ref="requestConfig" method="GET" path="/" parseResponse="false">
+            <httpn:request-builder>
+                <httpn:headers>
+                    <httpn:header key="User" value="Pepito"/>
+                </httpn:headers>
+            </httpn:request-builder>
         </httpn:request>
     </flow>
 
-
-    <flow name="fakeSever">
-        <httpn:listener config-ref="fakeConfig" path="/*" responseStreamingMode="AUTO" parseRequest="false"/>
-
-        <logger message="Fake service"/>
-    </flow>
 
 
     <http-policy:policy>
         <http-policy:source>
             <set-payload value="myValue"/>
             <set-payload value="myValue"/>
+            <http-policy:execute-next/>
+            <set-payload value="newValue"/>
         </http-policy:source>
         <http-policy:request>
-            <set-payload value="myValue"/>
-            <set-payload value="myValue"/>
+            <set-payload value="myNewRequestValue"/>
+            <http-policy:execute-next/>
         </http-policy:request>
     </http-policy:policy>
 
