@@ -6,10 +6,11 @@
  */
 package org.mule.runtime.core.execution;
 
-import org.mule.runtime.core.api.MuleContext;
-import org.mule.runtime.core.api.context.MuleContextAware;
 import org.mule.runtime.api.lifecycle.Initialisable;
 import org.mule.runtime.api.lifecycle.InitialisationException;
+import org.mule.runtime.core.api.MuleContext;
+import org.mule.runtime.core.api.context.MuleContextAware;
+import org.mule.runtime.core.policy.PolicyManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,7 +21,8 @@ import java.util.List;
 /**
  * Default implementation for {@link MessageProcessingManager}.
  */
-public class MuleMessageProcessingManager implements MessageProcessingManager, MuleContextAware, Initialisable {
+public class MuleMessageProcessingManager implements MessageProcessingManager, MuleContextAware, Initialisable
+{
 
   private final EndProcessPhase endProcessPhase = new EndProcessPhase();
   private MuleContext muleContext;
@@ -37,7 +39,9 @@ public class MuleMessageProcessingManager implements MessageProcessingManager, M
   }
 
   @Override
-  public void initialise() throws InitialisationException {
+  public void initialise() throws InitialisationException
+  {
+    PolicyManager policyManager = muleContext.getPolicyManager();
     Collection<MessageProcessPhase> registryMessageProcessPhases =
         muleContext.getRegistry().lookupObjects(MessageProcessPhase.class);
     List<MessageProcessPhase> messageProcessPhaseList = new ArrayList<MessageProcessPhase>();
@@ -47,6 +51,7 @@ public class MuleMessageProcessingManager implements MessageProcessingManager, M
     messageProcessPhaseList.add(new ValidationPhase());
     messageProcessPhaseList.add(new FlowProcessingPhase());
     messageProcessPhaseList.add(new AsyncResponseFlowProcessingPhase());
+    messageProcessPhaseList.add(new ExtensionFlowProcessingPhase(policyManager));
     Collections.sort(messageProcessPhaseList, new Comparator<MessageProcessPhase>() {
 
       @Override
