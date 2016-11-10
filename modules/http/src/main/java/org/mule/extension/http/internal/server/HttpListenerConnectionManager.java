@@ -67,7 +67,8 @@ public class HttpListenerConnectionManager implements HttpServerFactory, Initial
       return;
     }
 
-    httpListenerRegistry = new HttpListenerRegistry(getDefaultEncoding(muleContext), muleContext.getTransformationService(), messageProcessingManager);
+    httpListenerRegistry = new HttpListenerRegistry(getDefaultEncoding(muleContext), muleContext.getTransformationService(),
+                                                    messageProcessingManager);
     Collection<TcpServerSocketProperties> tcpServerSocketPropertiesBeans =
         muleContext.getRegistry().lookupObjects(TcpServerSocketProperties.class);
     TcpServerSocketProperties tcpServerSocketProperties = new TcpServerSocketProperties();

@@ -49,8 +49,10 @@ public class HttpListenerRegistry implements RequestHandlerProvider {
   private final ServerAddressMap<Server> serverAddressToServerMap = new ServerAddressMap<>();
   private final Map<Server, ServerAddressRequestHandlerRegistry> requestHandlerPerServerAddress = new HashMap<>();
 
-  public HttpListenerRegistry(Charset defaultEncoding, TransformationService transformationService, MessageProcessingManager messageProcessingManager) {
-    HttpResponseFactory httpResponseFactory = new HttpResponseFactory(HttpStreamingType.NEVER, new ObjectToByteArray(), transformationService);
+  public HttpListenerRegistry(Charset defaultEncoding, TransformationService transformationService,
+                              MessageProcessingManager messageProcessingManager) {
+    HttpResponseFactory httpResponseFactory =
+        new HttpResponseFactory(HttpStreamingType.NEVER, new ObjectToByteArray(), transformationService);
     this.noListenerRequestHandler = new NoListenerRequestHandler(defaultEncoding, messageProcessingManager, httpResponseFactory);
     this.noMethodRequestHandler = new NoMethodRequestHandler(defaultEncoding, messageProcessingManager, httpResponseFactory);
     this.serviceTemporarlyUnavailableRequestHandler =

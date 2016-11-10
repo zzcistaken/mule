@@ -209,7 +209,8 @@ public class HttpListener extends Source<Object, HttpRequestAttributes> {
     listenerPath = config.getFullListenerPath(path);
     path = listenerPath.getResolvedPath();
     responseFactory =
-        new HttpResponseFactory(responseStreamingMode, muleContext.getRegistry().lookupTransformer(DataType.OBJECT, BYTE_ARRAY), muleContext.getTransformationService());
+        new HttpResponseFactory(responseStreamingMode, muleContext.getRegistry().lookupTransformer(DataType.OBJECT, BYTE_ARRAY),
+                                muleContext.getTransformationService());
     responseSender = new HttpListenerResponseSender(responseFactory);
     startIfNeeded(responseFactory);
 

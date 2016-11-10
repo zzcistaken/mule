@@ -65,7 +65,8 @@ public class HttpResponseFactory {
   private TransformationService transformationService;
   private Transformer objectToByteArray;
 
-  public HttpResponseFactory(HttpStreamingType responseStreaming, Transformer objectToByteArray, TransformationService transformationService) {
+  public HttpResponseFactory(HttpStreamingType responseStreaming, Transformer objectToByteArray,
+                             TransformationService transformationService) {
     this.responseStreaming = responseStreaming;
     this.objectToByteArray = objectToByteArray;
     this.transformationService = transformationService;
@@ -74,9 +75,9 @@ public class HttpResponseFactory {
   /**
    * Creates an {@HttpResponse}.
    *
-   * @param responseBuilder          The {@link HttpResponseBuilder} that should be modified if necessary and used to build the
-   *                                 {@link HttpResponse}.
-   * @param listenerResponseBuilder  The generic {@HttpListenerResponseBuilder} configured for this listener.
+   * @param responseBuilder The {@link HttpResponseBuilder} that should be modified if necessary and used to build the
+   *        {@link HttpResponse}.
+   * @param listenerResponseBuilder The generic {@HttpListenerResponseBuilder} configured for this listener.
    * @param supportsTransferEncoding boolean that determines whether the HTTP protocol of the response supports streaming.
    * @return an {@HttpResponse} configured based on the parameters.
    * @throws MessagingException if the response creation fails.

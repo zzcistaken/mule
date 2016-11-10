@@ -54,7 +54,8 @@ public class HttpListenerConnectionManager implements Initialisable, Disposable,
 
   @Override
   public void initialise() throws InitialisationException {
-    httpListenerRegistry = new HttpListenerRegistry(getDefaultEncoding(muleContext), muleContext.getTransformationService(), messageProcessingManager);
+    httpListenerRegistry = new HttpListenerRegistry(getDefaultEncoding(muleContext), muleContext.getTransformationService(),
+                                                    messageProcessingManager);
     Collection<TcpServerSocketProperties> tcpServerSocketPropertiesBeans =
         muleContext.getRegistry().lookupObjects(TcpServerSocketProperties.class);
     TcpServerSocketProperties tcpServerSocketProperties = new DefaultTcpServerSocketProperties();

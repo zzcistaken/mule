@@ -23,7 +23,7 @@ public class HttpPolicyListenerParametersTransformer implements PolicyOperationP
 
   @Override
   public boolean supports(ComponentIdentifier componentIdentifier) {
-    //TODO add support for namespace
+    // TODO add support for namespace
     return componentIdentifier.getName().equals("listener");
   }
 
@@ -31,9 +31,8 @@ public class HttpPolicyListenerParametersTransformer implements PolicyOperationP
   public Message fromParametersToMessage(Map<String, Object> parameters) {
     HttpListenerResponseBuilder responseBuilder = (HttpListenerResponseBuilder) parameters.get("responseBuilder");
     ParameterMap headers = new ParameterMap();
-    //TODO fix usage of ParameterMap since this for each is necessary because it does not adhere to the Map interface.
-    for (String headerName : responseBuilder.getHeaders().keySet())
-    {
+    // TODO fix usage of ParameterMap since this for each is necessary because it does not adhere to the Map interface.
+    for (String headerName : responseBuilder.getHeaders().keySet()) {
       headers.put(headerName, responseBuilder.getHeaders().get(headerName));
     }
     return Message.builder().payload(responseBuilder.getBody())
@@ -41,19 +40,18 @@ public class HttpPolicyListenerParametersTransformer implements PolicyOperationP
         .build();
   }
 
-  //TODO this method is not required for sources, we need two types of PolicyOperationParametersTransformer
+  // TODO this method is not required for sources, we need two types of PolicyOperationParametersTransformer
   @Override
   public Map<String, Object> fromMessageToParameters(Message message) {
     HttpResponseAttributes httpResponseAttributes = (HttpResponseAttributes) message.getAttributes();
     HttpListenerSuccessResponseBuilder httpListenerSuccessResponseBuilder = new HttpListenerSuccessResponseBuilder();
     httpListenerSuccessResponseBuilder.setBody(message.getPayload().getValue());
-    //TODO change this code to work with collection
-    for (String headerName : httpResponseAttributes.getHeaders().keySet())
-    {
+    // TODO change this code to work with collection
+    for (String headerName : httpResponseAttributes.getHeaders().keySet()) {
       httpListenerSuccessResponseBuilder.getHeaders().put(headerName, httpResponseAttributes.getHeaders().get(headerName));
     }
 
-    //TODO see media type
+    // TODO see media type
     httpListenerSuccessResponseBuilder.setStatusCode(httpResponseAttributes.getStatusCode());
     httpListenerSuccessResponseBuilder.setReasonPhrase(httpResponseAttributes.getReasonPhrase());
     return ImmutableMap.<String, Object>builder().put("responseBuilder", httpListenerSuccessResponseBuilder).build();

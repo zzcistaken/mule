@@ -24,14 +24,14 @@ public class HttpPolicyRequestParametersTransformer implements PolicyOperationPa
 
   @Override
   public boolean supports(ComponentIdentifier componentIdentifier) {
-    //TODO add support for namespace
+    // TODO add support for namespace
     return componentIdentifier.getName().equals("request");
   }
 
   @Override
   public Message fromParametersToMessage(Map<String, Object> parameters) {
     HttpRequesterRequestBuilder requestBuilder = (HttpRequesterRequestBuilder) parameters.get("requestBuilder");
-    //TODO create a different HttpRequestAttributes with a sub-set of the supported attributes
+    // TODO create a different HttpRequestAttributes with a sub-set of the supported attributes
     return Message.builder().payload("empty body")
         .attributes(new HttpRequestAttributes(new ParameterMap(requestBuilder.getHeaders()),
                                               null, null, null, null, null, null, null, null,
@@ -40,13 +40,13 @@ public class HttpPolicyRequestParametersTransformer implements PolicyOperationPa
         .build();
   }
 
-  //TODO this method is not required for sources, we need two types of PolicyOperationParametersTransformer
+  // TODO this method is not required for sources, we need two types of PolicyOperationParametersTransformer
   @Override
   public Map<String, Object> fromMessageToParameters(Message message) {
     HttpRequestAttributes requestAttributes = (HttpRequestAttributes) message.getAttributes();
     HttpRequesterRequestBuilder httpRequesterRequestBuilder = new HttpRequesterRequestBuilder();
-    //TODO this fails because httpRequesterRequestBuilder doesn't support a list as values
-    //httpRequesterRequestBuilder.getHeaders().putAll(requestAttributes.getHeaders());
+    // TODO this fails because httpRequesterRequestBuilder doesn't support a list as values
+    // httpRequesterRequestBuilder.getHeaders().putAll(requestAttributes.getHeaders());
     httpRequesterRequestBuilder.getQueryParams().putAll(requestAttributes.getQueryParams());
     httpRequesterRequestBuilder.getUriParams().putAll(requestAttributes.getUriParams());
     return ImmutableMap.<String, Object>builder().put("requestBuilder", httpRequesterRequestBuilder).build();
