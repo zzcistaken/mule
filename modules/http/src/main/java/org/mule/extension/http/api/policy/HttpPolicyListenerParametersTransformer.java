@@ -16,36 +16,46 @@ import org.mule.runtime.dsl.api.component.ComponentIdentifier;
 
 import com.google.common.collect.ImmutableMap;
 
+import java.util.List;
 import java.util.Map;
 
-public class HttpPolicyListenerParametersTransformer implements PolicyOperationParametersTransformer
-{
+public class HttpPolicyListenerParametersTransformer implements PolicyOperationParametersTransformer {
 
-    @Override
-    public boolean supports(ComponentIdentifier componentIdentifier)
+  @Override
+  public boolean supports(ComponentIdentifier componentIdentifier) {
+    //TODO add support for namespace
+    return componentIdentifier.getName().equals("listener");
+  }
+
+  @Override
+  public Message fromParametersToMessage(Map<String, Object> parameters) {
+    HttpListenerResponseBuilder responseBuilder = (HttpListenerResponseBuilder) parameters.get("responseBuilder");
+    ParameterMap headers = new ParameterMap();
+    //TODO fix usage of ParameterMap since this for each is necessary because it does not adhere to the Map interface.
+    for (String headerName : responseBuilder.getHeaders().keySet())
     {
-        //TODO add support for namespace
-        return componentIdentifier.getName().equals("listener");
+      headers.put(headerName, responseBuilder.getHeaders().get(headerName));
+    }
+    return Message.builder().payload(responseBuilder.getBody())
+        .attributes(new HttpResponseAttributes(responseBuilder.getStatusCode(), responseBuilder.getReasonPhrase(), headers))
+        .build();
+  }
+
+  //TODO this method is not required for sources, we need two types of PolicyOperationParametersTransformer
+  @Override
+  public Map<String, Object> fromMessageToParameters(Message message) {
+    HttpResponseAttributes httpResponseAttributes = (HttpResponseAttributes) message.getAttributes();
+    HttpListenerSuccessResponseBuilder httpListenerSuccessResponseBuilder = new HttpListenerSuccessResponseBuilder();
+    httpListenerSuccessResponseBuilder.setBody(message.getPayload().getValue());
+    //TODO change this code to work with collection
+    for (String headerName : httpResponseAttributes.getHeaders().keySet())
+    {
+      httpListenerSuccessResponseBuilder.getHeaders().put(headerName, httpResponseAttributes.getHeaders().get(headerName));
     }
 
-    @Override
-    public Message fromParametersToMessage(Map<String, Object> parameters)
-    {
-        HttpListenerResponseBuilder responseBuilder = (HttpListenerResponseBuilder) parameters.get("responseBuilder");
-        return Message.builder().payload(responseBuilder.getBody()).attributes(new HttpResponseAttributes(responseBuilder.getStatusCode(), responseBuilder.getReasonPhrase(), new ParameterMap(responseBuilder.getHeaders()))).build();
-    }
-
-    //TODO this method is not required for sources, we need two types of PolicyOperationParametersTransformer
-    @Override
-    public Map<String, Object> fromMessageToParameters(Message message)
-    {
-        HttpResponseAttributes httpResponseAttributes = (HttpResponseAttributes) message.getAttributes();
-        HttpListenerSuccessResponseBuilder httpListenerSuccessResponseBuilder = new HttpListenerSuccessResponseBuilder();
-        httpListenerSuccessResponseBuilder.setBody(message.getPayload().getValue());
-        httpListenerSuccessResponseBuilder.getHeaders().putAll(httpResponseAttributes.getHeaders());
-        //TODO see media type
-        httpListenerSuccessResponseBuilder.setStatusCode(httpResponseAttributes.getStatusCode());
-        httpListenerSuccessResponseBuilder.setReasonPhrase(httpResponseAttributes.getReasonPhrase());
-        return ImmutableMap.<String, Object>builder().put("responseBuilder", httpListenerSuccessResponseBuilder).build();
-    }
+    //TODO see media type
+    httpListenerSuccessResponseBuilder.setStatusCode(httpResponseAttributes.getStatusCode());
+    httpListenerSuccessResponseBuilder.setReasonPhrase(httpResponseAttributes.getReasonPhrase());
+    return ImmutableMap.<String, Object>builder().put("responseBuilder", httpListenerSuccessResponseBuilder).build();
+  }
 }

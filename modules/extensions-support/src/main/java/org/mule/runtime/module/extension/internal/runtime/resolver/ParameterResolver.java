@@ -7,10 +7,9 @@
 package org.mule.runtime.module.extension.internal.runtime.resolver;
 
 //TODO move to core
-public interface ParameterResolver
-{
+public interface ParameterResolver {
 
-    //TODO move parameter away to another interface that underneath uses thine one
-    Object resolve(String parameterName, String configurationValue, Class expectedType);
+  //TODO move parameter away to another interface that underneath uses thine one
+  Object resolve(String parameterName, String configurationValue, Class expectedType);
 
 }

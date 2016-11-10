@@ -15,8 +15,10 @@ import java.nio.charset.Charset;
 
 public class NoMethodRequestHandler extends ErrorRequestHandler {
 
-  protected NoMethodRequestHandler(Charset encoding, MessageProcessingManager messageProcessingManager, HttpResponseFactory httpResponseFactory) {
-    super(encoding, METHOD_NOT_ALLOWED.getStatusCode(), METHOD_NOT_ALLOWED.getReasonPhrase(), "Method not allowed for endpoint: %s", messageProcessingManager, httpResponseFactory);
+  protected NoMethodRequestHandler(Charset encoding, MessageProcessingManager messageProcessingManager,
+                                   HttpResponseFactory httpResponseFactory) {
+    super(encoding, METHOD_NOT_ALLOWED.getStatusCode(), METHOD_NOT_ALLOWED.getReasonPhrase(),
+          "Method not allowed for endpoint: %s", messageProcessingManager, httpResponseFactory);
   }
 
 }

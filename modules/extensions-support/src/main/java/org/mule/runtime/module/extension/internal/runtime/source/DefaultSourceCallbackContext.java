@@ -61,14 +61,12 @@ class DefaultSourceCallbackContext implements SourceCallbackContext {
   }
 
   @Override
-  public void addMessagePolicyDescriptor(Object object)
-  {
+  public void addMessagePolicyDescriptor(Object object) {
     this.messagePolicyDescriptor = object;
   }
 
   @Override
-  public Optional<Object> getMessagePolicyDescriptor()
-  {
+  public Optional<Object> getMessagePolicyDescriptor() {
     return ofNullable(messagePolicyDescriptor);
   }
 

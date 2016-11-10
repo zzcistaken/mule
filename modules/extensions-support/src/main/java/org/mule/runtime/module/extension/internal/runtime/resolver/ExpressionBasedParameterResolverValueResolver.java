@@ -47,14 +47,12 @@ public class ExpressionBasedParameterResolverValueResolver<T> implements ValueRe
   }
 
   @Override
-  public void accept(ResolverSetVisitor resolverSetVisitor)
-  {
+  public void accept(ResolverSetVisitor resolverSetVisitor) {
     resolverSetVisitor.setConfigurationValue(exp);
   }
 
   @Override
-  public void resolve(ShittyParameterResolver parameterResolver)
-  {
+  public void resolve(ShittyParameterResolver parameterResolver) {
 
   }
 }

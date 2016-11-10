@@ -6,10 +6,10 @@
  */
 package org.mule.runtime.http.policy.internal;
 
+import org.mule.runtime.api.lifecycle.Initialisable;
+import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.MuleContext;
-import org.mule.runtime.core.api.lifecycle.Initialisable;
-import org.mule.runtime.core.api.lifecycle.InitialisationException;
 import org.mule.runtime.core.api.lifecycle.LifecycleUtils;
 import org.mule.runtime.core.api.processor.MessageProcessorChain;
 import org.mule.runtime.core.api.processor.Processor;
@@ -50,7 +50,7 @@ public abstract class AbstractPolicyChain implements Initialisable {
   public NextOperation nextOperation(String id, Consumer<Event> eventStackConsumer, NextOperation next) {
     for (Processor processor : processors) {
       if (processor instanceof PolicyNextActionMessageProcessor) {
-            ((PolicyNextActionMessageProcessor) processor).setNext(id, eventStackConsumer, next);
+        ((PolicyNextActionMessageProcessor) processor).setNext(id, eventStackConsumer, next);
       }
     }
     return (event) -> processorChain.process(event);

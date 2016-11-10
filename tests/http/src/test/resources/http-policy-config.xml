@@ -20,7 +20,7 @@
         <httpn:listener config-ref="proxyConfig" path="/*" responseStreamingMode="AUTO" parseRequest="false">
             <httpn:response-builder statusCode="#[message.getAttributes().getStatusCode()]"
                                     reasonPhrase="#[message.getAttributes().getReasonPhrase()]"
-                                    headersRef="#[message.getAttributes().getHeaders()]" />
+                                    headers="#[message.getAttributes().getHeaders()]" />
         </httpn:listener>
 
         <logger message="Logger in the flow with payload #[payload]"/>
@@ -34,9 +34,7 @@
         </httpn:request>
     </flow>
 
-
-
-    <http-policy:policy>
+    <http-policy:proxy>
         <http-policy:source>
             <set-payload value="myValue"/>
             <set-payload value="myValue"/>
@@ -47,6 +45,6 @@
             <set-payload value="myNewRequestValue"/>
             <http-policy:execute-next/>
         </http-policy:request>
-    </http-policy:policy>
+    </http-policy:proxy>
 
 </mule>

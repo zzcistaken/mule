@@ -6,11 +6,11 @@
  */
 package org.mule.extension.http.internal.request.validator;
 
-import static org.mule.extension.http.internal.HttpConnector.API_CONFIGURATION;
-import static org.mule.extension.http.internal.HttpConnector.OTHER_SETTINGS;
-import static org.mule.extension.http.internal.HttpConnector.REQUEST_SETTINGS;
-import static org.mule.extension.http.internal.HttpConnector.RESPONSE_SETTINGS;
-import static org.mule.extension.http.internal.HttpConnector.URL_CONFIGURATION;
+import static org.mule.extension.http.internal.HttpConnectorConstants.API_CONFIGURATION;
+import static org.mule.extension.http.internal.HttpConnectorConstants.OTHER_SETTINGS;
+import static org.mule.extension.http.internal.HttpConnectorConstants.REQUEST_SETTINGS;
+import static org.mule.extension.http.internal.HttpConnectorConstants.RESPONSE_SETTINGS;
+import static org.mule.extension.http.internal.HttpConnectorConstants.URL_CONFIGURATION;
 import static org.mule.runtime.extension.api.annotation.param.display.Placement.ADVANCED;
 import static org.mule.runtime.api.meta.ExpressionSupport.NOT_SUPPORTED;
 import org.mule.extension.http.api.HttpSendBodyMode;

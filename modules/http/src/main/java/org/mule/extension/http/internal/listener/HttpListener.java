@@ -26,7 +26,8 @@ import org.mule.extension.http.api.HttpResponseAttributes;
 import org.mule.extension.http.api.HttpStreamingType;
 import org.mule.extension.http.api.listener.builder.HttpListenerErrorResponseBuilder;
 import org.mule.extension.http.api.listener.builder.HttpListenerSuccessResponseBuilder;
-import org.mule.extension.http.internal.HttpConnector;
+import org.mule.extension.http.internal.HttpConnectorConstants;
+import org.mule.extension.http.internal.HttpListenerMetadataResolver;
 import org.mule.extension.http.internal.listener.server.ExtensionRequestHandler;
 import org.mule.extension.http.internal.listener.server.HttpListenerConfig;
 import org.mule.runtime.api.exception.MuleException;
@@ -122,7 +123,7 @@ public class HttpListener extends Source<Object, HttpRequestAttributes> {
    */
   @Parameter
   @Optional(defaultValue = "AUTO")
-  @Placement(tab = ADVANCED, group = HttpConnector.RESPONSE_SETTINGS)
+  @Placement(tab = ADVANCED, group = HttpConnectorConstants.RESPONSE_SETTINGS)
   private HttpStreamingType responseStreamingMode;
 
   /**
@@ -132,7 +133,7 @@ public class HttpListener extends Source<Object, HttpRequestAttributes> {
    */
   @Parameter
   @Optional
-  @Placement(tab = ADVANCED, group = HttpConnector.CONFIGURATION_OVERRIDES)
+  @Placement(tab = ADVANCED, group = HttpConnectorConstants.CONFIGURATION_OVERRIDES)
   private Boolean parseRequest;
 
   private MethodRequestMatcher methodRequestMatcher = AcceptsAllMethodsRequestMatcher.instance();
@@ -144,8 +145,8 @@ public class HttpListener extends Source<Object, HttpRequestAttributes> {
   private List<ErrorType> knownErrors;
 
   @OnSuccess
-  public void onSuccess(@Optional @DisplayName(HttpConnector.RESPONSE_SETTINGS) @Placement(
-      group = HttpConnector.RESPONSE_SETTINGS) @NullSafe HttpListenerSuccessResponseBuilder responseBuilder,
+  public void onSuccess(@Optional @DisplayName(HttpConnectorConstants.RESPONSE_SETTINGS) @Placement(
+      group = HttpConnectorConstants.RESPONSE_SETTINGS) @NullSafe HttpListenerSuccessResponseBuilder responseBuilder,
                         SourceCallbackContext callbackContext)
       throws Exception {
 
@@ -207,7 +208,8 @@ public class HttpListener extends Source<Object, HttpRequestAttributes> {
     path = HttpParser.sanitizePathWithStartSlash(path);
     listenerPath = config.getFullListenerPath(path);
     path = listenerPath.getResolvedPath();
-    responseFactory = new HttpResponseFactory(responseStreamingMode, muleContext.getRegistry().lookupTransformer(DataType.OBJECT, BYTE_ARRAY));
+    responseFactory =
+        new HttpResponseFactory(responseStreamingMode, muleContext.getRegistry().lookupTransformer(DataType.OBJECT, BYTE_ARRAY), muleContext.getTransformationService());
     responseSender = new HttpListenerResponseSender(responseFactory);
     startIfNeeded(responseFactory);
 
@@ -236,8 +238,8 @@ public class HttpListener extends Source<Object, HttpRequestAttributes> {
     return new ExtensionRequestHandler() {
 
       @Override
-      public Result<Object, HttpRequestAttributes> createResult(HttpRequestContext requestContext) throws HttpRequestParsingException
-      {
+      public Result<Object, HttpRequestAttributes> createResult(HttpRequestContext requestContext)
+          throws HttpRequestParsingException {
         return HttpListener.this.createResult(requestContext);
       }
 
@@ -267,8 +269,7 @@ public class HttpListener extends Source<Object, HttpRequestAttributes> {
       }
 
       @Override
-      public Message createMessage(HttpRequestContext requestContext) throws HttpRequestParsingException
-      {
+      public Message createMessage(HttpRequestContext requestContext) throws HttpRequestParsingException {
         throw new MuleRuntimeException(CoreMessages.createStaticMessage("operation not supported"));
       }
 

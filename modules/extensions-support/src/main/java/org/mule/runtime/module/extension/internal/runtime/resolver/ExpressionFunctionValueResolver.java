@@ -41,14 +41,12 @@ public final class ExpressionFunctionValueResolver<T> implements ValueResolver<F
   }
 
   @Override
-  public void accept(ResolverSetVisitor resolverSetVisitor)
-  {
+  public void accept(ResolverSetVisitor resolverSetVisitor) {
 
   }
 
   @Override
-  public void resolve(ShittyParameterResolver parameterResolver)
-  {
+  public void resolve(ShittyParameterResolver parameterResolver) {
 
   }
 

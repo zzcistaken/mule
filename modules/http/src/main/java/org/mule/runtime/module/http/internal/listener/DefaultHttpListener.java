@@ -148,8 +148,7 @@ public class DefaultHttpListener implements HttpListener, Initialisable, MuleCon
       }
 
       @Override
-      public Message createMessage(HttpRequestContext requestContext) throws HttpRequestParsingException
-      {
+      public Message createMessage(HttpRequestContext requestContext) throws HttpRequestParsingException {
         return createEvent(requestContext).getMessage();
       }
 
@@ -176,8 +175,9 @@ public class DefaultHttpListener implements HttpListener, Initialisable, MuleCon
   }
 
   private Event createEvent(HttpRequestContext requestContext) throws HttpRequestParsingException {
-    Event muleEvent = Event.builder(create(flowConstruct, resolveUri(requestContext).toString())).message(transform(requestContext, getDefaultEncoding(muleContext), parseRequest, listenerPath))
-            .exchangePattern(REQUEST_RESPONSE).flow(flowConstruct).session(new DefaultMuleSession()).build();
+    Event muleEvent = Event.builder(create(flowConstruct, resolveUri(requestContext).toString()))
+        .message(transform(requestContext, getDefaultEncoding(muleContext), parseRequest, listenerPath))
+        .exchangePattern(REQUEST_RESPONSE).flow(flowConstruct).session(new DefaultMuleSession()).build();
     // Update RequestContext ThreadLocal for backwards compatibility
     setCurrentEvent(muleEvent);
     return muleEvent;

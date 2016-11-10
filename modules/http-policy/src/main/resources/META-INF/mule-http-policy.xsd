@@ -23,7 +23,7 @@
 
     <xsd:element name="execute-next" type="mule:abstractMessageProcessorType" substitutionGroup="mule:abstract-message-processor"/>
 
-    <xsd:element name="policy" type="httpPolicyType" substitutionGroup="mule:abstract-shared-extension"/>
+    <xsd:element name="proxy" type="httpPolicyType" substitutionGroup="mule:abstract-shared-extension"/>
 
     <xsd:complexType name="httpPolicyType">
         <xsd:complexContent>

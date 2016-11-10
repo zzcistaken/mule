@@ -11,13 +11,12 @@ import org.mule.runtime.dsl.api.component.ComponentIdentifier;
 
 import java.util.Map;
 
-public interface PolicyOperationParametersTransformer
-{
+public interface PolicyOperationParametersTransformer {
 
-    boolean supports(ComponentIdentifier componentIdentifier);
+  boolean supports(ComponentIdentifier componentIdentifier);
 
-    Message fromParametersToMessage(Map<String, Object> parameters);
+  Message fromParametersToMessage(Map<String, Object> parameters);
 
-    Map<String, Object> fromMessageToParameters(Message message);
+  Map<String, Object> fromMessageToParameters(Message message);
 
 }

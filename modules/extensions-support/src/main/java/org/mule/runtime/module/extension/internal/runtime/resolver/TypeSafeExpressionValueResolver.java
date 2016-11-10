@@ -112,14 +112,12 @@ public class TypeSafeExpressionValueResolver<T> implements ValueResolver<T> {
   }
 
   @Override
-  public void accept(ResolverSetVisitor resolverSetVisitor)
-  {
+  public void accept(ResolverSetVisitor resolverSetVisitor) {
     resolverSetVisitor.setConfigurationValue(evaluator.getRawValue());
   }
 
   @Override
-  public void resolve(ShittyParameterResolver parameterResolver)
-  {
+  public void resolve(ShittyParameterResolver parameterResolver) {
     parameterResolver.resolve(null, evaluator.getRawValue(), expectedType);
   }
 

@@ -7,8 +7,8 @@
 package org.mule.extension.http.internal.listener;
 
 import static java.lang.String.format;
-import static org.mule.extension.http.internal.HttpConnector.TLS;
-import static org.mule.extension.http.internal.HttpConnector.TLS_CONFIGURATION;
+import static org.mule.extension.http.internal.HttpConnectorConstants.TLS;
+import static org.mule.extension.http.internal.HttpConnectorConstants.TLS_CONFIGURATION;
 import static org.mule.runtime.api.connection.ConnectionExceptionCode.UNKNOWN;
 import static org.mule.runtime.api.connection.ConnectionValidationResult.failure;
 import static org.mule.runtime.core.api.config.ThreadingProfile.DEFAULT_THREADING_PROFILE;
@@ -20,7 +20,7 @@ import static org.mule.runtime.extension.api.annotation.param.display.Placement.
 import static org.mule.runtime.api.meta.ExpressionSupport.NOT_SUPPORTED;
 import static org.mule.runtime.module.http.api.HttpConstants.Protocols.HTTP;
 import static org.mule.runtime.module.http.api.HttpConstants.Protocols.HTTPS;
-import org.mule.extension.http.internal.HttpConnector;
+import org.mule.extension.http.internal.HttpConnectorConstants;
 import org.mule.extension.http.internal.server.HttpListenerConnectionManager;
 import org.mule.extension.http.internal.listener.server.HttpServerConfiguration;
 import org.mule.runtime.api.connection.CachedConnectionProvider;
@@ -102,8 +102,8 @@ public class HttpListenerProvider implements CachedConnectionProvider<Server>, I
   @Parameter
   @Optional
   @Expression(NOT_SUPPORTED)
-  @DisplayName(HttpConnector.TLS_CONFIGURATION)
-  @Placement(tab = HttpConnector.TLS, group = HttpConnector.TLS_CONFIGURATION)
+  @DisplayName(TLS_CONFIGURATION)
+  @Placement(tab = TLS, group = TLS_CONFIGURATION)
   private TlsContextFactory tlsContext;
 
   /**

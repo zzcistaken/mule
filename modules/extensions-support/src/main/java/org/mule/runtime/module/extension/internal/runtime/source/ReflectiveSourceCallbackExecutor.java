@@ -69,7 +69,8 @@ class ReflectiveSourceCallbackExecutor implements SourceCallbackExecutor {
     return executor.execute(createExecutionContext(event, parameters, context));
   }
 
-  private ExecutionContext<SourceModel> createExecutionContext(Event event, Map<String, Object> parameters, SourceCallbackContext callbackContext) {
+  private ExecutionContext<SourceModel> createExecutionContext(Event event, Map<String, Object> parameters,
+                                                               SourceCallbackContext callbackContext) {
     ExecutionContextAdapter<SourceModel> executionContext = new DefaultExecutionContext<>(extensionModel,
                                                                                           configurationInstance,
                                                                                           parameters,

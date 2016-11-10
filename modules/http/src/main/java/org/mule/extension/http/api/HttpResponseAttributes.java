@@ -42,8 +42,7 @@ public class HttpResponseAttributes extends HttpAttributes {
     this.statusCode = statusCode;
   }
 
-  public void setReasonPhrase(String reasonPhrase)
-  {
+  public void setReasonPhrase(String reasonPhrase) {
     this.reasonPhrase = reasonPhrase;
   }
 }

@@ -31,7 +31,7 @@ public class HttpPolicyBuildingDefinitionProvider implements ComponentBuildingDe
   public List<ComponentBuildingDefinition> getComponentBuildingDefinitions() {
     ArrayList<ComponentBuildingDefinition> definitions = new ArrayList<>();
 
-    definitions.add(baseDefinition.copy().withIdentifier("policy")
+    definitions.add(baseDefinition.copy().withIdentifier("proxy")
         .withTypeDefinition(fromType(HttpProxyPolicy.class))
         .withSetterParameterDefinition("source", fromChildConfiguration(HttpSource.class).build())
         .withSetterParameterDefinition("request", fromChildConfiguration(HttpRequest.class).build()).build());

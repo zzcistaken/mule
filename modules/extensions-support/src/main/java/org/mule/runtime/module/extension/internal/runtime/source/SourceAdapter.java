@@ -162,21 +162,16 @@ public final class SourceAdapter implements Startable, Stoppable, FlowConstructA
       }
     }
 
-    public Map<String, Object> createResponseParameters(Event event)
-    {
-      try
-      {
+    public Map<String, Object> createResponseParameters(Event event) {
+      try {
         ResolverSetResult parameters = SourceAdapter.this.successCallbackParameters.resolve(event);
         return parameters.asMap();
-      }
-      catch (MuleException e)
-      {
+      } catch (MuleException e) {
         throw new MuleRuntimeException(e);
       }
     }
 
-    public void setResponseParameters(Map<String, Object> parameters)
-    {
+    public void setResponseParameters(Map<String, Object> parameters) {
       this.responseParameters = parameters;
     }
   }

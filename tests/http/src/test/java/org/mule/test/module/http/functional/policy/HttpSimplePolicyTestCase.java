@@ -24,25 +24,23 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 
-public class HttpSimplePolicyTestCase extends AbstractHttpTestCase
-{
+public class HttpSimplePolicyTestCase extends AbstractHttpTestCase {
 
-    @Rule
-    public DynamicPort proxyPort = new DynamicPort("proxyPort");
+  @Rule
+  public DynamicPort proxyPort = new DynamicPort("proxyPort");
 
-    @Rule
-    public DynamicPort httpPort = new DynamicPort("httpPort");
+  @Rule
+  public DynamicPort httpPort = new DynamicPort("httpPort");
 
-    @Override
-    protected String getConfigFile()
-    {
-        return "http-policy-config.xml";
-    }
+  @Override
+  protected String getConfigFile() {
+    return "http-policy-config.xml";
+  }
 
-    @Test
-    public void test() throws MuleException
-    {
-        Either<Error, InternalMessage> responseEither = muleContext.getClient().send("http://localhost:" + proxyPort.getNumber() + "/", "", new HashMap<String, Serializable>(), 999999);
-        Assert.assertThat(IOUtils.toString((InputStream) responseEither.getRight().getPayload().getValue()), Is.is("newValue"));
-    }
+  @Test
+  public void test() throws MuleException {
+    Either<Error, InternalMessage> responseEither = muleContext.getClient()
+        .send("http://localhost:" + proxyPort.getNumber() + "/", "", new HashMap<String, Serializable>(), 999999);
+    Assert.assertThat(IOUtils.toString((InputStream) responseEither.getRight().getPayload().getValue()), Is.is("newValue"));
+  }
 }

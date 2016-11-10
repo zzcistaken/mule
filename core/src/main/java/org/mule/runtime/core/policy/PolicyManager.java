@@ -12,12 +12,12 @@ import org.mule.runtime.dsl.api.component.ComponentIdentifier;
 
 import java.util.Optional;
 
-public interface PolicyManager
-{
+public interface PolicyManager {
 
-    Optional<Policy> lookupPolicy(ComponentIdentifier componentIdentifier, Optional<Object> messagePolicyDescriptor) throws RegistrationException;
+  Optional<Policy> lookupPolicy(ComponentIdentifier componentIdentifier, Optional<Object> messagePolicyDescriptor)
+      throws RegistrationException;
 
 
-    Optional<PolicyOperationParametersTransformer> lookupOperationParametersTransformer(ComponentIdentifier componentIdentifier);
+  Optional<PolicyOperationParametersTransformer> lookupOperationParametersTransformer(ComponentIdentifier componentIdentifier);
 
 }

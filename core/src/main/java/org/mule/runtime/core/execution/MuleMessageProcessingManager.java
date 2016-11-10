@@ -21,8 +21,7 @@ import java.util.List;
 /**
  * Default implementation for {@link MessageProcessingManager}.
  */
-public class MuleMessageProcessingManager implements MessageProcessingManager, MuleContextAware, Initialisable
-{
+public class MuleMessageProcessingManager implements MessageProcessingManager, MuleContextAware, Initialisable {
 
   private final EndProcessPhase endProcessPhase = new EndProcessPhase();
   private MuleContext muleContext;
@@ -39,8 +38,7 @@ public class MuleMessageProcessingManager implements MessageProcessingManager, M
   }
 
   @Override
-  public void initialise() throws InitialisationException
-  {
+  public void initialise() throws InitialisationException {
     PolicyManager policyManager = muleContext.getPolicyManager();
     Collection<MessageProcessPhase> registryMessageProcessPhases =
         muleContext.getRegistry().lookupObjects(MessageProcessPhase.class);

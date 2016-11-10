@@ -40,8 +40,8 @@ public class ErrorRequestHandler implements RequestHandler {
   private String reasonPhrase;
   private String entityFormat;
 
-  public ErrorRequestHandler(Charset encoding, int statusCode, String reasonPhrase, String entityFormat, MessageProcessingManager messageProcessingManager, HttpResponseFactory httpResponseFactory)
-  {
+  public ErrorRequestHandler(Charset encoding, int statusCode, String reasonPhrase, String entityFormat,
+                             MessageProcessingManager messageProcessingManager, HttpResponseFactory httpResponseFactory) {
     this.encoding = encoding;
     this.statusCode = statusCode;
     this.reasonPhrase = reasonPhrase;
@@ -57,55 +57,49 @@ public class ErrorRequestHandler implements RequestHandler {
   @Override
   public void handleRequest(HttpRequestContext requestContext, HttpResponseReadyCallback responseCallback) {
     String resolvedEntity = String.format(entityFormat, requestContext.getRequest().getUri());
-    try
-    {
+    try {
       //TODO the HttpResponseContext creation code is duplicated in HttpListener
       HttpResponseContext responseContext = new HttpResponseContext();
       final String httpVersion = requestContext.getRequest().getProtocol().asString();
       responseContext.setHttpVersion(httpVersion);
       responseContext.setSupportStreaming(supportsTransferEncoding(httpVersion));
       responseContext.setResponseCallback(responseCallback);
-      this.messageProcessingManager.processMessage(new ExtensionHttpMessageProcessTemplate(createMessage(requestContext), null, responseContext, httpResponseFactory), new MessageProcessContext()
-      {
-        @Override
-        public boolean supportsAsynchronousProcessing()
-        {
-          return false;
-        }
+      this.messageProcessingManager.processMessage(
+                                                   new ExtensionHttpMessageProcessTemplate(createMessage(requestContext), null,
+                                                                                           responseContext, httpResponseFactory),
+                                                   new MessageProcessContext() {
 
-        @Override
-        public MessageSource getMessageSource()
-        {
-          return null;
-        }
+                                                     @Override
+                                                     public boolean supportsAsynchronousProcessing() {
+                                                       return false;
+                                                     }
 
-        @Override
-        public FlowConstruct getFlowConstruct()
-        {
-          return null;
-        }
+                                                     @Override
+                                                     public MessageSource getMessageSource() {
+                                                       return null;
+                                                     }
 
-        @Override
-        public WorkManager getFlowExecutionWorkManager()
-        {
-          return null;
-        }
+                                                     @Override
+                                                     public FlowConstruct getFlowConstruct() {
+                                                       return null;
+                                                     }
 
-        @Override
-        public TransactionConfig getTransactionConfig()
-        {
-          return null;
-        }
+                                                     @Override
+                                                     public WorkManager getFlowExecutionWorkManager() {
+                                                       return null;
+                                                     }
 
-        @Override
-        public ClassLoader getExecutionClassLoader()
-        {
-          return null;
-        }
-      });
-    }
-    catch (HttpRequestParsingException e)
-    {
+                                                     @Override
+                                                     public TransactionConfig getTransactionConfig() {
+                                                       return null;
+                                                     }
+
+                                                     @Override
+                                                     public ClassLoader getExecutionClassLoader() {
+                                                       return null;
+                                                     }
+                                                   });
+    } catch (HttpRequestParsingException e) {
       //TODO define what to do with this exception since
       throw new MuleRuntimeException(e);
     }
@@ -129,8 +123,7 @@ public class ErrorRequestHandler implements RequestHandler {
   }
 
   @Override
-  public Message createMessage(HttpRequestContext requestContext) throws HttpRequestParsingException
-  {
+  public Message createMessage(HttpRequestContext requestContext) throws HttpRequestParsingException {
     return HttpRequestToMuleEvent.transform(requestContext, encoding, false,
                                             new ListenerPath(requestContext.getRequest().getPath(), ""));
   }

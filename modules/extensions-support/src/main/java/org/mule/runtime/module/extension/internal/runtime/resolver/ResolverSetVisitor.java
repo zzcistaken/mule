@@ -6,9 +6,8 @@
  */
 package org.mule.runtime.module.extension.internal.runtime.resolver;
 
-public interface ResolverSetVisitor
-{
+public interface ResolverSetVisitor {
 
-    void setConfigurationValue(Object configurationValue);
+  void setConfigurationValue(Object configurationValue);
 
 }

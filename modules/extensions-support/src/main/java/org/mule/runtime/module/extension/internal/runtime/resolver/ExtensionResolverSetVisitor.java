@@ -11,31 +11,27 @@ import org.mule.runtime.core.api.Event;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ExtensionResolverSetVisitor
-{
+public class ExtensionResolverSetVisitor {
 
-    private Map<String, Object> configurationValues = new HashMap<>();
+  private Map<String, Object> configurationValues = new HashMap<>();
 
-    public ResolverSetVisitor createVisitor(String parameterName)
-    {
-        return new InnerResolverSetVisitor(parameterName);
+  public ResolverSetVisitor createVisitor(String parameterName) {
+    return new InnerResolverSetVisitor(parameterName);
+  }
+
+  public class InnerResolverSetVisitor implements ResolverSetVisitor {
+
+    private String parameterName;
+    private Object configurationValue;
+
+    public InnerResolverSetVisitor(String parameterName) {
+      this.parameterName = parameterName;
     }
 
-    public class InnerResolverSetVisitor implements ResolverSetVisitor {
-
-        private String parameterName;
-        private Object configurationValue;
-
-        public InnerResolverSetVisitor(String parameterName)
-        {
-            this.parameterName = parameterName;
-        }
-
-        @Override
-        public void setConfigurationValue(Object configurationValue)
-        {
-            configurationValues.put(parameterName, configurationValue);
-        }
+    @Override
+    public void setConfigurationValue(Object configurationValue) {
+      configurationValues.put(parameterName, configurationValue);
     }
+  }
 
 }

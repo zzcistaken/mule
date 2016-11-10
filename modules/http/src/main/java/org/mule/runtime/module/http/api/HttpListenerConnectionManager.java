@@ -54,7 +54,7 @@ public class HttpListenerConnectionManager implements Initialisable, Disposable,
 
   @Override
   public void initialise() throws InitialisationException {
-    httpListenerRegistry = new HttpListenerRegistry(getDefaultEncoding(muleContext), messageProcessingManager);
+    httpListenerRegistry = new HttpListenerRegistry(getDefaultEncoding(muleContext), muleContext.getTransformationService(), messageProcessingManager);
     Collection<TcpServerSocketProperties> tcpServerSocketPropertiesBeans =
         muleContext.getRegistry().lookupObjects(TcpServerSocketProperties.class);
     TcpServerSocketProperties tcpServerSocketProperties = new DefaultTcpServerSocketProperties();
@@ -68,7 +68,8 @@ public class HttpListenerConnectionManager implements Initialisable, Disposable,
 
     String threadNamePrefix = ThreadNameHelper.getPrefix(muleContext) + LISTENER_THREAD_NAME_PREFIX;
     try {
-      httpServerManager = new GrizzlyServerManager(threadNamePrefix, httpListenerRegistry, tcpServerSocketProperties, policyManager);
+      httpServerManager =
+          new GrizzlyServerManager(threadNamePrefix, httpListenerRegistry, tcpServerSocketProperties, policyManager);
     } catch (IOException e) {
       throw new InitialisationException(e, this);
     }

@@ -13,25 +13,21 @@ import org.mule.runtime.dsl.api.xml.XmlNamespaceInfoProvider;
 import java.util.Collection;
 import java.util.Collections;
 
-public class HttpPolicyXmlNamespaceInfoProvider implements XmlNamespaceInfoProvider
-{
+public class HttpPolicyXmlNamespaceInfoProvider implements XmlNamespaceInfoProvider {
 
-    @Override
-    public Collection<XmlNamespaceInfo> getXmlNamespacesInfo()
-    {
-        return Collections.singletonList(new XmlNamespaceInfo()
-        {
-            @Override
-            public String getNamespaceUriPrefix()
-            {
-                return "http://www.mulesoft.org/schema/mule/mule-httpn";
-            }
+  @Override
+  public Collection<XmlNamespaceInfo> getXmlNamespacesInfo() {
+    return Collections.singletonList(new XmlNamespaceInfo() {
 
-            @Override
-            public String getNamespace()
-            {
-                return "http-policy";
-            }
-        });
-    }
+      @Override
+      public String getNamespaceUriPrefix() {
+        return "http://www.mulesoft.org/schema/mule/mule-httpn";
+      }
+
+      @Override
+      public String getNamespace() {
+        return "http-policy";
+      }
+    });
+  }
 }

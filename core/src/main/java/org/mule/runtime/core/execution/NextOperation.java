@@ -10,9 +10,8 @@ import org.mule.runtime.core.api.Event;
 
 //TODO define a more reusuable callback
 @FunctionalInterface
-public interface NextOperation
-{
+public interface NextOperation {
 
-    Event execute(Event event) throws Exception;
+  Event execute(Event event) throws Exception;
 
 }

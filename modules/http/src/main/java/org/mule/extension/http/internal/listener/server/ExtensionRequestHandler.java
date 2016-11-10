@@ -12,9 +12,8 @@ import org.mule.runtime.module.http.internal.domain.request.HttpRequestContext;
 import org.mule.runtime.module.http.internal.listener.HttpRequestParsingException;
 import org.mule.runtime.module.http.internal.listener.async.RequestHandler;
 
-public interface ExtensionRequestHandler extends RequestHandler
-{
+public interface ExtensionRequestHandler extends RequestHandler {
 
-    Result<Object, HttpRequestAttributes> createResult(HttpRequestContext requestContext) throws HttpRequestParsingException;
+  Result<Object, HttpRequestAttributes> createResult(HttpRequestContext requestContext) throws HttpRequestParsingException;
 
 }

@@ -39,14 +39,12 @@ public class StaticValueResolver<T> implements ValueResolver<T> {
   }
 
   @Override
-  public void accept(ResolverSetVisitor resolverSetVisitor)
-  {
+  public void accept(ResolverSetVisitor resolverSetVisitor) {
 
   }
 
   @Override
-  public void resolve(ShittyParameterResolver parameterResolver)
-  {
+  public void resolve(ShittyParameterResolver parameterResolver) {
     parameterResolver.resolve(null, null, null);
   }
 }

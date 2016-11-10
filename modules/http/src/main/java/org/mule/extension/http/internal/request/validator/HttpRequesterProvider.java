@@ -7,9 +7,9 @@
 package org.mule.extension.http.internal.request.validator;
 
 import static java.lang.String.format;
-import static org.mule.extension.http.internal.HttpConnector.AUTHENTICATION;
-import static org.mule.extension.http.internal.HttpConnector.TLS;
-import static org.mule.extension.http.internal.HttpConnector.TLS_CONFIGURATION;
+import static org.mule.extension.http.internal.HttpConnectorConstants.AUTHENTICATION;
+import static org.mule.extension.http.internal.HttpConnectorConstants.TLS;
+import static org.mule.extension.http.internal.HttpConnectorConstants.TLS_CONFIGURATION;
 import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.initialiseIfNeeded;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 import static org.mule.runtime.core.util.concurrent.ThreadNameHelper.getPrefix;

@@ -92,7 +92,7 @@ public class OperationMessageProcessorTestCase extends AbstractOperationMessageP
   @Override
   protected OperationMessageProcessor createOperationMessageProcessor() {
     return new OperationMessageProcessor(extensionModel, operationModel, configurationProvider, target, resolverSet,
-                                         extensionManager, emptyList(), null);
+                                         extensionManager, null);
   }
 
   @Test

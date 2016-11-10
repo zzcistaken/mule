@@ -18,7 +18,9 @@ import java.nio.charset.Charset;
  */
 public class ServiceTemporarilyUnavailableListenerRequestHandler extends ErrorRequestHandler {
 
-  protected ServiceTemporarilyUnavailableListenerRequestHandler(Charset defaultEncoding, MessageProcessingManager messageProcessingManager, HttpResponseFactory httpResponseFactory) {
+  protected ServiceTemporarilyUnavailableListenerRequestHandler(Charset defaultEncoding,
+                                                                MessageProcessingManager messageProcessingManager,
+                                                                HttpResponseFactory httpResponseFactory) {
     super(defaultEncoding, SERVICE_UNAVAILABLE.getStatusCode(), SERVICE_UNAVAILABLE.getReasonPhrase(),
           "Service not available for request uri: %s", messageProcessingManager, httpResponseFactory);
   }

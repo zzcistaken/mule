@@ -11,6 +11,7 @@ import org.mule.extension.http.api.HttpStreamingType;
 import org.mule.extension.http.internal.listener.HttpResponseFactory;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.api.util.Preconditions;
+import org.mule.runtime.core.TransformationService;
 import org.mule.runtime.core.config.i18n.CoreMessages;
 import org.mule.runtime.core.execution.MessageProcessingManager;
 import org.mule.runtime.core.internal.transformer.simple.ObjectToByteArray;
@@ -40,20 +41,20 @@ public class HttpListenerRegistry implements RequestHandlerProvider {
 
   private static final String WILDCARD_CHARACTER = "*";
   private static final String SLASH = "/";
-  private final NoListenerRequestHandler noListenerRequestHandler;
-  private final NoMethodRequestHandler noMethodRequestHandler;
-  private final ServiceTemporarilyUnavailableListenerRequestHandler serviceTemporarlyUnavailableRequestHandler;
+  private NoListenerRequestHandler noListenerRequestHandler;
+  private NoMethodRequestHandler noMethodRequestHandler;
+  private ServiceTemporarilyUnavailableListenerRequestHandler serviceTemporarlyUnavailableRequestHandler;
   private Logger logger = LoggerFactory.getLogger(getClass());
 
   private final ServerAddressMap<Server> serverAddressToServerMap = new ServerAddressMap<>();
   private final Map<Server, ServerAddressRequestHandlerRegistry> requestHandlerPerServerAddress = new HashMap<>();
 
-  public HttpListenerRegistry(Charset defaultEncoding, MessageProcessingManager messageProcessingManager)
-  {
-    HttpResponseFactory httpResponseFactory = new HttpResponseFactory(HttpStreamingType.NEVER, new ObjectToByteArray());
+  public HttpListenerRegistry(Charset defaultEncoding, TransformationService transformationService, MessageProcessingManager messageProcessingManager) {
+    HttpResponseFactory httpResponseFactory = new HttpResponseFactory(HttpStreamingType.NEVER, new ObjectToByteArray(), transformationService);
     this.noListenerRequestHandler = new NoListenerRequestHandler(defaultEncoding, messageProcessingManager, httpResponseFactory);
     this.noMethodRequestHandler = new NoMethodRequestHandler(defaultEncoding, messageProcessingManager, httpResponseFactory);
-    this.serviceTemporarlyUnavailableRequestHandler = new ServiceTemporarilyUnavailableListenerRequestHandler(defaultEncoding, messageProcessingManager, httpResponseFactory);
+    this.serviceTemporarlyUnavailableRequestHandler =
+        new ServiceTemporarilyUnavailableListenerRequestHandler(defaultEncoding, messageProcessingManager, httpResponseFactory);
   }
 
   public synchronized RequestHandlerManager addRequestHandler(final Server server, final RequestHandler requestHandler,

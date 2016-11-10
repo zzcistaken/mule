@@ -18,9 +18,10 @@ import java.nio.charset.Charset;
  */
 public class NoListenerRequestHandler extends ErrorRequestHandler {
 
-  protected NoListenerRequestHandler(Charset encoding, MessageProcessingManager messageProcessingManager, HttpResponseFactory httpResponseFactory)
-  {
-    super(encoding, NOT_FOUND.getStatusCode(), NOT_FOUND.getReasonPhrase(), "No listener for endpoint: %s", messageProcessingManager, httpResponseFactory);
+  protected NoListenerRequestHandler(Charset encoding, MessageProcessingManager messageProcessingManager,
+                                     HttpResponseFactory httpResponseFactory) {
+    super(encoding, NOT_FOUND.getStatusCode(), NOT_FOUND.getReasonPhrase(), "No listener for endpoint: %s",
+          messageProcessingManager, httpResponseFactory);
   }
 
 }

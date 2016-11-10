@@ -60,13 +60,14 @@ public class HttpListenerConnectionManager implements HttpServerFactory, Initial
   @Inject
   private MessageProcessingManager messageProcessingManager;
 
+
   @Override
   public void initialise() throws InitialisationException {
     if (initialized.getAndSet(true)) {
       return;
     }
 
-    httpListenerRegistry = new HttpListenerRegistry(getDefaultEncoding(muleContext), messageProcessingManager);
+    httpListenerRegistry = new HttpListenerRegistry(getDefaultEncoding(muleContext), muleContext.getTransformationService(), messageProcessingManager);
     Collection<TcpServerSocketProperties> tcpServerSocketPropertiesBeans =
         muleContext.getRegistry().lookupObjects(TcpServerSocketProperties.class);
     TcpServerSocketProperties tcpServerSocketProperties = new TcpServerSocketProperties();

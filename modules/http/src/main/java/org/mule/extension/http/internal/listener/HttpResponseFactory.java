@@ -7,11 +7,8 @@
 
 package org.mule.extension.http.internal.listener;
 
-import static org.mule.extension.http.api.HttpStreamingType.ALWAYS;
-import static org.mule.extension.http.api.HttpStreamingType.AUTO;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 import static org.mule.runtime.api.metadata.DataType.BYTE_ARRAY;
-import static org.mule.runtime.api.metadata.DataType.OBJECT;
 import static org.mule.runtime.module.http.api.HttpConstants.HttpStatus.getReasonPhraseForStatusCode;
 import static org.mule.runtime.module.http.api.HttpHeaders.Names.CONTENT_LENGTH;
 import static org.mule.runtime.module.http.api.HttpHeaders.Names.CONTENT_TYPE;
@@ -19,19 +16,15 @@ import static org.mule.runtime.module.http.api.HttpHeaders.Names.TRANSFER_ENCODI
 import static org.mule.runtime.module.http.api.HttpHeaders.Values.CHUNKED;
 import org.mule.extension.http.api.HttpStreamingType;
 import org.mule.extension.http.api.listener.builder.HttpListenerResponseBuilder;
-import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.api.message.MultiPartPayload;
 import org.mule.runtime.api.metadata.MediaType;
 import org.mule.runtime.core.TransformationService;
 import org.mule.runtime.core.api.Event;
-import org.mule.runtime.core.api.MuleContext;
-import org.mule.runtime.api.lifecycle.Startable;
 import org.mule.runtime.core.api.message.InternalMessage;
 import org.mule.runtime.core.api.transformer.Transformer;
 import org.mule.runtime.core.api.transformer.TransformerException;
 import org.mule.runtime.core.exception.MessagingException;
-import org.mule.runtime.core.internal.transformer.simple.ObjectToByteArray;
 import org.mule.runtime.core.model.ParameterMap;
 import org.mule.runtime.core.util.IOUtils;
 import org.mule.runtime.core.util.UUID;
@@ -72,9 +65,10 @@ public class HttpResponseFactory {
   private TransformationService transformationService;
   private Transformer objectToByteArray;
 
-  public HttpResponseFactory(HttpStreamingType responseStreaming, Transformer objectToByteArray) {
+  public HttpResponseFactory(HttpStreamingType responseStreaming, Transformer objectToByteArray, TransformationService transformationService) {
     this.responseStreaming = responseStreaming;
     this.objectToByteArray = objectToByteArray;
+    this.transformationService = transformationService;
   }
 
   /**
@@ -147,7 +141,8 @@ public class HttpResponseFactory {
       resolveEncoding(httpResponseHeaderBuilder, existingTransferEncoding, existingContentLength, supportsTransferEncoding,
                       (ByteArrayHttpEntity) httpEntity);
     } else if (payload instanceof InputStream) {
-      if (responseStreaming == HttpStreamingType.ALWAYS || (responseStreaming == HttpStreamingType.AUTO && existingContentLength == null)) {
+      if (responseStreaming == HttpStreamingType.ALWAYS
+          || (responseStreaming == HttpStreamingType.AUTO && existingContentLength == null)) {
         if (supportsTransferEncoding) {
           setupChunkedEncoding(httpResponseHeaderBuilder);
         }
@@ -205,7 +200,8 @@ public class HttpResponseFactory {
                                String existingContentLength, boolean supportsTransferEncoding,
                                ByteArrayHttpEntity byteArrayHttpEntity) {
     if (responseStreaming == HttpStreamingType.ALWAYS
-        || (responseStreaming == HttpStreamingType.AUTO && existingContentLength == null && CHUNKED.equals(existingTransferEncoding))) {
+        || (responseStreaming == HttpStreamingType.AUTO && existingContentLength == null
+            && CHUNKED.equals(existingTransferEncoding))) {
       if (supportsTransferEncoding) {
         setupChunkedEncoding(httpResponseHeaderBuilder);
       }

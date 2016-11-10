@@ -29,21 +29,20 @@ final class ExtensionFlowProcessingTemplate implements ExtensionFlowProcessingPh
 
   ExtensionFlowProcessingTemplate(Message message,
                                   Processor messageProcessor,
-                                  CompletionHandler<Event, MessagingException> completionHandler, Optional<Object> messagePolicyDescriptor) {
+                                  CompletionHandler<Event, MessagingException> completionHandler,
+                                  Optional<Object> messagePolicyDescriptor) {
     this.message = message;
     this.messageProcessor = messageProcessor;
     this.completionHandler = completionHandler;
     this.messagePolicyDescriptor = messagePolicyDescriptor;
   }
 
-  public Optional<Object> getMessagePolicyDescriptor()
-  {
+  public Optional<Object> getMessagePolicyDescriptor() {
     return messagePolicyDescriptor;
   }
 
   @Override
-  public Function<Event, Map<String, Object>> getSuccessfulExecutionResponseParametersFunction()
-  {
+  public Function<Event, Map<String, Object>> getSuccessfulExecutionResponseParametersFunction() {
     if (completionHandler instanceof SourceAdapter.SourceCompletionHandler) {
       return (event -> ((SourceAdapter.SourceCompletionHandler) completionHandler).createResponseParameters(event));
     }
@@ -51,8 +50,7 @@ final class ExtensionFlowProcessingTemplate implements ExtensionFlowProcessingPh
   }
 
   @Override
-  public Function<Event, Map<String, Object>> getFailedExecutionResponseParametersFunction()
-  {
+  public Function<Event, Map<String, Object>> getFailedExecutionResponseParametersFunction() {
     return null;
   }
 
@@ -67,10 +65,11 @@ final class ExtensionFlowProcessingTemplate implements ExtensionFlowProcessingPh
   }
 
   @Override
-  public void sendResponseToClient(Event event, Map<String, Object> parameters, ResponseCompletionCallback responseCompletionCallback) throws MuleException
-  {
+  public void sendResponseToClient(Event event, Map<String, Object> parameters,
+                                   ResponseCompletionCallback responseCompletionCallback)
+      throws MuleException {
     ExtensionSourceExceptionCallback exceptionCallback =
-            new ExtensionSourceExceptionCallback(responseCompletionCallback, event, completionHandler::onFailure);
+        new ExtensionSourceExceptionCallback(responseCompletionCallback, event, completionHandler::onFailure);
     ((SourceAdapter.SourceCompletionHandler) completionHandler).setResponseParameters(parameters);
     runAndNotify(() -> completionHandler.onCompletion(event, exceptionCallback), event, responseCompletionCallback);
   }
@@ -79,7 +78,8 @@ final class ExtensionFlowProcessingTemplate implements ExtensionFlowProcessingPh
   public void sendFailureResponseToClient(MessagingException messagingException,
                                           ResponseCompletionCallback responseCompletionCallback)
       throws MuleException {
-    runAndNotify(() -> completionHandler.onFailure(messagingException), messagingException.getEvent(), responseCompletionCallback);
+    runAndNotify(() -> completionHandler.onFailure(messagingException), messagingException.getEvent(),
+                 responseCompletionCallback);
   }
 
   private void runAndNotify(Runnable runnable, MuleEvent event, ResponseCompletionCallback responseCompletionCallback) {

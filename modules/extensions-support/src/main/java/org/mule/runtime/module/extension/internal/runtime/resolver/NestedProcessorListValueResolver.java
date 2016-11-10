@@ -47,14 +47,12 @@ public class NestedProcessorListValueResolver extends AbstractNestedProcessorVal
   }
 
   @Override
-  public void accept(ResolverSetVisitor resolverSetVisitor)
-  {
+  public void accept(ResolverSetVisitor resolverSetVisitor) {
 
   }
 
   @Override
-  public void resolve(ShittyParameterResolver parameterResolver)
-  {
+  public void resolve(ShittyParameterResolver parameterResolver) {
 
   }
 }

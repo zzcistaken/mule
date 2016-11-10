@@ -9,32 +9,27 @@ package org.mule.runtime.module.extension.internal.runtime.operation;
 import org.mule.runtime.api.meta.model.parameter.ParameterModel;
 
 
-public class ResolvedOperationParameter
-{
+public class ResolvedOperationParameter {
 
-    private final ParameterModel parameterModel;
-    private String parameterName;
-    private Object value;
+  private final ParameterModel parameterModel;
+  private String parameterName;
+  private Object value;
 
-    public ResolvedOperationParameter(String parameterName, Object value, ParameterModel parameterModel)
-    {
-        this.parameterName = parameterName;
-        this.value = value;
-        this.parameterModel = parameterModel;
-    }
+  public ResolvedOperationParameter(String parameterName, Object value, ParameterModel parameterModel) {
+    this.parameterName = parameterName;
+    this.value = value;
+    this.parameterModel = parameterModel;
+  }
 
-    public String getOperationParameter()
-    {
-        return parameterName;
-    }
+  public String getOperationParameter() {
+    return parameterName;
+  }
 
-    public Object getValue()
-    {
-        return value;
-    }
+  public Object getValue() {
+    return value;
+  }
 
-    public ParameterModel getParameterModel()
-    {
-        return parameterModel;
-    }
+  public ParameterModel getParameterModel() {
+    return parameterModel;
+  }
 }

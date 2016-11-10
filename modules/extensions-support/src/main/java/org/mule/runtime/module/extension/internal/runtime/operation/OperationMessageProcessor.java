@@ -36,7 +36,6 @@ import org.mule.runtime.api.metadata.descriptor.TypeMetadataDescriptor;
 import org.mule.runtime.api.metadata.resolving.MetadataResult;
 import org.mule.runtime.core.api.DefaultMuleException;
 import org.mule.runtime.core.api.Event;
-import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.api.lifecycle.Lifecycle;
 import org.mule.runtime.core.api.message.InternalMessage;
@@ -52,8 +51,6 @@ import org.mule.runtime.extension.api.runtime.ConfigurationInstance;
 import org.mule.runtime.extension.api.runtime.ConfigurationProvider;
 import org.mule.runtime.extension.api.runtime.operation.OperationExecutor;
 import org.mule.runtime.extension.api.runtime.operation.OperationExecutorFactory;
-import org.mule.runtime.extension.api.runtime.operation.OperationParameter;
-import org.mule.runtime.extension.api.runtime.operation.OperationParametersResolver;
 import org.mule.runtime.module.extension.internal.manager.ExtensionManagerAdapter;
 import org.mule.runtime.module.extension.internal.metadata.EntityMetadataMediator;
 import org.mule.runtime.module.extension.internal.model.property.OperationExecutorModelProperty;
@@ -102,11 +99,9 @@ public class OperationMessageProcessor extends ExtensionComponent implements Pro
   private final ResolverSet resolverSet;
   private final String target;
   private final EntityMetadataMediator entityMetadataMediator;
-  private final List<OperationParameter> operationParameters;
 
   private ExecutionMediator executionMediator;
   private OperationExecutor operationExecutor;
-  private OperationParametersResolver operationParametersResolver;
   private PolicyManager policyManager;
   protected ReturnDelegate returnDelegate;
 
@@ -115,7 +110,7 @@ public class OperationMessageProcessor extends ExtensionComponent implements Pro
                                    ConfigurationProvider configurationProvider,
                                    String target,
                                    ResolverSet resolverSet,
-                                   ExtensionManagerAdapter extensionManager, List<OperationParameter> operationParameters,
+                                   ExtensionManagerAdapter extensionManager,
                                    PolicyManager policyManager) {
     super(extensionModel, operationModel, configurationProvider, extensionManager);
     this.extensionModel = extensionModel;
@@ -123,7 +118,6 @@ public class OperationMessageProcessor extends ExtensionComponent implements Pro
     this.resolverSet = resolverSet;
     this.target = target;
     this.entityMetadataMediator = new EntityMetadataMediator(operationModel);
-    this.operationParameters = operationParameters;
     this.policyManager = policyManager;
   }
 

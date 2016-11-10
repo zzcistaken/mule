@@ -46,8 +46,7 @@ public class ExtensionFlowProcessingPhase
   private final PolicyManager policyManager;
   protected transient Logger logger = LoggerFactory.getLogger(getClass());
 
-  public ExtensionFlowProcessingPhase(PolicyManager policyManager)
-  {
+  public ExtensionFlowProcessingPhase(PolicyManager policyManager) {
     this.policyManager = policyManager;
   }
 
@@ -72,15 +71,16 @@ public class ExtensionFlowProcessingPhase
           MessageSource messageSource = messageProcessContext.getMessageSource();
           try {
             final MessagingExceptionHandler exceptionHandler = messageProcessContext.getFlowConstruct().getExceptionListener();
-            final Event templateEvent = Event.builder(create(messageProcessContext.getFlowConstruct(), "WTF????")).message((InternalMessage) template.getMessage()).build();
+            final Event templateEvent = Event.builder(create(messageProcessContext.getFlowConstruct(), "WTF????"))
+                .message((InternalMessage) template.getMessage()).build();
 
             NextOperation nextOperation = (muleEvent) -> {
               TransactionalErrorHandlingExecutionTemplate transactionTemplate =
-                      createMainExecutionTemplate(messageProcessContext.getFlowConstruct().getMuleContext(),
-                                                  messageProcessContext.getFlowConstruct(),
-                                                  (messageProcessContext.getTransactionConfig() == null ? new MuleTransactionConfig()
-                                                                                                        : messageProcessContext.getTransactionConfig()),
-                                                  exceptionHandler);
+                  createMainExecutionTemplate(messageProcessContext.getFlowConstruct().getMuleContext(),
+                                              messageProcessContext.getFlowConstruct(),
+                                              (messageProcessContext.getTransactionConfig() == null ? new MuleTransactionConfig()
+                                                  : messageProcessContext.getTransactionConfig()),
+                                              exceptionHandler);
               final Event response = transactionTemplate.execute(() -> {
 
                 fireNotification(messageSource, muleEvent, messageProcessContext.getFlowConstruct(), MESSAGE_RECEIVED);
@@ -90,17 +90,22 @@ public class ExtensionFlowProcessingPhase
             };
 
             Event flowExecutionResponse;
-            ComponentIdentifier sourceIdentifier = new ComponentIdentifier.Builder().withName("listener").withNamespace("httpn").build();
+            ComponentIdentifier sourceIdentifier =
+                new ComponentIdentifier.Builder().withName("listener").withNamespace("httpn").build();
             Optional<Policy> policy = policyManager.lookupPolicy(sourceIdentifier, template.getMessagePolicyDescriptor());
             if (policy.isPresent()) {
-              OperationPolicyInstance policyInstance = policy.get().createSourcePolicyInstance(templateEvent.getContext().getId(), sourceIdentifier);
+              OperationPolicyInstance policyInstance =
+                  policy.get().createSourcePolicyInstance(templateEvent.getContext().getId(), sourceIdentifier);
               nextOperation = buildFlowExecutionWithPolicyFunction(nextOperation, templateEvent, template, sourceIdentifier);
               flowExecutionResponse = policyInstance.process(templateEvent, nextOperation);
             } else {
               flowExecutionResponse = nextOperation.execute(templateEvent);
             }
             fireNotification(messageSource, flowExecutionResponse, messageProcessContext.getFlowConstruct(), MESSAGE_RESPONSE);
-            template.sendResponseToClient(flowExecutionResponse, policyManager.lookupOperationParametersTransformer(sourceIdentifier).get().fromMessageToParameters(flowExecutionResponse.getMessage()), createResponseCompletationCallback(phaseResultNotifier, exceptionHandler));
+            template.sendResponseToClient(flowExecutionResponse,
+                                          policyManager.lookupOperationParametersTransformer(sourceIdentifier).get()
+                                              .fromMessageToParameters(flowExecutionResponse.getMessage()),
+                                          createResponseCompletationCallback(phaseResultNotifier, exceptionHandler));
           } catch (final MessagingException e) {
             fireNotification(messageSource, e.getEvent(), messageProcessContext.getFlowConstruct(), MESSAGE_ERROR_RESPONSE);
             template.sendFailureResponseToClient(e, createSendFailureResponseCompletationCallback(phaseResultNotifier));
@@ -122,14 +127,19 @@ public class ExtensionFlowProcessingPhase
     }
   }
 
-  private NextOperation buildFlowExecutionWithPolicyFunction(NextOperation nextOperation, Event sourceEvent, ExtensionFlowProcessingPhaseTemplate template, ComponentIdentifier sourceIdentifier)
-  {
+  private NextOperation buildFlowExecutionWithPolicyFunction(NextOperation nextOperation, Event sourceEvent,
+                                                             ExtensionFlowProcessingPhaseTemplate template,
+                                                             ComponentIdentifier sourceIdentifier) {
     return (processEvent) -> {
       Event flowExecutionResponse = nextOperation.execute(sourceEvent);
-      Optional<PolicyOperationParametersTransformer> policyOperationParametersTransformer = policyManager.lookupOperationParametersTransformer(sourceIdentifier);
+      Optional<PolicyOperationParametersTransformer> policyOperationParametersTransformer =
+          policyManager.lookupOperationParametersTransformer(sourceIdentifier);
       if (policyOperationParametersTransformer.isPresent()) {
-        Map<String, Object> responseParameters = template.getSuccessfulExecutionResponseParametersFunction().apply(flowExecutionResponse);
-        return Event.builder(processEvent.getContext()).message((InternalMessage) policyOperationParametersTransformer.get().fromParametersToMessage(responseParameters)).build();
+        Map<String, Object> responseParameters =
+            template.getSuccessfulExecutionResponseParametersFunction().apply(flowExecutionResponse);
+        return Event.builder(processEvent.getContext())
+            .message((InternalMessage) policyOperationParametersTransformer.get().fromParametersToMessage(responseParameters))
+            .build();
       } else {
         return Event.builder(flowExecutionResponse).build();
       }

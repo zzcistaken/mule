@@ -40,7 +40,7 @@ public class PagedOperationMessageProcessor extends OperationMessageProcessor {
                                         ResolverSet resolverSet,
                                         ExtensionManagerAdapter extensionManager,
                                         PolicyManager policyManager) {
-    super(extensionModel, operationModel, configurationProvider, target, resolverSet, extensionManager, Collections.emptyList(), policyManager);
+    super(extensionModel, operationModel, configurationProvider, target, resolverSet, extensionManager, policyManager);
   }
 
   @Override

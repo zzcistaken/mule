@@ -190,8 +190,7 @@ public class DefaultExecutionContext<M extends ComponentModel> implements Execut
   }
 
   @Override
-  public void setEvent(Event event)
-  {
+  public void setEvent(Event event) {
     this.event = event;
   }
 

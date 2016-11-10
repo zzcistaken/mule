@@ -127,7 +127,8 @@ class DefaultSourceCallback<T, A extends Attributes> implements SourceCallback<T
                                             new ExtensionFlowProcessingTemplate(toMessage(result),
                                                                                 listener,
                                                                                 completionHandlerFactory
-                                                                                    .createCompletionHandler(context), context.getMessagePolicyDescriptor()),
+                                                                                    .createCompletionHandler(context),
+                                                                                null),
                                             processContextSupplier.get());
   }
 

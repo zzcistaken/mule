@@ -7,8 +7,8 @@
 package org.mule.extension.http.internal.request;
 
 import static java.lang.Integer.MAX_VALUE;
-import static org.mule.extension.http.internal.HttpConnector.OTHER_SETTINGS;
-import static org.mule.extension.http.internal.HttpConnector.CONFIGURATION_OVERRIDES;
+import static org.mule.extension.http.internal.HttpConnectorConstants.CONFIGURATION_OVERRIDES;
+import static org.mule.extension.http.internal.HttpConnectorConstants.OTHER_SETTINGS;
 import static org.mule.runtime.extension.api.annotation.param.display.Placement.ADVANCED;
 import org.mule.extension.http.api.HttpMetadataKey;
 import org.mule.extension.http.api.HttpResponseAttributes;
@@ -19,7 +19,6 @@ import org.mule.extension.http.api.request.client.HttpClient;
 import org.mule.extension.http.api.request.client.UriParameters;
 import org.mule.extension.http.api.request.validator.ResponseValidator;
 import org.mule.extension.http.api.request.validator.SuccessStatusCodeValidator;
-import org.mule.extension.http.internal.HttpConnector;
 import org.mule.extension.http.internal.HttpRequestMetadataResolver;
 import org.mule.extension.http.internal.request.validator.HttpRequesterConfig;
 import org.mule.runtime.core.api.Event;

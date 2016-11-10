@@ -51,7 +51,9 @@ public interface ExtensionFlowProcessingPhaseTemplate extends MessageProcessTemp
    *         the response using the underlying transport or connector then the exception to throw must be a
    *         {@link ResponseDispatchException}.
    */
-  void sendResponseToClient(Event flowExecutionResponse, Map<String, Object> parameters, ResponseCompletionCallback responseCompletionCallback) throws MuleException;
+  void sendResponseToClient(Event flowExecutionResponse, Map<String, Object> parameters,
+                            ResponseCompletionCallback responseCompletionCallback)
+      throws MuleException;
 
 
   /**

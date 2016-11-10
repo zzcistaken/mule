@@ -1094,8 +1094,7 @@ public class DefaultMuleContext implements MuleContext {
   }
 
   @Override
-  public PolicyManager getPolicyManager()
-  {
+  public PolicyManager getPolicyManager() {
     return getRegistry().get(OBJECT_POLICY_MANAGER);
   }
 

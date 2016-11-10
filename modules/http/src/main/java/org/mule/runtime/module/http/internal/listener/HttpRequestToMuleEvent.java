@@ -32,7 +32,7 @@ import java.util.Map;
 public class HttpRequestToMuleEvent {
 
   public static InternalMessage transform(final HttpRequestContext requestContext, final Charset charset,
-                                  Boolean parseRequest, ListenerPath listenerPath)
+                                          Boolean parseRequest, ListenerPath listenerPath)
       throws HttpRequestParsingException {
     final HttpRequest request = requestContext.getRequest();
     final Collection<String> headerNames = request.getHeaderNames();

@@ -25,69 +25,62 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class ExtensionHttpMessageProcessTemplate implements ExtensionFlowProcessingPhaseTemplate
-{
+public class ExtensionHttpMessageProcessTemplate implements ExtensionFlowProcessingPhaseTemplate {
 
-    private final HttpResponseContext httpResponseContext;
-    private Message message;
-    private Supplier<Message> createResponseMessageFunction;
-    private org.mule.extension.http.internal.listener.HttpListenerResponseSender httpListenerResponseSender;
-    private PolicyOperationParametersTransformer eventToHttpResponseParameters;
+  private final HttpResponseContext httpResponseContext;
+  private Message message;
+  private Supplier<Message> createResponseMessageFunction;
+  private org.mule.extension.http.internal.listener.HttpListenerResponseSender httpListenerResponseSender;
+  private PolicyOperationParametersTransformer eventToHttpResponseParameters;
 
-    public ExtensionHttpMessageProcessTemplate(final Message message, Supplier<Message> createResponseMessageFunction, HttpResponseContext httpResponseContext, HttpResponseFactory httpResponseFactory) {
-        this.httpListenerResponseSender = new HttpListenerResponseSender(httpResponseFactory);
-        this.message = message;
-        this.createResponseMessageFunction = createResponseMessageFunction;
-        this.httpResponseContext = httpResponseContext;
+  public ExtensionHttpMessageProcessTemplate(final Message message, Supplier<Message> createResponseMessageFunction,
+                                             HttpResponseContext httpResponseContext, HttpResponseFactory httpResponseFactory) {
+    this.httpListenerResponseSender = new HttpListenerResponseSender(httpResponseFactory);
+    this.message = message;
+    this.createResponseMessageFunction = createResponseMessageFunction;
+    this.httpResponseContext = httpResponseContext;
+  }
+
+  @Override
+  public Message getMessage() throws MuleException {
+    return message;
+  }
+
+  @Override
+  public Event routeEvent(Event event) throws MuleException {
+    return Event.builder(event).message((InternalMessage) createResponseMessageFunction.get()).build();
+  }
+
+  @Override
+  public void sendResponseToClient(Event flowExecutionResponse, Map<String, Object> parameters,
+                                   ResponseCompletionCallback responseCompletionCallback)
+      throws MuleException {
+    Object responseBuilder = parameters.get("responseBuilder");
+    try {
+      httpListenerResponseSender.sendResponse(httpResponseContext, (HttpListenerSuccessResponseBuilder) responseBuilder);
+    } catch (Exception e) {
+      throw new DefaultMuleException(e);
     }
+  }
 
-    @Override
-    public Message getMessage() throws MuleException
-    {
-        return message;
-    }
+  @Override
+  public void sendFailureResponseToClient(MessagingException exception, ResponseCompletionCallback responseCompletionCallback)
+      throws MuleException {
 
-    @Override
-    public Event routeEvent(Event event) throws MuleException
-    {
-        return Event.builder(event).message((InternalMessage) createResponseMessageFunction.get()).build();
-    }
+  }
 
-    @Override
-    public void sendResponseToClient(Event flowExecutionResponse, Map<String, Object> parameters, ResponseCompletionCallback responseCompletionCallback) throws MuleException
-    {
-        Object responseBuilder = parameters.get("responseBuilder");
-        try
-        {
-            httpListenerResponseSender.sendResponse(httpResponseContext, (HttpListenerSuccessResponseBuilder) responseBuilder);
-        }
-        catch (Exception e)
-        {
-            throw new DefaultMuleException(e);
-        }
-    }
+  @Override
+  public Function<Event, Map<String, Object>> getSuccessfulExecutionResponseParametersFunction() {
+    return null;
+  }
 
-    @Override
-    public void sendFailureResponseToClient(MessagingException exception, ResponseCompletionCallback responseCompletionCallback) throws MuleException
-    {
+  @Override
+  public Function<Event, Map<String, Object>> getFailedExecutionResponseParametersFunction() {
+    return null;
+  }
 
-    }
-
-    @Override
-    public Function<Event, Map<String, Object>> getSuccessfulExecutionResponseParametersFunction()
-    {
-        return null;
-    }
-
-    @Override
-    public Function<Event, Map<String, Object>> getFailedExecutionResponseParametersFunction()
-    {
-        return null;
-    }
-
-    @Override
-    public Optional<Object> getMessagePolicyDescriptor()
-    {
-        return null;
-    }
+  @Override
+  public Optional<Object> getMessagePolicyDescriptor() {
+    return null;
+  }
 }

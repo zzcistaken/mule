@@ -6,32 +6,27 @@
  */
 package org.mule.runtime.module.extension.internal.runtime.operation;
 
-public class OperationParameter
-{
+public class OperationParameter {
 
-    private String name;
-    private String configurationValue;
-    private Class type;
+  private String name;
+  private String configurationValue;
+  private Class type;
 
-    public OperationParameter(String name, String configurationValue, Class type)
-    {
-        this.name = name;
-        this.configurationValue = configurationValue;
-        this.type = type;
-    }
+  public OperationParameter(String name, String configurationValue, Class type) {
+    this.name = name;
+    this.configurationValue = configurationValue;
+    this.type = type;
+  }
 
-    public String getName()
-    {
-        return name;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public String getConfigurationValue()
-    {
-        return configurationValue;
-    }
+  public String getConfigurationValue() {
+    return configurationValue;
+  }
 
-    public Class getType()
-    {
-        return type;
-    }
+  public Class getType() {
+    return type;
+  }
 }

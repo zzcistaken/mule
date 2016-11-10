@@ -43,14 +43,12 @@ public class ConnectionProviderResolver implements ValueResolver<ConnectionProvi
   }
 
   @Override
-  public void accept(ResolverSetVisitor resolverSetVisitor)
-  {
+  public void accept(ResolverSetVisitor resolverSetVisitor) {
     //Do nothing
   }
 
   @Override
-  public void resolve(ShittyParameterResolver parameterResolver)
-  {
+  public void resolve(ShittyParameterResolver parameterResolver) {
 
   }
 

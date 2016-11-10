@@ -6,7 +6,6 @@
  */
 package org.mule.extension.http.api.policy;
 
-public class HttpListenerDescriptor
-{
+public class HttpListenerDescriptor {
 
 }

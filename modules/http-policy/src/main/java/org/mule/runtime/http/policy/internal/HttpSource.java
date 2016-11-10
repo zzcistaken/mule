@@ -10,9 +10,8 @@ import org.mule.runtime.dsl.api.component.ComponentIdentifier;
 
 public class HttpSource extends AbstractPolicyChain {
 
-    @Override
-    ComponentIdentifier getTargetComponentIdentifier()
-    {
-        return new ComponentIdentifier.Builder().withNamespace("httpn").withName("listener").build();
-    }
+  @Override
+  ComponentIdentifier getTargetComponentIdentifier() {
+    return new ComponentIdentifier.Builder().withNamespace("httpn").withName("listener").build();
+  }
 }
