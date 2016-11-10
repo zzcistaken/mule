@@ -28,11 +28,17 @@ public class PolicyNextActionMessageProcessor implements Processor {
     eventStackConsumerMap.get(event.getContext().getId()).accept(event);
     NextOperation nextOperation = nextOperationMap.get(event.getContext().getId());
     if (nextOperation == null) {
-      throw new MuleRuntimeException(createStaticMessage("There's not next operation configured for event context id "
+      throw new MuleRuntimeException(createStaticMessage("There's no next operation configured for event context id "
           + event.getContext().getId()));
     }
     try {
-      return nextOperation.execute(event);
+      Event result = nextOperation.execute(Event.builder(event.getContext()).message(event.getMessage()).build());
+      Event.Builder eventBuilder = Event.builder(result.getContext()).message(result.getMessage());
+      for (String variableName : event.getVariableNames())
+      {
+        eventBuilder.addVariable(variableName, event.getVariable(variableName).getValue(), event.getVariable(variableName).getDataType());
+      }
+      return eventBuilder.build();
     } catch (Exception e) {
       throw new DefaultMuleException(e);
     }

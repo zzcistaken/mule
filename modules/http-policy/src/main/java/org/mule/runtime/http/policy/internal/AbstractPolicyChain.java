@@ -6,8 +6,10 @@
  */
 package org.mule.runtime.http.policy.internal;
 
+import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.lifecycle.Initialisable;
 import org.mule.runtime.api.lifecycle.InitialisationException;
+import org.mule.runtime.api.lifecycle.Startable;
 import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.lifecycle.LifecycleUtils;
@@ -23,7 +25,8 @@ import java.util.function.Consumer;
 
 import javax.inject.Inject;
 
-public abstract class AbstractPolicyChain implements Initialisable {
+public abstract class AbstractPolicyChain implements Initialisable, Startable
+{
 
   @Inject
   private MuleContext muleContext;
@@ -47,7 +50,14 @@ public abstract class AbstractPolicyChain implements Initialisable {
 
   }
 
-  public NextOperation nextOperation(String id, Consumer<Event> eventStackConsumer, NextOperation next) {
+  @Override
+  public void start() throws MuleException
+  {
+    LifecycleUtils.startIfNeeded(processors);
+    processorChain.start();
+  }
+
+  public NextOperation createNextOperation(String id, Consumer<Event> eventStackConsumer, NextOperation next) {
     for (Processor processor : processors) {
       if (processor instanceof PolicyNextActionMessageProcessor) {
         ((PolicyNextActionMessageProcessor) processor).setNext(id, eventStackConsumer, next);

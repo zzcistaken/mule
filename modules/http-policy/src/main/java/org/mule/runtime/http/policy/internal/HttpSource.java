@@ -6,12 +6,25 @@
  */
 package org.mule.runtime.http.policy.internal;
 
+import org.mule.runtime.core.api.Event;
+import org.mule.runtime.core.execution.NextOperation;
 import org.mule.runtime.dsl.api.component.ComponentIdentifier;
+
+import java.util.function.Consumer;
 
 public class HttpSource extends AbstractPolicyChain {
 
   @Override
   ComponentIdentifier getTargetComponentIdentifier() {
     return new ComponentIdentifier.Builder().withNamespace("httpn").withName("listener").build();
+  }
+
+  @Override
+  public NextOperation createNextOperation(String id, Consumer<Event> eventStackConsumer, NextOperation next)
+  {
+    NextOperation nextOperation = super.createNextOperation(id, eventStackConsumer, next);
+    return (event -> {
+      return nextOperation.execute(event);
+    });
   }
 }

@@ -6,6 +6,8 @@
  */
 package org.mule.test.module.http.functional.policy;
 
+import static org.mule.functional.functional.FlowAssert.verify;
+import org.mule.functional.functional.FlowAssert;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Error;
 import org.mule.runtime.core.api.message.InternalMessage;
@@ -38,9 +40,11 @@ public class HttpSimplePolicyTestCase extends AbstractHttpTestCase {
   }
 
   @Test
-  public void test() throws MuleException {
+  public void test() throws Exception
+  {
     Either<Error, InternalMessage> responseEither = muleContext.getClient()
         .send("http://localhost:" + proxyPort.getNumber() + "/", "", new HashMap<String, Serializable>(), 999999);
     Assert.assertThat(IOUtils.toString((InputStream) responseEither.getRight().getPayload().getValue()), Is.is("newValue"));
+    verify();
   }
 }

@@ -6,8 +6,10 @@
  */
 package org.mule.runtime.http.policy.internal;
 
+import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.lifecycle.Initialisable;
 import org.mule.runtime.api.lifecycle.InitialisationException;
+import org.mule.runtime.api.lifecycle.Startable;
 import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.policy.OperationPolicyInstance;
 import org.mule.runtime.core.policy.Policy;
@@ -16,7 +18,8 @@ import org.mule.runtime.dsl.api.component.ComponentIdentifier;
 import java.util.HashMap;
 import java.util.Map;
 
-public class HttpProxyPolicy implements Policy, Initialisable {
+public class HttpProxyPolicy implements Policy, Initialisable, Startable
+{
 
   private HttpRequest request;
   private HttpSource source;
@@ -62,6 +65,13 @@ public class HttpProxyPolicy implements Policy, Initialisable {
     source.initialise();
   }
 
+  @Override
+  public void start() throws MuleException
+  {
+    request.start();
+    source.start();
+  }
+
   private class HttpOperationPolicyInstance {
 
     private Event lastEvent;
@@ -69,8 +79,8 @@ public class HttpProxyPolicy implements Policy, Initialisable {
     public OperationPolicyInstance createOperationPolicyInstance() {
       return (event, nextOperation) -> {
         lastEvent =
-            request.nextOperation(event.getContext().getId(), (beforeExecuteNextEvent) -> lastEvent = beforeExecuteNextEvent,
-                                  nextOperation)
+            request.createNextOperation(event.getContext().getId(), (beforeExecuteNextEvent) -> lastEvent = beforeExecuteNextEvent,
+                                        nextOperation)
                 .execute(Event.builder(lastEvent).message(event.getMessage()).build());
         return lastEvent;
       };
@@ -79,8 +89,8 @@ public class HttpProxyPolicy implements Policy, Initialisable {
     public OperationPolicyInstance createSourcePolicyInstance() {
       return (event, nextOperation) -> {
         lastEvent =
-            source.nextOperation(event.getContext().getId(), (beforeExecuteNextEvent) -> lastEvent = beforeExecuteNextEvent,
-                                 nextOperation)
+            source.createNextOperation(event.getContext().getId(), (beforeExecuteNextEvent) -> lastEvent = beforeExecuteNextEvent,
+                                       nextOperation)
                 .execute(event);
         return lastEvent;
       };
