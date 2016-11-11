@@ -28,7 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Resolves the {@link PluginUrlClassification} resources, exported packages and resources.
+ * Resolves the {@link PluginClassification} resources, exported packages and resources.
  *
  * @since 4.0
  */
@@ -50,12 +50,12 @@ public class PluginResourcesResolver {
   }
 
   /**
-   * Resolves for the given {@link PluginUrlClassification} the resources exported.
+   * Resolves for the given {@link PluginClassification} the resources exported.
    *
-   * @param pluginUrlClassification {@link PluginUrlClassification} to be resolved
-   * @return {@link PluginUrlClassification} with the resources resolved
+   * @param pluginUrlClassification {@link PluginClassification} to be resolved
+   * @return {@link PluginClassification} with the resources resolved
    */
-  public PluginUrlClassification resolvePluginResourcesFor(PluginUrlClassification pluginUrlClassification) {
+  public PluginClassification resolvePluginResourcesFor(PluginClassification pluginUrlClassification) {
     Set<String> exportPackages;
     Set<String> exportResources;
 
@@ -84,7 +84,7 @@ public class PluginResourcesResolver {
         exportResources = newHashSet(pluginProperties.getProperty(EXPORTED_RESOURCE_PROPERTY).split(COMMA_CHARACTER));
       }
 
-      return new PluginUrlClassification(pluginUrlClassification.getName(), pluginUrlClassification.getUrls(),
+      return new PluginClassification(pluginUrlClassification.getArtifactId(), pluginUrlClassification.getName(), pluginUrlClassification.getUrls(),
                                          pluginUrlClassification.getExportClasses(),
                                          pluginUrlClassification.getPluginDependencies(), exportPackages, exportResources);
     } catch (IOException e) {

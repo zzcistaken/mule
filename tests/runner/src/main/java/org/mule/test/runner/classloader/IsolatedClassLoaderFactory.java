@@ -33,9 +33,9 @@ import org.mule.runtime.module.artifact.util.FileJarExplorer;
 import org.mule.runtime.module.artifact.util.JarExplorer;
 import org.mule.runtime.module.artifact.util.JarInfo;
 import org.mule.test.runner.api.ArtifactClassLoaderHolder;
-import org.mule.test.runner.api.ArtifactUrlClassification;
+import org.mule.test.runner.api.ArtifactClassification;
 import org.mule.test.runner.api.ArtifactsUrlClassification;
-import org.mule.test.runner.api.PluginUrlClassification;
+import org.mule.test.runner.api.PluginClassification;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -106,7 +106,7 @@ public class IsolatedClassLoaderFactory {
     final List<ArtifactClassLoaderFilter> pluginArtifactClassLoaderFilters = new ArrayList<>();
 
     if (!artifactsUrlClassification.getPluginUrlClassifications().isEmpty()) {
-      for (PluginUrlClassification pluginUrlClassification : artifactsUrlClassification.getPluginUrlClassifications()) {
+      for (PluginClassification pluginUrlClassification : artifactsUrlClassification.getPluginUrlClassifications()) {
         logClassLoaderUrls("PLUGIN (" + pluginUrlClassification.getName() + ")", pluginUrlClassification.getUrls());
 
         String artifactId = getArtifactPluginId(regionClassLoader.getArtifactId(), pluginUrlClassification.getName());
@@ -166,7 +166,7 @@ public class IsolatedClassLoaderFactory {
                                                                 ClassLoaderLookupPolicy childClassLoaderLookupPolicy,
                                                                 ArtifactsUrlClassification artifactsUrlClassification) {
     List<ArtifactClassLoader> servicesArtifactClassLoaders = newArrayList();
-    for (ArtifactUrlClassification serviceUrlClassification : artifactsUrlClassification.getServiceUrlClassifications()) {
+    for (ArtifactClassification serviceUrlClassification : artifactsUrlClassification.getServiceUrlClassifications()) {
       logClassLoaderUrls("SERVICE (" + serviceUrlClassification.getArtifactId() + ")", serviceUrlClassification.getUrls());
 
       MuleArtifactClassLoader artifactClassLoader =
@@ -254,7 +254,7 @@ public class IsolatedClassLoaderFactory {
     };
   }
 
-  private ArtifactClassLoaderFilter createArtifactClassLoaderFilter(PluginUrlClassification pluginUrlClassification) {
+  private ArtifactClassLoaderFilter createArtifactClassLoaderFilter(PluginClassification pluginUrlClassification) {
     String exportedPackages = pluginUrlClassification.getExportedPackages().stream().collect(joining(", "));
     final String exportedResources = pluginUrlClassification.getExportedResources().stream().collect(joining(", "));
     ArtifactClassLoaderFilter artifactClassLoaderFilter =

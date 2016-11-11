@@ -11,7 +11,7 @@ import static org.mule.runtime.module.artifact.classloader.ClassLoaderLookupStra
 import static org.mule.runtime.module.artifact.classloader.ClassLoaderLookupStrategy.PARENT_FIRST;
 import org.mule.runtime.module.artifact.classloader.ClassLoaderLookupPolicy;
 import org.mule.runtime.module.artifact.classloader.ClassLoaderLookupStrategy;
-import org.mule.test.runner.api.PluginUrlClassification;
+import org.mule.test.runner.api.PluginClassification;
 
 import java.util.HashMap;
 import java.util.List;
@@ -27,16 +27,16 @@ public class PluginLookPolicyFactory {
   /**
    * Creates a {@link ClassLoaderLookupPolicy} for plugins considering their dependencies.
    *
-   * @param pluginClassification the {@link PluginUrlClassification} to creates its {@link ClassLoaderLookupPolicy}
-   * @param pluginClassifications whole list of {@link PluginUrlClassification} for the current context
+   * @param pluginClassification the {@link PluginClassification} to creates its {@link ClassLoaderLookupPolicy}
+   * @param pluginClassifications whole list of {@link PluginClassification} for the current context
    * @param parentLookupPolicies the {@link ClassLoaderLookupPolicy} for the parent {@link ClassLoader}
    * @return {@link ClassLoaderLookupPolicy} for the plugin
    */
-  public ClassLoaderLookupPolicy createLookupPolicy(PluginUrlClassification pluginClassification,
-                                                    List<PluginUrlClassification> pluginClassifications,
+  public ClassLoaderLookupPolicy createLookupPolicy(PluginClassification pluginClassification,
+                                                    List<PluginClassification> pluginClassifications,
                                                     ClassLoaderLookupPolicy parentLookupPolicies) {
     Map<String, ClassLoaderLookupStrategy> pluginsLookupPolicies = new HashMap<>();
-    for (PluginUrlClassification dependencyPluginClassification : pluginClassifications) {
+    for (PluginClassification dependencyPluginClassification : pluginClassifications) {
       if (dependencyPluginClassification.getArtifactId().equals(pluginClassification.getArtifactId())) {
         continue;
       }
@@ -53,15 +53,15 @@ public class PluginLookPolicyFactory {
   }
 
   /**
-   * If the plugin declares the dependency the {@link PluginUrlClassification} would be {@link ClassLoaderLookupStrategy#PARENT_FIRST}
+   * If the plugin declares the dependency the {@link PluginClassification} would be {@link ClassLoaderLookupStrategy#PARENT_FIRST}
    * otherwise {@link ClassLoaderLookupStrategy#CHILD_FIRST}.
    *
-   * @param currentPluginClassification {@link PluginUrlClassification} being classified.
-   * @param dependencyPluginClassification {@link PluginUrlClassification} from the region.
+   * @param currentPluginClassification {@link PluginClassification} being classified.
+   * @param dependencyPluginClassification {@link PluginClassification} from the region.
    * @return {@link ClassLoaderLookupStrategy} to be used by current plugin for the exported packages defined by the dependencyPluginClassification.
    */
-  private ClassLoaderLookupStrategy getClassLoaderLookupStrategy(PluginUrlClassification currentPluginClassification,
-                                                                 PluginUrlClassification dependencyPluginClassification) {
+  private ClassLoaderLookupStrategy getClassLoaderLookupStrategy(PluginClassification currentPluginClassification,
+                                                                 PluginClassification dependencyPluginClassification) {
     final ClassLoaderLookupStrategy parentFirst;
     if (currentPluginClassification.getPluginDependencies().contains(dependencyPluginClassification.getName())) {
       parentFirst = PARENT_FIRST;

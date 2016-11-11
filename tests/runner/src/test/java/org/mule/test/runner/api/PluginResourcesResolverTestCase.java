@@ -76,7 +76,7 @@ public class PluginResourcesResolverTestCase extends AbstractMuleTestCase {
 
   @Test
   public void resolvePluginResourcesForMulePluginWithoutPluginPropertiesDescriptor() {
-    PluginUrlClassification mulePluginClassification = newPluginUrlClassification(Collections.<URL>emptyList());
+    PluginClassification mulePluginClassification = newPluginUrlClassification(Collections.<URL>emptyList());
     PluginResourcesResolver resolver = new PluginResourcesResolver(extensionManager);
     expectedException.expect(IllegalStateException.class);
     expectedException.expectMessage(Matchers.contains(PLUGIN_PROPERTIES + " couldn't be found for plugin"));
@@ -95,10 +95,10 @@ public class PluginResourcesResolverTestCase extends AbstractMuleTestCase {
     pluginProperties.store(new FileWriter(pluginPropertiesFile), "Writing " + PLUGIN_PROPERTIES);
     URL classPathUrl = temporaryFolder.getRoot().toURI().toURL();
     List<URL> urls = newArrayList(classPathUrl);
-    PluginUrlClassification mulePluginClassification = newPluginUrlClassification(urls);
+    PluginClassification mulePluginClassification = newPluginUrlClassification(urls);
     PluginResourcesResolver resolver = new PluginResourcesResolver(extensionManager);
 
-    PluginUrlClassification result = resolver.resolvePluginResourcesFor(mulePluginClassification);
+    PluginClassification result = resolver.resolvePluginResourcesFor(mulePluginClassification);
     verify(extensionManager, never()).parseExtensionManifestXml(anyObject());
 
     assertResolvedResources(mulePluginClassification, result);
@@ -122,22 +122,22 @@ public class PluginResourcesResolverTestCase extends AbstractMuleTestCase {
 
     URL classPathUrl = manifestFile.getParentFile().getParentFile().toURI().toURL();
     List<URL> urls = newArrayList(classPathUrl);
-    PluginUrlClassification extensionPluginClassification = newPluginUrlClassification(urls);
+    PluginClassification extensionPluginClassification = newPluginUrlClassification(urls);
     PluginResourcesResolver resolver = new PluginResourcesResolver(extensionManager);
     URL manifestUrl = manifestFile.toURI().toURL();
     when(extensionManager.parseExtensionManifestXml(manifestUrl)).thenReturn(extensionManifest);
 
-    PluginUrlClassification result = resolver.resolvePluginResourcesFor(extensionPluginClassification);
+    PluginClassification result = resolver.resolvePluginResourcesFor(extensionPluginClassification);
     verify(extensionManager).parseExtensionManifestXml(manifestUrl);
 
     assertResolvedResources(extensionPluginClassification, result);
   }
 
-  private PluginUrlClassification newPluginUrlClassification(List<URL> urls) {
-    return new PluginUrlClassification(MULE_PLUGIN, urls, Collections.<Class>emptyList(), Collections.<String>emptyList());
+  private PluginClassification newPluginUrlClassification(List<URL> urls) {
+    return new PluginClassification(MULE_PLUGIN, urls, Collections.<Class>emptyList(), Collections.<String>emptyList());
   }
 
-  private void assertResolvedResources(PluginUrlClassification original, PluginUrlClassification resolved) {
+  private void assertResolvedResources(PluginClassification original, PluginClassification resolved) {
     assertThat(resolved.getName(), equalTo(original.getName()));
 
     assertThat(resolved.getUrls(), hasSize(1));

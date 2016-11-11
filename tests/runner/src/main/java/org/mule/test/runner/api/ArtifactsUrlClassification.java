@@ -21,9 +21,9 @@ import java.util.List;
 public class ArtifactsUrlClassification {
 
   private final List<URL> containerUrls;
-  private final List<ArtifactUrlClassification> serviceUrlClassifications;
+  private final List<ArtifactClassification> serviceUrlClassifications;
   private final List<URL> pluginSharedLibUrls;
-  private final List<PluginUrlClassification> pluginUrlClassifications;
+  private final List<PluginClassification> pluginUrlClassifications;
   private final List<URL> applicationUrls;
 
   /**
@@ -31,17 +31,17 @@ public class ArtifactsUrlClassification {
    *
    * @param containerUrls list of {@link URL} that define the artifacts that would be loaded with the container
    *        {@link ClassLoader}. Not null.
-   * @param serviceUrlClassifications for each plugin discovered a list of {@link ArtifactUrlClassification} that defines the
+   * @param serviceUrlClassifications for each plugin discovered a list of {@link ArtifactClassification} that defines the
    *        artifact that would be loaded by the service {@link ClassLoader}. Not null.
    * @param pluginSharedLibUrls of {@link URL} that define the artifacts that would be loaded with the shareLib
    *        {@link ClassLoader}
-   * @param pluginUrlClassifications for each plugin discovered a list of {@link PluginUrlClassification} that defines the
+   * @param pluginUrlClassifications for each plugin discovered a list of {@link PluginClassification} that defines the
    *        artifact that would be loaded by the plugin {@link ClassLoader}. Not null.
    * @param applicationUrls list of {@link URL} that define the artifacts that would be loaded with the application
    *        {@link ClassLoader}. Not null.
    */
-  public ArtifactsUrlClassification(List<URL> containerUrls, List<ArtifactUrlClassification> serviceUrlClassifications,
-                                    List<URL> pluginSharedLibUrls, List<PluginUrlClassification> pluginUrlClassifications,
+  public ArtifactsUrlClassification(List<URL> containerUrls, List<ArtifactClassification> serviceUrlClassifications,
+                                    List<URL> pluginSharedLibUrls, List<PluginClassification> pluginUrlClassifications,
                                     List<URL> applicationUrls) {
     checkNotNull(containerUrls, "containerUrls cannot be null");
     checkNotNull(serviceUrlClassifications, "serviceUrlClassifications cannot be null");
@@ -60,7 +60,7 @@ public class ArtifactsUrlClassification {
     return containerUrls;
   }
 
-  public List<ArtifactUrlClassification> getServiceUrlClassifications() {
+  public List<ArtifactClassification> getServiceUrlClassifications() {
     return serviceUrlClassifications;
   }
 
@@ -68,7 +68,7 @@ public class ArtifactsUrlClassification {
     return pluginSharedLibUrls;
   }
 
-  public List<PluginUrlClassification> getPluginUrlClassifications() {
+  public List<PluginClassification> getPluginUrlClassifications() {
     return pluginUrlClassifications;
   }
 

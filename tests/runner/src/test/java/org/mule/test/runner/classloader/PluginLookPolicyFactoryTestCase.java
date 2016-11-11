@@ -20,7 +20,7 @@ import org.mule.runtime.module.artifact.classloader.ClassLoaderLookupPolicy;
 import org.mule.runtime.module.artifact.classloader.ClassLoaderLookupStrategy;
 import org.mule.tck.junit4.AbstractMuleTestCase;
 import org.mule.tck.size.SmallTest;
-import org.mule.test.runner.api.PluginUrlClassification;
+import org.mule.test.runner.api.PluginClassification;
 
 import java.net.URL;
 import java.util.Collections;
@@ -40,22 +40,22 @@ public class PluginLookPolicyFactoryTestCase extends AbstractMuleTestCase {
   private static final String FOO_PACKAGE = "org.bar.foo";
 
   private PluginLookPolicyFactory factory;
-  private PluginUrlClassification fooPluginClassification;
+  private PluginClassification fooPluginClassification;
 
   @Before
   public void setUp() {
     factory = new PluginLookPolicyFactory();
-    fooPluginClassification = new PluginUrlClassification(FOO_PLUGIN_ID, Collections.<URL>emptyList(),
+    fooPluginClassification = new PluginClassification(FOO_PLUGIN_ID, Collections.<URL>emptyList(),
                                                           Collections.<Class>emptyList(), Collections.<String>emptyList(),
                                                           newHashSet(FOO_PACKAGE), Collections.<String>emptySet());
   }
 
   @Test
   public void lookupPoliciesForPluginThatDeclaresDependency() {
-    PluginUrlClassification barPluginClassification =
-        new PluginUrlClassification(BAR_PLUGIN_ID, Collections.<URL>emptyList(), Collections.<Class>emptyList(),
+    PluginClassification barPluginClassification =
+        new PluginClassification(BAR_PLUGIN_ID, Collections.<URL>emptyList(), Collections.<Class>emptyList(),
                                     newArrayList(FOO_PLUGIN_ID));
-    List<PluginUrlClassification> pluginClassifications = newArrayList(barPluginClassification, fooPluginClassification);
+    List<PluginClassification> pluginClassifications = newArrayList(barPluginClassification, fooPluginClassification);
     ClassLoaderLookupPolicy parentLookupPolicies = getParentClassLoaderLookupPolicy();
 
     ClassLoaderLookupPolicy pluginPolicy =
@@ -65,10 +65,10 @@ public class PluginLookPolicyFactoryTestCase extends AbstractMuleTestCase {
 
   @Test
   public void lookupPoliciesForPluginThatDoesNotDeclareDependency() {
-    PluginUrlClassification barPluginClassification =
-        new PluginUrlClassification(BAR_PLUGIN_ID, Collections.<URL>emptyList(), Collections.<Class>emptyList(),
+    PluginClassification barPluginClassification =
+        new PluginClassification(BAR_PLUGIN_ID, Collections.<URL>emptyList(), Collections.<Class>emptyList(),
                                     Collections.<String>emptyList());
-    List<PluginUrlClassification> pluginClassifications = newArrayList(barPluginClassification, fooPluginClassification);
+    List<PluginClassification> pluginClassifications = newArrayList(barPluginClassification, fooPluginClassification);
     ClassLoaderLookupPolicy parentLookupPolicies = getParentClassLoaderLookupPolicy();
 
     ClassLoaderLookupPolicy pluginPolicy =

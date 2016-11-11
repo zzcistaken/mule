@@ -52,6 +52,10 @@ public class ClassPathClassifierContext {
   private boolean extensionMetadataGenerationEnabled = false;
   private File pluginResourcesFolder;
 
+  // During processing of this context...
+  private List<PluginClassification> pluginClassifications = newArrayList();
+  private List<ArtifactClassification> serviceClassifications = newArrayList();
+
   /**
    * Creates a context used for doing the classification of the class path.
    *
@@ -247,6 +251,22 @@ public class ClassPathClassifierContext {
    */
   public boolean isExtensionMetadataGenerationEnabled() {
     return extensionMetadataGenerationEnabled;
+  }
+
+  public void addPluginClassification(PluginClassification pluginClassification) {
+    this.pluginClassifications.add(pluginClassification);
+  }
+
+  public List<PluginClassification> getPluginClassifications() {
+    return this.pluginClassifications;
+  }
+
+  public void addServiceClassification(ArtifactClassification serviceClassification) {
+    this.serviceClassifications.add(serviceClassification);
+  }
+
+  public List<ArtifactClassification> getServiceClassifications() {
+    return this.serviceClassifications;
   }
 
 }
