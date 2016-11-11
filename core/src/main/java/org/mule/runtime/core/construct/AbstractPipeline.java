@@ -7,7 +7,6 @@
 package org.mule.runtime.core.construct;
 
 import static java.lang.String.format;
-import static java.util.Objects.requireNonNull;
 import static org.apache.commons.collections.CollectionUtils.selectRejected;
 import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.startIfNeeded;
 import static org.mule.runtime.core.api.processor.ReactiveProcessor.ProcessingType.CPU_LITE;
@@ -17,8 +16,9 @@ import static org.mule.runtime.core.context.notification.PipelineMessageNotifica
 import static org.mule.runtime.core.util.NotificationUtils.buildPathResolver;
 import static org.mule.runtime.core.util.rx.Exceptions.rxExceptionToMuleException;
 import static reactor.core.publisher.Flux.from;
+
 import org.mule.runtime.api.exception.MuleException;
-import org.mule.runtime.api.exception.MuleRuntimeException;
+import org.mule.runtime.api.lifecycle.LifecycleException;
 import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.GlobalNameableObject;
 import org.mule.runtime.core.api.MuleContext;
@@ -26,7 +26,6 @@ import org.mule.runtime.core.api.config.MuleConfiguration;
 import org.mule.runtime.core.api.config.MuleProperties;
 import org.mule.runtime.core.api.construct.FlowConstructInvalidException;
 import org.mule.runtime.core.api.construct.Pipeline;
-import org.mule.runtime.api.lifecycle.LifecycleException;
 import org.mule.runtime.core.api.processor.DefaultMessageProcessorPathElement;
 import org.mule.runtime.core.api.processor.InternalMessageProcessor;
 import org.mule.runtime.core.api.processor.MessageProcessorBuilder;
@@ -37,7 +36,6 @@ import org.mule.runtime.core.api.processor.MessageProcessorPathElement;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.processor.strategy.ProcessingStrategy;
 import org.mule.runtime.core.api.processor.strategy.ProcessingStrategyFactory;
-import org.mule.runtime.core.api.registry.RegistrationException;
 import org.mule.runtime.core.api.scheduler.SchedulerService;
 import org.mule.runtime.core.api.source.ClusterizableMessageSource;
 import org.mule.runtime.core.api.source.CompositeMessageSource;
@@ -53,8 +51,8 @@ import org.mule.runtime.core.processor.AbstractInterceptingMessageProcessor;
 import org.mule.runtime.core.processor.AbstractRequestResponseMessageProcessor;
 import org.mule.runtime.core.processor.IdempotentRedeliveryPolicy;
 import org.mule.runtime.core.processor.chain.DefaultMessageProcessorChainBuilder;
-import org.mule.runtime.core.processor.strategy.LegacyAsynchronousProcessingStrategyFactory;
 import org.mule.runtime.core.processor.strategy.DefaultFlowProcessingStrategyFactory;
+import org.mule.runtime.core.processor.strategy.LegacyAsynchronousProcessingStrategyFactory;
 import org.mule.runtime.core.processor.strategy.LegacyNonBlockingProcessingStrategyFactory;
 import org.mule.runtime.core.processor.strategy.SynchronousProcessingStrategyFactory;
 import org.mule.runtime.core.source.ClusterizableMessageSourceWrapper;
@@ -66,6 +64,7 @@ import java.util.List;
 
 import org.apache.commons.collections.Predicate;
 import org.reactivestreams.Publisher;
+
 import reactor.core.publisher.Mono;
 
 /**
@@ -104,12 +103,7 @@ public abstract class AbstractPipeline extends AbstractFlowConstruct implements 
 
   public AbstractPipeline(String name, MuleContext muleContext) {
     super(name, muleContext);
-    try {
-      this.schedulerService = muleContext.getRegistry().lookupObject(SchedulerService.class);
-      requireNonNull(schedulerService);
-    } catch (RegistrationException e) {
-      throw new MuleRuntimeException(e);
-    }
+    this.schedulerService = muleContext.getSchedulerService();
     initialiseProcessingStrategy();
   }
 
