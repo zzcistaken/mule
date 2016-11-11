@@ -458,14 +458,11 @@ public class AetherClassPathClassifier implements ClassPathClassifier {
       final List<String> pluginDependencies = node.getArtifactDependencies().stream()
           .map(dependency -> toClassifierLessId(dependency.getArtifact()))
           .collect(toList());
-      final String classifierLessId = toClassifierLessId(node.getArtifact());
-      final PluginUrlClassification pluginUrlClassification =
-          pluginResourcesResolver.resolvePluginResourcesFor(
-                                                            new PluginUrlClassification(classifierLessId, node.getUrls(),
-                                                                                        node.getExportClasses(),
-                                                                                        pluginDependencies));
+      final PluginExportResources exportResources = pluginResourcesResolver.resolvePluginResourcesFor(node.getArtifact(), node.getUrls().toArray(new URL[0]));
 
-      classifiedPluginUrls.put(classifierLessId, pluginUrlClassification);
+      final String classifierLessId = toClassifierLessId(node.getArtifact());
+      classifiedPluginUrls.put(classifierLessId, new PluginUrlClassification(classifierLessId, node.getArtifact().getArtifactId(), node.getUrls(), node.getExportClasses(),
+                                                                             pluginDependencies, exportResources.getExportPackages(), exportResources.getExportResources()));
     }
 
     for (PluginUrlClassification pluginUrlClassification : classifiedPluginUrls.values()) {

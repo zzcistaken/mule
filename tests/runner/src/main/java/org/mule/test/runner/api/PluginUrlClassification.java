@@ -10,7 +10,6 @@ package org.mule.test.runner.api;
 import static org.mule.runtime.api.util.Preconditions.checkNotNull;
 
 import java.net.URL;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -21,10 +20,8 @@ import java.util.Set;
  *
  * @since 4.0
  */
-public class PluginUrlClassification {
+public class PluginUrlClassification extends ArtifactUrlClassification {
 
-  private final List<URL> urls;
-  private final String name;
   private final List<Class> exportClasses;
   private final List<String> pluginDependencies;
   private Set<String> exportedPackages;
@@ -41,34 +38,19 @@ public class PluginUrlClassification {
    * @param exportedPackages {@link Set} of exported packages by this plugin
    * @param exportedResources {@link Set} of exported resources by this plugin
    */
-  public PluginUrlClassification(String name, List<URL> urls, List<Class> exportClasses, List<String> pluginDependencies,
+  public PluginUrlClassification(String artifactId, String name, List<URL> urls, List<Class> exportClasses, List<String> pluginDependencies,
                                  Set<String> exportedPackages, Set<String> exportedResources) {
-    checkNotNull(name, "name cannot be null");
-    checkNotNull(urls, "urls cannot be null");
+    super(artifactId, name, urls);
     checkNotNull(pluginDependencies, "pluginDependencies cannot be null");
     checkNotNull(exportedPackages, "exportedPackages cannot be null");
     checkNotNull(exportedResources, "exportedResources cannot be null");
 
-    this.name = name;
-    this.urls = urls;
     this.exportClasses = exportClasses;
     this.pluginDependencies = pluginDependencies;
     this.exportedPackages = exportedPackages;
     this.exportedResources = exportedResources;
   }
-
-  public PluginUrlClassification(String name, List<URL> urls, List<Class> exportClasses, List<String> pluginDependencies) {
-    this(name, urls, exportClasses, pluginDependencies, Collections.<String>emptySet(), Collections.<String>emptySet());
-  }
-
-  public List<URL> getUrls() {
-    return urls;
-  }
-
-  public String getName() {
-    return name;
-  }
-
+  
   public List<Class> getExportClasses() {
     return exportClasses;
   }
