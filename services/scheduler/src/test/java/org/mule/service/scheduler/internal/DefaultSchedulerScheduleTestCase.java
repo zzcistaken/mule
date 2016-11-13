@@ -57,9 +57,7 @@ public class DefaultSchedulerScheduleTestCase extends BaseDefaultSchedulerTestCa
     return asList(new Object[][] {
         // Use a default ScheduledExecutorService to compare behavior
         {(Function<DefaultSchedulerScheduleTestCase, ScheduledExecutorService>) test -> test.useSharedScheduledExecutor()},
-        {(Function<DefaultSchedulerScheduleTestCase, ScheduledExecutorService>) test -> test.createScheduledSameThreadExecutor()},
-        {(Function<DefaultSchedulerScheduleTestCase, ScheduledExecutorService>) test -> test
-            .createScheduledNotSameThreadExecutor()}
+        {(Function<DefaultSchedulerScheduleTestCase, ScheduledExecutorService>) test -> test.createScheduledSameThreadExecutor()}
     });
   }
 
@@ -536,10 +534,6 @@ public class DefaultSchedulerScheduleTestCase extends BaseDefaultSchedulerTestCa
   }
 
   protected ScheduledExecutorService createScheduledSameThreadExecutor() {
-    return new DefaultScheduler(sharedExecutor, 1, 1, sharedScheduledExecutor);
-  }
-
-  protected ScheduledExecutorService createScheduledNotSameThreadExecutor() {
     return new DefaultScheduler(sharedExecutor, 1, 1, sharedScheduledExecutor);
   }
 }

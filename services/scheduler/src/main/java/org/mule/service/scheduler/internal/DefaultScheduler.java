@@ -174,6 +174,7 @@ class DefaultScheduler extends AbstractExecutorService implements Scheduler {
         }
       }
       scheduledTasks.clear();
+      cancelledBeforeFireTasks.clear();
 
       return tasks;
     } finally {
