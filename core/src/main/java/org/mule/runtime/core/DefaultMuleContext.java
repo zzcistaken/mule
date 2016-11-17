@@ -20,6 +20,7 @@ import static org.mule.runtime.core.api.config.MuleProperties.OBJECT_EXPRESSION_
 import static org.mule.runtime.core.api.config.MuleProperties.OBJECT_LOCK_FACTORY;
 import static org.mule.runtime.core.api.config.MuleProperties.OBJECT_MULE_STREAM_CLOSER_SERVICE;
 import static org.mule.runtime.core.api.config.MuleProperties.OBJECT_NOTIFICATION_MANAGER;
+import static org.mule.runtime.core.api.config.MuleProperties.OBJECT_POLICY_MANAGER;
 import static org.mule.runtime.core.api.config.MuleProperties.OBJECT_POLLING_CONTROLLER;
 import static org.mule.runtime.core.api.config.MuleProperties.OBJECT_PROCESSING_TIME_WATCHER;
 import static org.mule.runtime.core.api.config.MuleProperties.OBJECT_QUEUE_MANAGER;
@@ -102,6 +103,7 @@ import org.mule.runtime.core.exception.MessagingException;
 import org.mule.runtime.core.lifecycle.MuleContextLifecycleManager;
 import org.mule.runtime.core.management.stats.AllStatistics;
 import org.mule.runtime.core.management.stats.ProcessingTimeWatcher;
+import org.mule.runtime.core.policy.PolicyManager;
 import org.mule.runtime.core.registry.DefaultRegistryBroker;
 import org.mule.runtime.core.registry.MuleRegistryHelper;
 import org.mule.runtime.core.util.ApplicationShutdownSplashScreen;
@@ -259,6 +261,8 @@ public class DefaultMuleContext implements MuleContext {
       }
     });
   }
+
+  private PolicyManager policyManager;
 
   /**
    * @deprecated Use empty constructor instead and use setter for dependencies.
@@ -1103,6 +1107,17 @@ public class DefaultMuleContext implements MuleContext {
   @Override
   public ConfigurationComponentLocator getConfigurationComponentLocator() {
     return getRegistry().lookupObject(OBJECT_CONFIGURATION_COMPONENT_LOCATOR);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public PolicyManager getPolicyManager() {
+    if (policyManager == null) {
+      policyManager = getRegistry().get(OBJECT_POLICY_MANAGER);
+    }
+    return policyManager;
   }
 
   @Override
