@@ -4,7 +4,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.runtime.module.deployment.impl.internal.artifact;
+package org.mule.runtime.deployment.model.api.artifact;
 
 import org.mule.runtime.module.artifact.Artifact;
 

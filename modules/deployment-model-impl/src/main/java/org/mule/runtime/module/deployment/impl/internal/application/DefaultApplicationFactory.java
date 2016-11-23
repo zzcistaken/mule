@@ -12,16 +12,17 @@ import static java.util.stream.Stream.concat;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 import static org.mule.runtime.api.util.Preconditions.checkArgument;
 import static org.mule.runtime.deployment.model.internal.AbstractArtifactClassLoaderBuilder.getArtifactPluginId;
+
 import org.mule.runtime.deployment.model.api.DeploymentException;
 import org.mule.runtime.deployment.model.api.application.Application;
 import org.mule.runtime.deployment.model.api.application.ApplicationDescriptor;
+import org.mule.runtime.deployment.model.api.application.ApplicationFactory;
 import org.mule.runtime.deployment.model.api.domain.Domain;
 import org.mule.runtime.deployment.model.api.plugin.ArtifactPlugin;
 import org.mule.runtime.deployment.model.api.plugin.ArtifactPluginDescriptor;
 import org.mule.runtime.deployment.model.api.plugin.ArtifactPluginRepository;
 import org.mule.runtime.module.artifact.classloader.ClassLoaderRepository;
 import org.mule.runtime.module.artifact.classloader.MuleDeployableArtifactClassLoader;
-import org.mule.runtime.module.deployment.impl.internal.artifact.ArtifactFactory;
 import org.mule.runtime.module.deployment.impl.internal.artifact.MuleContextListenerFactory;
 import org.mule.runtime.module.deployment.impl.internal.domain.DomainRepository;
 import org.mule.runtime.module.deployment.impl.internal.plugin.DefaultArtifactPlugin;
@@ -35,7 +36,7 @@ import java.util.List;
 /**
  * Creates default mule applications
  */
-public class DefaultApplicationFactory implements ArtifactFactory<Application> {
+public class DefaultApplicationFactory implements ApplicationFactory {
 
   private final ApplicationDescriptorFactory applicationDescriptorFactory;
   private final DomainRepository domainRepository;
@@ -68,6 +69,7 @@ public class DefaultApplicationFactory implements ArtifactFactory<Application> {
     this.muleContextListenerFactory = muleContextListenerFactory;
   }
 
+  @Override
   public Application createArtifact(File appDir) throws IOException {
     String appName = appDir.getName();
     if (appName.contains(" ")) {

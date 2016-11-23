@@ -13,6 +13,7 @@ import static org.mule.runtime.core.config.bootstrap.ArtifactType.APP;
 import static org.mule.runtime.core.util.ClassUtils.withContextClassLoader;
 import static org.mule.runtime.core.util.SplashScreen.miniSplash;
 import static org.mule.runtime.module.deployment.impl.internal.artifact.ArtifactContextBuilder.newBuilder;
+
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.lifecycle.Stoppable;
 import org.mule.runtime.api.metadata.MetadataService;
@@ -185,8 +186,7 @@ public class DefaultMuleApplication implements Application {
       if (muleContextListener != null) {
         artifactBuilder.setMuleContextListener(muleContextListener);
       }
-      artifactContext = artifactBuilder.build();
-      setMuleContext(artifactContext.getMuleContext());
+      setArtifactContext(artifactBuilder.build());
     } catch (Exception e) {
       setStatusToFailed();
 

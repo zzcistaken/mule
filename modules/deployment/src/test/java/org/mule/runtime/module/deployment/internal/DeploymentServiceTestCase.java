@@ -55,6 +55,7 @@ import static org.mule.runtime.deployment.model.api.application.ApplicationStatu
 import static org.mule.runtime.deployment.model.api.application.ApplicationStatus.STOPPED;
 import static org.mule.runtime.deployment.model.api.domain.Domain.DEFAULT_DOMAIN_NAME;
 import static org.mule.runtime.deployment.model.api.domain.Domain.DOMAIN_CONFIG_FILE_LOCATION;
+import static org.mule.runtime.deployment.model.api.factory.ArtifactFactoryProvider.getDefaultProvider;
 import static org.mule.runtime.extension.internal.introspection.describer.XmlBasedDescriber.DESCRIBER_ID;
 import static org.mule.runtime.module.artifact.classloader.DefaultArtifactClassLoaderFilter.EXPORTED_CLASS_PACKAGES_PROPERTY;
 import static org.mule.runtime.module.artifact.classloader.DefaultArtifactClassLoaderFilter.EXPORTED_RESOURCE_PROPERTY;
@@ -64,6 +65,7 @@ import static org.mule.runtime.module.deployment.internal.MuleDeploymentService.
 import static org.mule.runtime.module.deployment.internal.TestApplicationFactory.createTestApplicationFactory;
 import static org.mule.runtime.module.service.ServiceDescriptorFactory.SERVICE_PROVIDER_CLASS_NAME;
 import static org.mule.tck.junit4.AbstractMuleContextTestCase.TEST_MESSAGE;
+
 import org.mule.runtime.api.deployment.meta.MulePluginModelBuilder;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.lifecycle.Initialisable;
@@ -97,6 +99,7 @@ import org.mule.runtime.module.deployment.impl.internal.builder.ArtifactPluginFi
 import org.mule.runtime.module.deployment.impl.internal.builder.DomainFileBuilder;
 import org.mule.runtime.module.deployment.impl.internal.domain.DefaultDomainManager;
 import org.mule.runtime.module.deployment.impl.internal.domain.DefaultMuleDomain;
+import org.mule.runtime.module.deployment.impl.internal.factory.MuleRuntimeArtifactFactoryProvider;
 import org.mule.runtime.module.service.ServiceManager;
 import org.mule.runtime.module.service.builder.ServiceFileBuilder;
 import org.mule.tck.junit4.AbstractMuleTestCase;
@@ -344,7 +347,8 @@ public class DeploymentServiceTestCase extends AbstractMuleTestCase {
 
     applicationDeploymentListener = mock(DeploymentListener.class);
     domainDeploymentListener = mock(DeploymentListener.class);
-    MuleArtifactResourcesRegistry muleArtifactResourcesRegistry = new MuleArtifactResourcesRegistry();
+    MuleArtifactResourcesRegistry muleArtifactResourcesRegistry =
+        ((MuleRuntimeArtifactFactoryProvider) getDefaultProvider()).getRegistry();
     serviceManager = muleArtifactResourcesRegistry.getServiceManager();
     containerClassLoader = muleArtifactResourcesRegistry.getContainerClassLoader();
     artifactClassLoaderManager = muleArtifactResourcesRegistry.getArtifactClassLoaderManager();
@@ -3171,7 +3175,7 @@ public class DeploymentServiceTestCase extends AbstractMuleTestCase {
   }
 
   private void assertNoDeploymentInvoked(final DeploymentListener deploymentListener) {
-    //  TODO(pablo.kraan): look for a better way to test this
+    // TODO(pablo.kraan): look for a better way to test this
     boolean invoked;
     Prober prober = new PollingProber(DeploymentDirectoryWatcher.DEFAULT_CHANGES_CHECK_INTERVAL_MS * 2, 100);
     try {

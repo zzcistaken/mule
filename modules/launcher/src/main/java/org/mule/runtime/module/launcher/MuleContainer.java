@@ -6,6 +6,8 @@
  */
 package org.mule.runtime.module.launcher;
 
+import static org.mule.runtime.deployment.model.api.factory.ArtifactFactoryProvider.getDefaultProvider;
+
 import org.mule.module.artifact.classloader.net.MuleArtifactUrlStreamHandler;
 import org.mule.module.artifact.classloader.net.MuleUrlStreamHandlerFactory;
 import org.mule.runtime.api.exception.ExceptionHelper;
@@ -20,8 +22,9 @@ import org.mule.runtime.core.config.i18n.CoreMessages;
 import org.mule.runtime.core.util.StringMessageUtils;
 import org.mule.runtime.core.util.SystemUtils;
 import org.mule.runtime.module.deployment.api.DeploymentService;
-import org.mule.runtime.module.deployment.impl.internal.temporary.DefaultTemporaryArtifactBuilderFactory;
 import org.mule.runtime.module.deployment.impl.internal.MuleArtifactResourcesRegistry;
+import org.mule.runtime.module.deployment.impl.internal.factory.MuleRuntimeArtifactFactoryProvider;
+import org.mule.runtime.module.deployment.impl.internal.temporary.DefaultTemporaryArtifactBuilderFactory;
 import org.mule.runtime.module.deployment.internal.MuleDeploymentService;
 import org.mule.runtime.module.launcher.coreextension.ClasspathMuleCoreExtensionDiscoverer;
 import org.mule.runtime.module.launcher.coreextension.DefaultMuleCoreExtensionManagerServer;
@@ -71,7 +74,8 @@ public class MuleContainer {
   private final RepositoryService repositoryService;
   private final ToolingService toolingService;
   private final MuleCoreExtensionManagerServer coreExtensionManager;
-  private MuleArtifactResourcesRegistry artifactResourcesRegistry = new MuleArtifactResourcesRegistry();
+  private MuleArtifactResourcesRegistry artifactResourcesRegistry =
+      ((MuleRuntimeArtifactFactoryProvider) getDefaultProvider()).getRegistry();
 
   static {
     if (System.getProperty(MuleProperties.MULE_SIMPLE_LOG) == null) {
@@ -209,7 +213,7 @@ public class MuleContainer {
     } else {
       logger.error(msg.toString() + " " + e.getMessage(), e);
     }
-    List<String> msgs = new ArrayList<String>();
+    List<String> msgs = new ArrayList<>();
     msgs.add(msg.getMessage());
     Throwable root = ExceptionHelper.getRootException(e);
     msgs.add(root.getMessage() + " (" + root.getClass().getName() + ")");

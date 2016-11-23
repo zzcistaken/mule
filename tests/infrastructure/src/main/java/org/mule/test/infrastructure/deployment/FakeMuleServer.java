@@ -16,10 +16,11 @@ import static org.mockito.Mockito.verify;
 import static org.mule.runtime.container.api.MuleFoldersUtil.APPS_FOLDER;
 import static org.mule.runtime.container.api.MuleFoldersUtil.DOMAINS_FOLDER;
 import static org.mule.runtime.container.api.MuleFoldersUtil.SERVICES_FOLDER;
+import static org.mule.runtime.deployment.model.api.factory.ArtifactFactoryProvider.getDefaultProvider;
 
-import org.mule.runtime.container.api.MuleCoreExtension;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.exception.MuleRuntimeException;
+import org.mule.runtime.container.api.MuleCoreExtension;
 import org.mule.runtime.core.api.config.MuleProperties;
 import org.mule.runtime.core.util.FileUtils;
 import org.mule.runtime.core.util.FilenameUtils;
@@ -28,8 +29,9 @@ import org.mule.runtime.deployment.model.api.application.Application;
 import org.mule.runtime.module.artifact.classloader.ArtifactClassLoader;
 import org.mule.runtime.module.deployment.api.DeploymentListener;
 import org.mule.runtime.module.deployment.api.DeploymentService;
-import org.mule.runtime.module.deployment.impl.internal.temporary.DefaultTemporaryArtifactBuilderFactory;
 import org.mule.runtime.module.deployment.impl.internal.MuleArtifactResourcesRegistry;
+import org.mule.runtime.module.deployment.impl.internal.factory.MuleRuntimeArtifactFactoryProvider;
+import org.mule.runtime.module.deployment.impl.internal.temporary.DefaultTemporaryArtifactBuilderFactory;
 import org.mule.runtime.module.deployment.internal.MuleDeploymentService;
 import org.mule.runtime.module.launcher.coreextension.DefaultMuleCoreExtensionManagerServer;
 import org.mule.runtime.module.launcher.coreextension.ReflectionMuleCoreExtensionDependencyResolver;
@@ -86,7 +88,8 @@ public class FakeMuleServer {
   }
 
   public FakeMuleServer(String muleHomePath, List<MuleCoreExtension> intialCoreExtensions) {
-    MuleArtifactResourcesRegistry muleArtifactResourcesRegistry = new MuleArtifactResourcesRegistry();
+    MuleArtifactResourcesRegistry muleArtifactResourcesRegistry =
+        ((MuleRuntimeArtifactFactoryProvider) getDefaultProvider()).getRegistry();
     containerClassLoader = muleArtifactResourcesRegistry.getContainerClassLoader();
     serviceManager = muleArtifactResourcesRegistry.getServiceManager();
 

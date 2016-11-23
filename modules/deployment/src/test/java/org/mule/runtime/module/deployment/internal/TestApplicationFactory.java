@@ -51,7 +51,6 @@ public class TestApplicationFactory extends DefaultApplicationFactory {
   public static TestApplicationFactory createTestApplicationFactory(MuleApplicationClassLoaderFactory applicationClassLoaderFactory,
                                                                     DomainManager domainManager,
                                                                     ServiceRepository serviceRepository) {
-    ArtifactClassLoaderFilterFactory classLoaderFilterFactory = new ArtifactClassLoaderFilterFactory();
     ArtifactPluginDescriptorFactory artifactPluginDescriptorFactory =
         new ArtifactPluginDescriptorFactory();
     ArtifactPluginDescriptorLoader artifactPluginDescriptorLoader =

@@ -14,8 +14,10 @@ import static org.mule.runtime.deployment.model.api.domain.Domain.DEFAULT_DOMAIN
 import static org.mule.runtime.deployment.model.internal.domain.DomainClassLoaderFactory.getDomainId;
 import static org.mule.runtime.module.deployment.impl.internal.artifact.ArtifactFactoryUtils.getDeploymentFile;
 import static org.mule.runtime.module.reboot.MuleContainerBootstrapUtils.getMuleDomainsDir;
+
 import org.mule.runtime.deployment.model.api.domain.Domain;
 import org.mule.runtime.deployment.model.api.domain.DomainDescriptor;
+import org.mule.runtime.deployment.model.api.domain.DomainFactory;
 import org.mule.runtime.module.artifact.classloader.ArtifactClassLoader;
 import org.mule.runtime.module.artifact.classloader.ClassLoaderRepository;
 import org.mule.runtime.module.artifact.classloader.DeployableArtifactClassLoaderFactory;
@@ -71,7 +73,9 @@ public class DefaultDomainFactory implements DomainFactory {
         new DefaultMuleDomain(descriptor, domainClassLoaderFactory.create(getDomainId(DEFAULT_DOMAIN_NAME), containerClassLoader,
                                                                           descriptor, emptyList()),
                               classLoaderRepository, serviceRepository);
-    defaultMuleDomain.setMuleContextListener(muleContextListenerFactory.create(descriptor.getName()));
+    if (muleContextListenerFactory != null) {
+      defaultMuleDomain.setMuleContextListener(muleContextListenerFactory.create(descriptor.getName()));
+    }
     DomainWrapper domainWrapper = new DomainWrapper(defaultMuleDomain, this);
     domainManager.addDomain(domainWrapper);
     return domainWrapper;
