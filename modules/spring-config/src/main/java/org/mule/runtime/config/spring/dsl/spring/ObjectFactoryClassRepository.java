@@ -68,12 +68,12 @@ public class ObjectFactoryClassRepository {
         return objectFactoryClassCache
             .get(componentBuildingDefinition,
                  () -> getObjectFactoryDynamicClass(componentBuildingDefinition, objectFactoryType, createdObjectType,
-                                                    isLazyInitFunction, instancePostCreationFunctionOptional.get()));
+                                                    isLazyInitFunction, (object) -> {
+                                                    }));
       } else {
         // instancePostCreationFunctionOptional is used within the intercepted method so we can't use a cache.
         return getObjectFactoryDynamicClass(componentBuildingDefinition, objectFactoryType, createdObjectType, isLazyInitFunction,
-                                            (object) -> {
-                                            });
+                                            instancePostCreationFunctionOptional.get());
       }
     } catch (ExecutionException e) {
       throw new MuleRuntimeException(e);
