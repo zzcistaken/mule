@@ -64,7 +64,7 @@ public class ObjectFactoryClassRepository {
                                                     Supplier<Boolean> isLazyInitFunction,
                                                     Optional<Consumer<Object>> instancePostCreationFunctionOptional) {
     try {
-      if (instancePostCreationFunctionOptional.isPresent()) {
+      if (!instancePostCreationFunctionOptional.isPresent()) {
         return objectFactoryClassCache
             .get(componentBuildingDefinition,
                  () -> getObjectFactoryDynamicClass(componentBuildingDefinition, objectFactoryType, createdObjectType,

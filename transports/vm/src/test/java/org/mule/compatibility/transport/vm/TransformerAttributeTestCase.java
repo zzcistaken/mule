@@ -27,7 +27,6 @@ public class TransformerAttributeTestCase extends CompatibilityFunctionalTestCas
   }
 
   @Test
-  @Ignore("MULE-10724")
   public void testSimple() throws Exception {
     MuleClient client = muleContext.getClient();
     InternalMessage message = client.send("vm://simple", OUTBOUND_MESSAGE, null).getRight();
@@ -36,7 +35,6 @@ public class TransformerAttributeTestCase extends CompatibilityFunctionalTestCas
   }
 
   @Test
-  @Ignore("MULE-10724")
   public void testThrough() throws Exception {
     MuleClient client = muleContext.getClient();
     InternalMessage message = client.send("vm://chained", OUTBOUND_MESSAGE, null).getRight();

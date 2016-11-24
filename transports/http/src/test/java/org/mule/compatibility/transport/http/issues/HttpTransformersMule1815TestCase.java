@@ -77,7 +77,6 @@ public class HttpTransformersMule1815TestCase extends CompatibilityFunctionalTes
    * @throws Exception
    */
   @Test
-  @Ignore("MULE-10724")
   public void testIgnored() throws Exception {
     assertThat(getPayloadAsString(sendTo("ignored")), is(OUTBOUND_MESSAGE + " transformed" + " transformed 2" + " Received"));
   }
@@ -88,7 +87,6 @@ public class HttpTransformersMule1815TestCase extends CompatibilityFunctionalTes
    * @throws Exception
    */
   @Test
-  @Ignore("MULE-10724")
   public void testInbound() throws Exception {
     assertEquals(
                  // this reads backwards - innermost is first in chain
