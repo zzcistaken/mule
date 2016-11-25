@@ -14,6 +14,14 @@
                        money="100000"
                        initialHealth="CANCER"
                        finalHealth="CANCER">
+        <heisenberg:enemies>
+            <heisenberg:enemy value="Gustavo Fring"/>
+            <heisenberg:enemy value="Hank"/>
+        </heisenberg:enemies>
+        <heisenberg:monthly-incomes>
+            <heisenberg:monthly-income value="12000"/>
+            <heisenberg:monthly-income value="500"/>
+        </heisenberg:monthly-incomes>
 
         <heisenberg:connection saulPhoneNumber="123-12-3"/>
     </heisenberg:config>

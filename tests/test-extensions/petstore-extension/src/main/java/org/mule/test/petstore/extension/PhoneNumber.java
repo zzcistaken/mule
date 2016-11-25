@@ -9,6 +9,8 @@ package org.mule.test.petstore.extension;
 import org.mule.runtime.extension.api.annotation.dsl.xml.XmlHints;
 import org.mule.runtime.extension.api.annotation.param.Parameter;
 
+import java.util.List;
+
 @XmlHints(allowTopLevelDefinition = true)
 public class PhoneNumber {
 
@@ -18,11 +20,18 @@ public class PhoneNumber {
   @Parameter
   private String home;
 
+  @Parameter
+  private List<String> areaCodes;
+
   public String getMobile() {
     return mobile;
   }
 
   public String getHome() {
     return home;
+  }
+
+  public List<String> getAreaCodes() {
+    return areaCodes;
   }
 }

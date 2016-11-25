@@ -9,6 +9,7 @@ package org.mule.runtime.module.extension.internal.config.dsl;
 import static com.google.common.collect.ImmutableList.copyOf;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toSet;
+import static org.mule.metadata.internal.utils.MetadataTypeUtils.getTypeId;
 import static org.mule.metadata.java.api.utils.JavaTypeUtils.getType;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 import static org.mule.runtime.module.extension.internal.config.dsl.ExtensionDefinitionParser.CHILD_ELEMENT_KEY_PREFIX;
@@ -22,6 +23,7 @@ import org.mule.runtime.api.meta.model.parameter.ParameterModel;
 import org.mule.runtime.api.meta.model.parameter.ParameterizedModel;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.config.ConfigurationException;
+import org.mule.runtime.core.util.StringUtils;
 import org.mule.runtime.core.util.collection.ImmutableListCollector;
 import org.mule.runtime.core.util.func.CompositePredicate;
 import org.mule.runtime.dsl.api.component.AbstractAnnotatedObjectFactory;
@@ -114,6 +116,9 @@ public abstract class AbstractExtensionObjectFactory<T> extends AbstractAnnotate
 
           if (resolver != null) {
             resolverSet.add(parameterName, resolver);
+          } else if (p.isRequired()) {
+            throw new IllegalStateException(format("Parameter '%s' of type %s is required but wasn't set", parameterName,
+                                                   getTypeId(p.getType()).orElse(StringUtils.EMPTY)));
           }
         });
 

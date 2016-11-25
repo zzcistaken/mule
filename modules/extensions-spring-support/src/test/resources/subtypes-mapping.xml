@@ -30,7 +30,9 @@
         </subtypes:door-interface>
         <subtypes:explicit-square side="2" area="4"/>
         <subtypes:final-pojo someString="message"/>
-        <subtypes:ricin microgramsPerKilo="2"/>
+        <subtypes:ricin microgramsPerKilo="2">
+            <heisenberg:destination victim="Krazy-8" address="Jesse's"/>
+        </subtypes:ricin>
         <subtypes:extensible-weapon>
             <heisenberg:ricin microgramsPerKilo="22">
                 <heisenberg:destination victim="Krazy-8" address="Jesse's"/>
@@ -39,9 +41,19 @@
         <subtypes:triangle>
             <subtypes:triangle-alias height="4" area="2"/>
         </subtypes:triangle>
+        <subtypes:pojo-with-extension>
+            <subtypes:extensible-pojo myString="bla">
+                <subtypes:numbers>
+                    <subtypes:number value="1"/>
+                </subtypes:numbers>
+            </subtypes:extensible-pojo>
+        </subtypes:pojo-with-extension>
         <subtypes:pojo-list-one>
             <subtypes:pojo-for-list id="inner"/>
         </subtypes:pojo-list-one>
+        <subtypes:pojo-list-two>
+            <subtypes:pojo-for-list id="ble"/>
+        </subtypes:pojo-list-two>
         <subtypes:weapon-list>
             <subtypes:revolver bullets="6"/>
             <heisenberg:ricin microgramsPerKilo="10">
@@ -72,6 +84,14 @@
                        money="1000000"
                        finalHealth="DEAD"
                        labAddress="#['Pollos Hermanos']">
+        <heisenberg:enemies>
+            <heisenberg:enemy value="Gustavo Fring"/>
+            <heisenberg:enemy value="Hank"/>
+        </heisenberg:enemies>
+        <heisenberg:monthly-incomes>
+            <heisenberg:monthly-income value="12000"/>
+            <heisenberg:monthly-income value="500"/>
+        </heisenberg:monthly-incomes>
         <heisenberg:wild-card-weapons>
             <heisenberg:ricin microgramsPerKilo="10">
                 <heisenberg:destination victim="Krazy-8" address="Jesse's"/>

@@ -8,14 +8,16 @@ package org.mule.runtime.module.extension.internal.config.dsl.parameter;
 
 import static java.lang.String.format;
 import static org.mule.metadata.internal.utils.MetadataTypeUtils.getDefaultValue;
+import static org.mule.metadata.internal.utils.MetadataTypeUtils.getLocalPart;
+import static org.mule.metadata.internal.utils.MetadataTypeUtils.getTypeId;
 import static org.mule.metadata.java.api.utils.JavaTypeUtils.getType;
 import static org.mule.runtime.core.util.ClassUtils.withContextClassLoader;
 import static org.mule.runtime.module.extension.internal.util.IntrospectionUtils.getFieldByNameOrAlias;
 import static org.mule.runtime.module.extension.internal.util.MuleExtensionUtils.getInitialiserEvent;
-import org.mule.metadata.api.model.ObjectFieldType;
 import org.mule.metadata.api.model.ObjectType;
 import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.MuleContext;
+import org.mule.runtime.core.util.StringUtils;
 import org.mule.runtime.extension.api.declaration.type.annotation.FlattenedTypeAnnotation;
 import org.mule.runtime.extension.api.exception.IllegalModelDefinitionException;
 import org.mule.runtime.module.extension.internal.config.dsl.AbstractExtensionObjectFactory;
@@ -56,7 +58,7 @@ public class TopLevelParameterObjectFactory extends AbstractExtensionObjectFacto
   @Override
   public Object doGetObject() throws Exception {
     return withContextClassLoader(classLoader, () -> {
-      //TODO MULE-10919 - This logic is similar to that of the resolverset object builder and should
+      // TODO MULE-10919 - This logic is similar to that of the resolverset object builder and should
       // be generalized
 
       resolveParameters(objectType, builder);
@@ -79,7 +81,7 @@ public class TopLevelParameterObjectFactory extends AbstractExtensionObjectFacto
           }
 
           final ObjectType groupType = (ObjectType) groupField.getValue();
-          final Field objectField = getField(objectClass, getFieldKey(groupField));
+          final Field objectField = getField(objectClass, getLocalPart(groupField));
           DefaultObjectBuilder groupBuilder = new DefaultObjectBuilder(getType(groupField.getValue()));
           builder.addPropertyResolver(objectField.getName(), new ObjectBuilderValueResolver<>(groupBuilder));
 
@@ -93,7 +95,7 @@ public class TopLevelParameterObjectFactory extends AbstractExtensionObjectFacto
     final boolean isParameterGroup = objectType.getAnnotation(FlattenedTypeAnnotation.class).isPresent();
     final Map<String, Object> parameters = getParameters();
     objectType.getFields().forEach(field -> {
-      final String key = getFieldKey(field);
+      final String key = getLocalPart(field);
 
       ValueResolver<?> valueResolver = null;
       Field objectField = getField(objectClass, key);
@@ -107,6 +109,10 @@ public class TopLevelParameterObjectFactory extends AbstractExtensionObjectFacto
 
       if (valueResolver != null) {
         builder.addPropertyResolver(objectField.getName(), valueResolver);
+      } else if (field.isRequired() && !field.getAnnotation(FlattenedTypeAnnotation.class).isPresent()) {
+        throw new IllegalStateException(format("Class %s contains field '%s' of type %s which is required but wasn't set",
+                                               objectClass.getName(), getLocalPart(field),
+                                               getTypeId(field.getValue()).orElse(StringUtils.EMPTY)));
       }
     });
   }
@@ -116,9 +122,5 @@ public class TopLevelParameterObjectFactory extends AbstractExtensionObjectFacto
         .orElseThrow(() -> new IllegalModelDefinitionException(format("Class '%s' does not contain field %s",
                                                                       objectClass.getName(),
                                                                       key)));
-  }
-
-  private String getFieldKey(ObjectFieldType field) {
-    return field.getKey().getName().getLocalPart();
   }
 }

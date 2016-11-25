@@ -7,6 +7,9 @@
 
     <petstore:config name="config" cashierName="Cashier name">
         <petstore:connection username="john" password="doe"/>
+        <petstore:pets>
+            <petstore:pet value="Dog"/>
+        </petstore:pets>
     </petstore:config>
 
     <flow name="getCashierNestedParams">

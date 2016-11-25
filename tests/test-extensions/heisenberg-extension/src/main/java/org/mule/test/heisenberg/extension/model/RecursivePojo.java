@@ -7,8 +7,10 @@
 package org.mule.test.heisenberg.extension.model;
 
 
-import org.mule.runtime.extension.api.annotation.param.Parameter;
 import org.mule.runtime.extension.api.annotation.dsl.xml.XmlHints;
+import org.mule.runtime.extension.api.annotation.param.Optional;
+import org.mule.runtime.extension.api.annotation.param.Parameter;
+
 import java.util.List;
 import java.util.Map;
 
@@ -16,12 +18,15 @@ import java.util.Map;
 public class RecursivePojo {
 
   @Parameter
+  @Optional
   private RecursivePojo next;
 
   @Parameter
+  @Optional
   private List<RecursivePojo> childs;
 
   @Parameter
+  @Optional
   private Map<String, RecursivePojo> mappedChilds;
 
   public RecursivePojo getNext() {
