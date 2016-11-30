@@ -199,7 +199,7 @@
         <log4jVersion>2.5</log4jVersion>
         <disruptorVersion>3.3.0</disruptorVersion>
         <mockitoVersion>1.10.19</mockitoVersion>
-        <muleDslApiVersion>1.0.0-SNAPSHOT</muleDslApiVersion>
+        <muleDslApiVersion>1.0.0-M4</muleDslApiVersion>
         <muleExtensionsApiVersion>1.0.0-M4</muleExtensionsApiVersion>
         <multithreadedtcVersion>1.01</multithreadedtcVersion>
         <!-- TODO EE-1395 -->
@@ -229,7 +229,7 @@
         <testFtpServerVersion>1.0.6</testFtpServerVersion>
         <tomcatVersion>6.0.44</tomcatVersion>
         <unirestVersion>1.4.9</unirestVersion>
-        <weaveVersion>4.0-SNAPSHOT</weaveVersion>
+        <weaveVersion>4.0.0-M4</weaveVersion>
         <woodstoxVersion>4.4.1</woodstoxVersion>
         <wrapperVersion>3.2.3</wrapperVersion>
         <xalanVersion>2.7.2</xalanVersion>
@@ -272,7 +272,7 @@
         <maven.buildnumber.plugin.version>1.4</maven.buildnumber.plugin.version>
         <maven.surefire.plugin.version>2.19.1</maven.surefire.plugin.version>
         <maven.enforcer.plugin.version>1.4.1</maven.enforcer.plugin.version>
-        <mule.module.maven.plugin.version>1.0-SNAPSHOT</mule.module.maven.plugin.version>
+        <mule.module.maven.plugin.version>1.0.0-M4</mule.module.maven.plugin.version>
         <!-- v1.1.0 has an issue with Optional dependencies, when resolving the graph it overrides the optionality of a transitive
              dependency with the one define in the dependency management (which is mostly in all the cases "false")
              https://bugs.eclipse.org/bugs/show_bug.cgi?id=501019 -->
@@ -1072,7 +1072,7 @@
                         <groupId>jaxen</groupId>
                         <artifactId>jaxen</artifactId>
                     </exclusion>
-                    <exclusion>
+                    <exclusion>∂
                         <groupId>relaxngDatatype</groupId>
                         <artifactId>relaxngDatatype</artifactId>
                     </exclusion>
