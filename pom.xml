@@ -1072,7 +1072,7 @@
                         <groupId>jaxen</groupId>
                         <artifactId>jaxen</artifactId>
                     </exclusion>
-                    <exclusion>∂
+                    <exclusion>
                         <groupId>relaxngDatatype</groupId>
                         <artifactId>relaxngDatatype</artifactId>
                     </exclusion>
