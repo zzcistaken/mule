@@ -12,7 +12,7 @@
     <packaging>pom</packaging>
     <name>Embedded (Single jar file)</name>
     <description>Assembles the Mule core, modules, and transports into a single library (jar). This is useful for embedding Mule into an existing project.</description>
-                        qq
+
     <build>
         <plugins>
             <plugin>

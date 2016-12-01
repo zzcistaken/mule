@@ -275,6 +275,7 @@
         <mule.module.maven.plugin.version>1.0.0-M4</mule.module.maven.plugin.version>
         <mule.extensions.maven.plugin.version>1.0.0-M4</mule.extensions.maven.plugin.version>
         <mule.plugins.maven.app.plugins.version>1.0.0-M4</mule.plugins.maven.app.plugins.version>
+        <mule.app.plugins.maven.plugin.version>1.0.0-M4</mule.app.plugins.maven.plugin.version>
         <!-- v1.1.0 has an issue with Optional dependencies, when resolving the graph it overrides the optionality of a transitive
              dependency with the one define in the dependency management (which is mostly in all the cases "false")
              https://bugs.eclipse.org/bugs/show_bug.cgi?id=501019 -->
@@ -1845,6 +1846,18 @@
                     <version>${mule.module.maven.plugin.version}</version>
                     <extensions>true</extensions>
                 </plugin>
+                <plugin>
+                    <groupId>org.mule.plugins</groupId>
+                    <artifactId>mule-app-plugins-maven-plugin</artifactId>
+                    <version>${mule.app.plugins.maven.plugin.version}</version>
+                    <extensions>true</extensions>
+                </plugin>
+                <plugin>
+                    <groupId>org.mule.extensions</groupId>
+                    <artifactId>mule-extensions-maven-plugin</artifactId>
+                    <version>${mule.extensions.maven.plugin.version}</version>
+                    <extensions>true</extensions>
+                </plugin>
             </plugins>
         </pluginManagement>
 
@@ -2005,18 +2018,6 @@
                         </manifestEntries>
                     </archive>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.mule.plugins</groupId>
-                <artifactId>mule-app-plugins-maven-plugin</artifactId>
-                <version>${}</version>
-                <extensions>true</extensions>
-            </plugin>
-            <plugin>
-                <groupId>org.mule.extensions</groupId>
-                <artifactId>mule-extensions-maven-plugin</artifactId>
-                <version>${mule.extensions.maven.plugin.version}</version>
-                <extensions>true</extensions>
             </plugin>
             <plugin>
                 <groupId>org.mule.tools</groupId>
@@ -2286,6 +2287,26 @@
                         <configuration>
                             <skip>${skipGpg}</skip>
                         </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-enforcer-plugin</artifactId>
+                        <version>${maven.enforcer.plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>enforce-require-release-deps</id>
+                                <goals>
+                                    <goal>enforce</goal>
+                                </goals>
+                                <configuration>
+                                    <rules>
+                                        <requireReleaseDeps>
+                                            <message>No Snapshots Allowed!</message>
+                                        </requireReleaseDeps>
+                                    </rules>
+                                </configuration>
+                            </execution>
+                        </executions>
                     </plugin>
                 </plugins>
             </build>
