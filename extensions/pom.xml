@@ -17,10 +17,6 @@
     <name>Mule Extensions</name>
     <description>Mule extensions that augment the core Mule functionality through the Mule Extension API</description>
 
-    <properties>
-        <mule.extensions.maven.plugin.version>1.0.0-SNAPSHOT</mule.extensions.maven.plugin.version>
-    </properties>
-
     <modules>
         <module>all-extensions</module>
         <module>db</module>
@@ -156,7 +152,6 @@
             <plugin>
                 <groupId>org.mule.extensions</groupId>
                 <artifactId>mule-extensions-maven-plugin</artifactId>
-                <version>${mule.extensions.maven.plugin.version}</version>
                 <extensions>true</extensions>
             </plugin>
             <plugin>
