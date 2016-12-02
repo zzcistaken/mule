@@ -8,11 +8,10 @@ package org.mule.runtime.core.processor.strategy;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
+import static org.mule.runtime.core.processor.strategy.AbstractSchedulingProcessingStrategy.TRANSACTIONAL_ERROR_MESSAGE;
 import static org.mule.runtime.core.transaction.TransactionCoordination.isTransactionActive;
 import static reactor.core.Exceptions.propagate;
 import static reactor.core.publisher.Flux.from;
-import org.mule.runtime.api.exception.MuleException;
-import org.mule.runtime.api.scheduler.Scheduler;
 import org.mule.runtime.core.api.DefaultMuleException;
 import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.MuleContext;
@@ -23,54 +22,26 @@ import org.mule.runtime.core.api.processor.strategy.ProcessingStrategyFactory;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 import org.reactivestreams.Publisher;
 import reactor.core.publisher.TopicProcessor;
-import reactor.core.scheduler.Schedulers;
 
 /**
- * Creates {@link MultiReactorProcessingStrategy} instances. This processing strategy demultiplexes incoming messages to
+ * Creates {@link RingBufferProcessingStrategy} instances. This processing strategy demultiplexes incoming messages to
  * single-threaded event-loop.
  *
  * This processing strategy is not suitable for transactional flows and will fail if used with an active transaction.
  *
  * @since 4.0
  */
-public class RingBufferReactorProcessingStrategyFactory implements ProcessingStrategyFactory {
+public class RingBufferProcessingStrategyFactory implements ProcessingStrategyFactory {
 
   @Override
   public ProcessingStrategy create(MuleContext muleContext) {
-    return new MultiReactorProcessingStrategy(() -> muleContext.getSchedulerService().customScheduler("event-loop", 1),
-                                              scheduler -> scheduler.stop(muleContext.getConfiguration().getShutdownTimeout(),
-                                                                          MILLISECONDS),
-                                              muleContext);
+    return new RingBufferProcessingStrategy();
   }
 
-  static class MultiReactorProcessingStrategy extends AbstractSchedulingProcessingStrategy {
-
-    private Supplier<Scheduler> cpuLightSchedulerSupplier;
-    protected Scheduler cpuLightScheduler;
-
-    public MultiReactorProcessingStrategy(Supplier<Scheduler> cpuLightSchedulerSupplier,
-                                          Consumer<Scheduler> schedulerStopper,
-                                          MuleContext muleContext) {
-      super(schedulerStopper, muleContext);
-      this.cpuLightSchedulerSupplier = cpuLightSchedulerSupplier;
-    }
-
-    @Override
-    public void start() throws MuleException {
-      this.cpuLightScheduler = cpuLightSchedulerSupplier.get();
-    }
-
-    @Override
-    public void stop() throws MuleException {
-      if (cpuLightScheduler != null) {
-        getSchedulerStopper().accept(cpuLightScheduler);
-      }
-    }
+  static class RingBufferProcessingStrategy implements ProcessingStrategy {
 
     @Override
     public Function<Publisher<Event>, Publisher<Event>> onPipeline(FlowConstruct flowConstruct,
@@ -88,11 +59,6 @@ public class RingBufferReactorProcessingStrategyFactory implements ProcessingStr
           throw propagate(new DefaultMuleException(createStaticMessage(TRANSACTIONAL_ERROR_MESSAGE)));
         }
       };
-    }
-
-    @Override
-    protected Predicate<Scheduler> scheduleOverridePredicate() {
-      return scheduler -> false;
     }
   }
 

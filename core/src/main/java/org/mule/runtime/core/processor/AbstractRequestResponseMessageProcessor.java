@@ -63,7 +63,7 @@ public abstract class AbstractRequestResponseMessageProcessor extends AbstractIn
   public Publisher<Event> apply(Publisher<Event> publisher) {
     Flux<Event> flux = from(publisher).transform(processRequest());
     if (next != null) {
-      flux = flux.transform(s -> applyNext(s));
+      flux = flux.transform(applyNext());
     }
     return flux.transform(processResponse())
         .doOnNext(result -> processFinally(result, null))

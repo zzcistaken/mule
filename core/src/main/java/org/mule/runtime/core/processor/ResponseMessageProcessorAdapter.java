@@ -25,6 +25,7 @@ import org.mule.runtime.api.lifecycle.Lifecycle;
 import org.mule.runtime.api.lifecycle.Startable;
 import org.mule.runtime.api.lifecycle.Stoppable;
 import org.mule.runtime.core.api.processor.Processor;
+import org.mule.runtime.core.exception.MessagingException;
 import org.mule.runtime.core.execution.MessageProcessorExecutionTemplate;
 import org.mule.runtime.core.util.rx.Exceptions;
 import org.mule.runtime.core.util.rx.Exceptions.EventDroppedException;
@@ -33,7 +34,7 @@ import java.util.function.Function;
 
 import org.reactivestreams.Publisher;
 
-public class ResponseMessageProcessorAdapter extends AbstractRequestResponseMessageProcessor
+public class ResponseMessageProcessorAdapter extends AbstractInterceptingMessageProcessor
     implements Lifecycle, FlowConstructAware {
 
   protected MessageProcessorExecutionTemplate messageProcessorExecutionTemplate = createExecutionTemplate();
@@ -53,18 +54,39 @@ public class ResponseMessageProcessorAdapter extends AbstractRequestResponseMess
     this.responseProcessor = processor;
   }
 
+
   @Override
-  protected Event processResponse(final Event response) throws MuleException {
-    return response;
+  public Event process(Event event) throws MuleException {
+    Event response = processNext(event);
+    if (responseProcessor == null || !isEventValid(response)) {
+      return response;
+    } else {
+      return resolveReturnEvent(responseProcessor.process(response), response);
+    }
+  }
+
+  private Event resolveReturnEvent(Event result, Event original) {
+    if (result == null) {
+      // If <response> returns null then it acts as an implicit branch like in flows, the different
+      // here is that what's next, it's not another message processor that follows this one in the
+      // configuration file but rather the response phase of the inbound endpoint, or optionally
+      // other response processing on the way back to the inbound endpoint.
+      return original;
+    } else {
+      return result;
+    }
   }
 
   @Override
-  protected Function<Publisher<Event>, Publisher<Event>> processResponse() {
+  public Publisher<Event> apply(Publisher<Event> publisher) {
     if (responseProcessor == null) {
-      return stream -> stream;
+      return publisher;
     } else {
-      return stream -> from(stream).transform(responseProcessor).onErrorResumeWith(EventDroppedException.class,
-                                                                                   ede -> just(ede.getEvent()));
+      return from(publisher)
+          .transform(applyNext())
+          .concatMap(event -> just(event)
+              .transform(responseProcessor)
+              .onErrorResumeWith(EventDroppedException.class, ede -> just(event)));
     }
   }
 

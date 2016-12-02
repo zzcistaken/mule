@@ -63,16 +63,42 @@ public abstract class AbstractFilteringMessageProcessor extends AbstractIntercep
 
   @Override
   public Publisher<Event> apply(Publisher<Event> publisher) {
-    return from(publisher).<Event>handle((event, sink) -> {
-      Builder builder = Event.builder(event);
-      boolean accepted = accept(event, builder);
-      if (accepted) {
-        sink.next(builder.build());
-      } else {
-        sink.error(newEventDroppedException(builder.build()));
-      }
-    }).transform(p -> applyNext(p))
-        .onErrorResumeWith(EventDroppedException.class, handleUnaccepted());
+    // Optimize to only use concatMap is unaccepted processor is configured.
+    if (unacceptedMessageProcessor == null) {
+      return from(publisher).<Event>handle((event, sink) -> {
+        Builder builder = Event.builder(event);
+        boolean accepted;
+        try {
+          accepted = accept(event, builder);
+          if (accepted) {
+            sink.next(builder.build());
+          } else {
+            if (isThrowOnUnaccepted()) {
+              sink.error(filterUnacceptedException(event));
+            } else {
+              sink.error(newEventDroppedException(event));
+            }
+          }
+        } catch (Exception ex) {
+          sink.error(filterFailureException(builder.build(), ex));
+        }
+      }).transform(applyNext());
+    } else {
+      return from(publisher).concatMap(event -> {
+        Builder builder = Event.builder(event);
+        boolean accepted;
+        try {
+          accepted = accept(event, builder);
+          if (accepted) {
+            return just(event).transform(applyNext());
+          } else {
+            return just(event).transform(unacceptedMessageProcessor);
+          }
+        } catch (Exception ex) {
+          return error(filterFailureException(builder.build(), ex));
+        }
+      });
+    }
   }
 
   protected abstract boolean accept(Event event, Event.Builder builder);
@@ -84,18 +110,6 @@ public abstract class AbstractFilteringMessageProcessor extends AbstractIntercep
       throw filterUnacceptedException(event);
     } else {
       return null;
-    }
-  }
-
-  private Function<EventDroppedException, Publisher<Event>> handleUnaccepted() {
-    if (unacceptedMessageProcessor != null) {
-      return exception -> just(exception.getEvent()).transform(unacceptedMessageProcessor);
-    } else if (isThrowOnUnaccepted()) {
-      return exception -> {
-        throw propagate(filterUnacceptedException(exception.getEvent()));
-      };
-    } else {
-      return exception -> error(exception);
     }
   }
 

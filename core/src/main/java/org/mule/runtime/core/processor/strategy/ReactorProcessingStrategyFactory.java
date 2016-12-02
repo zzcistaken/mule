@@ -31,7 +31,7 @@ import org.reactivestreams.Publisher;
 import reactor.core.scheduler.Schedulers;
 
 /**
- * Creates {@link MultiReactorProcessingStrategy} instances. This processing strategy demultiplexes incoming messages to
+ * Creates {@link ReactorProcessingStrategy} instances. This processing strategy demultiplexes incoming messages to
  * single-threaded event-loop.
  *
  * This processing strategy is not suitable for transactional flows and will fail if used with an active transaction.
@@ -42,20 +42,20 @@ public class ReactorProcessingStrategyFactory implements ProcessingStrategyFacto
 
   @Override
   public ProcessingStrategy create(MuleContext muleContext) {
-    return new MultiReactorProcessingStrategy(() -> muleContext.getSchedulerService().customScheduler("event-loop", 1),
-                                              scheduler -> scheduler.stop(muleContext.getConfiguration().getShutdownTimeout(),
-                                                                          MILLISECONDS),
-                                              muleContext);
+    return new ReactorProcessingStrategy(() -> muleContext.getSchedulerService().customScheduler("event-loop", 1),
+                                         scheduler -> scheduler.stop(muleContext.getConfiguration().getShutdownTimeout(),
+                                                                     MILLISECONDS),
+                                         muleContext);
   }
 
-  static class MultiReactorProcessingStrategy extends AbstractSchedulingProcessingStrategy {
+  static class ReactorProcessingStrategy extends AbstractSchedulingProcessingStrategy {
 
     private Supplier<Scheduler> cpuLightSchedulerSupplier;
     protected Scheduler cpuLightScheduler;
 
-    public MultiReactorProcessingStrategy(Supplier<Scheduler> cpuLightSchedulerSupplier,
-                                          Consumer<Scheduler> schedulerStopper,
-                                          MuleContext muleContext) {
+    public ReactorProcessingStrategy(Supplier<Scheduler> cpuLightSchedulerSupplier,
+                                     Consumer<Scheduler> schedulerStopper,
+                                     MuleContext muleContext) {
       super(schedulerStopper, muleContext);
       this.cpuLightSchedulerSupplier = cpuLightSchedulerSupplier;
     }
@@ -78,7 +78,7 @@ public class ReactorProcessingStrategyFactory implements ProcessingStrategyFacto
                                                                    MessagingExceptionHandler messagingExceptionHandler) {
       return publisher -> from(publisher)
           .doOnNext(assertCanProcess())
-          .publishOn(Schedulers.single())
+          .publishOn(createReactorScheduler(cpuLightScheduler))
           .transform(pipelineFunction);
     }
 
