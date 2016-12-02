@@ -165,6 +165,7 @@
         <commonsNetVersion>3.3</commonsNetVersion>
         <commonsPoolVersion>1.6</commonsPoolVersion>
         <cxfVersion>2.7.18</cxfVersion>
+        <metadataModelXmlVersion>1.0.0-M4</metadataModelXmlVersion>
         <derbyVersion>10.11.1.1</derbyVersion>
         <dom4jVersion>1.6.1</dom4jVersion>
         <flatpackVersion>3.1.1</flatpackVersion>
@@ -2294,7 +2295,7 @@
                         <version>${maven.enforcer.plugin.version}</version>
                         <executions>
                             <execution>
-                                <id>enforce-require-release-deps</id>
+                                <id>enforce-no-snapshots-in-deps</id>
                                 <goals>
                                     <goal>enforce</goal>
                                 </goals>

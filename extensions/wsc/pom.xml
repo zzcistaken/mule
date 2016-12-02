@@ -19,7 +19,6 @@
 
     <properties>
         <cxfVersion>2.7.15</cxfVersion>
-        <metadataModelXmlVersion>1.0.0-SNAPSHOT</metadataModelXmlVersion>
         <xmlUnitVersion>1.6</xmlUnitVersion>
         <formatterConfigPath>../../formatter.xml</formatterConfigPath>
     </properties>
