@@ -233,7 +233,7 @@ public abstract class AbstractPipeline extends AbstractFlowConstruct implements 
 
         @Override
         public Event process(final Event event) throws MuleException {
-          if (isTransactionActive()) {
+          if (isTransactionActive() || processingStrategy == SYNCHRONOUS_PROCESSING_STRATEGY_INSTANCE) {
             return pipeline.process(event);
           } else {
             try {

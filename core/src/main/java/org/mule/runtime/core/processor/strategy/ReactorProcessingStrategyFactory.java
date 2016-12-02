@@ -11,6 +11,7 @@ import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 import static org.mule.runtime.core.transaction.TransactionCoordination.isTransactionActive;
 import static reactor.core.Exceptions.propagate;
 import static reactor.core.publisher.Flux.from;
+import static reactor.core.publisher.Flux.using;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.scheduler.Scheduler;
 import org.mule.runtime.core.api.DefaultMuleException;
@@ -27,7 +28,6 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import org.reactivestreams.Publisher;
-import reactor.core.publisher.TopicProcessor;
 import reactor.core.scheduler.Schedulers;
 
 /**
@@ -38,7 +38,7 @@ import reactor.core.scheduler.Schedulers;
  *
  * @since 4.0
  */
-public class MultiReactorProcessingStrategyFactory implements ProcessingStrategyFactory {
+public class ReactorProcessingStrategyFactory implements ProcessingStrategyFactory {
 
   @Override
   public ProcessingStrategy create(MuleContext muleContext) {
@@ -78,8 +78,7 @@ public class MultiReactorProcessingStrategyFactory implements ProcessingStrategy
                                                                    MessagingExceptionHandler messagingExceptionHandler) {
       return publisher -> from(publisher)
           .doOnNext(assertCanProcess())
-          //.subscribeWith(TopicProcessor.create())
-          .publishOn(createReactorScheduler(cpuLightScheduler))
+          .publishOn(Schedulers.single())
           .transform(pipelineFunction);
     }
 

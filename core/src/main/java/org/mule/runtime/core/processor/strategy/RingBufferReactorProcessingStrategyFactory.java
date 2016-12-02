@@ -38,7 +38,7 @@ import reactor.core.scheduler.Schedulers;
  *
  * @since 4.0
  */
-public class MultiReactorProcessingStrategyFactory implements ProcessingStrategyFactory {
+public class RingBufferReactorProcessingStrategyFactory implements ProcessingStrategyFactory {
 
   @Override
   public ProcessingStrategy create(MuleContext muleContext) {
@@ -78,8 +78,7 @@ public class MultiReactorProcessingStrategyFactory implements ProcessingStrategy
                                                                    MessagingExceptionHandler messagingExceptionHandler) {
       return publisher -> from(publisher)
           .doOnNext(assertCanProcess())
-          //.subscribeWith(TopicProcessor.create())
-          .publishOn(createReactorScheduler(cpuLightScheduler))
+          .subscribeWith(TopicProcessor.create())
           .transform(pipelineFunction);
     }
 

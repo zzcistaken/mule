@@ -20,10 +20,12 @@ import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.routing.filter.FilterUnacceptedException;
 import org.mule.runtime.core.config.i18n.CoreMessages;
 import org.mule.runtime.core.exception.MessagingException;
+import org.mule.runtime.core.util.rx.Exceptions.EventDroppedException;
 
 import java.util.function.Function;
 
 import org.reactivestreams.Publisher;
+import reactor.core.Exceptions;
 
 /**
  * Abstract {@link InterceptingMessageProcessor} that can be easily be extended and used for filtering message flow through a
@@ -61,15 +63,16 @@ public abstract class AbstractFilteringMessageProcessor extends AbstractIntercep
 
   @Override
   public Publisher<Event> apply(Publisher<Event> publisher) {
-    return from(publisher).concatMap(event -> {
+    return from(publisher).<Event>handle((event, sink) -> {
       Builder builder = Event.builder(event);
       boolean accepted = accept(event, builder);
       if (accepted) {
-        return applyNext(just(builder.build()));
+        sink.next(builder.build());
       } else {
-        return handleUnaccepted().apply(event);
+        sink.error(newEventDroppedException(builder.build()));
       }
-    });
+    }).transform(p -> applyNext(p))
+        .onErrorResumeWith(EventDroppedException.class, handleUnaccepted());
   }
 
   protected abstract boolean accept(Event event, Event.Builder builder);
@@ -84,15 +87,15 @@ public abstract class AbstractFilteringMessageProcessor extends AbstractIntercep
     }
   }
 
-  private Function<Event, Publisher<Event>> handleUnaccepted() {
+  private Function<EventDroppedException, Publisher<Event>> handleUnaccepted() {
     if (unacceptedMessageProcessor != null) {
-      return event -> just(event).transform(unacceptedMessageProcessor);
+      return exception -> just(exception.getEvent()).transform(unacceptedMessageProcessor);
     } else if (isThrowOnUnaccepted()) {
-      return event -> {
-        throw propagate(filterUnacceptedException(event));
+      return exception -> {
+        throw propagate(filterUnacceptedException(exception.getEvent()));
       };
     } else {
-      return event -> error(newEventDroppedException(event));
+      return exception -> error(exception);
     }
   }
 

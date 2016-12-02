@@ -26,6 +26,8 @@ import org.mule.runtime.api.lifecycle.Startable;
 import org.mule.runtime.api.lifecycle.Stoppable;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.execution.MessageProcessorExecutionTemplate;
+import org.mule.runtime.core.util.rx.Exceptions;
+import org.mule.runtime.core.util.rx.Exceptions.EventDroppedException;
 
 import java.util.function.Function;
 
@@ -52,32 +54,17 @@ public class ResponseMessageProcessorAdapter extends AbstractRequestResponseMess
   }
 
   @Override
-  protected Event processResponse(final Event response, final Event request) throws MuleException {
-    if (responseProcessor == null || !isEventValid(response)) {
-      return response;
-    } else {
-      return resolveReturnEvent(responseProcessor.process(response), response);
-    }
+  protected Event processResponse(final Event response) throws MuleException {
+     return response;
   }
 
   @Override
-  protected Function<Publisher<Event>, Publisher<Event>> processResponse(Event request) {
+  protected Function<Publisher<Event>, Publisher<Event>> processResponse() {
     if (responseProcessor == null) {
       return stream -> stream;
     } else {
-      return stream -> from(stream).transform(responseProcessor).map(result -> resolveReturnEvent(result, request));
-    }
-  }
-
-  private Event resolveReturnEvent(Event result, Event original) {
-    if (result == null) {
-      // If <response> returns null then it acts as an implicit branch like in flows, the different
-      // here is that what's next, it's not another message processor that follows this one in the
-      // configuration file but rather the response phase of the inbound endpoint, or optionally
-      // other response processing on the way back to the inbound endpoint.
-      return original;
-    } else {
-      return result;
+      return stream -> from(stream).transform(responseProcessor).onErrorResumeWith(EventDroppedException.class,
+                                                                                   ede -> just(ede.getEvent()));
     }
   }
 
