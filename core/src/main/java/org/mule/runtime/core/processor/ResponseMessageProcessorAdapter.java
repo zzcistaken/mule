@@ -55,7 +55,7 @@ public class ResponseMessageProcessorAdapter extends AbstractRequestResponseMess
 
   @Override
   protected Event processResponse(final Event response) throws MuleException {
-     return response;
+    return response;
   }
 
   @Override
