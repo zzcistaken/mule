@@ -64,6 +64,7 @@ def deployJars()
     deployToRemote(ceRepoUrl, ceRepoId, 'org.mule.modules', 'mule-module-validation', version, 'jar')
     deployToRemote(ceRepoUrl, ceRepoId, 'org.mule', 'mule-core', version, 'jar')
     [
+            'extensions',
             'modules',
             'patterns',
             'tests',
