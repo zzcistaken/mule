@@ -6,6 +6,9 @@
  */
 package org.mule.runtime.core.policy;
 
+import static org.mule.runtime.core.util.rx.Exceptions.checkedFunction;
+import static reactor.core.publisher.Flux.from;
+import static reactor.core.publisher.Mono.just;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.DefaultMuleException;
@@ -18,6 +21,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import org.reactivestreams.Publisher;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 /**
  * {@link OperationPolicy} created from a list of {@link Policy}.
@@ -36,17 +43,17 @@ public class CompositeOperationPolicy extends
 
   /**
    * Creates a new composite policy.
-   *
+   * <p>
    * If a non-empty {@code operationPolicyParametersTransformer} is passed to this class, then it will be used to convert the
    * flow execution response parameters to a message with the content of such parameters in order to allow the pipeline after
    * the next-operation to modify the response. If an empty {@code operationPolicyParametersTransformer} is provided then
    * the policy won't be able to change the response parameters of the source and the original response parameters generated
    * from the source will be usd.
-   * 
-   * @param parameterizedPolicies list of {@link Policy} to chain together.
+   *
+   * @param parameterizedPolicies                list of {@link Policy} to chain together.
    * @param operationPolicyParametersTransformer transformer from the operation parameters to a message and vice versa.
-   * @param operationPolicyProcessorFactory factory for creating each {@link OperationPolicy} from a {@link Policy}
-   * @param operationExecutionFunction the function that executes the operation.
+   * @param operationPolicyProcessorFactory      factory for creating each {@link OperationPolicy} from a {@link Policy}
+   * @param operationExecutionFunction           the function that executes the operation.
    */
   public CompositeOperationPolicy(List<Policy> parameterizedPolicies,
                                   Optional<OperationPolicyParametersTransformer> operationPolicyParametersTransformer,
@@ -88,9 +95,9 @@ public class CompositeOperationPolicy extends
    * Always uses the stored result of {@code processNextOperation} so all the chains after the operation execution are executed
    * with the actual operation result and not a modified version from another policy.
    *
-   * @param policy the policy to execute.
+   * @param policy        the policy to execute.
    * @param nextProcessor the processor to execute when the policy next-processor gets executed
-   * @param event the event to use to execute the policy chain.
+   * @param event         the event to use to execute the policy chain.
    */
   @Override
   protected Event processPolicy(Policy policy, Processor nextProcessor, Event event)
@@ -102,10 +109,14 @@ public class CompositeOperationPolicy extends
   }
 
   @Override
-  public Event process(Event operationEvent) throws Exception {
-    Message message = getParametersTransformer().isPresent()
-        ? getParametersTransformer().get().fromParametersToMessage(getParametersProcessor().getOperationParameters())
-        : operationEvent.getMessage();
-    return processPolicies(Event.builder(operationEvent).message((InternalMessage) message).build());
+  public Publisher<Event> apply(Publisher<Event> eventPublisher) {
+    return from(eventPublisher).map(checkedFunction(event -> {
+      Message message = getParametersTransformer().isPresent()
+          ? getParametersTransformer().get().fromParametersToMessage(getParametersProcessor().getOperationParameters())
+          : event.getMessage();
+
+      return Event.builder(event).message((InternalMessage) message).build();
+    })).concatMap(event -> just(event).transform(new AbstractCompositePolicy.NextOperationCall(event)));
+    //TODO: Try to remove this concatMap by having NextOPerationCall independent from the original event
   }
 }

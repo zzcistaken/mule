@@ -8,6 +8,7 @@ package org.mule.runtime.core.policy;
 
 import static org.mule.runtime.api.util.Preconditions.checkArgument;
 import static org.mule.runtime.api.util.Preconditions.checkState;
+import static reactor.core.publisher.Mono.just;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.core.AbstractAnnotatedObject;
 import org.mule.runtime.core.api.DefaultMuleException;
@@ -16,6 +17,8 @@ import org.mule.runtime.core.api.processor.Processor;
 
 import java.util.List;
 import java.util.Optional;
+
+import org.reactivestreams.Publisher;
 
 /**
  * Abstract implementation that performs the chaining of a set of policies and the {@link Processor} being intercepted.
@@ -56,9 +59,8 @@ public abstract class AbstractCompositePolicy<ParametersTransformer, ParametersP
    * in the chain until the finally policy it's executed in which case then next operation of it, it will be the operation
    * execution.
    */
-  public final Event processPolicies(Event operationEvent) throws Exception {
-    return new AbstractCompositePolicy.NextOperationCall(operationEvent)
-        .process(operationEvent);
+  public final Publisher<Event> processPolicies(Event operationEvent) throws Exception {
+    return just(operationEvent).transform(new AbstractCompositePolicy.NextOperationCall(operationEvent));
   }
 
   /**

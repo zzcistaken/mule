@@ -29,7 +29,7 @@ import java.util.function.Supplier;
 import org.reactivestreams.Publisher;
 
 /**
- * Creates {@link ProactorProcessingStrategyFactory} instances. This processing strategy dipatches incoming messages to
+ * Creates {@link ProactorProcessingStrategyFactory} instances. This processing strategy dispatches incoming messages to
  * single-threaded event-loop. The execution
  *
  *
