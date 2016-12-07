@@ -23,8 +23,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.reactivestreams.Publisher;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
 /**
  * {@link OperationPolicy} created from a list of {@link Policy}.
@@ -61,7 +59,7 @@ public class CompositeOperationPolicy extends
                                   OperationParametersProcessor operationParametersProcessor,
                                   OperationExecutionFunction operationExecutionFunction) {
     super(parameterizedPolicies, operationPolicyParametersTransformer, operationParametersProcessor);
-    this.nextOperation = (event) -> {
+    this.nextOperation = event -> {
       try {
         Map<String, Object> parametersMap = new HashMap<>();
         parametersMap.putAll(operationParametersProcessor.getOperationParameters());
@@ -69,7 +67,7 @@ public class CompositeOperationPolicy extends
           parametersMap
               .putAll(operationPolicyParametersTransformer.get().fromMessageToParameters(event.getMessage()));
         }
-        return operationExecutionFunction.execute(parametersMap, event);
+        return operationExecutionFunction.execute(parametersMap, just(event));
       } catch (MuleException e) {
         throw e;
       } catch (Exception e) {

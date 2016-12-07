@@ -16,11 +16,15 @@ import static org.mule.runtime.core.api.processor.ReactiveProcessor.ProcessingTy
 import static org.mule.runtime.core.el.mvel.MessageVariableResolverFactory.FLOW_VARS;
 import static org.mule.runtime.core.util.ClassUtils.withContextClassLoader;
 import static org.mule.runtime.core.util.StringUtils.isBlank;
+import static org.mule.runtime.core.util.rx.Exceptions.checkedFunction;
+import static org.mule.runtime.core.util.rx.internal.Operators.nullSafeMap;
 import static org.mule.runtime.module.extension.internal.util.IntrospectionUtils.isVoid;
 import static org.mule.runtime.module.extension.internal.util.MuleExtensionUtils.getClassLoader;
 import static org.mule.runtime.module.extension.internal.util.MuleExtensionUtils.getInitialiserEvent;
 import static org.mule.runtime.module.extension.internal.util.MuleExtensionUtils.getOperationExecutorFactory;
 import static org.slf4j.LoggerFactory.getLogger;
+import static reactor.core.publisher.Flux.from;
+import static reactor.core.publisher.Mono.just;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.api.lifecycle.Lifecycle;
@@ -37,11 +41,9 @@ import org.mule.runtime.api.metadata.descriptor.TypeMetadataDescriptor;
 import org.mule.runtime.api.metadata.resolving.MetadataResult;
 import org.mule.runtime.core.api.DefaultMuleException;
 import org.mule.runtime.core.api.Event;
-import org.mule.runtime.core.api.policy.OperationPolicyParametersTransformer;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.exception.MessagingException;
 import org.mule.runtime.core.policy.OperationExecutionFunction;
-import org.mule.runtime.core.policy.OperationParametersProcessor;
 import org.mule.runtime.core.policy.OperationPolicy;
 import org.mule.runtime.core.policy.PolicyManager;
 import org.mule.runtime.dsl.api.component.ComponentIdentifier;
@@ -61,11 +63,12 @@ import org.mule.runtime.module.extension.internal.runtime.LazyExecutionContext;
 import org.mule.runtime.module.extension.internal.runtime.ParameterValueResolver;
 import org.mule.runtime.module.extension.internal.runtime.resolver.ResolverSet;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
+import reactor.core.publisher.Mono;
 
 /**
  * A {@link Processor} capable of executing extension operations.
@@ -125,26 +128,42 @@ public class OperationMessageProcessor extends ExtensionComponent implements Pro
   @Override
   public Event process(Event event) throws MuleException {
     return withContextClassLoader(getExtensionClassLoader(), () -> {
-      Optional<ConfigurationInstance> configuration = getConfiguration(event);
 
-      ComponentIdentifier operationIdentifier =
-          new ComponentIdentifier.Builder().withName(operationModel.getName())
-              .withNamespace(extensionModel.getName().toLowerCase()).build();
-
-      Map<String, Object> operationParameters = resolverSet.resolve(event).asMap();
-
-      OperationExecutionFunction operationExecutionFunction = (parameters, operationEvent) -> {
-        ExecutionContextAdapter operationContext = createExecutionContext(configuration, parameters, operationEvent);
-        MuleEvent muleEvent = doProcess(event, operationContext);
-        return (Event) muleEvent;
-      };
-
-      OperationPolicy policy =
-          policyManager.createOperationPolicy(operationIdentifier, event, operationParameters, operationExecutionFunction);
-      return policy.process(event);
     }, MuleException.class, e -> {
       throw new DefaultMuleException(e);
     });
+  }
+
+  @Override
+  public Publisher<Event> apply(Publisher<Event> publisher) {
+    return withContextClassLoader(getExtensionClassLoader(), () -> from(publisher).handle(event -> {
+    return withContextClassLoader(getExtensionClassLoader(), () -> from(publisher).handle(event -> {
+                          Optional<ConfigurationInstance> configuration = getConfiguration(event);
+
+                          ComponentIdentifier operationIdentifier =
+                              new ComponentIdentifier.Builder().withName(operationModel.getName())
+                                  .withNamespace(extensionModel.getName().toLowerCase()).build();
+
+                          Map<String, Object> operationParameters = resolverSet.resolve(event).asMap();
+
+                          OperationExecutionFunction operationExecutionFunction = (parameters, operationEvent) -> {
+                            ExecutionContextAdapter operationContext = createExecutionContext(configuration, parameters, event);
+                            MuleEvent muleEvent = doProcess(event, operationContext);
+                            return (Event) muleEvent;
+                          };
+
+                          OperationPolicy policy =
+                              policyManager
+                                  .createOperationPolicy(operationIdentifier, event, operationParameters, operationExecutionFunction);
+                          return policy.apply(just(event));
+
+
+                        }
+        )));
+  }
+
+  private Publisher<Event> doApply(Publisher<Event> eventPublisher, Event event) {
+
   }
 
   protected org.mule.runtime.api.message.MuleEvent doProcess(Event event, ExecutionContextAdapter operationContext)
@@ -255,10 +274,10 @@ public class OperationMessageProcessor extends ExtensionComponent implements Pro
     if (!configurationModel.getOperationModel(operationModel.getName()).isPresent() &&
         !configurationProvider.getExtensionModel().getOperationModel(operationModel.getName()).isPresent()) {
       throw new IllegalOperationException(format(
-                                                 "Flow '%s' defines an usage of operation '%s' which points to configuration '%s'. "
-                                                     + "The selected config does not support that operation.",
-                                                 flowConstruct.getName(), operationModel.getName(),
-                                                 configurationProvider.getName()));
+          "Flow '%s' defines an usage of operation '%s' which points to configuration '%s'. "
+              + "The selected config does not support that operation.",
+          flowConstruct.getName(), operationModel.getName(),
+          configurationProvider.getName()));
     }
   }
 
