@@ -26,7 +26,7 @@ import org.mule.runtime.core.api.construct.FlowConstruct;
 import org.mule.runtime.core.api.message.InternalMessage;
 import org.mule.runtime.core.api.policy.OperationPolicyParametersTransformer;
 import org.mule.runtime.core.api.processor.Processor;
-import org.mule.tck.junit4.AbstractMuleTestCase;
+import org.mule.tck.junit4.AbstractReactiveProcessorTestCase;
 
 import java.util.Optional;
 
@@ -36,7 +36,11 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 //TODO MULE-10927 - create a common class between CompositeOperationPolicyTestCase and CompositeSourcePolicyTestCase
-public class CompositeOperationPolicyTestCase extends AbstractMuleTestCase {
+public class CompositeOperationPolicyTestCase extends AbstractReactiveProcessorTestCase {
+
+  public CompositeOperationPolicyTestCase(Mode mode) {
+    super(mode);
+  }
 
   @Rule
   public ExpectedException expectedException = none();
@@ -94,7 +98,7 @@ public class CompositeOperationPolicyTestCase extends AbstractMuleTestCase {
                                                             operationPolicyParametersTransformer, operationPolicyProcessorFactory,
                                                             operationParametersProcessor, operationExecutionFunction);
 
-    Event result = compositeOperationPolicy.process(initialEvent);
+    Event result = process(compositeOperationPolicy, initialEvent);
     assertThat(result, is(nextProcessResultEvent));
     verify(operationExecutionFunction).execute(any(), same(initialEvent));
     verify(operationPolicyProcessorFactory).createOperationPolicy(same(firstPolicy), any());
@@ -107,7 +111,7 @@ public class CompositeOperationPolicyTestCase extends AbstractMuleTestCase {
                                                             operationPolicyParametersTransformer, operationPolicyProcessorFactory,
                                                             operationParametersProcessor, operationExecutionFunction);
 
-    Event result = compositeOperationPolicy.process(initialEvent);
+    Event result = process(compositeOperationPolicy, initialEvent);
     assertThat(result, is(nextProcessResultEvent));
     verify(operationExecutionFunction).execute(any(), same(initialEvent));
     verify(operationPolicyProcessorFactory).createOperationPolicy(same(firstPolicy), any());
@@ -132,7 +136,7 @@ public class CompositeOperationPolicyTestCase extends AbstractMuleTestCase {
                                                             operationParametersProcessor, operationExecutionFunction);
     expectedException.expect(MuleException.class);
     expectedException.expectCause(is(policyException));
-    compositeOperationPolicy.process(initialEvent);
+    process(compositeOperationPolicy, initialEvent);
   }
 
   @Test
@@ -144,7 +148,7 @@ public class CompositeOperationPolicyTestCase extends AbstractMuleTestCase {
                                                             operationParametersProcessor, operationExecutionFunction);
     expectedException.expect(MuleException.class);
     expectedException.expectCause(is(policyException));
-    compositeOperationPolicy.process(initialEvent);
+    process(compositeOperationPolicy, initialEvent);
   }
 
   private Event createTestEvent() {

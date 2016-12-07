@@ -11,8 +11,6 @@ import org.mule.runtime.core.api.Event;
 
 import java.util.Map;
 
-import org.reactivestreams.Publisher;
-
 /**
  * Function for executing an operation.
  *
@@ -28,6 +26,6 @@ public interface OperationExecutionFunction {
    * @param eventPublisher the event publisher to use for executing the operation.
    * @return an {@link Event} as result of the operation execution.
    */
-  Event execute(Map<String, Object> parameters, Publisher<Event> eventPublisher) throws MuleException;
+  Event execute(Map<String, Object> parameters, Event eventPublisher) throws MuleException;
 
 }

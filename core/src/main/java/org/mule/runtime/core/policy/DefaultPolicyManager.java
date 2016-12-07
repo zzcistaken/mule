@@ -9,6 +9,7 @@ package org.mule.runtime.core.policy;
 import static java.util.Collections.emptyList;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 import static org.mule.runtime.core.functional.Either.right;
+import static reactor.core.publisher.Flux.from;
 import static reactor.core.publisher.Mono.just;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.exception.MuleRuntimeException;
@@ -103,17 +104,18 @@ public class DefaultPolicyManager implements PolicyManager, Initialisable {
         createOperationPointcutParameters(operationIdentifier, operationParameters);
     List<Policy> parameterizedPolicies = policyProvider.findOperationParameterizedPolicies(operationPointcutParameters);
     if (parameterizedPolicies.isEmpty()) {
-      return eventPublisher -> {
-        Event resultEvent = null;
-        try {
-          resultEvent = operationExecutionFunction.execute(operationParameters, eventPublisher);
-        } catch (MuleException e) {
-          reactor.core.Exceptions.propagate(e);
-        }
-
-        return just(resultEvent);
-      };
+      return eventPublisher ->
+        from(eventPublisher).concatMap(fluxEvent -> {
+          Event resultEvent = null;
+          try {
+            resultEvent = operationExecutionFunction.execute(operationParameters, fluxEvent);
+          } catch (MuleException e) {
+            reactor.core.Exceptions.propagate(e);
+          }
+          return just(resultEvent);
+        });
     }
+
     return new CompositeOperationPolicy(parameterizedPolicies, lookupOperationParametersTransformer(operationIdentifier),
                                         operationPolicyProcessorFactory, () -> operationParameters, operationExecutionFunction);
   }

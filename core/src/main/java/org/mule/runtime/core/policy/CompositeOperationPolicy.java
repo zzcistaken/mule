@@ -67,7 +67,7 @@ public class CompositeOperationPolicy extends
           parametersMap
               .putAll(operationPolicyParametersTransformer.get().fromMessageToParameters(event.getMessage()));
         }
-        return operationExecutionFunction.execute(parametersMap, just(event));
+        return operationExecutionFunction.execute(parametersMap, event);
       } catch (MuleException e) {
         throw e;
       } catch (Exception e) {
@@ -85,8 +85,7 @@ public class CompositeOperationPolicy extends
    */
   @Override
   protected Event processNextOperation(Event event) throws MuleException {
-    nextOperationResponse = nextOperation.process(event);
-    return nextOperationResponse;
+    return nextOperationResponse = nextOperation.process(event);
   }
 
   /**
@@ -115,6 +114,6 @@ public class CompositeOperationPolicy extends
 
       return Event.builder(event).message((InternalMessage) message).build();
     })).concatMap(event -> just(event).transform(new AbstractCompositePolicy.NextOperationCall(event)));
-    //TODO: Try to remove this concatMap by having NextOPerationCall independent from the original event
+    //TODO: Try to remove this concatMap by having NextOperationCall independent from the original event
   }
 }

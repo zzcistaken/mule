@@ -17,7 +17,6 @@ import static org.mule.runtime.core.el.mvel.MessageVariableResolverFactory.FLOW_
 import static org.mule.runtime.core.util.ClassUtils.withContextClassLoader;
 import static org.mule.runtime.core.util.StringUtils.isBlank;
 import static org.mule.runtime.core.util.rx.Exceptions.checkedFunction;
-import static org.mule.runtime.core.util.rx.internal.Operators.nullSafeMap;
 import static org.mule.runtime.module.extension.internal.util.IntrospectionUtils.isVoid;
 import static org.mule.runtime.module.extension.internal.util.MuleExtensionUtils.getClassLoader;
 import static org.mule.runtime.module.extension.internal.util.MuleExtensionUtils.getInitialiserEvent;
@@ -68,7 +67,6 @@ import java.util.Optional;
 
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
-import reactor.core.publisher.Mono;
 
 /**
  * A {@link Processor} capable of executing extension operations.
@@ -127,43 +125,38 @@ public class OperationMessageProcessor extends ExtensionComponent implements Pro
 
   @Override
   public Event process(Event event) throws MuleException {
-    return withContextClassLoader(getExtensionClassLoader(), () -> {
-
-    }, MuleException.class, e -> {
-      throw new DefaultMuleException(e);
-    });
+    throw new UnsupportedOperationException("Non blocking only baby");
   }
 
   @Override
   public Publisher<Event> apply(Publisher<Event> publisher) {
-    return withContextClassLoader(getExtensionClassLoader(), () -> from(publisher).handle(event -> {
-    return withContextClassLoader(getExtensionClassLoader(), () -> from(publisher).handle(event -> {
-                          Optional<ConfigurationInstance> configuration = getConfiguration(event);
-
-                          ComponentIdentifier operationIdentifier =
-                              new ComponentIdentifier.Builder().withName(operationModel.getName())
-                                  .withNamespace(extensionModel.getName().toLowerCase()).build();
-
-                          Map<String, Object> operationParameters = resolverSet.resolve(event).asMap();
-
-                          OperationExecutionFunction operationExecutionFunction = (parameters, operationEvent) -> {
-                            ExecutionContextAdapter operationContext = createExecutionContext(configuration, parameters, event);
-                            MuleEvent muleEvent = doProcess(event, operationContext);
-                            return (Event) muleEvent;
-                          };
-
-                          OperationPolicy policy =
-                              policyManager
-                                  .createOperationPolicy(operationIdentifier, event, operationParameters, operationExecutionFunction);
-                          return policy.apply(just(event));
-
-
-                        }
-        )));
+    return from(publisher).concatMap(checkedFunction(this::doApply));
   }
 
-  private Publisher<Event> doApply(Publisher<Event> eventPublisher, Event event) {
+  private Publisher<Event> doApply(Event event) throws MuleException {
+    return withContextClassLoader(getExtensionClassLoader(), () -> {
+      Optional<ConfigurationInstance> configuration = getConfiguration(event);
 
+      ComponentIdentifier operationIdentifier =
+          new ComponentIdentifier.Builder().withName(operationModel.getName())
+              .withNamespace(extensionModel.getName().toLowerCase()).build();
+
+      Map<String, Object> operationParameters = resolverSet.resolve(event).asMap();
+
+      OperationExecutionFunction operationExecutionFunction = (parameters, operationEvent) -> {
+        ExecutionContextAdapter operationContext = createExecutionContext(configuration, parameters, event);
+        MuleEvent muleEvent = doProcess(event, operationContext);
+        return (Event) muleEvent;
+      };
+
+      OperationPolicy policy =
+          policyManager
+              .createOperationPolicy(operationIdentifier, event, operationParameters, operationExecutionFunction);
+      return policy.apply(just(event));
+
+    }, MuleException.class, e -> {
+      throw new DefaultMuleException(e);
+    });
   }
 
   protected org.mule.runtime.api.message.MuleEvent doProcess(Event event, ExecutionContextAdapter operationContext)
