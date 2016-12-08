@@ -98,6 +98,7 @@ public class OperationMessageProcessor extends ExtensionComponent implements Pro
 
   private final ExtensionModel extensionModel;
   private final OperationModel operationModel;
+  private final ComponentIdentifier operationIdentifier;
   private final ResolverSet resolverSet;
   private final String target;
   private final EntityMetadataMediator entityMetadataMediator;
@@ -121,6 +122,11 @@ public class OperationMessageProcessor extends ExtensionComponent implements Pro
     this.target = target;
     this.entityMetadataMediator = new EntityMetadataMediator(operationModel);
     this.policyManager = policyManager;
+
+    operationIdentifier = new ComponentIdentifier.Builder()
+        .withName(operationModel.getName())
+        .withNamespace(extensionModel.getName().toLowerCase())
+        .build();
   }
 
   @Override
@@ -137,16 +143,12 @@ public class OperationMessageProcessor extends ExtensionComponent implements Pro
     return withContextClassLoader(getExtensionClassLoader(), () -> {
       Optional<ConfigurationInstance> configuration = getConfiguration(event);
 
-      ComponentIdentifier operationIdentifier =
-          new ComponentIdentifier.Builder().withName(operationModel.getName())
-              .withNamespace(extensionModel.getName().toLowerCase()).build();
-
       Map<String, Object> operationParameters = resolverSet.resolve(event).asMap();
 
       OperationExecutionFunction operationExecutionFunction = (parameters, operationEvent) -> {
         ExecutionContextAdapter operationContext = createExecutionContext(configuration, parameters, event);
         MuleEvent muleEvent = doProcess(event, operationContext);
-        return (Event) muleEvent;
+        return just((Event) muleEvent);
       };
 
       OperationPolicy policy =

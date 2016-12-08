@@ -8,14 +8,21 @@ package org.mule.runtime.core.policy;
 
 import static org.mule.runtime.api.util.Preconditions.checkArgument;
 import static org.mule.runtime.api.util.Preconditions.checkState;
+import static org.mule.runtime.core.util.rx.Exceptions.checkedFunction;
+import static reactor.core.publisher.Flux.from;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.core.AbstractAnnotatedObject;
 import org.mule.runtime.core.api.DefaultMuleException;
 import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.processor.Processor;
+import org.mule.runtime.core.util.rx.Exceptions;
 
 import java.util.List;
 import java.util.Optional;
+
+import org.reactivestreams.Publisher;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 /**
  * Abstract implementation that performs the chaining of a set of policies and the {@link Processor} being intercepted.
@@ -56,7 +63,7 @@ public abstract class AbstractCompositePolicy<ParametersTransformer, ParametersP
    * in the chain until the finally policy it's executed in which case then next operation of it, it will be the operation
    * execution.
    */
-  public final Event processPolicies(Event operationEvent) throws Exception {
+  public final Mono<Event> processPolicies(Event operationEvent) throws Exception {
     return new AbstractCompositePolicy.NextOperationCall(operationEvent)
         .process(operationEvent);
   }
@@ -82,7 +89,7 @@ public abstract class AbstractCompositePolicy<ParametersTransformer, ParametersP
    * @return the event to use for processing the after phase of the policy
    * @throws MuleException if there's an error executing processing the next operation.
    */
-  protected abstract Event processNextOperation(Event event) throws MuleException;
+  protected abstract Publisher<Event> processNextOperation(Event event) throws MuleException;
 
   /**
    * Template method for executing a policy.
@@ -94,7 +101,7 @@ public abstract class AbstractCompositePolicy<ParametersTransformer, ParametersP
    * @return the result to use for the next policy in the chain.
    * @throws Exception if the execution of the policy fails.
    */
-  protected abstract Event processPolicy(Policy policy, Processor nextProcessor, Event event)
+  protected abstract Mono<Event> processPolicy(Policy policy, Processor nextProcessor, Event event)
       throws Exception;
 
   /**
@@ -110,20 +117,26 @@ public abstract class AbstractCompositePolicy<ParametersTransformer, ParametersP
     }
 
     @Override
+    public Publisher<Event> apply(Publisher<Event> publisher) {
+      return from(publisher).concatMap(checkedFunction(event -> {
+        checkState(index <= parameterizedPolicies.size(), "composite policy index is greater that the number of policies.");
+        if (index == parameterizedPolicies.size()) {
+          return processNextOperation(event);
+        }
+        Policy policy = parameterizedPolicies.get(index);
+        index++;
+        try {
+          return processPolicy(policy, this, originalEvent);
+        } catch (MuleException e) {
+          throw e;
+        } catch (Exception e) {
+          throw new DefaultMuleException(e);
+        }
+      }));
+    }
+
+    @Override
     public Event process(Event event) throws MuleException {
-      checkState(index <= parameterizedPolicies.size(), "composite policy index is greater that the number of policies.");
-      if (index == parameterizedPolicies.size()) {
-        return processNextOperation(event);
-      }
-      Policy policy = parameterizedPolicies.get(index);
-      index++;
-      try {
-        return processPolicy(policy, this, originalEvent);
-      } catch (MuleException e) {
-        throw e;
-      } catch (Exception e) {
-        throw new DefaultMuleException(e);
-      }
     }
   }
 

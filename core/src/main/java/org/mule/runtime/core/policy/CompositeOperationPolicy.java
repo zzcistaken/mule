@@ -6,9 +6,8 @@
  */
 package org.mule.runtime.core.policy;
 
-import static org.mule.runtime.core.util.rx.Exceptions.checkedFunction;
 import static reactor.core.publisher.Flux.from;
-import static reactor.core.publisher.Mono.just;
+import static reactor.core.publisher.Flux.just;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.DefaultMuleException;
@@ -16,6 +15,7 @@ import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.message.InternalMessage;
 import org.mule.runtime.core.api.policy.OperationPolicyParametersTransformer;
 import org.mule.runtime.core.api.processor.Processor;
+import org.mule.runtime.core.util.rx.Exceptions;
 
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.reactivestreams.Publisher;
+import reactor.core.publisher.Mono;
 
 /**
  * {@link OperationPolicy} created from a list of {@link Policy}.
@@ -59,19 +60,30 @@ public class CompositeOperationPolicy extends
                                   OperationParametersProcessor operationParametersProcessor,
                                   OperationExecutionFunction operationExecutionFunction) {
     super(parameterizedPolicies, operationPolicyParametersTransformer, operationParametersProcessor);
-    this.nextOperation = event -> {
-      try {
-        Map<String, Object> parametersMap = new HashMap<>();
-        parametersMap.putAll(operationParametersProcessor.getOperationParameters());
-        if (operationPolicyParametersTransformer.isPresent()) {
-          parametersMap
-              .putAll(operationPolicyParametersTransformer.get().fromMessageToParameters(event.getMessage()));
-        }
-        return operationExecutionFunction.execute(parametersMap, event);
-      } catch (MuleException e) {
-        throw e;
-      } catch (Exception e) {
-        throw new DefaultMuleException(e);
+    nextOperation = new Processor() {
+
+      @Override
+      public Event process(Event event) throws MuleException {
+        return null;
+      }
+
+      @Override
+      public Publisher<Event> apply(Publisher<Event> publisher) {
+        return from(publisher).concatMap(Exceptions.checkedFunction(event -> {
+          try {
+            Map<String, Object> parametersMap = new HashMap<>();
+            parametersMap.putAll(operationParametersProcessor.getOperationParameters());
+            if (operationPolicyParametersTransformer.isPresent()) {
+              parametersMap
+                  .putAll(operationPolicyParametersTransformer.get().fromMessageToParameters(event.getMessage()));
+            }
+            return operationExecutionFunction.execute(parametersMap, event);
+          } catch (MuleException e) {
+            throw e;
+          } catch (Exception e) {
+            throw new DefaultMuleException(e);
+          }
+        }));
       }
     };
     this.operationPolicyProcessorFactory = operationPolicyProcessorFactory;
@@ -84,8 +96,9 @@ public class CompositeOperationPolicy extends
    * @param event the event to execute the operation.
    */
   @Override
-  protected Event processNextOperation(Event event) throws MuleException {
-    return nextOperationResponse = nextOperation.process(event);
+  protected Publisher<Event> processNextOperation(Event event) throws MuleException {
+    // TODO: can't just store the original event, that requires blocking!
+    return nextOperationResponse = nextOperation.apply(Mono.just(event));
   }
 
   /**
@@ -97,23 +110,19 @@ public class CompositeOperationPolicy extends
    * @param event         the event to use to execute the policy chain.
    */
   @Override
-  protected Event processPolicy(Policy policy, Processor nextProcessor, Event event)
+  protected Mono<Event> processPolicy(Policy policy, Processor nextProcessor, Event event)
       throws Exception {
     Processor defaultOperationPolicy =
         operationPolicyProcessorFactory.createOperationPolicy(policy, nextProcessor);
-    defaultOperationPolicy.process(event);
-    return nextOperationResponse;
+    defaultOperationPolicy.apply(just(event));
+    return Mono.just(nextOperationResponse);
   }
 
   @Override
-  public Publisher<Event> apply(Publisher<Event> eventPublisher) {
-    return from(eventPublisher).map(checkedFunction(event -> {
-      Message message = getParametersTransformer().isPresent()
-          ? getParametersTransformer().get().fromParametersToMessage(getParametersProcessor().getOperationParameters())
-          : event.getMessage();
-
-      return Event.builder(event).message((InternalMessage) message).build();
-    })).concatMap(event -> just(event).transform(new AbstractCompositePolicy.NextOperationCall(event)));
-    //TODO: Try to remove this concatMap by having NextOperationCall independent from the original event
+  public Mono<Event> process(Event operationEvent) throws Exception {
+    Message message = getParametersTransformer().isPresent()
+        ? getParametersTransformer().get().fromParametersToMessage(getParametersProcessor().getOperationParameters())
+        : operationEvent.getMessage();
+    return processPolicies(Event.builder(operationEvent).message((InternalMessage) message).build());
   }
 }
