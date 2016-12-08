@@ -9,9 +9,11 @@ package org.mule.test.runner.api;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.stream.Collectors.toList;
+import static org.eclipse.aether.util.artifact.JavaScopes.TEST;
 
 import java.net.URL;
 import java.util.List;
+import java.util.Optional;
 
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.graph.Dependency;
@@ -35,8 +37,9 @@ public class PluginSharedLibClassifier extends AbstractArtifactClassifier<Artifa
    * @return {@link ArtifactUrlClassification} with list of {@link URL}s to be added to runtime shared libraries.
    */
   @Override
-  public List<ArtifactUrlClassification> classify(DependencyResolver dependencyResolver, ClassPathClassifierContext context, List<Dependency> directDependencies,
-                                                         Artifact rootArtifact, ArtifactClassificationType rootArtifactType) {
+  public List<ArtifactUrlClassification> classify(DependencyResolver dependencyResolver, ClassPathClassifierContext context,
+                                                  List<Dependency> directDependencies,
+                                                  Artifact rootArtifact, ArtifactClassificationType rootArtifactType) {
     List<URL> pluginSharedLibUrls = newArrayList();
 
     List<Dependency> pluginSharedLibDependencies = context.getSharedPluginLibCoordinates().stream()
@@ -54,7 +57,7 @@ public class PluginSharedLibClassifier extends AbstractArtifactClassifier<Artifa
                 .getArtifact().getFile().toURI().toURL();
           } catch (Exception e) {
             throw new IllegalStateException("Error while resolving dependency '" + pluginSharedLibDependency
-                                                + "' as plugin sharedLibs");
+                + "' as plugin sharedLibs");
           }
         })
         .forEach(pluginSharedLibUrls::add);
@@ -64,4 +67,24 @@ public class PluginSharedLibClassifier extends AbstractArtifactClassifier<Artifa
     //TODO: refactor this to avoid having artifactId on top of the hierarchy
     return newArrayList(new ArtifactUrlClassification("pluginSharedLib", "pluginSharedLib", pluginSharedLibUrls));
   }
+
+  /**
+   * Finds the plugin shared lib {@link Dependency} from the direct dependencies of the  rootArtifact.
+   *
+   * @param pluginSharedLibCoords Maven coordinates that define the plugin shared lib artifact
+   * @param rootArtifact {@link Artifact} that defines the current artifact that requested to build this class loaders
+   * @param directDependencies {@link List} of {@link Dependency} with direct dependencies for the rootArtifact
+   * @return {@link Artifact} representing the plugin shared lib artifact
+   */
+  private Dependency findPluginSharedLibArtifact(String pluginSharedLibCoords, Artifact rootArtifact,
+                                                   List<Dependency> directDependencies) {
+    Optional<Dependency> pluginSharedLibDependency = discoverDependency(pluginSharedLibCoords, rootArtifact, directDependencies);
+    if (!pluginSharedLibDependency.isPresent() || !pluginSharedLibDependency.get().getScope().equals(TEST)) {
+      throw new IllegalStateException("Plugin shared lib artifact '" + pluginSharedLibCoords +
+                                          "' in order to be resolved has to be declared as " + TEST + " dependency of your Maven project (" + rootArtifact + ")");
+    }
+
+    return pluginSharedLibDependency.get();
+  }
+
 }

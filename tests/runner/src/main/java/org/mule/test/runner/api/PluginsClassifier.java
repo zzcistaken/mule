@@ -65,8 +65,9 @@ public class PluginsClassifier extends AbstractArtifactClassifier<PluginUrlClass
    * @return {@link List} of {@link PluginUrlClassification}.
    */
   @Override
-  public List<PluginUrlClassification> classify(DependencyResolver dependencyResolver, ClassPathClassifierContext context, List<Dependency> directDependencies,
-                                                         Artifact rootArtifact, ArtifactClassificationType rootArtifactType) {
+  public List<PluginUrlClassification> classify(DependencyResolver dependencyResolver, ClassPathClassifierContext context,
+                                                List<Dependency> directDependencies,
+                                                Artifact rootArtifact, ArtifactClassificationType rootArtifactType) {
     Map<String, ArtifactClassificationNode> pluginsClassified = newLinkedHashMap();
 
     List<Artifact> pluginsArtifacts = context.getPluginCoordinates().stream()
@@ -79,7 +80,8 @@ public class PluginsClassifier extends AbstractArtifactClassifier<PluginUrlClass
         dependency -> dependency.getArtifact().getClassifier().equals(MULE_PLUGIN_CLASSIFIER);
     if (PLUGIN.equals(rootArtifactType)) {
       logger.debug("rootArtifact '{}' identified as Mule plugin", rootArtifact);
-      buildPluginUrlClassification(dependencyResolver, rootArtifact, context, directDependencies, mulePluginDependencyFilter, pluginsClassified);
+      buildPluginUrlClassification(dependencyResolver, rootArtifact, context, directDependencies, mulePluginDependencyFilter,
+                                   pluginsClassified);
 
       pluginsArtifacts = pluginsArtifacts.stream()
           .filter(pluginArtifact -> !(rootArtifact.getGroupId().equals(pluginArtifact.getGroupId())
@@ -144,7 +146,8 @@ public class PluginsClassifier extends AbstractArtifactClassifier<PluginUrlClass
    * @param rootArtifactDirectDependencies {@link List} of {@link Dependency} with direct dependencies for the rootArtifact
    * @param artifactsClassified {@link Map} that contains already classified plugins
    */
-  private void buildPluginUrlClassification(DependencyResolver dependencyResolver, Artifact artifactToClassify, ClassPathClassifierContext context,
+  private void buildPluginUrlClassification(DependencyResolver dependencyResolver, Artifact artifactToClassify,
+                                            ClassPathClassifierContext context,
                                             List<Dependency> rootArtifactDirectDependencies,
                                             Predicate<Dependency> directDependenciesFilter,
                                             Map<String, ArtifactClassificationNode> artifactsClassified) {
@@ -179,7 +182,8 @@ public class PluginsClassifier extends AbstractArtifactClassifier<PluginUrlClass
         .map(artifact -> {
           String artifactClassifierLessId = toClassifierLessId(artifact);
           if (!artifactsClassified.containsKey(artifactClassifierLessId)) {
-            buildPluginUrlClassification(dependencyResolver, artifact, context, rootArtifactDirectDependencies, directDependenciesFilter,
+            buildPluginUrlClassification(dependencyResolver, artifact, context, rootArtifactDirectDependencies,
+                                         directDependenciesFilter,
                                          artifactsClassified);
           }
           return artifactsClassified.get(artifactClassifierLessId);
@@ -210,7 +214,7 @@ public class PluginsClassifier extends AbstractArtifactClassifier<PluginUrlClass
       if (!findDirectDependency(pluginArtifact.getGroupId(), pluginArtifact.getArtifactId(), rootArtifactDirectDependencies)
           .isPresent()) {
         throw new IllegalStateException("Plugin '" + pluginArtifact
-                                            + "' has to be defined as direct dependency of your Maven project (" + context.getRootArtifact() + ")");
+            + "' has to be defined as direct dependency of your Maven project (" + context.getRootArtifact() + ")");
       }
     }
   }
@@ -227,7 +231,7 @@ public class PluginsClassifier extends AbstractArtifactClassifier<PluginUrlClass
   private Optional<Dependency> findDirectDependency(String groupId, String artifactId, List<Dependency> directDependencies) {
     return directDependencies.isEmpty() ? Optional.<Dependency>empty()
         : directDependencies.stream().filter(dependency -> dependency.getArtifact().getGroupId().equals(groupId)
-        && dependency.getArtifact().getArtifactId().equals(artifactId)).findFirst();
+            && dependency.getArtifact().getArtifactId().equals(artifactId)).findFirst();
   }
 
   /**
@@ -244,7 +248,7 @@ public class PluginsClassifier extends AbstractArtifactClassifier<PluginUrlClass
     Optional<Dependency> pluginDependency = discoverDependency(pluginCoords, rootArtifact, directDependencies);
     if (!pluginDependency.isPresent() || !pluginDependency.get().getScope().equals(PROVIDED)) {
       throw new IllegalStateException("Plugin '" + pluginCoords + "' in order to be resolved has to be declared as " + PROVIDED +
-                                          " dependency of your Maven project (" + rootArtifact + ")");
+          " dependency of your Maven project (" + rootArtifact + ")");
     }
 
     return pluginDependency.get().getArtifact();
@@ -264,11 +268,15 @@ public class PluginsClassifier extends AbstractArtifactClassifier<PluginUrlClass
       final List<String> pluginDependencies = node.getArtifactDependencies().stream()
           .map(dependency -> toClassifierLessId(dependency.getArtifact()))
           .collect(toList());
-      final PluginExportResources exportResources = pluginResourcesResolver.resolvePluginResourcesFor(node.getArtifact(), node.getUrls().toArray(new URL[0]));
+      final PluginExportResources exportResources =
+          pluginResourcesResolver.resolvePluginResourcesFor(node.getArtifact(), node.getUrls().toArray(new URL[0]));
 
       final String classifierLessId = toClassifierLessId(node.getArtifact());
-      classifiedPluginUrls.put(classifierLessId, new PluginUrlClassification(classifierLessId, node.getArtifact().getArtifactId(), node.getUrls(), node.getExportClasses(),
-                                                                             pluginDependencies, exportResources.getExportPackages(), exportResources.getExportResources()));
+      classifiedPluginUrls.put(classifierLessId, new PluginUrlClassification(classifierLessId, node.getArtifact().getArtifactId(),
+                                                                             node.getUrls(), node.getExportClasses(),
+                                                                             pluginDependencies,
+                                                                             exportResources.getExportPackages(),
+                                                                             exportResources.getExportResources()));
     }
 
     for (PluginUrlClassification pluginUrlClassification : classifiedPluginUrls.values()) {

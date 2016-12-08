@@ -73,7 +73,7 @@ public class PluginResourcesResolver {
         URL pluginPropertiesUrl = classLoader.getResource(PLUGIN_PROPERTIES);
         if (pluginPropertiesUrl == null) {
           throw new IllegalStateException(PLUGIN_PROPERTIES + " couldn't be found for plugin: " +
-                                              plugin);
+              plugin);
         }
         Properties pluginProperties;
         try {

@@ -87,7 +87,7 @@ public class ArtifactClassificationNodeCollector {
    * @param directDependenciesFilter {@link Predicate} that defines which direct dependency from the artifact processed should be used to obtain its dependencies and build a node too.
    */
   public void setDirectDependenciesFilter(
-      Predicate<Dependency> directDependenciesFilter) {
+                                          Predicate<Dependency> directDependenciesFilter) {
     this.directDependenciesFilter = directDependenciesFilter;
   }
 
@@ -149,7 +149,7 @@ public class ArtifactClassificationNodeCollector {
       if (!findDirectDependency(artifact.getGroupId(), artifact.getArtifactId(), rootArtifactDirectDependencies)
           .isPresent()) {
         throw new IllegalStateException("Plugin '" + artifact
-                                            + "' has to be defined as direct dependency of your Maven project (" + rootArtifact + ")");
+            + "' has to be defined as direct dependency of your Maven project (" + rootArtifact + ")");
       }
     }
   }
@@ -157,7 +157,7 @@ public class ArtifactClassificationNodeCollector {
   private Optional<Dependency> findDirectDependency(String groupId, String artifactId, List<Dependency> directDependencies) {
     return directDependencies.isEmpty() ? Optional.<Dependency>empty()
         : directDependencies.stream().filter(dependency -> dependency.getArtifact().getGroupId().equals(groupId)
-        && dependency.getArtifact().getArtifactId().equals(artifactId)).findFirst();
+            && dependency.getArtifact().getArtifactId().equals(artifactId)).findFirst();
   }
 
   protected String toClassifierLessId(Artifact pluginArtifact) {

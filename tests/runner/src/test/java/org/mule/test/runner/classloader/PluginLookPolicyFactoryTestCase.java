@@ -45,7 +45,7 @@ public class PluginLookPolicyFactoryTestCase extends AbstractMuleTestCase {
   @Before
   public void setUp() {
     factory = new PluginLookPolicyFactory();
-    fooPluginClassification = new PluginUrlClassification(FOO_PLUGIN_ID, Collections.<URL>emptyList(),
+    fooPluginClassification = new PluginUrlClassification(FOO_PLUGIN_ID, FOO_PLUGIN_ID, Collections.<URL>emptyList(),
                                                           Collections.<Class>emptyList(), Collections.<String>emptyList(),
                                                           newHashSet(FOO_PACKAGE), Collections.<String>emptySet());
   }
@@ -53,8 +53,8 @@ public class PluginLookPolicyFactoryTestCase extends AbstractMuleTestCase {
   @Test
   public void lookupPoliciesForPluginThatDeclaresDependency() {
     PluginUrlClassification barPluginClassification =
-        new PluginUrlClassification(BAR_PLUGIN_ID, Collections.<URL>emptyList(), Collections.<Class>emptyList(),
-                                    newArrayList(FOO_PLUGIN_ID));
+        new PluginUrlClassification(BAR_PLUGIN_ID, BAR_PLUGIN_ID, Collections.<URL>emptyList(), Collections.<Class>emptyList(),
+                                    newArrayList(FOO_PLUGIN_ID), Collections.<String>emptySet(), Collections.<String>emptySet());
     List<PluginUrlClassification> pluginClassifications = newArrayList(barPluginClassification, fooPluginClassification);
     ClassLoaderLookupPolicy parentLookupPolicies = getParentClassLoaderLookupPolicy();
 
@@ -66,8 +66,8 @@ public class PluginLookPolicyFactoryTestCase extends AbstractMuleTestCase {
   @Test
   public void lookupPoliciesForPluginThatDoesNotDeclareDependency() {
     PluginUrlClassification barPluginClassification =
-        new PluginUrlClassification(BAR_PLUGIN_ID, Collections.<URL>emptyList(), Collections.<Class>emptyList(),
-                                    Collections.<String>emptyList());
+        new PluginUrlClassification(BAR_PLUGIN_ID, BAR_PLUGIN_ID, Collections.<URL>emptyList(), Collections.<Class>emptyList(),
+                                    Collections.<String>emptyList(), Collections.<String>emptySet(), Collections.<String>emptySet());
     List<PluginUrlClassification> pluginClassifications = newArrayList(barPluginClassification, fooPluginClassification);
     ClassLoaderLookupPolicy parentLookupPolicies = getParentClassLoaderLookupPolicy();
 

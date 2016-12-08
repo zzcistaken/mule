@@ -29,5 +29,6 @@ public interface ArtifactClassifier<T extends ArtifactUrlClassification> {
    * @param rootArtifactType {@link ArtifactClassificationType} defines the type of root artifact
    * @return the result of the classification {@link ArtifactUrlClassification}
    */
-  List<T> classify(DependencyResolver dependencyResolver, ClassPathClassifierContext context, List<Dependency> directDependencies, Artifact rootArtifact, ArtifactClassificationType rootArtifactType);
+  List<T> classify(DependencyResolver dependencyResolver, ClassPathClassifierContext context, List<Dependency> directDependencies,
+                   Artifact rootArtifact, ArtifactClassificationType rootArtifactType);
 }

@@ -54,8 +54,8 @@ public class ServicesClassifier extends AbstractArtifactClassifier<ArtifactUrlCl
    */
   @Override
   public List<ArtifactUrlClassification> classify(DependencyResolver dependencyResolver, ClassPathClassifierContext context,
-                                                List<Dependency> directDependencies,
-                                                Artifact rootArtifact, ArtifactClassificationType rootArtifactType) {
+                                                  List<Dependency> directDependencies,
+                                                  Artifact rootArtifact, ArtifactClassificationType rootArtifactType) {
     final Predicate<Dependency> muleServiceClassifiedDependencyFilter =
         dependency -> dependency.getArtifact().getClassifier().equals(MULE_SERVICE_CLASSIFIER);
     List<Artifact> serviceArtifactsDeclared = filterArtifacts(directDependencies,
@@ -104,7 +104,7 @@ public class ServicesClassifier extends AbstractArtifactClassifier<ArtifactUrlCl
         return new ArtifactUrlClassification(toClassifierLessId(node.getArtifact()), serviceProviderClassName, node.getUrls());
       } catch (IOException e) {
         throw new IllegalArgumentException("Couldn't read " + SERVICE_PROPERTIES_FILE_NAME + " for artifact: "
-                                               + node.getArtifact(), e);
+            + node.getArtifact(), e);
       }
     }).collect(toList());
   }

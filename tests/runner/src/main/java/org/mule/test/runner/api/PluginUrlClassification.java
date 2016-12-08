@@ -38,7 +38,8 @@ public class PluginUrlClassification extends ArtifactUrlClassification {
    * @param exportedPackages {@link Set} of exported packages by this plugin
    * @param exportedResources {@link Set} of exported resources by this plugin
    */
-  public PluginUrlClassification(String artifactId, String name, List<URL> urls, List<Class> exportClasses, List<String> pluginDependencies,
+  public PluginUrlClassification(String artifactId, String name, List<URL> urls, List<Class> exportClasses,
+                                 List<String> pluginDependencies,
                                  Set<String> exportedPackages, Set<String> exportedResources) {
     super(artifactId, name, urls);
     checkNotNull(pluginDependencies, "pluginDependencies cannot be null");
@@ -50,7 +51,7 @@ public class PluginUrlClassification extends ArtifactUrlClassification {
     this.exportedPackages = exportedPackages;
     this.exportedResources = exportedResources;
   }
-  
+
   public List<Class> getExportClasses() {
     return exportClasses;
   }

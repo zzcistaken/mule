@@ -10,7 +10,6 @@ package org.mule.test.runner.api;
 import static java.util.stream.Collectors.toList;
 import static org.eclipse.aether.util.artifact.ArtifactIdUtils.toId;
 import static org.eclipse.aether.util.artifact.JavaScopes.COMPILE;
-import static org.eclipse.aether.util.artifact.JavaScopes.TEST;
 
 import java.util.List;
 import java.util.Optional;
@@ -35,25 +34,6 @@ public abstract class AbstractArtifactClassifier<T extends ArtifactUrlClassifica
   protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
   /**
-   * Finds the plugin shared lib {@link Dependency} from the direct dependencies of the  rootArtifact.
-   *
-   * @param pluginSharedLibCoords Maven coordinates that define the plugin shared lib artifact
-   * @param rootArtifact {@link Artifact} that defines the current artifact that requested to build this class loaders
-   * @param directDependencies {@link List} of {@link Dependency} with direct dependencies for the rootArtifact
-   * @return {@link Artifact} representing the plugin shared lib artifact
-   */
-  protected Dependency findPluginSharedLibArtifact(String pluginSharedLibCoords, Artifact rootArtifact,
-                                                 List<Dependency> directDependencies) {
-    Optional<Dependency> pluginSharedLibDependency = discoverDependency(pluginSharedLibCoords, rootArtifact, directDependencies);
-    if (!pluginSharedLibDependency.isPresent() || !pluginSharedLibDependency.get().getScope().equals(TEST)) {
-      throw new IllegalStateException("Plugin shared lib artifact '" + pluginSharedLibCoords +
-                                          "' in order to be resolved has to be declared as " + TEST + " dependency of your Maven project (" + rootArtifact + ")");
-    }
-
-    return pluginSharedLibDependency.get();
-  }
-
-  /**
    * Discovers the {@link Dependency} from the list of directDependencies using the artifact coordiantes in format of:
    *
    * <pre>
@@ -71,11 +51,11 @@ public abstract class AbstractArtifactClassifier<T extends ArtifactUrlClassifica
    * @throws {@link IllegalArgumentException} if artifactCoords are not in the expected format
    */
   protected Optional<Dependency> discoverDependency(String artifactCoords, Artifact rootArtifact,
-                                                 List<Dependency> directDependencies) {
+                                                    List<Dependency> directDependencies) {
     final String[] artifactCoordsSplit = artifactCoords.split(MAVEN_COORDINATES_SEPARATOR);
     if (artifactCoordsSplit.length != 2) {
       throw new IllegalArgumentException("Artifact coordinates should be in format of groupId:artifactId, '" + artifactCoords +
-                                             "' is not a valid format");
+          "' is not a valid format");
     }
     String groupId = artifactCoordsSplit[0];
     String artifactId = artifactCoordsSplit[1];
@@ -105,7 +85,7 @@ public abstract class AbstractArtifactClassifier<T extends ArtifactUrlClassifica
   private Optional<Dependency> findDirectDependency(String groupId, String artifactId, List<Dependency> directDependencies) {
     return directDependencies.isEmpty() ? Optional.<Dependency>empty()
         : directDependencies.stream().filter(dependency -> dependency.getArtifact().getGroupId().equals(groupId)
-        && dependency.getArtifact().getArtifactId().equals(artifactId)).findFirst();
+            && dependency.getArtifact().getArtifactId().equals(artifactId)).findFirst();
   }
 
   protected String toClassifierLessId(Artifact pluginArtifact) {
