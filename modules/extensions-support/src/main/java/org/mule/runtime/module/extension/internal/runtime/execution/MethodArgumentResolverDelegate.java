@@ -14,6 +14,7 @@ import org.mule.metadata.java.api.JavaTypeLoader;
 import org.mule.runtime.api.message.Error;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.meta.model.ComponentModel;
+import org.mule.runtime.api.meta.model.parameter.ParameterGroupModel;
 import org.mule.runtime.api.meta.model.parameter.ParameterModel;
 import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.util.collection.ImmutableMapCollector;
@@ -68,12 +69,12 @@ public final class MethodArgumentResolverDelegate implements ArgumentResolverDel
    *
    * @param method the {@link Method} to be called
    */
-  public MethodArgumentResolverDelegate(ComponentModel componentModel, Method method) {
+  public MethodArgumentResolverDelegate(List<ParameterGroupModel> parameterGroupModels, Method method) {
     this.method = method;
-    initArgumentResolvers(componentModel);
+    initArgumentResolvers(parameterGroupModels);
   }
 
-  private void initArgumentResolvers(ComponentModel model) {
+  private void initArgumentResolvers(List<ParameterGroupModel> parameterGroupModels) {
     final Class<?>[] parameterTypes = method.getParameterTypes();
 
     if (isEmpty(parameterTypes)) {
@@ -84,7 +85,7 @@ public final class MethodArgumentResolverDelegate implements ArgumentResolverDel
     argumentResolvers = new ArgumentResolver[parameterTypes.length];
     Annotation[][] parameterAnnotations = method.getParameterAnnotations();
     Parameter[] parameters = method.getParameters();
-    parameterGroupResolvers = getParameterGroupResolvers(model);
+    parameterGroupResolvers = getParameterGroupResolvers(parameterGroupModels);
     final List<String> paramNames = getParamNames(method);
 
     for (int i = 0; i < parameterTypes.length; i++) {
@@ -182,8 +183,8 @@ public final class MethodArgumentResolverDelegate implements ArgumentResolverDel
    * @param model operation model
    * @return mapping between the {@link Method}'s arguments which are parameters groups and their respective resolvers
    */
-  private Map<Parameter, ParameterGroupArgumentResolver<? extends Object>> getParameterGroupResolvers(ComponentModel model) {
-    return model.getParameterGroupModels().stream()
+  private Map<Parameter, ParameterGroupArgumentResolver<? extends Object>> getParameterGroupResolvers(List<ParameterGroupModel> parameterGroupModels) {
+    return parameterGroupModels.stream()
         .map(group -> group.getModelProperty(ParameterGroupModelProperty.class)
             .map(ParameterGroupModelProperty::getDescriptor).orElse(null))
         .filter(group -> group != null && group.getContainer() instanceof Parameter)
