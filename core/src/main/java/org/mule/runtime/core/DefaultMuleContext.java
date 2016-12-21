@@ -11,10 +11,6 @@ import static org.apache.commons.lang.SystemUtils.JAVA_VERSION;
 import static org.mule.runtime.core.api.config.MuleProperties.OBJECT_CLUSTER_CONFIGURATION;
 import static org.mule.runtime.core.api.config.MuleProperties.OBJECT_CONFIGURATION_COMPONENT_LOCATOR;
 import static org.mule.runtime.core.api.config.MuleProperties.OBJECT_CONVERTER_RESOLVER;
-import static org.mule.runtime.core.api.config.MuleProperties.OBJECT_DEFAULT_MESSAGE_DISPATCHER_THREADING_PROFILE;
-import static org.mule.runtime.core.api.config.MuleProperties.OBJECT_DEFAULT_MESSAGE_RECEIVER_THREADING_PROFILE;
-import static org.mule.runtime.core.api.config.MuleProperties.OBJECT_DEFAULT_MESSAGE_REQUESTER_THREADING_PROFILE;
-import static org.mule.runtime.core.api.config.MuleProperties.OBJECT_DEFAULT_THREADING_PROFILE;
 import static org.mule.runtime.core.api.config.MuleProperties.OBJECT_EXPRESSION_MANAGER;
 import static org.mule.runtime.core.api.config.MuleProperties.OBJECT_LOCK_FACTORY;
 import static org.mule.runtime.core.api.config.MuleProperties.OBJECT_MULE_STREAM_CLOSER_SERVICE;
@@ -60,7 +56,6 @@ import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.SingleResourceTransactionFactoryManager;
 import org.mule.runtime.core.api.client.MuleClient;
 import org.mule.runtime.core.api.config.MuleConfiguration;
-import org.mule.runtime.core.api.config.ThreadingProfile;
 import org.mule.runtime.core.api.construct.Pipeline;
 import org.mule.runtime.core.api.context.MuleContextAware;
 import org.mule.runtime.core.api.context.notification.FlowTraceManager;
@@ -116,7 +111,6 @@ import org.mule.runtime.core.util.UUID;
 import org.mule.runtime.core.util.concurrent.Latch;
 import org.mule.runtime.core.util.lock.LockFactory;
 import org.mule.runtime.core.util.queue.QueueManager;
-import org.mule.runtime.core.util.rx.Exceptions;
 import org.mule.runtime.core.util.rx.Exceptions.EventDroppedException;
 import org.mule.runtime.extension.api.ExtensionManager;
 
@@ -724,21 +718,6 @@ public class DefaultMuleContext implements MuleContext {
     return injector;
   }
 
-  @Override
-  public ThreadingProfile getDefaultMessageDispatcherThreadingProfile() {
-    return (ThreadingProfile) getRegistry().lookupObject(OBJECT_DEFAULT_MESSAGE_DISPATCHER_THREADING_PROFILE);
-  }
-
-  @Override
-  public ThreadingProfile getDefaultMessageRequesterThreadingProfile() {
-    return (ThreadingProfile) getRegistry().lookupObject(OBJECT_DEFAULT_MESSAGE_REQUESTER_THREADING_PROFILE);
-  }
-
-  @Override
-  public ThreadingProfile getDefaultMessageReceiverThreadingProfile() {
-    return (ThreadingProfile) getRegistry().lookupObject(OBJECT_DEFAULT_MESSAGE_RECEIVER_THREADING_PROFILE);
-  }
-
   /**
    * {@inheritDoc}
    */
@@ -753,11 +732,6 @@ public class DefaultMuleContext implements MuleContext {
     }
 
     return this.streamCloserService;
-  }
-
-  @Override
-  public ThreadingProfile getDefaultThreadingProfile() {
-    return (ThreadingProfile) getRegistry().lookupObject(OBJECT_DEFAULT_THREADING_PROFILE);
   }
 
   /**
