@@ -5,10 +5,10 @@
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
       http://www.mulesoft.org/schema/mule/hello http://www.mulesoft.org/schema/mule/hello/current/mule-hello.xsd">
 
-    <hello:config name="pepe" message="Hello!!!"/>
+    <hello:config name="pepe" message="Hello from extension!"/>
 
     <flow name="main">
-        <poll frequency="1000">
+        <poll frequency="5000">
             <set-payload value=""/>
         </poll>
 
