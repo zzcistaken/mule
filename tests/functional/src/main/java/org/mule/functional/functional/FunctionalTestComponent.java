@@ -8,7 +8,8 @@ package org.mule.functional.functional;
 
 import static org.apache.commons.lang.SystemUtils.LINE_SEPARATOR;
 import static org.mule.functional.functional.FunctionalTestNotification.EVENT_RECEIVED;
-import static org.mule.runtime.core.api.Event.getCurrentEvent;
+import static org.mule.runtime.core.DefaultEventContext.create;
+
 import org.mule.functional.exceptions.FunctionalTestException;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.lifecycle.Disposable;
@@ -157,7 +158,9 @@ public class FunctionalTestComponent extends AbstractAnnotatedObject
    */
   @Override
   public Object onReceive(Object data) throws Exception {
-    MuleEventContext context = new DefaultMuleEventContext(flowConstruct, getCurrentEvent());
+    MuleEventContext context =
+        new DefaultMuleEventContext(flowConstruct,
+                                    Event.builder(create(flowConstruct, "testComponent")).message(Message.of(data)).build());
 
     if (isThrowException()) {
       throwException();

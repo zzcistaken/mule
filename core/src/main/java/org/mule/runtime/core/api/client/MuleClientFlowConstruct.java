@@ -43,7 +43,9 @@ public class MuleClientFlowConstruct implements FlowConstruct {
 
   @Override
   public MessagingExceptionHandler getExceptionListener() {
-    return new DefaultMessagingExceptionStrategy(muleContext);
+    final DefaultMessagingExceptionStrategy es = new DefaultMessagingExceptionStrategy(muleContext);
+    es.setFlowConstruct(this);
+    return es;
   }
 
   @Override

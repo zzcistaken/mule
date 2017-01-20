@@ -6,6 +6,8 @@
  */
 package org.mule.runtime.core;
 
+import static java.util.Objects.requireNonNull;
+
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.metadata.DataType;
@@ -39,6 +41,7 @@ public class DefaultMuleEventContext implements MuleEventContext {
   private final FlowConstruct flow;
 
   public DefaultMuleEventContext(FlowConstruct flow, Event event) {
+    requireNonNull(event);
     this.flow = flow;
     this.event = event;
   }
