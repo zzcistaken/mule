@@ -19,6 +19,7 @@ import static org.mule.runtime.core.util.ExceptionUtils.createErrorEvent;
 import static org.mule.runtime.core.util.ExceptionUtils.putContext;
 import static org.slf4j.LoggerFactory.getLogger;
 import static reactor.core.publisher.Flux.from;
+import static reactor.core.publisher.Flux.just;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.api.lifecycle.Startable;
@@ -39,11 +40,13 @@ import org.mule.runtime.core.context.notification.ServerNotificationManager;
 import org.mule.runtime.core.exception.MessagingException;
 import org.mule.runtime.core.execution.MessageProcessorExecutionTemplate;
 import org.mule.runtime.core.util.NotificationUtils;
+import org.mule.runtime.core.util.Predicate;
 import org.mule.runtime.core.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -58,6 +61,7 @@ import reactor.core.publisher.Flux;
 public abstract class AbstractMessageProcessorChain extends AbstractAnnotatedObject implements MessageProcessorChain {
 
   private static final Logger log = getLogger(AbstractMessageProcessorChain.class);
+  private List<BiFunction<Processor, Function<Publisher<Event>, Publisher<Event>>, Function<Publisher<Event>, Publisher<Event>>>> interceptors;
 
   protected String name;
   protected List<Processor> processors;
@@ -72,6 +76,18 @@ public abstract class AbstractMessageProcessorChain extends AbstractAnnotatedObj
   public AbstractMessageProcessorChain(String name, List<Processor> processors) {
     this.name = name;
     this.processors = processors;
+    // Handle errors
+    interceptors.add((processor, next) -> stream -> from(stream)
+        .transform(next)
+        .mapError(MessagingException.class, handleMessagingException(processor)));
+    // Notify
+    interceptors.add((processor, next) -> stream -> from(stream)
+        .doOnNext(preNotification(processor))
+        .transform(next).doOnNext(postNotification(processor)).doOnError(MessagingException.class, errorNotification(processor)));
+    // Set ThreadLocal Event
+    interceptors.add((processor, next) -> stream -> from(stream)
+        .doOnNext(event -> setCurrentEvent(event))
+        .transform(next).doOnNext(result -> setCurrentEvent(result)));
   }
 
   @Override
@@ -101,25 +117,13 @@ public abstract class AbstractMessageProcessorChain extends AbstractAnnotatedObj
   public Publisher<Event> apply(Publisher<Event> publisher) {
     Flux<Event> stream = from(publisher);
     for (Processor processor : getProcessorsToExecute()) {
-      if (flowConstruct instanceof Pipeline) {
-        ProcessingStrategy processingStrategy = ((Pipeline) flowConstruct).getProcessingStrategy();
-        stream = stream.transform(processingStrategy.onProcessor(processor, processorFunction(processor)));
-      } else {
-        stream = stream.transform(processorFunction(processor));
+      Function<Publisher<Event>, Publisher<Event>> processorFunction = processor;
+      for (BiFunction<Processor, Function<Publisher<Event>, Publisher<Event>>, Function<Publisher<Event>, Publisher<Event>>> interceptor : interceptors) {
+        processorFunction = interceptor.apply(processor, processorFunction);
       }
+      stream.transform(processorFunction);
     }
     return stream;
-  }
-
-  private Function<Publisher<Event>, Publisher<Event>> processorFunction(Processor processor) {
-    return publisher -> from(publisher)
-        .doOnNext(preNotification(processor))
-        .doOnNext(event -> setCurrentEvent(event))
-        .transform(stream -> from(stream.transform(processor)))
-        .mapError(MessagingException.class, handleMessagingException(processor))
-        .doOnNext(result -> setCurrentEvent(result))
-        .doOnNext(postNotification(processor))
-        .doOnError(MessagingException.class, errorNotification(processor));
   }
 
   private Function<MessagingException, MessagingException> handleMessagingException(Processor processor) {
@@ -244,6 +248,10 @@ public abstract class AbstractMessageProcessorChain extends AbstractAnnotatedObj
     this.flowConstruct = flowConstruct;
     this.messageProcessorExecutionTemplate.setFlowConstruct(flowConstruct);
     setFlowConstructIfNeeded(getMessageProcessorsForLifecycle(), flowConstruct);
+
+    if (flowConstruct instanceof Pipeline) {
+      interceptors.add((processor, next) -> ((Pipeline) flowConstruct).getProcessingStrategy().onProcessor(processor, next));
+    }
   }
 
   @Override
