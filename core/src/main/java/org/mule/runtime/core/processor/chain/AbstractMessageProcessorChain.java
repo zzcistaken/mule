@@ -26,8 +26,10 @@ import org.mule.runtime.core.AbstractAnnotatedObject;
 import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.construct.FlowConstruct;
+import org.mule.runtime.core.api.construct.FlowConstructAware;
 import org.mule.runtime.core.api.construct.MessageProcessorPathResolver;
 import org.mule.runtime.core.api.construct.Pipeline;
+import org.mule.runtime.core.api.context.MuleContextAware;
 import org.mule.runtime.core.api.exception.MessagingExceptionHandler;
 import org.mule.runtime.core.api.exception.MessagingExceptionHandlerAware;
 import org.mule.runtime.core.api.processor.MessageProcessorChain;
@@ -38,6 +40,9 @@ import org.mule.runtime.core.context.notification.MessageProcessorNotification;
 import org.mule.runtime.core.context.notification.ServerNotificationManager;
 import org.mule.runtime.core.exception.MessagingException;
 import org.mule.runtime.core.execution.MessageProcessorExecutionTemplate;
+import org.mule.runtime.core.processor.DefaultMessageProcessorExecutionMediator;
+import org.mule.runtime.core.processor.InterceptorMessageProcessorExecutionMediator;
+import org.mule.runtime.core.processor.MessageProcessorExecutionMediator;
 import org.mule.runtime.core.util.NotificationUtils;
 import org.mule.runtime.core.util.StringUtils;
 
@@ -64,6 +69,7 @@ public abstract class AbstractMessageProcessorChain extends AbstractAnnotatedObj
   protected MuleContext muleContext;
   protected FlowConstruct flowConstruct;
   protected MessageProcessorExecutionTemplate messageProcessorExecutionTemplate = createExecutionTemplate();
+  private MessageProcessorExecutionMediator messageProcessorExecutionMediator;
 
   public AbstractMessageProcessorChain(List<Processor> processors) {
     this(null, processors);
@@ -87,6 +93,9 @@ public abstract class AbstractMessageProcessorChain extends AbstractAnnotatedObj
   }
 
   protected Event doProcess(Event event) throws MuleException {
+    //TODO find a better way to do this!
+    createMessageProcessorExecutionMediator();
+
     for (Processor processor : getProcessorsToExecute()) {
       setCurrentEvent(event);
       event = messageProcessorExecutionTemplate.execute(processor, event);
@@ -99,10 +108,14 @@ public abstract class AbstractMessageProcessorChain extends AbstractAnnotatedObj
 
   @Override
   public Publisher<Event> apply(Publisher<Event> publisher) {
+    //TODO find a better way to do this!
+    createMessageProcessorExecutionMediator();
+
     Flux<Event> stream = from(publisher);
     for (Processor processor : getProcessorsToExecute()) {
       if (flowConstruct instanceof Pipeline) {
         ProcessingStrategy processingStrategy = ((Pipeline) flowConstruct).getProcessingStrategy();
+        // TODO just later check if we can implement an InterceptorProcessingStrategy
         stream = stream.transform(processingStrategy.onProcessor(processor, processorFunction(processor)));
       } else {
         stream = stream.transform(processorFunction(processor));
@@ -111,11 +124,24 @@ public abstract class AbstractMessageProcessorChain extends AbstractAnnotatedObj
     return stream;
   }
 
+  private void createMessageProcessorExecutionMediator() {
+    messageProcessorExecutionMediator =
+        muleContext.getMessageProcessorInterceptorManager().isInterceptionEnabled()
+            ? new InterceptorMessageProcessorExecutionMediator() : new DefaultMessageProcessorExecutionMediator();
+
+    if (messageProcessorExecutionMediator instanceof MuleContextAware) {
+      ((MuleContextAware) messageProcessorExecutionMediator).setMuleContext(muleContext);
+    }
+    if (messageProcessorExecutionMediator instanceof FlowConstructAware) {
+      ((FlowConstructAware) messageProcessorExecutionMediator).setFlowConstruct(flowConstruct);
+    }
+  }
+
   private Function<Publisher<Event>, Publisher<Event>> processorFunction(Processor processor) {
     return publisher -> from(publisher)
         .doOnNext(preNotification(processor))
         .doOnNext(event -> setCurrentEvent(event))
-        .transform(stream -> from(stream.transform(processor)))
+        .transform(stream -> messageProcessorExecutionMediator.apply(publisher, processor))
         .mapError(MessagingException.class, handleMessagingException(processor))
         .doOnNext(result -> setCurrentEvent(result))
         .doOnNext(postNotification(processor))
