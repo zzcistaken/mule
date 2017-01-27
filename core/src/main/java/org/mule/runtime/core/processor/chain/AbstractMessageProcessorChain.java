@@ -313,7 +313,20 @@ public abstract class AbstractMessageProcessorChain extends AbstractAnnotatedObj
           } else {
             return publisher -> from(publisher)
                 .doOnNext(e -> handler.before(e))
-                .flatMap(event -> fromFuture(handler.around(event, () -> Mono.just(event).transform(next).toFuture())))
+                .flatMap(event -> fromFuture(handler.around(event, new NextAction()
+                {
+                  @Override
+                  public CompletableFuture<Event> proceed()
+                  {
+                    return Mono.just(event).transform(next).toFuture());
+                  }
+
+                  @Override
+                  public CompletableFuture<Event> skip()
+                  {
+                    return CompletableFuture.completedFuture(event);
+                  }
+                }))
                 .doOnNext(e -> handler.after(e));
 
           }
@@ -344,6 +357,8 @@ public abstract class AbstractMessageProcessorChain extends AbstractAnnotatedObj
   public interface NextAction {
 
     CompletableFuture<Event> proceed();
+
+    CompletableFuture<Event> skip();
   }
 
 
