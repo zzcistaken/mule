@@ -11,6 +11,7 @@ import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.construct.FlowConstruct;
 import org.mule.runtime.core.api.exception.MessagingExceptionHandler;
 import org.mule.runtime.core.api.processor.Processor;
+import org.mule.runtime.core.api.processor.ReactiveProcessor;
 
 import java.util.function.Function;
 
@@ -51,13 +52,10 @@ public interface ProcessingStrategy {
   /**
    * Enrich {@link Processor} function by adding pre/post operators to implement processing strategy behaviour.
    *
-   * @param processor processor instance.
-   * @param processorFunction processor function
    * @return enriched processor function
    */
-  default Function<Publisher<Event>, Publisher<Event>> onProcessor(Processor processor,
-                                                                   Function<Publisher<Event>, Publisher<Event>> processorFunction) {
-    return publisher -> from(publisher).transform(processorFunction);
+  default Function<ReactiveProcessor, ReactiveProcessor> onProcessor() {
+    return processor -> publisher -> from(publisher).transform(processor);
   }
 
   /**

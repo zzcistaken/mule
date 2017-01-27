@@ -20,6 +20,7 @@ import static org.mule.runtime.core.util.ExceptionUtils.putContext;
 import static org.slf4j.LoggerFactory.getLogger;
 import static reactor.core.publisher.Flux.from;
 import static reactor.core.publisher.Flux.just;
+import static reactor.core.publisher.Mono.fromFuture;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.api.lifecycle.Startable;
@@ -34,6 +35,7 @@ import org.mule.runtime.core.api.exception.MessagingExceptionHandlerAware;
 import org.mule.runtime.core.api.processor.MessageProcessorChain;
 import org.mule.runtime.core.api.processor.MessageProcessorPathElement;
 import org.mule.runtime.core.api.processor.Processor;
+import org.mule.runtime.core.api.processor.ReactiveProcessor;
 import org.mule.runtime.core.api.processor.strategy.ProcessingStrategy;
 import org.mule.runtime.core.context.notification.MessageProcessorNotification;
 import org.mule.runtime.core.context.notification.ServerNotificationManager;
@@ -42,10 +44,13 @@ import org.mule.runtime.core.execution.MessageProcessorExecutionTemplate;
 import org.mule.runtime.core.util.NotificationUtils;
 import org.mule.runtime.core.util.Predicate;
 import org.mule.runtime.core.util.StringUtils;
+import org.mule.runtime.dsl.api.component.config.ComponentIdentifier;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -53,6 +58,7 @@ import java.util.function.Function;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 /**
  * Builder needs to return a composite rather than the first MessageProcessor in the chain. This is so that if this chain is
@@ -61,7 +67,7 @@ import reactor.core.publisher.Flux;
 public abstract class AbstractMessageProcessorChain extends AbstractAnnotatedObject implements MessageProcessorChain {
 
   private static final Logger log = getLogger(AbstractMessageProcessorChain.class);
-  private List<BiFunction<Processor, Function<Publisher<Event>, Publisher<Event>>, Function<Publisher<Event>, Publisher<Event>>>> interceptors;
+  private List<BiFunction<Processor, ReactiveProcessor, ReactiveProcessor>> interceptors;
 
   protected String name;
   protected List<Processor> processors;
@@ -117,8 +123,8 @@ public abstract class AbstractMessageProcessorChain extends AbstractAnnotatedObj
   public Publisher<Event> apply(Publisher<Event> publisher) {
     Flux<Event> stream = from(publisher);
     for (Processor processor : getProcessorsToExecute()) {
-      Function<Publisher<Event>, Publisher<Event>> processorFunction = processor;
-      for (BiFunction<Processor, Function<Publisher<Event>, Publisher<Event>>, Function<Publisher<Event>, Publisher<Event>>> interceptor : interceptors) {
+      ReactiveProcessor processorFunction = processor;
+      for (BiFunction<Processor, ReactiveProcessor, ReactiveProcessor> interceptor : interceptors) {
         processorFunction = interceptor.apply(processor, processorFunction);
       }
       stream.transform(processorFunction);
@@ -250,7 +256,7 @@ public abstract class AbstractMessageProcessorChain extends AbstractAnnotatedObj
     setFlowConstructIfNeeded(getMessageProcessorsForLifecycle(), flowConstruct);
 
     if (flowConstruct instanceof Pipeline) {
-      interceptors.add((processor, next) -> ((Pipeline) flowConstruct).getProcessingStrategy().onProcessor(processor, next));
+      interceptors.add(0, (processor, next) -> ((Pipeline) flowConstruct).getProcessingStrategy().onProcessor().apply(next));
     }
   }
 
@@ -284,5 +290,61 @@ public abstract class AbstractMessageProcessorChain extends AbstractAnnotatedObj
   public void dispose() {
     disposeIfNeeded(getMessageProcessorsForLifecycle(), log);
   }
+
+
+
+  class InterceptorAdaptor implements BiFunction<Processor, ReactiveProcessor, ReactiveProcessor> {
+
+    InterceptionHandler handler;
+
+    public InterceptorAdaptor(InterceptionHandler handler) {
+      this.handler = handler;
+    }
+
+    @Override
+    public ReactiveProcessor apply(Processor processor, ReactiveProcessor next) {
+      if (handler.pointcut().evaluate(processor)) {
+        try {
+          if (handler.getClass().getMethod("around").isDefault()) {
+            return publisher -> from(publisher)
+                .doOnNext(e -> handler.before(e))
+                .transform(next)
+                .doOnNext(e -> handler.after(e));
+          } else {
+            return publisher -> from(publisher)
+                .doOnNext(e -> handler.before(e))
+                .flatMap(event -> fromFuture(handler.around(event, () -> Mono.just(event).transform(next).toFuture())))
+                .doOnNext(e -> handler.after(e));
+
+          }
+        } catch (NoSuchMethodException e) {
+          e.printStackTrace();
+          return null;
+        }
+
+      } else {
+        return next;
+      }
+    }
+  }
+  public interface InterceptionHandler {
+
+
+    Predicate<Processor> pointcut();
+
+    default void before(Event event) {};
+
+    default CompletableFuture<Event> around(Event event, NextAction next) {
+      return next.proceed();
+    };
+
+    default void after(Event event) {}
+  }
+
+  public interface NextAction {
+
+    CompletableFuture<Event> proceed();
+  }
+
 
 }
