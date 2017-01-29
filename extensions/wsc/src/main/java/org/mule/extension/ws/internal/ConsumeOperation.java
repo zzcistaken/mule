@@ -21,6 +21,7 @@ import org.mule.extension.ws.internal.metadata.ConsumeOutputResolver;
 import org.mule.extension.ws.internal.metadata.MessageBuilderResolver;
 import org.mule.extension.ws.internal.metadata.OperationKeysResolver;
 import org.mule.extension.ws.internal.metadata.WscAttributesResolver;
+import org.mule.runtime.core.util.XMLUtils;
 import org.mule.runtime.core.util.collection.ImmutableListCollector;
 import org.mule.runtime.extension.api.annotation.OnException;
 import org.mule.runtime.extension.api.annotation.error.Throws;
@@ -32,7 +33,6 @@ import org.mule.runtime.extension.api.annotation.param.NullSafe;
 import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.UseConfig;
 import org.mule.runtime.extension.api.runtime.operation.Result;
-import org.mule.runtime.module.xml.util.XMLUtils;
 
 import com.google.common.collect.ImmutableList;
 

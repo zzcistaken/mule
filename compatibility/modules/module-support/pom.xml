@@ -95,6 +95,13 @@
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
+        <!--// TODO(pablo.kraan): MULE-11558 - used on tests -->
+        <dependency>
+            <groupId>org.mule.modules</groupId>
+            <artifactId>mule-module-xml</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
 
         <!--TODO: MULE-10837-->
         <dependency>
@@ -144,7 +151,7 @@
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
-        <!--// TODO(pablo.kraan): MULE-11558 - used on different places -->
+        <!--// TODO(pablo.kraan): MULE-11558 - used on Mx4jAgent -->
         <dependency>
             <groupId>org.mule.modules</groupId>
             <artifactId>mule-module-xml</artifactId>

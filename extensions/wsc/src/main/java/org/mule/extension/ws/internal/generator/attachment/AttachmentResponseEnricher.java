@@ -8,6 +8,7 @@ package org.mule.extension.ws.internal.generator.attachment;
 
 import static java.lang.String.format;
 import static org.mule.extension.ws.internal.util.WscMetadataTypeUtils.getAttachmentFields;
+import static org.mule.runtime.core.util.XMLUtils.toXml;
 import org.mule.extension.ws.api.WscMultipartPayload;
 import org.mule.extension.ws.api.exception.InvalidWsdlException;
 import org.mule.extension.ws.internal.ConsumeOperation;
@@ -16,7 +17,6 @@ import org.mule.extension.ws.internal.introspection.WsdlIntrospecter;
 import org.mule.metadata.api.TypeLoader;
 import org.mule.metadata.api.model.MetadataType;
 import org.mule.metadata.api.model.ObjectFieldType;
-import org.mule.runtime.module.xml.util.XMLUtils;
 
 import java.util.List;
 
@@ -56,7 +56,7 @@ public abstract class AttachmentResponseEnricher {
     if (!attachmentParams.isEmpty()) {
       processResponseAttachments(response, attachmentParams, exchange);
     }
-    return XMLUtils.toXml(response);
+    return toXml(response);
   }
 
   /**

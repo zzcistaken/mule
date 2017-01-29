@@ -7,13 +7,13 @@
 package org.mule.test.integration.streaming;
 
 import static org.junit.Assert.assertTrue;
-import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.runtime.core.util.XMLUtils;
 import org.mule.runtime.core.util.concurrent.Latch;
 import org.mule.runtime.module.xml.stax.DelegateXMLStreamReader;
 import org.mule.runtime.module.xml.stax.StaxSource;
-import org.mule.runtime.module.xml.util.XMLUtils;
 import org.mule.tck.probe.PollingProber;
 import org.mule.tck.probe.Probe;
+import org.mule.test.AbstractIntegrationTestCase;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

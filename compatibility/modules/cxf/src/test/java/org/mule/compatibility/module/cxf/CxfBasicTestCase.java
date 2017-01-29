@@ -11,18 +11,14 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mule.runtime.module.http.api.client.HttpRequestOptionsBuilder.newOptions;
 import static org.mule.service.http.api.HttpConstants.Methods.POST;
-
 import org.mule.runtime.api.metadata.MediaType;
 import org.mule.runtime.core.api.client.MuleClient;
 import org.mule.runtime.core.api.message.InternalMessage;
 import org.mule.runtime.core.util.IOUtils;
 import org.mule.runtime.module.http.api.client.HttpRequestOptions;
-import org.mule.runtime.module.xml.util.XMLUtils;
 import org.mule.tck.junit4.rule.DynamicPort;
 
 import java.io.InputStream;
-
-import javax.xml.transform.TransformerFactoryConfigurationError;
 
 import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.Rule;
@@ -49,11 +45,7 @@ public class CxfBasicTestCase extends AbstractCxfOverHttpExtensionTestCase {
     super.doSetUp();
     echoWsdl = IOUtils.getResourceAsString("cxf-echo-service.wsdl", getClass());
     XMLUnit.setIgnoreWhitespace(true);
-    try {
-      XMLUnit.getTransformerFactory();
-    } catch (TransformerFactoryConfigurationError e) {
-      XMLUnit.setTransformerFactory(XMLUtils.TRANSFORMER_FACTORY_JDK5);
-    }
+    XMLUnit.getTransformerFactory();
   }
 
   @Test

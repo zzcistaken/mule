@@ -6,7 +6,6 @@
  */
 package org.mule.test.xml.config;
 
-import org.mule.runtime.module.xml.util.XMLUtils;
 
 import javax.xml.transform.ErrorListener;
 import javax.xml.transform.Source;
@@ -14,7 +13,6 @@ import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.URIResolver;
 
 public class CustomXsltTransformerFactory extends TransformerFactory {
@@ -24,14 +22,7 @@ public class CustomXsltTransformerFactory extends TransformerFactory {
   public CustomXsltTransformerFactory() {
     super();
 
-    TransformerFactory tf;
-    try {
-      tf = TransformerFactory.newInstance();
-    } catch (TransformerFactoryConfigurationError e) {
-      System.setProperty("javax.xml.transform.TransformerFactory", XMLUtils.TRANSFORMER_FACTORY_JDK5);
-      tf = TransformerFactory.newInstance();
-    }
-    this.delegate = tf;
+    this.delegate = TransformerFactory.newInstance();
   }
 
   public boolean equals(Object obj) {
