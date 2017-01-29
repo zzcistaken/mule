@@ -95,12 +95,6 @@
         <!-- Mule Runtime Dependencies -->
         <dependency>
             <groupId>org.mule.modules</groupId>
-            <artifactId>mule-module-xml</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mule.modules</groupId>
             <artifactId>mule-module-management</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>

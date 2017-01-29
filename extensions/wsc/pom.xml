@@ -101,6 +101,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <!--// TODO(pablo.kraan): MULE-11558 - used on different places-->
         <dependency>
             <groupId>org.mule.modules</groupId>
             <artifactId>mule-module-xml</artifactId>
