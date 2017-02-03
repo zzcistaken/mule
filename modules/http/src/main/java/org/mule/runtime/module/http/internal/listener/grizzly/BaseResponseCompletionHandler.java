@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 
 public abstract class BaseResponseCompletionHandler extends EmptyCompletionHandler<WriteResult> {
 
-  private final Logger logger = LoggerFactory.getLogger(this.getClass());
+  private static final Logger logger = LoggerFactory.getLogger(BaseResponseCompletionHandler.class);
 
   protected HttpResponsePacket buildHttpResponsePacket(HttpRequestPacket sourceRequest, HttpResponse httpResponse) {
     final HttpResponsePacket.Builder responsePacketBuilder = HttpResponsePacket.builder(sourceRequest)
