@@ -12,9 +12,11 @@ import static org.junit.Assert.assertThat;
 
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.construct.Flow;
+import org.mule.runtime.core.api.construct.Pipeline;
+import org.mule.runtime.core.api.processor.ReactiveProcessor;
+import org.mule.runtime.core.api.processor.Sink;
 import org.mule.runtime.core.api.processor.strategy.ProcessingStrategy;
 import org.mule.runtime.core.api.processor.strategy.ProcessingStrategyFactory;
-import org.mule.runtime.core.processor.strategy.AbstractProcessingStrategy;
 import org.mule.runtime.core.processor.strategy.SynchronousProcessingStrategyFactory;
 import org.mule.runtime.core.processor.strategy.DefaultFlowProcessingStrategyFactory;
 import org.mule.runtime.core.processor.strategy.LegacyAsynchronousProcessingStrategyFactory;
@@ -76,7 +78,8 @@ public class FlowProcessingStrategyConfigTestCase extends AbstractIntegrationTes
     return flow.getProcessingStrategyFactory();
   }
 
-  public static class CustomProcessingStrategyFactory extends AbstractProcessingStrategy implements ProcessingStrategyFactory {
+  public static class CustomProcessingStrategyFactory implements ProcessingStrategyFactory, ProcessingStrategy
+  {
 
     String foo;
 
@@ -87,6 +90,12 @@ public class FlowProcessingStrategyConfigTestCase extends AbstractIntegrationTes
     @Override
     public ProcessingStrategy create(MuleContext muleContext, String schedulersNamePrefix) {
       return this;
+    }
+
+    @Override
+    public Sink createSink(Pipeline pipeline, ReactiveProcessor processor)
+    {
+      return null;
     }
   }
 

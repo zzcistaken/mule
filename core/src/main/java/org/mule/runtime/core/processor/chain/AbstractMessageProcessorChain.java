@@ -121,7 +121,7 @@ public abstract class AbstractMessageProcessorChain extends AbstractAnnotatedObj
         new ArrayList<>();
 
     if (flowConstruct instanceof Pipeline) {
-      interceptors.add((processor, next) -> ((Pipeline) flowConstruct).getProcessingStrategy().onProcessor(processor, next));
+      interceptors.add((processor, next) -> ((Pipeline) flowConstruct).getProcessingStrategy().onProcessor().apply(processor));
     }
 
     // Handle errors

@@ -9,25 +9,21 @@ package org.mule.runtime.core.processor.strategy;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.mule.runtime.core.api.processor.ReactiveProcessor.ProcessingType.BLOCKING;
 import static org.mule.runtime.core.api.scheduler.SchedulerConfig.config;
-import static reactor.core.publisher.Flux.from;
-import static reactor.core.publisher.Flux.just;
+import static org.mule.runtime.core.processor.strategy.ProcessingStrategyUtils.FAIL_IF_TX_ACTIVE_EVENT_CONSUMER;
 
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.lifecycle.Startable;
 import org.mule.runtime.api.lifecycle.Stoppable;
 import org.mule.runtime.api.scheduler.Scheduler;
-import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.MuleContext;
-import org.mule.runtime.core.api.construct.FlowConstruct;
+import org.mule.runtime.core.api.construct.Pipeline;
 import org.mule.runtime.core.api.exception.MessagingExceptionHandler;
+import org.mule.runtime.core.api.processor.ReactiveProcessor;
 import org.mule.runtime.core.api.processor.strategy.ProcessingStrategy;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
-
-import org.reactivestreams.Publisher;
-import reactor.core.scheduler.Schedulers;
 
 /**
  * Creates {@link WorkQueueProcessingStrategy} instances. This processing strategy dispatches incoming messages to a work queue
@@ -38,17 +34,13 @@ import reactor.core.scheduler.Schedulers;
  *
  * @since 4.0
  */
-public class WorkQueueProcessingStrategyFactory extends AbstractRingBufferProcessingStrategyFactory {
+public class WorkQueueProcessingStrategyFactory extends AbstractRingBufferProcessingStrategyFactory
+    implements SchedulingConfig {
 
   private static int DEFAULT_MAX_CONCURRENCY = 16;
   private int maxConcurrency = DEFAULT_MAX_CONCURRENCY;
 
-  /**
-   * Configures the maximum concurrency permitted. This will typically be used to limit the number of concurrent blocking tasks
-   * using the IO pool, but will also limit the number of CPU_LIGHT threads in used concurrently.
-   *
-   * @param maxConcurrency
-   */
+  @Override
   public void setMaxConcurrency(int maxConcurrency) {
     if (maxConcurrency > 1) {
       throw new IllegalArgumentException("maxConcurrency must be at least 1");
@@ -65,9 +57,9 @@ public class WorkQueueProcessingStrategyFactory extends AbstractRingBufferProces
                                                                        MILLISECONDS),
                                            () -> muleContext.getSchedulerService().customScheduler(config()
                                                .withName(schedulersNamePrefix + "." + RING_BUFFER_SCHEDULER_NAME_SUFFIX)
-                                               .withMaxConcurrentTasks(getSubscriberCount() + 1)),
+                                               .withMaxConcurrentTasks(maxConcurrency + 1)),
                                            getBufferSize(),
-                                           getSubscriberCount(),
+                                           maxConcurrency,
                                            getWaitStrategy(),
                                            muleContext);
   }
@@ -91,20 +83,18 @@ public class WorkQueueProcessingStrategyFactory extends AbstractRingBufferProces
     public WorkQueueProcessingStrategy(Supplier<Scheduler> ioSchedulerSupplier, int concurrency,
                                        Consumer<Scheduler> schedulerStopper,
                                        Supplier<Scheduler> ringBufferSchedulerSupplier,
-                                       int bufferSize, int subscriberCount, String waitStrategy, MuleContext muleContext) {
-      super(ringBufferSchedulerSupplier, bufferSize, subscriberCount, waitStrategy, muleContext);
+                                       int bufferSize, int subscriberCount, WaitStrategy waitStrategy, MuleContext muleContext) {
+      super(ringBufferSchedulerSupplier, bufferSize, subscriberCount, waitStrategy, FAIL_IF_TX_ACTIVE_EVENT_CONSUMER,
+            muleContext);
       this.ioSchedulerSupplier = ioSchedulerSupplier;
       this.schedulerStopper = schedulerStopper;
       this.concurrency = concurrency;
     }
 
     @Override
-    public Function<Publisher<Event>, Publisher<Event>> onPipeline(FlowConstruct flowConstruct,
-                                                                   Function<Publisher<Event>, Publisher<Event>> pipelineFunction,
-                                                                   MessagingExceptionHandler messagingExceptionHandler) {
-      return publisher -> from(publisher)
-          .flatMap(event -> just(event).transform(pipelineFunction).subscribeOn(Schedulers.fromExecutorService(ioScheduler)),
-                   concurrency);
+    public Function<ReactiveProcessor, ReactiveProcessor> onPipeline(Pipeline pipeline,
+                                                                     MessagingExceptionHandler messagingExceptionHandler) {
+      return ProcessingStrategyUtils.scheduleBlocking(ioScheduler, concurrency);
     }
 
     @Override

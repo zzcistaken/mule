@@ -11,7 +11,6 @@ import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mule.runtime.core.processor.strategy.AbstractRingBufferProcessingStrategyFactory.DEFAULT_BUFFER_SIZE;
-import static org.mule.runtime.core.processor.strategy.AbstractRingBufferProcessingStrategyFactory.DEFAULT_SUBSCRIBER_COUNT;
 import static org.mule.runtime.core.processor.strategy.AbstractRingBufferProcessingStrategyFactory.DEFAULT_WAIT_STRATEGY;
 
 import org.mule.runtime.core.api.MuleContext;
@@ -42,7 +41,7 @@ public class DefaultProcessingStrategyTestCase extends ProactorProcessingStrateg
                                              MAX_VALUE,
                                              () -> blocking,
                                              DEFAULT_BUFFER_SIZE,
-                                             DEFAULT_SUBSCRIBER_COUNT,
+                                             1,
                                              DEFAULT_WAIT_STRATEGY,
                                              muleContext);
   }

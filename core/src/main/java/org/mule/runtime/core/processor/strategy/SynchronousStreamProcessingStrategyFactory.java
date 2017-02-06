@@ -6,13 +6,14 @@
  */
 package org.mule.runtime.core.processor.strategy;
 
-import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.MuleContext;
+import org.mule.runtime.core.api.construct.Pipeline;
 import org.mule.runtime.core.api.processor.Processor;
+import org.mule.runtime.core.api.processor.ReactiveProcessor;
+import org.mule.runtime.core.api.processor.Sink;
 import org.mule.runtime.core.api.processor.strategy.ProcessingStrategy;
 import org.mule.runtime.core.api.processor.strategy.ProcessingStrategyFactory;
-
-import java.util.function.Consumer;
+import org.mule.runtime.core.processor.strategy.sink.DirectSink;
 
 /**
  * This processing strategy processes all {@link Processor}'s in the caller thread serializing each event using a shared event
@@ -20,20 +21,17 @@ import java.util.function.Consumer;
  */
 public class SynchronousStreamProcessingStrategyFactory implements ProcessingStrategyFactory {
 
-  public static final ProcessingStrategy SYNCHRONOUS_STREAM_PROCESSING_STRATEGY_INSTANCE = new AbstractProcessingStrategy() {
+  public static final ProcessingStrategy SYNCHRONOUS_STREAM_PROCESSING_STRATEGY_INSTANCE = new ProcessingStrategy() {
 
     @Override
     public boolean isSynchronous() {
       return true;
     }
 
-    /*
-     * This processing strategy supports transactions so we override default check that fails on transactions.
-     */
     @Override
-    protected Consumer<Event> createOnEventConsumer() {
-      return event -> {
-      };
+    public Sink createSink(Pipeline pipeline, ReactiveProcessor processor) {
+      return new DirectSink(processor, event -> {
+      });
     }
   };
 

@@ -13,8 +13,8 @@ import java.time.Duration;
 import java.util.function.Consumer;
 
 /**
- * Used to dispatch {@link Event}'s asynchronously for processing. The result of asynchronous processing can be obtained by
- * subscribing to the {@link Event}'s {@link EventContext}.
+ * Used to dispatch {@link Event}'s for processing. The result of processing can be obtained by subscribing to the {@link Event}'s
+ * {@link EventContext}.
  * <p/>
  * All Sinks must support concurrent calls from multiple publishers and it is then up to each implementation to determine how to
  * handle this, i.e.

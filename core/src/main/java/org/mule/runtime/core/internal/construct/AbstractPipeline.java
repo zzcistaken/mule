@@ -43,6 +43,7 @@ import org.mule.runtime.core.api.processor.MessageProcessorChainBuilder;
 import org.mule.runtime.core.api.processor.MessageProcessorContainer;
 import org.mule.runtime.core.api.processor.MessageProcessorPathElement;
 import org.mule.runtime.core.api.processor.Processor;
+import org.mule.runtime.core.api.processor.ReactiveProcessor;
 import org.mule.runtime.core.api.processor.Sink;
 import org.mule.runtime.core.api.processor.strategy.ProcessingStrategy;
 import org.mule.runtime.core.api.processor.strategy.ProcessingStrategyFactory;
@@ -283,9 +284,9 @@ public abstract class AbstractPipeline extends AbstractFlowConstruct implements 
     createFlowMap();
   }
 
-  protected Function<Publisher<Event>, Publisher<Event>> processFlowFunction() {
+  protected ReactiveProcessor processFlowFunction() {
     return stream -> from(stream)
-        .transform(processingStrategy.onPipeline(this, pipeline))
+        .transform(processingStrategy.onPipeline(this).apply(pipeline))
         .doOnNext(response -> response.getContext().success(response))
         .doOnError(MessagingException.class, handleError())
         .doOnError(EventDroppedException.class, ede -> {
@@ -434,6 +435,7 @@ public abstract class AbstractPipeline extends AbstractFlowConstruct implements 
     sink = null;
     stopIfStoppable(processingStrategy);
     stopIfStoppable(pipeline);
+    eventContextCache.invalidateAll();
     super.doStop();
   }
 

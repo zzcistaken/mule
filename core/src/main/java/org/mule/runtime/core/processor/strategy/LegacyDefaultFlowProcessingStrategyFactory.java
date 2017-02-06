@@ -8,22 +8,21 @@ package org.mule.runtime.core.processor.strategy;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.mule.runtime.core.api.scheduler.SchedulerConfig.config;
+import static org.mule.runtime.core.processor.strategy.ProcessingStrategyUtils.NOP_EVENT_CONSUMER;
 import static org.mule.runtime.core.processor.strategy.SynchronousProcessingStrategyFactory.SYNCHRONOUS_PROCESSING_STRATEGY_INSTANCE;
 import static org.mule.runtime.core.transaction.TransactionCoordination.isTransactionActive;
 import static reactor.core.publisher.Flux.from;
 import static reactor.core.publisher.Mono.just;
 
 import org.mule.runtime.api.scheduler.Scheduler;
-import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.MuleContext;
-import org.mule.runtime.core.api.construct.FlowConstruct;
+import org.mule.runtime.core.api.construct.Pipeline;
+import org.mule.runtime.core.api.processor.ReactiveProcessor;
 import org.mule.runtime.core.api.processor.strategy.ProcessingStrategy;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
-
-import org.reactivestreams.Publisher;
 
 /**
  * This factory's processing strategy uses the 'asynchronous' strategy where possible, but if an event is synchronous it processes
@@ -47,30 +46,20 @@ public class LegacyDefaultFlowProcessingStrategyFactory extends LegacyAsynchrono
 
     public LegacyDefaultFlowProcessingStrategy(Supplier<Scheduler> schedulerSupplier, Consumer<Scheduler> schedulerStopper,
                                                MuleContext muleContext) {
-      super(schedulerSupplier, schedulerStopper, muleContext);
+      super(schedulerSupplier, schedulerStopper, NOP_EVENT_CONSUMER, muleContext);
     }
 
     @Override
-    public Function<Publisher<Event>, Publisher<Event>> onPipeline(FlowConstruct flowConstruct,
-                                                                   Function<Publisher<Event>, Publisher<Event>> pipelineFunction) {
-      return publisher -> from(publisher).concatMap(request -> {
-        if (canProcessAsync(request)) {
-          return just(request).transform(super.onPipeline(flowConstruct, pipelineFunction));
+    public Function<ReactiveProcessor, ReactiveProcessor> onPipeline(Pipeline pipeline) {
+      return processor -> publisher -> from(publisher).concatMap(request -> {
+        if (!isTransactionActive()) {
+          return just(request).transform(super.onPipeline(pipeline).apply(processor));
         } else {
-          return just(request).transform(SYNCHRONOUS_PROCESSING_STRATEGY_INSTANCE.onPipeline(flowConstruct, pipelineFunction));
+          return just(request)
+              .transform(SYNCHRONOUS_PROCESSING_STRATEGY_INSTANCE.onPipeline(pipeline).apply(processor));
         }
       });
     }
 
-    protected boolean canProcessAsync(Event event) {
-      return !isTransactionActive();
-    }
-
-    @Override
-    protected Consumer<Event> createOnEventConsumer() {
-      // Do nothing given event should still be processed when transaction is active
-      return event -> {
-      };
-    }
   }
 }

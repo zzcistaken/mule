@@ -12,9 +12,10 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.internal.matchers.ThrowableMessageMatcher.hasMessage;
-import static org.mule.runtime.core.processor.strategy.AbstractProcessingStrategy.TRANSACTIONAL_ERROR_MESSAGE;
 import static org.mule.runtime.core.processor.strategy.AbstractRingBufferProcessingStrategyFactory.DEFAULT_BUFFER_SIZE;
 import static org.mule.runtime.core.processor.strategy.AbstractRingBufferProcessingStrategyFactory.DEFAULT_WAIT_STRATEGY;
+import static org.mule.runtime.core.processor.strategy.ProcessingStrategyUtils.FAIL_IF_TX_ACTIVE_EVENT_CONSUMER;
+import static org.mule.runtime.core.processor.strategy.ProcessingStrategyUtils.TRANSACTIONAL_ERROR_MESSAGE;
 
 import org.mule.runtime.core.api.DefaultMuleException;
 import org.mule.runtime.core.api.MuleContext;
@@ -24,7 +25,6 @@ import org.mule.runtime.core.processor.strategy.AbstractRingBufferProcessingStra
 import org.mule.runtime.core.transaction.TransactionCoordination;
 import org.mule.tck.testmodels.mule.TestTransaction;
 
-import org.hamcrest.Matchers;
 import ru.yandex.qatools.allure.annotations.Description;
 import ru.yandex.qatools.allure.annotations.Features;
 import ru.yandex.qatools.allure.annotations.Stories;
@@ -43,6 +43,7 @@ public class ReactorProcessingStrategyTestCase extends AbstractProcessingStrateg
                                             DEFAULT_BUFFER_SIZE,
                                             1,
                                             DEFAULT_WAIT_STRATEGY,
+                                            FAIL_IF_TX_ACTIVE_EVENT_CONSUMER,
                                             muleContext);
   }
 

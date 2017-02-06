@@ -6,18 +6,14 @@
  */
 package org.mule.runtime.core.api.processor.strategy;
 
-import static reactor.core.publisher.Flux.from;
-
 import org.mule.runtime.core.api.Event;
-import org.mule.runtime.core.api.construct.FlowConstruct;
 import org.mule.runtime.core.api.construct.Pipeline;
 import org.mule.runtime.core.api.exception.MessagingExceptionHandler;
 import org.mule.runtime.core.api.processor.Processor;
+import org.mule.runtime.core.api.processor.ReactiveProcessor;
 import org.mule.runtime.core.api.processor.Sink;
 
 import java.util.function.Function;
-
-import org.reactivestreams.Publisher;
 
 /**
  * Determines how a list of message processors should processed.
@@ -28,48 +24,41 @@ public interface ProcessingStrategy {
    * Creates instances of {@link Sink} to be used for emitting {@link Event}'s to be processed. Each {@link Sink} should be used
    * independent streams that implement the {@link Pipeline}.
    *
-   * @param flowConstruct pipeline instance.
-   * @param pipelineFunction function representing the pipeline.
+   * @param pipeline pipeline instance.
+   * @param processor processor representing the pipeline.
    * @return new sink instance
    */
-  Sink createSink(FlowConstruct flowConstruct, Function<Publisher<Event>, Publisher<Event>> pipelineFunction);
+  Sink createSink(Pipeline pipeline, ReactiveProcessor processor);
 
   /**
    * Enrich {@link Processor} function by adding pre/post operators to implement processing strategy behaviour.
    *
-   * @param flowConstruct pipeline instance.
-   * @param pipelineFunction pipeline function.
+   * @param pipeline pipeline instance.
    * @return enriched pipeline function/
    */
-  default Function<Publisher<Event>, Publisher<Event>> onPipeline(FlowConstruct flowConstruct,
-                                                                  Function<Publisher<Event>, Publisher<Event>> pipelineFunction) {
-    return onPipeline(flowConstruct, pipelineFunction, flowConstruct.getExceptionListener());
+  default Function<ReactiveProcessor, ReactiveProcessor> onPipeline(Pipeline pipeline) {
+    return onPipeline(pipeline, pipeline.getExceptionListener());
   }
 
   /**
    * Enrich {@link Processor} function by adding pre/post operators to implement processing strategy behaviour.
    *
-   * @param flowConstruct pipeline instance.
-   * @param pipelineFunction pipeline function.
+   * @param pipeline pipeline instance.
    * @param messagingExceptionHandler exception handle to use.
    * @return enriched pipeline function
    */
-  default Function<Publisher<Event>, Publisher<Event>> onPipeline(FlowConstruct flowConstruct,
-                                                                  Function<Publisher<Event>, Publisher<Event>> pipelineFunction,
-                                                                  MessagingExceptionHandler messagingExceptionHandler) {
-    return publisher -> from(publisher).transform(pipelineFunction);
+  default Function<ReactiveProcessor, ReactiveProcessor> onPipeline(Pipeline pipeline,
+                                                                    MessagingExceptionHandler messagingExceptionHandler) {
+    return processor -> processor;
   }
 
   /**
    * Enrich {@link Processor} function by adding pre/post operators to implement processing strategy behaviour.
    *
-   * @param processor processor instance.
-   * @param processorFunction processor function
    * @return enriched processor function
    */
-  default Function<Publisher<Event>, Publisher<Event>> onProcessor(Processor processor,
-                                                                   Function<Publisher<Event>, Publisher<Event>> processorFunction) {
-    return publisher -> from(publisher).transform(processorFunction);
+  default Function<ReactiveProcessor, ReactiveProcessor> onProcessor() {
+    return processor -> processor;
   }
 
   /**

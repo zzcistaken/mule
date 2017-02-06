@@ -10,19 +10,16 @@ import static java.lang.Math.min;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.mule.runtime.core.api.processor.ReactiveProcessor.ProcessingType.BLOCKING;
 import static org.mule.runtime.core.api.processor.ReactiveProcessor.ProcessingType.CPU_INTENSIVE;
-import static org.mule.runtime.core.api.processor.ReactiveProcessor.ProcessingType.CPU_LITE;
 import static org.mule.runtime.core.api.scheduler.SchedulerConfig.config;
 import static org.mule.runtime.core.processor.strategy.ProcessingStrategyUtils.FAIL_IF_TX_ACTIVE_EVENT_CONSUMER;
-import static org.mule.runtime.core.processor.strategy.ProcessingStrategyUtils.scheduleBlockingProactor;
+import static org.mule.runtime.core.processor.strategy.ProcessingStrategyUtils.scheduleBlocking;
 import static org.mule.runtime.core.processor.strategy.ProcessingStrategyUtils.scheduleParallel;
-import static org.mule.runtime.core.processor.strategy.ProcessingStrategyUtils.scheduleParallelProactor;
 
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.lifecycle.Startable;
 import org.mule.runtime.api.lifecycle.Stoppable;
 import org.mule.runtime.api.scheduler.Scheduler;
 import org.mule.runtime.core.api.MuleContext;
-import org.mule.runtime.core.api.construct.Pipeline;
 import org.mule.runtime.core.api.processor.ReactiveProcessor;
 import org.mule.runtime.core.api.processor.strategy.ProcessingStrategy;
 
@@ -31,7 +28,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
- * Creates {@link ProactorProcessingStrategyFactory} instances. This processing strategy dispatches incoming messages to
+ * Creates {@link RingBufferProcessingStrategyFactory} instances. This processing strategy dispatches incoming messages to
  * single-threaded event-loop.
  *
  *
@@ -42,7 +39,7 @@ import java.util.function.Supplier;
  *
  * @since 4.0
  */
-public class ProactorProcessingStrategyFactory extends AbstractRingBufferProcessingStrategyFactory implements SchedulingConfig {
+public class RingBufferProcessingStrategyFactory extends AbstractRingBufferProcessingStrategyFactory implements SchedulingConfig {
 
   private static int DEFAULT_MAX_CONCURRENCY = Integer.MAX_VALUE;
   private int maxConcurrency = DEFAULT_MAX_CONCURRENCY;
@@ -66,51 +63,48 @@ public class ProactorProcessingStrategyFactory extends AbstractRingBufferProcess
     } else {
       int subscribers = getSubscriberCount() != null ? getSubscriberCount()
           : min(Runtime.getRuntime().availableProcessors(), getMaxConcurrency());
-      return new ProactorProcessingStrategy(() -> muleContext.getSchedulerService()
-          .cpuLightScheduler(config().withName(schedulersNamePrefix + "." + CPU_LITE.name())),
-                                            () -> muleContext.getSchedulerService()
-                                                .cpuIntensiveScheduler(config()
-                                                    .withName(schedulersNamePrefix + "." + CPU_INTENSIVE.name())),
-                                            () -> muleContext.getSchedulerService()
-                                                .ioScheduler(config().withName(schedulersNamePrefix + "." + BLOCKING.name())),
-                                            scheduler -> scheduler.stop(muleContext.getConfiguration().getShutdownTimeout(),
-                                                                        MILLISECONDS),
-                                            maxConcurrency,
-                                            () -> muleContext.getSchedulerService()
-                                                .customScheduler(config()
-                                                    .withName(schedulersNamePrefix + RING_BUFFER_SCHEDULER_NAME_SUFFIX)
-                                                    .withMaxConcurrentTasks(subscribers + 1)),
-                                            getBufferSize(),
-                                            subscribers,
-                                            getWaitStrategy(),
-                                            muleContext);
+      return new SimpleRingBufferProcessingStrategy(
+                                                    () -> muleContext.getSchedulerService()
+                                                        .cpuIntensiveScheduler(config()
+                                                            .withName(schedulersNamePrefix + "." + CPU_INTENSIVE.name())),
+                                                    () -> muleContext.getSchedulerService()
+                                                        .ioScheduler(config()
+                                                            .withName(schedulersNamePrefix + "." + BLOCKING.name())),
+                                                    scheduler -> scheduler
+                                                        .stop(muleContext.getConfiguration().getShutdownTimeout(),
+                                                              MILLISECONDS),
+                                                    maxConcurrency,
+                                                    () -> muleContext.getSchedulerService()
+                                                        .customScheduler(config()
+                                                            .withName(schedulersNamePrefix + RING_BUFFER_SCHEDULER_NAME_SUFFIX)
+                                                            .withMaxConcurrentTasks(subscribers + 1)),
+                                                    getBufferSize(),
+                                                    subscribers,
+                                                    getWaitStrategy(),
+                                                    muleContext);
     }
   }
 
-  static class ProactorProcessingStrategy extends RingBufferProcessingStrategy implements Startable, Stoppable {
+  static class SimpleRingBufferProcessingStrategy extends RingBufferProcessingStrategy implements Startable, Stoppable {
 
-    private Supplier<Scheduler> cpuLightSchedulerSupplier;
     private Supplier<Scheduler> blockingSchedulerSupplier;
     private Supplier<Scheduler> cpuIntensiveSchedulerSupplier;
     private Consumer<Scheduler> schedulerStopper;
-    private Scheduler cpuLightScheduler;
     private Scheduler blockingScheduler;
     private Scheduler cpuIntensiveScheduler;
     private int maxConcurrency;
 
-    public ProactorProcessingStrategy(Supplier<Scheduler> cpuLightSchedulerSupplier,
-                                      Supplier<Scheduler> blockingSchedulerSupplier,
-                                      Supplier<Scheduler> cpuIntensiveSchedulerSupplier,
-                                      Consumer<Scheduler> schedulerStopper,
-                                      int maxConcurrency,
-                                      Supplier<Scheduler> ringBufferSchedulerSupplier,
-                                      int bufferSize,
-                                      int subscriberCount,
-                                      WaitStrategy waitStrategy,
-                                      MuleContext muleContext) {
+    public SimpleRingBufferProcessingStrategy(Supplier<Scheduler> blockingSchedulerSupplier,
+                                              Supplier<Scheduler> cpuIntensiveSchedulerSupplier,
+                                              Consumer<Scheduler> schedulerStopper,
+                                              int maxConcurrency,
+                                              Supplier<Scheduler> ringBufferSchedulerSupplier,
+                                              int bufferSize,
+                                              int subscriberCount,
+                                              WaitStrategy waitStrategy,
+                                              MuleContext muleContext) {
       super(ringBufferSchedulerSupplier, bufferSize, subscriberCount, waitStrategy, FAIL_IF_TX_ACTIVE_EVENT_CONSUMER,
             muleContext);
-      this.cpuLightSchedulerSupplier = cpuLightSchedulerSupplier;
       this.blockingSchedulerSupplier = blockingSchedulerSupplier;
       this.cpuIntensiveSchedulerSupplier = cpuIntensiveSchedulerSupplier;
       this.schedulerStopper = schedulerStopper;
@@ -119,16 +113,12 @@ public class ProactorProcessingStrategyFactory extends AbstractRingBufferProcess
 
     @Override
     public void start() throws MuleException {
-      this.cpuLightScheduler = cpuLightSchedulerSupplier.get();
       this.blockingScheduler = blockingSchedulerSupplier.get();
       this.cpuIntensiveScheduler = cpuIntensiveSchedulerSupplier.get();
     }
 
     @Override
     public void stop() throws MuleException {
-      if (cpuLightScheduler != null) {
-        schedulerStopper.accept(cpuLightScheduler);
-      }
       if (blockingScheduler != null) {
         schedulerStopper.accept(blockingScheduler);
       }
@@ -138,17 +128,12 @@ public class ProactorProcessingStrategyFactory extends AbstractRingBufferProcess
     }
 
     @Override
-    public Function<ReactiveProcessor, ReactiveProcessor> onPipeline(Pipeline flowConstruct) {
-      return scheduleParallel(cpuLightScheduler, maxConcurrency);
-    }
-
-    @Override
     public Function<ReactiveProcessor, ReactiveProcessor> onProcessor() {
       return processor -> {
         if (processor.getProcessingType() == BLOCKING) {
-          return scheduleBlockingProactor(blockingScheduler, cpuLightScheduler, maxConcurrency).apply(processor);
+          return scheduleBlocking(blockingScheduler, maxConcurrency).apply(processor);
         } else if (processor.getProcessingType() == CPU_INTENSIVE) {
-          return scheduleParallelProactor(cpuIntensiveScheduler, cpuLightScheduler, maxConcurrency).apply(processor);
+          return scheduleParallel(cpuIntensiveScheduler, maxConcurrency).apply(processor);
         } else {
           return processor;
         }

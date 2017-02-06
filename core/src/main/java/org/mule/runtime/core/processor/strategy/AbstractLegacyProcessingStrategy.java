@@ -6,37 +6,25 @@
  */
 package org.mule.runtime.core.processor.strategy;
 
-import static reactor.core.publisher.Mono.just;
+import static org.mule.runtime.core.processor.strategy.ProcessingStrategyUtils.NOP_EVENT_CONSUMER;
 
-import org.mule.runtime.core.api.Event;
-import org.mule.runtime.core.api.construct.FlowConstruct;
+import org.mule.runtime.core.api.construct.Pipeline;
+import org.mule.runtime.core.api.processor.ReactiveProcessor;
 import org.mule.runtime.core.api.processor.Sink;
-
-import java.util.function.Consumer;
-import java.util.function.Function;
-
-import org.reactivestreams.Publisher;
+import org.mule.runtime.core.api.processor.strategy.ProcessingStrategy;
+import org.mule.runtime.core.processor.strategy.sink.StreamPerEventSink;
 
 /**
  * Interface to be implemented by legacy processing strategy implementations. This interface provides a default implementation of
- * {@link #createSink(FlowConstruct, Function)} that ensures processed events are not de-multiplexed into a single
- * {@link org.mule.runtime.core.api.construct.Flow} stream but are rather executed independently.
+ * {@link ProcessingStrategy#createSink(Pipeline, ReactiveProcessor)} that ensures processed events are not de-multiplexed into a
+ * single {@link org.mule.runtime.core.api.construct.Flow} stream but are rather executed independently.
  */
-public abstract class AbstractLegacyProcessingStrategy extends AbstractProcessingStrategy {
+@Deprecated
+public abstract class AbstractLegacyProcessingStrategy implements ProcessingStrategy {
 
   @Override
-  public Sink createSink(FlowConstruct flowConstruct, Function<Publisher<Event>, Publisher<Event>> function) {
-    return new Sink() {
-
-      Consumer<Event> onEventConsumer = createOnEventConsumer();
-
-      @Override
-      public void accept(Event event) {
-        onEventConsumer.accept(event);
-        just(event).transform(function).subscribe();
-      }
-
-    };
+  public final Sink createSink(Pipeline pipeline, ReactiveProcessor processor) {
+    return new StreamPerEventSink(processor, NOP_EVENT_CONSUMER);
   }
 
 }

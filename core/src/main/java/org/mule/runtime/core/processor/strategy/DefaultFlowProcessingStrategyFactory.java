@@ -6,6 +6,7 @@
  */
 package org.mule.runtime.core.processor.strategy;
 
+import static java.lang.Math.min;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.disposeIfNeeded;
 import static org.mule.runtime.core.api.processor.ReactiveProcessor.ProcessingType.BLOCKING;
@@ -20,25 +21,26 @@ import org.mule.runtime.api.lifecycle.Disposable;
 import org.mule.runtime.api.scheduler.Scheduler;
 import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.MuleContext;
-import org.mule.runtime.core.api.construct.FlowConstruct;
+import org.mule.runtime.core.api.construct.Pipeline;
+import org.mule.runtime.core.api.processor.ReactiveProcessor;
 import org.mule.runtime.core.api.processor.Sink;
 import org.mule.runtime.core.api.processor.strategy.ProcessingStrategy;
 
 import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import org.reactivestreams.Publisher;
-
 /**
- * Creates default processing strategy with same behaviuor as {@link ProactorProcessingStrategyFactory} apart from the fact it
- * will process syncronously without errror when a transaction is active.
+ * Creates default processing strategy with same behaviour as {@link ProactorProcessingStrategyFactory} apart from the fact it
+ * will process synchronously without error when a transaction is active.
  */
 public class DefaultFlowProcessingStrategyFactory extends ProactorProcessingStrategyFactory {
 
   @Override
   public ProcessingStrategy create(MuleContext muleContext, String schedulersNamePrefix) {
+
+    int subscribers = getSubscriberCount() != null ? getSubscriberCount()
+        : min(Runtime.getRuntime().availableProcessors(), getMaxConcurrency());
+
     return new DefaultFlowProcessingStrategy(() -> muleContext.getSchedulerService()
         .cpuLightScheduler(config().withName(schedulersNamePrefix + "." + CPU_LITE.name())),
                                              () -> muleContext.getSchedulerService()
@@ -52,9 +54,9 @@ public class DefaultFlowProcessingStrategyFactory extends ProactorProcessingStra
                                              () -> muleContext.getSchedulerService()
                                                  .customScheduler(config()
                                                      .withName(schedulersNamePrefix + RING_BUFFER_SCHEDULER_NAME_SUFFIX)
-                                                     .withMaxConcurrentTasks(getSubscriberCount() + 1)),
+                                                     .withMaxConcurrentTasks(subscribers + 1)),
                                              getBufferSize(),
-                                             1,
+                                             subscribers,
                                              getWaitStrategy(),
                                              muleContext);
   }
@@ -69,29 +71,17 @@ public class DefaultFlowProcessingStrategyFactory extends ProactorProcessingStra
                                             Supplier<Scheduler> ringBufferSchedulerSupplier,
                                             int bufferSize,
                                             int subscriberCount,
-                                            String waitStrategy,
+                                            WaitStrategy waitStrategy,
                                             MuleContext muleContext) {
       super(cpuLightSchedulerSupplier, blockingSchedulerSupplier, cpuIntensiveSchedulerSupplier, schedulerStopper,
             maxConcurrency, ringBufferSchedulerSupplier, bufferSize, subscriberCount, waitStrategy, muleContext);
     }
 
     @Override
-    public Sink createSink(FlowConstruct flowConstruct, Function<Publisher<Event>, Publisher<Event>> function) {
-      Sink proactorSink = super.createSink(flowConstruct, function);
-      Sink syncSink = SYNCHRONOUS_PROCESSING_STRATEGY_INSTANCE.createSink(flowConstruct, function);
+    public Sink createSink(Pipeline pipeline, ReactiveProcessor processor) {
+      Sink proactorSink = super.createSink(pipeline, processor);
+      Sink syncSink = SYNCHRONOUS_PROCESSING_STRATEGY_INSTANCE.createSink(pipeline, processor);
       return new DelegateSink(syncSink, proactorSink);
-    }
-
-    @Override
-    protected Consumer<Event> createOnEventConsumer() {
-      // Do nothing given event should still be processed when transaction is active
-      return event -> {
-      };
-    }
-
-    @Override
-    protected Predicate<Scheduler> scheduleOverridePredicate() {
-      return scheduler -> isTransactionActive();
     }
 
     private final static class DelegateSink implements Sink, Disposable {

@@ -26,6 +26,7 @@ import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.api.lifecycle.Startable;
 import org.mule.runtime.api.lifecycle.Stoppable;
 import org.mule.runtime.core.api.Event;
+import org.mule.runtime.core.api.construct.Pipeline;
 import org.mule.runtime.core.api.exception.MessagingExceptionHandler;
 import org.mule.runtime.core.api.exception.MessagingExceptionHandlerAware;
 import org.mule.runtime.core.api.message.InternalMessage;
@@ -125,7 +126,7 @@ public class AsyncDelegateMessageProcessor extends AbstractMessageProcessorOwner
         .doOnNext(event -> warnConsumablePayload(event.getMessage()))
         .doOnNext(request -> just(request)
             .map(event1 -> updateEventForAsync(event1))
-            .transform(processingStrategy.onPipeline(flowConstruct, delegate, messagingExceptionHandler))
+            .transform(processingStrategy.onPipeline((Pipeline) flowConstruct, messagingExceptionHandler).apply(delegate))
             .onErrorResumeWith(MessagingException.class, messagingExceptionHandler)
             .doOnError(UNEXPECTED_EXCEPTION_PREDICATE,
                        exception -> logger.error("Unhandled exception in async processing.", exception))

@@ -11,6 +11,7 @@ import static org.mule.runtime.core.api.rx.Exceptions.UNEXPECTED_EXCEPTION_PREDI
 import static org.mule.runtime.core.api.scheduler.SchedulerConfig.config;
 import static org.mule.runtime.core.context.notification.AsyncMessageNotification.PROCESS_ASYNC_COMPLETE;
 import static org.mule.runtime.core.context.notification.AsyncMessageNotification.PROCESS_ASYNC_SCHEDULED;
+import static org.mule.runtime.core.processor.strategy.ProcessingStrategyUtils.FAIL_IF_TX_ACTIVE_EVENT_CONSUMER;
 import static org.slf4j.LoggerFactory.getLogger;
 import static reactor.core.publisher.Flux.from;
 import static reactor.core.publisher.Flux.just;
@@ -24,7 +25,9 @@ import org.mule.runtime.api.scheduler.Scheduler;
 import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.construct.FlowConstruct;
+import org.mule.runtime.core.api.construct.Pipeline;
 import org.mule.runtime.core.api.exception.MessagingExceptionHandler;
+import org.mule.runtime.core.api.processor.ReactiveProcessor;
 import org.mule.runtime.core.api.processor.strategy.ProcessingStrategy;
 import org.mule.runtime.core.api.processor.strategy.ProcessingStrategyFactory;
 import org.mule.runtime.core.api.rx.Exceptions.EventDroppedException;
@@ -38,7 +41,6 @@ import java.util.function.Supplier;
 
 import javax.resource.spi.work.WorkManager;
 
-import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 
 /**
@@ -58,6 +60,7 @@ public class LegacyAsynchronousProcessingStrategyFactory implements ProcessingSt
         .ioScheduler(config().withName(schedulersNamePrefix)),
                                                     scheduler -> scheduler
                                                         .stop(muleContext.getConfiguration().getShutdownTimeout(), MILLISECONDS),
+                                                    FAIL_IF_TX_ACTIVE_EVENT_CONSUMER,
                                                     muleContext);
   }
 
@@ -69,29 +72,30 @@ public class LegacyAsynchronousProcessingStrategyFactory implements ProcessingSt
     private MuleContext muleContext;
     private Supplier<Scheduler> schedulerSupplier;
     private Scheduler scheduler;
+    private Consumer<Event> eventConsumer;
 
     public LegacyAsynchronousProcessingStrategy(Supplier<Scheduler> schedulerSupplier, Consumer<Scheduler> schedulerStopper,
-                                                MuleContext muleContext) {
+                                                Consumer<Event> eventConsumer, MuleContext muleContext) {
       this.schedulerSupplier = schedulerSupplier;
       this.schedulerStopper = schedulerStopper;
+      this.eventConsumer = eventConsumer;
       this.muleContext = muleContext;
     }
 
     @Override
-    public Function<Publisher<Event>, Publisher<Event>> onPipeline(FlowConstruct flowConstruct,
-                                                                   Function<Publisher<Event>, Publisher<Event>> pipelineFunction,
-                                                                   MessagingExceptionHandler messagingExceptionHandler) {
+    public Function<ReactiveProcessor, ReactiveProcessor> onPipeline(Pipeline flowConstruct,
+                                                                     MessagingExceptionHandler messagingExceptionHandler) {
 
       // Conserve existing 3.x async processing strategy behaviuor:
       // i) The request event is echoed rather than the the result of async processing returned
       // ii) Any exceptions that occur due to async processing are not propagated upwards
-      return publisher -> from(publisher)
-          .doOnNext(createOnEventConsumer())
+      return processor -> publisher -> from(publisher)
+          .doOnNext(eventConsumer)
           .doOnNext(fireAsyncScheduledNotification(flowConstruct))
           .doOnNext(request -> just(request)
               .map(event -> Event.builder(event).session(new DefaultMuleSession(event.getSession())).build())
               .publishOn(fromExecutorService(scheduler))
-              .transform(pipelineFunction)
+              .transform(processor)
               .doOnNext(event -> fireAsyncCompleteNotification(event, flowConstruct, null))
               .doOnError(MessagingException.class, e -> fireAsyncCompleteNotification(e.getEvent(), flowConstruct, e))
               .onErrorResumeWith(MessagingException.class, messagingExceptionHandler)
