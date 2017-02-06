@@ -50,6 +50,7 @@ public class WorkQueueProcessingStrategyFactory extends AbstractRingBufferProces
 
   @Override
   public ProcessingStrategy create(MuleContext muleContext, String schedulersNamePrefix) {
+
     return new WorkQueueProcessingStrategy(() -> muleContext.getSchedulerService()
         .ioScheduler(config().withName(schedulersNamePrefix + "." + BLOCKING.name())),
                                            maxConcurrency,
@@ -57,9 +58,9 @@ public class WorkQueueProcessingStrategyFactory extends AbstractRingBufferProces
                                                                        MILLISECONDS),
                                            () -> muleContext.getSchedulerService().customScheduler(config()
                                                .withName(schedulersNamePrefix + "." + RING_BUFFER_SCHEDULER_NAME_SUFFIX)
-                                               .withMaxConcurrentTasks(maxConcurrency + 1)),
+                                               .withMaxConcurrentTasks(getSubscriberCount() + 1)),
                                            getBufferSize(),
-                                           maxConcurrency,
+                                           getSubscriberCount(),
                                            getWaitStrategy(),
                                            muleContext);
   }

@@ -30,6 +30,7 @@ import org.openjdk.jmh.annotations.Measurement;
 import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.TearDown;
+import org.openjdk.jmh.annotations.Threads;
 import org.openjdk.jmh.annotations.Warmup;
 import reactor.core.publisher.Mono;
 
@@ -75,22 +76,23 @@ public class FlowBenchmark extends AbstractBenchmark {
   }
 
   @Benchmark
+  @Threads(4)
   public Event processSource() throws MuleException {
     return source.trigger(Event.builder(DefaultEventContext.create(flow, TEST_CONNECTOR))
         .message(InternalMessage.of(TEST_PAYLOAD)).build());
   }
 
-  // @Benchmark
-  // public CountDownLatch processSourceStream() throws MuleException, InterruptedException {
-  // CountDownLatch latch = new CountDownLatch(1000);
-  // for (int i = 0; i < 1000; i++) {
-  // Mono.just(Event.builder(DefaultEventContext.create(flow, TEST_CONNECTOR))
-  // .message(InternalMessage.of(TEST_PAYLOAD)).build()).transform(source.getListener()).doOnNext(event -> latch.countDown())
-  // .subscribe();
-  // }
-  // latch.await();
-  // return latch;
-  // }
+  @Benchmark
+  public CountDownLatch processSourceStream() throws MuleException, InterruptedException {
+    CountDownLatch latch = new CountDownLatch(1000);
+    for (int i = 0; i < 1000; i++) {
+      Mono.just(Event.builder(DefaultEventContext.create(flow, TEST_CONNECTOR))
+          .message(InternalMessage.of(TEST_PAYLOAD)).build()).transform(source.getListener()).doOnNext(event -> latch.countDown())
+          .subscribe();
+    }
+    latch.await();
+    return latch;
+  }
   //
   // @Benchmark
   // public Event processFlow() throws MuleException {

@@ -61,8 +61,7 @@ public class RingBufferProcessingStrategyFactory extends AbstractRingBufferProce
     if (maxConcurrency == 1) {
       return new ReactorProcessingStrategyFactory().create(muleContext, schedulersNamePrefix);
     } else {
-      int subscribers = getSubscriberCount() != null ? getSubscriberCount()
-          : min(Runtime.getRuntime().availableProcessors(), getMaxConcurrency());
+      int subscribers = min(getSubscriberCount(), getMaxConcurrency());
       return new SimpleRingBufferProcessingStrategy(
                                                     () -> muleContext.getSchedulerService()
                                                         .cpuIntensiveScheduler(config()

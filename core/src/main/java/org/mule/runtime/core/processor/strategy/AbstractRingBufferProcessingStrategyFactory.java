@@ -6,8 +6,6 @@
  */
 package org.mule.runtime.core.processor.strategy;
 
-import static org.mule.runtime.core.processor.strategy.RingBufferConfig.WaitStrategy.LITE_BLOCKING;
-import static reactor.util.concurrent.QueueSupplier.SMALL_BUFFER_SIZE;
 import static reactor.util.concurrent.QueueSupplier.isPowerOfTwo;
 
 import org.mule.runtime.api.scheduler.Scheduler;
@@ -39,7 +37,7 @@ public abstract class AbstractRingBufferProcessingStrategyFactory
 
   private int bufferSize = DEFAULT_BUFFER_SIZE;
   private WaitStrategy waitStrategy = DEFAULT_WAIT_STRATEGY;
-  private Integer subscriberCount;
+  private int subscriberCount = DEFAULT_SUBSCRIBER_COUNT;
 
   @Override
   public void setBufferSize(int bufferSize) {
@@ -63,7 +61,7 @@ public abstract class AbstractRingBufferProcessingStrategyFactory
     return bufferSize;
   }
 
-  protected Integer getSubscriberCount() {
+  protected int getSubscriberCount() {
     return subscriberCount;
   }
 

@@ -30,13 +30,11 @@ public class ReactorProcessingStrategyFactory extends AbstractRingBufferProcessi
   @Override
   public ProcessingStrategy create(MuleContext muleContext, String schedulersNamePrefix) {
 
-    int subscribers = getSubscriberCount() != null ? getSubscriberCount() : 1;
-
     return new RingBufferProcessingStrategy(() -> muleContext.getSchedulerService()
         .customScheduler(SchedulerConfig.config().withName(schedulersNamePrefix + RING_BUFFER_SCHEDULER_NAME_SUFFIX)
-            .withMaxConcurrentTasks(subscribers + 1)),
+            .withMaxConcurrentTasks(getSubscriberCount() + 1)),
                                             getBufferSize(),
-                                            subscribers,
+                                            getSubscriberCount(),
                                             getWaitStrategy(),
                                             FAIL_IF_TX_ACTIVE_EVENT_CONSUMER,
                                             muleContext);

@@ -37,10 +37,7 @@ public class DefaultFlowProcessingStrategyFactory extends ProactorProcessingStra
 
   @Override
   public ProcessingStrategy create(MuleContext muleContext, String schedulersNamePrefix) {
-
-    int subscribers = getSubscriberCount() != null ? getSubscriberCount()
-        : min(Runtime.getRuntime().availableProcessors(), getMaxConcurrency());
-
+    int subscribers = min(getSubscriberCount(), getMaxConcurrency());
     return new DefaultFlowProcessingStrategy(() -> muleContext.getSchedulerService()
         .cpuLightScheduler(config().withName(schedulersNamePrefix + "." + CPU_LITE.name())),
                                              () -> muleContext.getSchedulerService()

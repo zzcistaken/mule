@@ -64,8 +64,7 @@ public class ProactorProcessingStrategyFactory extends AbstractRingBufferProcess
     if (maxConcurrency == 1) {
       return new ReactorProcessingStrategyFactory().create(muleContext, schedulersNamePrefix);
     } else {
-      int subscribers = getSubscriberCount() != null ? getSubscriberCount()
-          : min(Runtime.getRuntime().availableProcessors(), getMaxConcurrency());
+      int subscribers = min(getSubscriberCount(), getMaxConcurrency());
       return new ProactorProcessingStrategy(() -> muleContext.getSchedulerService()
           .cpuLightScheduler(config().withName(schedulersNamePrefix + "." + CPU_LITE.name())),
                                             () -> muleContext.getSchedulerService()

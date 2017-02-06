@@ -17,6 +17,7 @@ import org.mule.runtime.core.api.processor.strategy.ProcessingStrategyFactory;
 public interface RingBufferConfig extends BufferConfig {
 
   WaitStrategy DEFAULT_WAIT_STRATEGY = LITE_BLOCKING;
+  int DEFAULT_SUBSCRIBER_COUNT = 1;
 
   /**
    * Configure the number of ring-buffer subscribers.
