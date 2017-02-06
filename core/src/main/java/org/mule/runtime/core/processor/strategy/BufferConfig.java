@@ -14,8 +14,7 @@ import org.mule.runtime.core.api.processor.strategy.ProcessingStrategyFactory;
 /**
  * Common configuration for {@link ProcessingStrategyFactory}'s that need to configure the use of a cached IO pool.
  */
-public interface BufferConfig
-{
+public interface BufferConfig {
 
   int DEFAULT_BUFFER_SIZE = SMALL_BUFFER_SIZE;
 
