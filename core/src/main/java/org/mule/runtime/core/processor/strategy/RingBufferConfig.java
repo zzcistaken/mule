@@ -6,24 +6,17 @@
  */
 package org.mule.runtime.core.processor.strategy;
 
+import static org.mule.runtime.core.processor.strategy.RingBufferConfig.WaitStrategy.LITE_BLOCKING;
+
 import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.processor.strategy.ProcessingStrategyFactory;
 
 /**
  * Common configuration for {@link ProcessingStrategyFactory}'s that need to configure the use of a cached IO pool.
  */
-public interface RingBufferConfig {
+public interface RingBufferConfig extends BufferConfig {
 
-  /**
-   * Configure the size of the ring-buffer size used to buffer and de-multiplex events from multiple source threads. This value
-   * must be a power-of two.
-   * <p/>
-   * Ring buffers typically use a power of two because it means that the rollover at the end of the buffer can be achieved using a
-   * bit mask rather than having to explicitly compare the head/tail pointer with the end of the buffer.
-   *
-   * @param bufferSize buffer size to use.
-   */
-  void setBufferSize(int bufferSize);
+  WaitStrategy DEFAULT_WAIT_STRATEGY = LITE_BLOCKING;
 
   /**
    * Configure the number of ring-buffer subscribers.

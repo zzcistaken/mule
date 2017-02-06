@@ -11,6 +11,7 @@ import static java.util.concurrent.TimeUnit.MICROSECONDS;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import org.mule.AbstractBenchmarkAssertionTestCase;
 import org.mule.FlowBenchmark;
+import org.mule.runtime.core.processor.strategy.BufferedSynchronousProcessingStrategyFactory;
 import org.mule.runtime.core.processor.strategy.DefaultFlowProcessingStrategyFactory;
 import org.mule.runtime.core.processor.strategy.SynchronousProcessingStrategyFactory;
 
@@ -24,7 +25,7 @@ public class FlowBenchmarkAssertionTestCase extends AbstractBenchmarkAssertionTe
   public void processSourceDefault() {
     runAndAssertBenchmark(FlowBenchmark.class, "processSource", 1,
                           singletonMap(PROCESSING_STRATEGY_PARAM,
-                                       new String[] {DefaultFlowProcessingStrategyFactory.class.getCanonicalName()}),
+                                       new String[] {BufferedSynchronousProcessingStrategyFactory.class.getCanonicalName()}),
                           50, MICROSECONDS, 6000);
   }
 

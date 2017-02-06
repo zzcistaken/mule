@@ -36,8 +36,6 @@ public abstract class AbstractRingBufferProcessingStrategyFactory
 
   protected static String RING_BUFFER_SCHEDULER_NAME_SUFFIX = ".ring-buffer";
 
-  public static int DEFAULT_BUFFER_SIZE = SMALL_BUFFER_SIZE;
-  public static WaitStrategy DEFAULT_WAIT_STRATEGY = LITE_BLOCKING;
 
   private int bufferSize = DEFAULT_BUFFER_SIZE;
   private WaitStrategy waitStrategy = DEFAULT_WAIT_STRATEGY;

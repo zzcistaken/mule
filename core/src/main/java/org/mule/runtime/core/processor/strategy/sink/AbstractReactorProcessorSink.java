@@ -73,8 +73,8 @@ abstract class AbstractReactorProcessorSink implements Sink, Disposable {
 
     @Override
     public void dispose() {
-      disposable.dispose();
       blockingSink.complete();
+      disposable.dispose();
     }
 
   }
