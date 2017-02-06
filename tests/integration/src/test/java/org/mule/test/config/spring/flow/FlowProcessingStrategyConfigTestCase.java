@@ -78,8 +78,7 @@ public class FlowProcessingStrategyConfigTestCase extends AbstractIntegrationTes
     return flow.getProcessingStrategyFactory();
   }
 
-  public static class CustomProcessingStrategyFactory implements ProcessingStrategyFactory, ProcessingStrategy
-  {
+  public static class CustomProcessingStrategyFactory implements ProcessingStrategyFactory, ProcessingStrategy {
 
     String foo;
 
@@ -93,8 +92,7 @@ public class FlowProcessingStrategyConfigTestCase extends AbstractIntegrationTes
     }
 
     @Override
-    public Sink createSink(Pipeline pipeline, ReactiveProcessor processor)
-    {
+    public Sink createSink(Pipeline pipeline, ReactiveProcessor processor) {
       return null;
     }
   }
