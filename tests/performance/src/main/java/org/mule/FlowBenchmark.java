@@ -93,22 +93,22 @@ public class FlowBenchmark extends AbstractBenchmark {
     latch.await();
     return latch;
   }
-  //
-  // @Benchmark
-  // public Event processFlow() throws MuleException {
-  // return flow.process(Event.builder(DefaultEventContext.create(flow, TEST_CONNECTOR))
-  // .message(InternalMessage.of(TEST_PAYLOAD)).build());
-  // }
-  //
-  // @Benchmark
-  // public CountDownLatch processFlowStream() throws MuleException, InterruptedException {
-  // CountDownLatch latch = new CountDownLatch(1000);
-  // for (int i = 0; i < 1000; i++) {
-  // Mono.just(Event.builder(DefaultEventContext.create(flow, TEST_CONNECTOR))
-  // .message(InternalMessage.of(TEST_PAYLOAD)).build()).transform(flow).doOnNext(event -> latch.countDown()).subscribe();
-  // }
-  // latch.await();
-  // return latch;
-  // }
+
+  @Benchmark
+  public Event processFlow() throws MuleException {
+    return flow.process(Event.builder(DefaultEventContext.create(flow, TEST_CONNECTOR))
+        .message(InternalMessage.of(TEST_PAYLOAD)).build());
+  }
+
+  @Benchmark
+  public CountDownLatch processFlowStream() throws MuleException, InterruptedException {
+    CountDownLatch latch = new CountDownLatch(1000);
+    for (int i = 0; i < 1000; i++) {
+      Mono.just(Event.builder(DefaultEventContext.create(flow, TEST_CONNECTOR))
+          .message(InternalMessage.of(TEST_PAYLOAD)).build()).transform(flow).doOnNext(event -> latch.countDown()).subscribe();
+    }
+    latch.await();
+    return latch;
+  }
 
 }
