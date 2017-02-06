@@ -151,7 +151,7 @@ public class ThreadPoolsConfig {
 
   private long gracefulShutdownTimeout = 15000;
   private int cpuLightQueueSize = 1024;
-  private int cpuLightPoolSize = 2 * cores;
+  private int cpuLightPoolSize = 1;
   private int ioQueueSize = 1024;
   private int ioCorePoolSize = cores;
   private int ioMaxPoolSize = 256;

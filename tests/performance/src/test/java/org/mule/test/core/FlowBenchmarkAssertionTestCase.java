@@ -25,7 +25,7 @@ public class FlowBenchmarkAssertionTestCase extends AbstractBenchmarkAssertionTe
   public void processSourceDefault() {
     runAndAssertBenchmark(FlowBenchmark.class, "processSource", 1,
                           singletonMap(PROCESSING_STRATEGY_PARAM,
-                                       new String[] {BufferedSynchronousProcessingStrategyFactory.class.getCanonicalName()}),
+                                       new String[] {DefaultFlowProcessingStrategyFactory.class.getCanonicalName()}),
                           50, MICROSECONDS, 6000);
   }
 

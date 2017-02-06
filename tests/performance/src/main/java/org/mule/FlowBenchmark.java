@@ -51,7 +51,6 @@ public class FlowBenchmark extends AbstractBenchmark {
       "org.mule.runtime.core.processor.strategy.BufferedSynchronousProcessingStrategyFactory",
       "org.mule.runtime.core.processor.strategy.SynchronousProcessingStrategyFactory",
       "org.mule.runtime.core.processor.strategy.ReactorProcessingStrategyFactory",
-      "org.mule.runtime.core.processor.strategy.ParallelReactorProcessingStrategyFactory",
       "org.mule.runtime.core.processor.strategy.ProactorProcessingStrategyFactory",
       "org.mule.runtime.core.processor.strategy.WorkQueueProcessingStrategyFactory",
       "org.mule.runtime.core.processor.strategy.RingBufferProcessingStrategyFactory"
@@ -76,7 +75,6 @@ public class FlowBenchmark extends AbstractBenchmark {
   }
 
   @Benchmark
-  @Threads(4)
   public Event processSource() throws MuleException {
     return source.trigger(Event.builder(DefaultEventContext.create(flow, TEST_CONNECTOR))
         .message(InternalMessage.of(TEST_PAYLOAD)).build());
