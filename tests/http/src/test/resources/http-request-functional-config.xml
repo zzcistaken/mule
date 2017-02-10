@@ -2,9 +2,11 @@
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:httpn="http://www.mulesoft.org/schema/mule/httpn"
+      xmlns:test="http://www.mulesoft.org/schema/mule/test"
       xsi:schemaLocation="
                http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-               http://www.mulesoft.org/schema/mule/httpn http://www.mulesoft.org/schema/mule/httpn/current/mule-httpn.xsd">
+               http://www.mulesoft.org/schema/mule/httpn http://www.mulesoft.org/schema/mule/httpn/current/mule-httpn.xsd
+               http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
 
     <httpn:request-config name="requestConfig" basePath="basePath">
         <httpn:request-connection host="localhost" port="${httpPort}"/>
@@ -21,6 +23,8 @@
 
     <flow name="requestFlow">
         <httpn:request config-ref="requestConfig" method="POST" path="requestPath"/>
+        <test:assert expression="#[mel:payload instanceof org.mule.runtime.api.streaming.CursorStreamProvider]"/>
+        <object-to-string-transformer />
     </flow>
 
     <!-- MULE-8956 -->

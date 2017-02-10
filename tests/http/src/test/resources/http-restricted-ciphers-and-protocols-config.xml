@@ -75,6 +75,7 @@
 
     <flow name="12Client12Server">
         <httpn:request config-ref="requestConfig2" path="/" method="POST"/>
+        <object-to-string-transformer />
     </flow>
 
     <flow name="serverFlow3">

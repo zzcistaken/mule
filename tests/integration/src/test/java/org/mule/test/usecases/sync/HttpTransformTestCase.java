@@ -11,6 +11,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mule.service.http.api.HttpConstants.Method.POST;
+
 import org.mule.runtime.api.metadata.DataType;
 import org.mule.runtime.core.api.message.InternalMessage;
 import org.mule.runtime.core.transformer.compression.GZipUncompressTransformer;
@@ -22,8 +23,11 @@ import org.mule.service.http.api.domain.entity.InputStreamHttpEntity;
 import org.mule.service.http.api.domain.message.request.HttpRequest;
 import org.mule.service.http.api.domain.message.response.HttpResponse;
 import org.mule.services.http.TestHttpClient;
+import org.mule.tck.junit4.FlakinessDetectorTestRunner;
+import org.mule.tck.junit4.FlakyTest;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.test.runner.RunnerDelegateTo;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,6 +35,7 @@ import java.util.Arrays;
 import org.junit.Rule;
 import org.junit.Test;
 
+@RunnerDelegateTo(FlakinessDetectorTestRunner.class)
 public class HttpTransformTestCase extends AbstractIntegrationTestCase {
 
   @Rule
@@ -78,6 +83,7 @@ public class HttpTransformTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
+  @FlakyTest
   public void testBinaryWithBridge() throws Exception {
     Object payload = Arrays.asList(42);
     InternalMessage message = flowRunner("LocalService").withPayload(payload).run().getMessage();

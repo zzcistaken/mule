@@ -10,12 +10,15 @@ import static org.apache.commons.lang.RandomStringUtils.randomAlphabetic;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+
 import org.mule.functional.junit4.ExtensionFunctionalTestCase;
 import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.construct.Flow;
-import org.mule.runtime.core.streaming.bytes.ByteStreamingStatistics;
 import org.mule.runtime.core.internal.streaming.StreamingManagerAdapter;
+import org.mule.runtime.core.streaming.bytes.ByteStreamingStatistics;
 import org.mule.runtime.core.util.IOUtils;
+import org.mule.tck.junit4.FlakinessDetectorTestRunner;
+import org.mule.tck.junit4.FlakyTest;
 import org.mule.tck.probe.JUnitLambdaProbe;
 import org.mule.tck.probe.PollingProber;
 import org.mule.test.marvel.MarvelExtension;
@@ -25,7 +28,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
+@RunWith(FlakinessDetectorTestRunner.class)
 public class StreamingExtensionTestCase extends ExtensionFunctionalTestCase {
 
   private static final String BARGAIN_SPELL = "dormammu i've come to bargain";
@@ -90,6 +95,7 @@ public class StreamingExtensionTestCase extends ExtensionFunctionalTestCase {
   }
 
   @Test
+  @FlakyTest
   public void seekInTx() throws Exception {
     doSeek("seekStreamTx");
   }
@@ -133,8 +139,8 @@ public class StreamingExtensionTestCase extends ExtensionFunctionalTestCase {
   private void assertAllStreamingResourcesClosed() {
     ByteStreamingStatistics stats = streamingManagerAdapter.forBytes().getByteStreamingStatistics();
     new PollingProber(10000, 100).check(new JUnitLambdaProbe(() -> {
-      assertThat(stats.getOpenCursorProvidersCount(), is(0));
-      assertThat(stats.getOpenCursorsCount(), is(0));
+      assertThat("openCursorProvidersCount", stats.getOpenCursorProvidersCount(), is(0));
+      assertThat("openCursorsCount", stats.getOpenCursorsCount(), is(0));
       return true;
     }));
   }
