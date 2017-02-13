@@ -6,20 +6,18 @@
  */
 package org.mule.runtime.config.spring.dsl.model;
 
-import static java.lang.Integer.parseInt;
-import static java.lang.String.format;
+import static java.util.Optional.empty;
+import static java.util.Optional.of;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
-import static org.mule.runtime.api.util.Preconditions.checkState;
-import static org.mule.runtime.config.spring.dsl.spring.CommonBeanDefinitionCreator.areMatchingTypes;
+import org.mule.runtime.api.component.location.Location;
 import org.mule.runtime.api.exception.MuleRuntimeException;
+import org.mule.runtime.api.util.Reference;
 import org.mule.runtime.config.spring.dsl.processor.AbstractAttributeDefinitionVisitor;
-import org.mule.runtime.core.api.processor.Processor;
-import org.mule.runtime.core.api.source.MessageSource;
 import org.mule.runtime.dsl.api.component.ComponentBuildingDefinition;
 
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -56,29 +54,14 @@ public class MinimalApplicationModelGenerator {
   /**
    * Resolves the minimal set of {@link ComponentModel}s for a component within a flow.
    *
-   * @param componentPath the component path in which the component is located.
+   * @param location the component path in which the component is located.
    * @return the generated {@link ApplicationModel} with the minimal set of {@link ComponentModel}s required.
    * @throws NoSuchComponentModelException if the requested component does not exists.
    */
-  public ApplicationModel getMinimalModelByPath(String componentPath) {
-    String[] parts = componentPath.split("/");
-    String flowName = parts[0];
-    ComponentModel flowModel = findRequiredComponentModel(flowName);
-    filterFlowModelParts(flowModel, parts);
-    return getMinimalModelByName(flowModel.getNameAttribute());
-  }
-
-  /**
-   * Resolves the minimal set of {@link ComponentModel}s for a named component within the configuration.
-   *
-   * @param name name of the {@link ComponentModel}
-   * @return the generated {@link ApplicationModel} with the minimal set of {@link ComponentModel}s required.
-   * @throws NoSuchComponentModelException if the requested component does not exists.
-   */
-  public ApplicationModel getMinimalModelByName(String name) {
-    ComponentModel requestedComponentModel = findRequiredComponentModel(name);
+  public ApplicationModel getMinimalModel(Location location) {
+    ComponentModel requestedComponentModel = findRequiredComponentModel(location);
     final Set<String> otherRequiredGlobalComponents = resolveComponentDependencies(requestedComponentModel);
-    otherRequiredGlobalComponents.add(name);
+    otherRequiredGlobalComponents.add(location.getGlobalComponentName());
     Set<String> allRequiredComponentModels = findComponentModelsDependencies(otherRequiredGlobalComponents);
     Iterator<ComponentModel> iterator = applicationModel.getRootComponentModel().getInnerComponents().iterator();
     while (iterator.hasNext()) {
@@ -90,55 +73,33 @@ public class MinimalApplicationModelGenerator {
     return applicationModel;
   }
 
-  private ComponentModel filterFlowModelParts(ComponentModel flowModel, String[] parts) {
-    ComponentModel currentLevelModel = flowModel;
-    // TODO MULE-11482: improve this ugly code when new flow path mechanism is in place
-    for (int i = 1; i < parts.length; i++) {
-      String part = parts[i];
-      switch (part) {
-        case "source": {
-          ComponentModel sourceComponentModel = flowModel.getInnerComponents().get(0);
-          checkState(areMatchingTypes(MessageSource.class, sourceComponentModel.getType()),
-                     format(
-                            "Flow path is pointing to the message source of flow %s but it seems that the flow does not have a message source, component identifier of first element is %s",
-                            flowModel.getNameAttribute(), sourceComponentModel.getIdentifier()));
-          Iterator<ComponentModel> iterator = flowModel.getInnerComponents().iterator();
-          // Just keep the first element that it's the source.
-          iterator.next();
-          while (iterator.hasNext()) {
-            iterator.next();
-            iterator.remove();
-          }
-        }
-          break;
-        default: {
-          int selectedPath = parseInt(part);
-          List<ComponentModel> innerComponents = currentLevelModel.getInnerComponents();
-          Iterator<ComponentModel> iterator = innerComponents.iterator();
-          int currentElement = 0;
-          while (iterator.hasNext()) {
-            ComponentModel childComponentModel = iterator.next();
-            if (childComponentModel.getType() != null
-                && areMatchingTypes(Processor.class, childComponentModel.getType())) {
-              if (currentElement != selectedPath) {
-                iterator.remove();
-              } else {
-                currentLevelModel = childComponentModel;
-              }
-              currentElement++;
-            } else {
-              iterator.remove();
-            }
-          }
-        }
-      }
-    }
-    return flowModel;
-  }
-
   private ComponentModel findRequiredComponentModel(String name) {
     return applicationModel.findNamedComponent(name)
         .orElseThrow(() -> new NoSuchComponentModelException(createStaticMessage("No named component with name " + name)));
+  }
+
+  private ComponentModel findRequiredComponentModel(Location location) {
+    final Reference<ComponentModel> foundComponentModelReference = new Reference<>();
+    Optional<ComponentModel> globalComponent = applicationModel.findNamedComponent(location.getGlobalComponentName());
+    globalComponent.ifPresent(componentModel -> {
+      findComponentWithLocation(componentModel, location).ifPresent(foundComponentModel -> {
+        foundComponentModelReference.set(foundComponentModel);
+      });
+    });
+    return foundComponentModelReference.get();
+  }
+
+  private Optional<ComponentModel> findComponentWithLocation(ComponentModel componentModel, Location location) {
+    if (componentModel.getComponentLocation().getLocation().equals(location.toString())) {
+      return of(componentModel);
+    }
+    for (ComponentModel childComponent : componentModel.getInnerComponents()) {
+      Optional<ComponentModel> foundComponent = findComponentWithLocation(childComponent, location);
+      if (foundComponent.isPresent()) {
+        return foundComponent;
+      }
+    }
+    return empty();
   }
 
   private Set<String> findComponentModelsDependencies(Set<String> componentModelNames) {

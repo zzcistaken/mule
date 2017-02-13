@@ -8,7 +8,7 @@ package org.mule.runtime.core.internal.locator;
 
 import org.mule.runtime.api.component.location.ComponentLocation;
 import org.mule.runtime.core.api.locator.ConfigurationComponentLocator;
-import org.mule.runtime.core.api.locator.Location;
+import org.mule.runtime.api.component.location.Location;
 
 import java.util.Map;
 import java.util.Optional;
