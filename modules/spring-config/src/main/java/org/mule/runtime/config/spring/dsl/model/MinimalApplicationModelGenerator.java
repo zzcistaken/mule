@@ -36,6 +36,8 @@ import java.util.Set;
 // TODO MULE-9688 - refactor this class when the ComponentModel becomes immutable
 public class MinimalApplicationModelGenerator {
 
+  public static final String AVOID_INIT_ANNOTATION = "avoidInitAnnotation";
+
   private final ComponentBuildingDefinitionRegistry componentBuildingDefinitionRegistry;
   private final ApplicationModel applicationModel;
 
@@ -84,8 +86,10 @@ public class MinimalApplicationModelGenerator {
     while (iterator.hasNext()) {
       ComponentModel componentModel = iterator.next();
       if (componentModel.getNameAttribute() == null || !allRequiredComponentModels.contains(componentModel.getNameAttribute())) {
-        iterator.remove();
+        //iterator.remove();
+        componentModel.getAnnotations().put(AVOID_INIT_ANNOTATION, true);
       }
+      componentModel.getAnnotations().put(AVOID_INIT_ANNOTATION, false);
     }
     return applicationModel;
   }

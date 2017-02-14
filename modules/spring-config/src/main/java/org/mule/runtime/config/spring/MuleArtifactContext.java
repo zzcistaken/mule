@@ -15,6 +15,7 @@ import static org.apache.commons.lang3.ArrayUtils.addAll;
 import static org.mule.runtime.api.util.Preconditions.checkArgument;
 import static org.mule.runtime.config.spring.dsl.model.ApplicationModel.CONFIGURATION_IDENTIFIER;
 import static org.mule.runtime.config.spring.dsl.model.ApplicationModel.MULE_IDENTIFIER;
+import static org.mule.runtime.config.spring.dsl.model.MinimalApplicationModelGenerator.AVOID_INIT_ANNOTATION;
 import static org.mule.runtime.config.spring.dsl.spring.BeanDefinitionFactory.SPRING_SINGLETON_OBJECT;
 import static org.mule.runtime.config.spring.parsers.generic.AutoIdUtils.uniqueValue;
 import static org.mule.runtime.core.api.config.MuleProperties.OBJECT_CONNECTIVITY_TESTING_SERVICE;
@@ -315,7 +316,8 @@ public class MuleArtifactContext extends AbstractXmlApplicationContext {
     List<String> createdComponentModels = new ArrayList<>();
     applicationModel.executeOnEveryMuleComponentTree(componentModel -> {
       if (!mustBeRoot || componentModel.isRoot()) {
-        if (componentModel.getIdentifier().equals(MULE_IDENTIFIER)) {
+        if (componentModel.getIdentifier().equals(MULE_IDENTIFIER)
+            || (Boolean) componentModel.getAnnotations().get(AVOID_INIT_ANNOTATION)) {
           return;
         }
         if (componentModel.getNameAttribute() != null) {

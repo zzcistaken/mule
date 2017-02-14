@@ -231,7 +231,8 @@ public class ComponentModel {
   }
 
   public Map<String, Object> getAnnotations() {
-    return unmodifiableMap(annotations);
+    //return unmodifiableMap(annotations);
+    return annotations;
   }
 
   // TODO MULE-11355: Make the ComponentModel haven an ComponentConfiguration internally
