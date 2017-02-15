@@ -18,10 +18,12 @@ import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.connectivity.ConnectivityTestingService;
 import org.mule.runtime.core.api.connectivity.ConnectivityTestingStrategy;
 import org.mule.runtime.core.api.connectivity.UnsupportedConnectivityTestingObjectException;
+import org.mule.runtime.core.api.exception.ObjectNotFoundException;
 import org.mule.runtime.core.api.registry.ServiceRegistry;
 import org.mule.runtime.core.registry.SpiServiceRegistry;
 
 import java.util.Collection;
+import java.util.Optional;
 
 import javax.inject.Inject;
 
@@ -72,7 +74,9 @@ public class DefaultConnectivityTestingService implements ConnectivityTestingSer
    */
   @Override
   public ConnectionValidationResult testConnection(Location location) {
-    Object connectivityTestingObject = muleContext.getConfigurationComponentLocator().find(location);
+    Optional<Object> foundObjectOptional = muleContext.getConfigurationComponentLocator().find(location);
+    Object connectivityTestingObject =
+        foundObjectOptional.orElseThrow((() -> new ObjectNotFoundException("No object found with path: " + location)));
     for (ConnectivityTestingStrategy connectivityTestingStrategy : connectivityTestingStrategies) {
       if (connectivityTestingStrategy.accepts(connectivityTestingObject)) {
         try {
