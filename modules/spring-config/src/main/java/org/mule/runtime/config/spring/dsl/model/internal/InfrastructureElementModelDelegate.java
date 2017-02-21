@@ -10,12 +10,14 @@ import static java.lang.String.format;
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.mule.runtime.api.component.ComponentIdentifier.builder;
 import static org.mule.runtime.api.dsl.DslConstants.CORE_NAMESPACE;
+import static org.mule.runtime.api.dsl.DslConstants.DYNAMIC_CONFIG_POLICY_ELEMENT_IDENTIFIER;
 import static org.mule.runtime.api.dsl.DslConstants.POOLING_PROFILE_ELEMENT_IDENTIFIER;
 import static org.mule.runtime.api.dsl.DslConstants.RECONNECT_ELEMENT_IDENTIFIER;
 import static org.mule.runtime.api.dsl.DslConstants.RECONNECT_FOREVER_ELEMENT_IDENTIFIER;
 import static org.mule.runtime.api.dsl.DslConstants.REDELIVERY_POLICY_ELEMENT_IDENTIFIER;
 import static org.mule.runtime.api.dsl.DslConstants.TLS_CONTEXT_ELEMENT_IDENTIFIER;
 import static org.mule.runtime.api.util.Preconditions.checkArgument;
+import static org.mule.runtime.extension.api.ExtensionConstants.DYNAMIC_CONFIG_POLICY_PARAMETER_NAME;
 import static org.mule.runtime.extension.api.ExtensionConstants.INFRASTRUCTURE_PARAMETER_NAMES;
 import static org.mule.runtime.extension.api.ExtensionConstants.POOLING_PROFILE_PARAMETER_NAME;
 import static org.mule.runtime.extension.api.ExtensionConstants.RECONNECTION_STRATEGY_PARAMETER_NAME;
@@ -25,7 +27,6 @@ import static org.mule.runtime.extension.api.declaration.type.ReconnectionStrate
 import org.mule.runtime.api.app.declaration.ParameterElementDeclaration;
 import org.mule.runtime.api.app.declaration.ParameterValueVisitor;
 import org.mule.runtime.api.app.declaration.fluent.ParameterObjectValue;
-import org.mule.runtime.api.component.ComponentIdentifier;
 import org.mule.runtime.api.meta.model.parameter.ParameterModel;
 import org.mule.runtime.config.spring.dsl.model.DslElementModel;
 import org.mule.runtime.dsl.api.component.config.ComponentConfiguration;
@@ -63,6 +64,12 @@ class InfrastructureElementModelDelegate {
         cloneDeclarationToElement(parameterModel, paramDsl, parentConfig, parentElement,
                                   (ParameterObjectValue) declaration.getValue(),
                                   POOLING_PROFILE_ELEMENT_IDENTIFIER);
+        return;
+
+      case DYNAMIC_CONFIG_POLICY_PARAMETER_NAME:
+        cloneDeclarationToElement(parameterModel, paramDsl, parentConfig, parentElement,
+                                  (ParameterObjectValue) declaration.getValue(),
+                                  DYNAMIC_CONFIG_POLICY_ELEMENT_IDENTIFIER);
         return;
 
       case TLS_PARAMETER_NAME:

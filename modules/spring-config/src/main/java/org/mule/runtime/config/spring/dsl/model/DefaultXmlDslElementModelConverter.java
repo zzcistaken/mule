@@ -11,6 +11,7 @@ import static java.util.Optional.empty;
 import static java.util.stream.Stream.of;
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.mule.runtime.api.dsl.DslConstants.CONFIG_ATTRIBUTE_NAME;
+import static org.mule.runtime.api.dsl.DslConstants.DYNAMIC_CONFIG_POLICY_ELEMENT_IDENTIFIER;
 import static org.mule.runtime.api.dsl.DslConstants.NAME_ATTRIBUTE_NAME;
 import static org.mule.runtime.api.dsl.DslConstants.POOLING_PROFILE_ELEMENT_IDENTIFIER;
 import static org.mule.runtime.api.dsl.DslConstants.RECONNECT_ELEMENT_IDENTIFIER;
@@ -53,6 +54,7 @@ public class DefaultXmlDslElementModelConverter implements XmlDslElementModelCon
                                                                   RECONNECT_FOREVER_ELEMENT_IDENTIFIER,
                                                                   REDELIVERY_POLICY_ELEMENT_IDENTIFIER,
                                                                   TLS_CONTEXT_ELEMENT_IDENTIFIER,
+                                                                  DYNAMIC_CONFIG_POLICY_ELEMENT_IDENTIFIER,
                                                                   TLS_PARAMETER_NAME,
                                                                   POOLING_PROFILE_PARAMETER_NAME,
                                                                   RECONNECTION_STRATEGY_PARAMETER_NAME,
