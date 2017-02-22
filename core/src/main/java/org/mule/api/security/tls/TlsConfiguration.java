@@ -6,7 +6,9 @@
  */
 package org.mule.api.security.tls;
 
+import static java.lang.String.format;
 import static org.mule.api.config.MuleProperties.SYSTEM_PROPERTY_PREFIX;
+
 import org.mule.api.lifecycle.CreateException;
 import org.mule.api.security.TlsDirectKeyStore;
 import org.mule.api.security.TlsDirectTrustStore;
@@ -21,13 +23,25 @@ import org.mule.util.StringUtils;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.GeneralSecurityException;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.Security;
+import java.security.cert.CRL;
+import java.security.cert.CertStore;
+import java.security.cert.CertificateFactory;
+import java.security.cert.CollectionCertStoreParameters;
+import java.security.cert.PKIXBuilderParameters;
+import java.security.cert.TrustAnchor;
+import java.security.cert.X509CertSelector;
+import java.security.cert.X509Certificate;
+import java.util.Collection;
 import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Set;
 
+import javax.net.ssl.CertPathTrustManagerParameters;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -112,7 +126,8 @@ public final class TlsConfiguration
 {
     public static final String DEFAULT_KEYSTORE = ".keystore";
     public static final String DEFAULT_KEYSTORE_TYPE = KeyStore.getDefaultType();
-    public static final String DEFAULT_KEYMANAGER_ALGORITHM = KeyManagerFactory.getDefaultAlgorithm();
+    // Don't use default as in Java 7 it's SunX509 or implementation dependant, starting from Java 8 it's PKIX
+    public static final String DEFAULT_KEYMANAGER_ALGORITHM = "PKIX";
     public static final String DEFAULT_SSL_TYPE = "TLSv1";
     public static final String JSSE_NAMESPACE = "javax.net";
 
@@ -150,6 +165,13 @@ public final class TlsConfiguration
     private String trustStoreName = null;
     private String trustStorePassword = null;
     private String trustStoreType = DEFAULT_KEYSTORE_TYPE;
+
+    // this is the revocation check configuration
+    private boolean ocspStandardRevocationCheck = false;
+    private boolean crldpStandardRevocationCheck = false;
+    private String crlFileCustomRevocationCheckPath;
+    private String ocspCustomRevocationCheckUrl;
+
     private String trustManagerAlgorithm = DEFAULT_KEYMANAGER_ALGORITHM;
     private TrustManagerFactory trustManagerFactory = null;
     private boolean explicitTrustStoreOnly = false;
@@ -192,6 +214,10 @@ public final class TlsConfiguration
         }
         validate(anon);
 
+        if (selectedRevocationChecks() > 1)
+        {
+            throw new CreateException(CoreMessages.createStaticMessage("More than one revocation check mechanism selected, please select one or none"), this);
+        }
 
         if (!anon)
         {
@@ -209,7 +235,7 @@ public final class TlsConfiguration
             new TlsPropertiesMapper(namespace).writeToProperties(System.getProperties(), this);
         }
 
-        tlsProperties.load(String.format(PROPERTIES_FILE_PATTERN, SecurityUtils.getSecurityModel()));
+        tlsProperties.load(format(PROPERTIES_FILE_PATTERN, SecurityUtils.getSecurityModel()));
     }
 
     private void validate(boolean anon) throws CreateException
@@ -223,6 +249,17 @@ public final class TlsConfiguration
         }
     }
 
+    private int selectedRevocationChecks()
+    {
+        int selectedRCs = 0;
+
+        selectedRCs += (isOcspStandardRevocationCheck() || isCrldpStandardRevocationCheck()) ? 1 : 0;
+        selectedRCs += getCrlFileCustomRevocationCheckPath() != null ? 1 : 0;
+        selectedRCs += getOcspCustomRevocationCheckUrl() != null ? 1 : 0;
+
+        return selectedRCs;
+    }
+
     private void initKeyManagerFactory() throws CreateException
     {
         if (logger.isDebugEnabled())
@@ -230,17 +267,8 @@ public final class TlsConfiguration
             logger.debug("initialising key manager factory from keystore data");
         }
 
-        KeyStore tempKeyStore;
-        try
-        {
-            tempKeyStore = loadKeyStore();
-            checkKeyStoreContainsAlias(tempKeyStore);
-        }
-        catch (Exception e)
-        {
-            throw new CreateException(
-                    CoreMessages.failedToLoad("KeyStore: " + keyStoreName), e, this);
-        }
+        KeyStore tempKeyStore = loadKeyStore("KeyStore", keystoreType, keyStoreName, keyStorePassword);
+        checkKeyStoreContainsAlias(tempKeyStore);
 
         try
         {
@@ -253,89 +281,171 @@ public final class TlsConfiguration
         }
     }
 
-    protected  KeyStore loadKeyStore() throws GeneralSecurityException, IOException
+    protected  KeyStore loadKeyStore(String storeName, String type, String path, String password) throws CreateException
     {
-        KeyStore tempKeyStore = KeyStore.getInstance(keystoreType);
-
-        InputStream is = IOUtils.getResourceAsStream(keyStoreName, getClass());
-        if (null == is)
+        try
         {
-            throw new FileNotFoundException(
-                CoreMessages.cannotLoadFromClasspath("Keystore: " + keyStoreName).getMessage());
-        }
+            KeyStore tempKeyStore = KeyStore.getInstance(type);
 
-        tempKeyStore.load(is, keyStorePassword.toCharArray());
-        return tempKeyStore;
-    }
-
-    protected void checkKeyStoreContainsAlias(KeyStore keyStore) throws KeyStoreException
-    {
-        if (StringUtils.isNotBlank(keyAlias))
-        {
-            boolean keyAliasFound = false;
-
-            Enumeration<String> aliases = keyStore.aliases();
-            while (aliases.hasMoreElements())
+            InputStream is = IOUtils.getResourceAsStream(path, getClass());
+            if (null == is)
             {
-                String alias = aliases.nextElement();
-
-                if (alias.equals(keyAlias))
-                {
-                    // if alias is found all is valid but continue processing to strip out all
-                    // other (unwanted) keys
-                    keyAliasFound = true;
-                }
-                else
-                {
-                    // if the current alias is not the one we are looking for, remove
-                    // it from the keystore
-                    keyStore.deleteEntry(alias);
-                }
+                throw new FileNotFoundException(
+                        CoreMessages.cannotLoadFromClasspath(path).getMessage());
             }
 
-            // if the alias was not found, throw an exception
-            if (!keyAliasFound)
+            tempKeyStore.load(is, password.toCharArray());
+            return tempKeyStore;
+        }
+        catch (Exception e)
+        {
+            throw new CreateException(
+                    CoreMessages.failedToLoad(format("%s with type '%s' and path '%s'", storeName, type, path)), e, this);
+        }
+    }
+
+    protected void checkKeyStoreContainsAlias(KeyStore keyStore) throws CreateException
+    {
+        try
+        {
+            if (StringUtils.isNotBlank(keyAlias))
             {
-                throw new IllegalStateException("Key with alias \"" + keyAlias + "\" was not found");
+                boolean keyAliasFound = false;
+
+                Enumeration<String> aliases = keyStore.aliases();
+                while (aliases.hasMoreElements())
+                {
+                    String alias = aliases.nextElement();
+
+                    if (alias.equals(keyAlias))
+                    {
+                        // if alias is found all is valid but continue processing to strip out all
+                        // other (unwanted) keys
+                        keyAliasFound = true;
+                    }
+                    else
+                    {
+                        // if the current alias is not the one we are looking for, remove
+                        // it from the keystore
+                        keyStore.deleteEntry(alias);
+                    }
+                }
+
+                // if the alias was not found, throw an exception
+                if (!keyAliasFound)
+                {
+                    throw new IllegalStateException("Key with alias \"" + keyAlias + "\" was not found");
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            throw new CreateException(
+                    CoreMessages.failedToLoad(format("KeyStore with type '%s' and path '%s'", keystoreType, keyStoreName)), e, this);
+        }
+    }
+
+    private void addCertsFromKeyStore(KeyStore keyStore, Set<TrustAnchor> trustAnchors) throws KeyStoreException
+    {
+        Enumeration<String> aliases = keyStore.aliases();
+        while (aliases.hasMoreElements())
+        {
+            String alias = aliases.nextElement();
+            if (keyStore.isKeyEntry(alias) || keyStore.isCertificateEntry(alias))
+            {
+                trustAnchors.add(new TrustAnchor((X509Certificate)keyStore.getCertificate(alias), null));
             }
         }
     }
 
     private void initTrustManagerFactory() throws CreateException
     {
-        if (null != trustStoreName)
+        if (trustStoreName == null)
         {
-            trustStorePassword = null == trustStorePassword ? "" : trustStorePassword;
+            return;
+        }
 
-            KeyStore trustStore;
-            try
+        trustStorePassword = null == trustStorePassword ? "" : trustStorePassword;
+
+        KeyStore trustStore = loadKeyStore("TrustStore", trustStoreType, trustStoreName, trustStorePassword);
+
+        try
+        {
+            trustManagerFactory = TrustManagerFactory.getInstance(trustManagerAlgorithm);
+
+            if (selectedRevocationChecks() == 1)
             {
-                trustStore = KeyStore.getInstance(trustStoreType);
-                InputStream is = IOUtils.getResourceAsStream(trustStoreName, getClass());
-                if (null == is)
+                // Revocation checking is only supported for PKIX algorithm
+                if ("PKIX".equalsIgnoreCase(getTrustManagerAlgorithm()))
                 {
-                    throw new FileNotFoundException(
-                            "Failed to load truststore from classpath or local file: " + trustStoreName);
-                }
-                trustStore.load(is, trustStorePassword.toCharArray());
-            }
-            catch (Exception e)
-            {
-                throw new CreateException(
-                        CoreMessages.failedToLoad("TrustStore: " + trustStoreName), e, this);
-            }
+                    // When creating build parameters we must manually trust each certificate (which is automatic otherwise)
+                    HashSet<TrustAnchor> trustAnchors = new HashSet<>();
+                    addCertsFromKeyStore(trustStore, trustAnchors);
 
-            try
+                    KeyStore keyStore = loadKeyStore("KeyStore", keystoreType, keyStoreName, keyStorePassword);
+                    checkKeyStoreContainsAlias(keyStore);
+                    // Will only add selected one, as checkKeyStoreContainsAlias removes other keys
+                    addCertsFromKeyStore(keyStore, trustAnchors);
+
+                    PKIXBuilderParameters pbParams = new PKIXBuilderParameters(trustAnchors, new X509CertSelector());
+
+                    // Make sure revocation checking is enabled (equivalent to setting "com.sun.net.ssl.checkRevocation")
+                    pbParams.setRevocationEnabled(true);
+
+                    if (getCrlFileCustomRevocationCheckPath() != null)
+                    {
+                        Collection<? extends CRL> crls = loadCRL(getCrlFileCustomRevocationCheckPath());
+                        if (crls != null && !crls.isEmpty())
+                        {
+                            pbParams.addCertStore(CertStore.getInstance("Collection", new CollectionCertStoreParameters(crls)));
+                        }
+                    }
+
+                    Security.setProperty("ocsp.enable", Boolean.toString(isOcspStandardRevocationCheck()));
+                    System.setProperty("com.sun.security.enableCRLDP", Boolean.toString(isCrldpStandardRevocationCheck()));
+                    Security.setProperty("ocsp.responderURL", getOcspCustomRevocationCheckUrl() != null ? getOcspCustomRevocationCheckUrl() : "");
+
+                    trustManagerFactory.init(new CertPathTrustManagerParameters(pbParams));
+                }
+                else
+                {
+                    throw new CreateException(CoreMessages.createStaticMessage("Certificate revocation configuration is only supported for the PKIX algorithm"), this);
+                }
+            }
+            else
             {
-                trustManagerFactory = TrustManagerFactory.getInstance(trustManagerAlgorithm);
                 trustManagerFactory.init(trustStore);
             }
-            catch (Exception e)
+        }
+        catch (Exception e)
+        {
+            throw new CreateException(
+                    CoreMessages.failedToLoad("Trust Manager (" + trustManagerAlgorithm + ")"), e, this);
+        }
+    }
+
+    public Collection<? extends CRL> loadCRL(String crlPath) throws Exception
+    {
+        Collection<? extends CRL> crlList = null;
+
+        if (crlPath != null)
+        {
+            InputStream in = null;
+            try
             {
-                throw new CreateException(
-                        CoreMessages.failedToLoad("Trust Manager (" + trustManagerAlgorithm + ")"), e, this);
+                in = IOUtils.getResourceAsStream(crlPath, getClass());
+                crlList = CertificateFactory.getInstance("X.509").generateCRLs(in);
+            }
+            finally
+            {
+                if (in != null)
+                {
+                    in.close();
+                }
             }
         }
+
+        return crlList;
     }
 
 
@@ -411,7 +521,7 @@ public final class TlsConfiguration
 
         if (enabledProtocols != null && !ArrayUtils.contains(enabledProtocols, sslType))
         {
-            throw new IllegalArgumentException(String.format("Protocol %s is not allowed in current configuration", sslType));
+            throw new IllegalArgumentException(format("Protocol %s is not allowed in current configuration", sslType));
         }
 
         this.sslType = sslType;
@@ -645,6 +755,46 @@ public final class TlsConfiguration
         this.keyAlias = keyAlias;
     }
 
+    public boolean isOcspStandardRevocationCheck()
+    {
+        return ocspStandardRevocationCheck;
+    }
+
+    public void setOcspStandardRevocationCheck(boolean ocspStandardRevocationCheck)
+    {
+        this.ocspStandardRevocationCheck = ocspStandardRevocationCheck;
+    }
+
+    public boolean isCrldpStandardRevocationCheck()
+    {
+        return crldpStandardRevocationCheck;
+    }
+
+    public void setCrldpStandardRevocationCheck(boolean crldpStandardRevocationCheck)
+    {
+        this.crldpStandardRevocationCheck = crldpStandardRevocationCheck;
+    }
+
+    public String getCrlFileCustomRevocationCheckPath()
+    {
+        return crlFileCustomRevocationCheckPath;
+    }
+
+    public void setCrlFileCustomRevocationCheckPath(String crlFileCustomRevocationCheckPath)
+    {
+        this.crlFileCustomRevocationCheckPath = crlFileCustomRevocationCheckPath;
+    }
+
+    public String getOcspCustomRevocationCheckUrl()
+    {
+        return ocspCustomRevocationCheckUrl;
+    }
+
+    public void setOcspCustomRevocationCheckUrl(String ocspCustomRevocationCheckUrl)
+    {
+        this.ocspCustomRevocationCheckUrl = ocspCustomRevocationCheckUrl;
+    }
+
     @Override
     public boolean equals(Object o)
     {
@@ -735,6 +885,22 @@ public final class TlsConfiguration
         {
             return false;
         }
+        if (ocspStandardRevocationCheck != that.ocspStandardRevocationCheck)
+        {
+            return false;
+        }
+        if (crldpStandardRevocationCheck != that.crldpStandardRevocationCheck)
+        {
+            return false;
+        }
+        if (ocspCustomRevocationCheckUrl != null ? !ocspCustomRevocationCheckUrl.equals(that.ocspCustomRevocationCheckUrl) : that.ocspCustomRevocationCheckUrl != null)
+        {
+            return false;
+        }
+        if (crlFileCustomRevocationCheckPath != null ? !crlFileCustomRevocationCheckPath.equals(that.crlFileCustomRevocationCheckPath) : that.crlFileCustomRevocationCheckPath != null)
+        {
+            return false;
+        }
 
         return true;
     }
@@ -757,6 +923,10 @@ public final class TlsConfiguration
         result = hashcodePrimeNumber * result + (trustStoreName != null ? trustStoreName.hashCode() : 0);
         result = hashcodePrimeNumber * result + (trustStorePassword != null ? trustStorePassword.hashCode() : 0);
         result = hashcodePrimeNumber * result + (trustStoreType != null ? trustStoreType.hashCode() : 0);
+        result = hashcodePrimeNumber * result + Boolean.toString(ocspStandardRevocationCheck).hashCode();
+        result = hashcodePrimeNumber * result + Boolean.toString(crldpStandardRevocationCheck).hashCode();
+        result = hashcodePrimeNumber * result + (crlFileCustomRevocationCheckPath != null ? crlFileCustomRevocationCheckPath.hashCode() : 0);
+        result = hashcodePrimeNumber * result + (ocspCustomRevocationCheckUrl != null ? ocspCustomRevocationCheckUrl.hashCode() : 0);
         result = hashcodePrimeNumber * result + (trustManagerAlgorithm != null ? trustManagerAlgorithm.hashCode() : 0);
         result = hashcodePrimeNumber * result + (trustManagerFactory != null ? trustManagerFactory.hashCode() : 0);
         result = hashcodePrimeNumber * result + (explicitTrustStoreOnly ? 1 : 0);

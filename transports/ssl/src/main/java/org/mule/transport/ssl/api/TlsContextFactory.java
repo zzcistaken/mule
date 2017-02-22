@@ -58,6 +58,11 @@ public interface TlsContextFactory
     boolean isTrustStoreConfigured();
 
     /**
+     * @return true if the certificate revocation check was configured, false otherwise
+     */
+    boolean isRevocationCheckConfigured();
+
+    /**
      * @return An object with the configuration of the key store.
      */
     TlsContextKeyStoreConfiguration getKeyStoreConfiguration();
@@ -66,4 +71,9 @@ public interface TlsContextFactory
      * @return An object with the configuration of the trust store.
      */
     TlsContextTrustStoreConfiguration getTrustStoreConfiguration();
+
+    /**
+     * @return An object with the configuration of certificate revocation checks.
+     */
+    TlsContextRevocationCheckConfiguration getRevocationCheckConfiguration();
 }

@@ -29,6 +29,9 @@ public class TlsNamespaceHandler extends AbstractMuleNamespaceHandler
         registerBeanDefinitionParser("protocol-handler", new ProtocolHandlerDefinitionParser());
         registerBeanDefinitionParser("context", new TlsContextDefinitionParser());
         registerBeanDefinitionParser("trust-store", new TrustStoreTlsContextDefinitionParser());
+        registerBeanDefinitionParser("standard-revocation-check", new StandardRevocationCheckDefinitionParser());
+        registerBeanDefinitionParser("crl-file-revocation-check", new CrlFileRevocationCheckDefinitionParser());
+        registerBeanDefinitionParser("custom-ocsp-revocation-check", new CustomOcspRevocationCheckDefinitionParser());
     }
 
 }

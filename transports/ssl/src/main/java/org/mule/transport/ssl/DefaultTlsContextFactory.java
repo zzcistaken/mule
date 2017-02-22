@@ -14,6 +14,7 @@ import org.mule.api.security.tls.TlsConfiguration;
 import org.mule.config.i18n.MessageFactory;
 import org.mule.transport.ssl.api.TlsContextFactory;
 import org.mule.transport.ssl.api.TlsContextKeyStoreConfiguration;
+import org.mule.transport.ssl.api.TlsContextRevocationCheckConfiguration;
 import org.mule.transport.ssl.api.TlsContextTrustStoreConfiguration;
 import org.mule.util.ArrayUtils;
 import org.mule.util.FileUtils;
@@ -235,6 +236,45 @@ public class DefaultTlsContextFactory implements TlsContextFactory, Initialisabl
         this.trustStoreInsecure = insecure;
     }
 
+    public boolean isOcspStandardRevocationCheck()
+    {
+        return tlsConfiguration.isOcspStandardRevocationCheck();
+    }
+
+    public void setOcspStandardRevocationCheck(boolean ocspStandardRevocationCheck)
+    {
+        tlsConfiguration.setOcspStandardRevocationCheck(ocspStandardRevocationCheck);
+    }
+
+    public boolean isCrldpStandardRevocationCheck()
+    {
+        return tlsConfiguration.isCrldpStandardRevocationCheck();
+    }
+
+    public void setCrldpStandardRevocationCheck(boolean crldpStandardRevocationCheck)
+    {
+        tlsConfiguration.setCrldpStandardRevocationCheck(crldpStandardRevocationCheck);
+    }
+
+    public String getCrlFileCustomRevocationCheckPath()
+    {
+        return tlsConfiguration.getCrlFileCustomRevocationCheckPath();
+    }
+
+    public void setCrlFileCustomRevocationCheckPath(String crlFileCustomRevocationCheckPath)
+    {
+        tlsConfiguration.setCrlFileCustomRevocationCheckPath(crlFileCustomRevocationCheckPath);
+    }
+
+    public String getOcspCustomRevocationCheckUrl()
+    {
+        return tlsConfiguration.getOcspCustomRevocationCheckUrl();
+    }
+
+    public void setOcspCustomRevocationCheckUrl(String ocspCustomRevocationCheckUrl)
+    {
+        tlsConfiguration.setOcspCustomRevocationCheckUrl(ocspCustomRevocationCheckUrl);
+    }
 
     @Override
     public SSLContext createSslContext() throws KeyManagementException, NoSuchAlgorithmException, CreateException
@@ -285,6 +325,13 @@ public class DefaultTlsContextFactory implements TlsContextFactory, Initialisabl
     public void setEnabledProtocols(String enabledProtocols)
     {
         this.enabledProtocols = StringUtils.splitAndTrim(enabledProtocols, ",");
+    }
+
+    @Override
+    public boolean isRevocationCheckConfigured()
+    {
+        return tlsConfiguration.isOcspStandardRevocationCheck() || isCrldpStandardRevocationCheck() ||
+               getCrlFileCustomRevocationCheckPath() != null || getOcspCustomRevocationCheckUrl() != null;
     }
 
     @Override
@@ -375,6 +422,36 @@ public class DefaultTlsContextFactory implements TlsContextFactory, Initialisabl
             public boolean isInsecure()
             {
                 return isTrustStoreInsecure();
+            }
+        };
+    }
+
+    @Override
+    public TlsContextRevocationCheckConfiguration getRevocationCheckConfiguration() {
+        return new TlsContextRevocationCheckConfiguration()
+        {
+            @Override
+            public boolean getStandardOcsp()
+            {
+                return isOcspStandardRevocationCheck();
+            }
+
+            @Override
+            public boolean getStandardCrldp()
+            {
+                return isCrldpStandardRevocationCheck();
+            }
+
+            @Override
+            public String getCustomCrlFile()
+            {
+                return getCrlFileCustomRevocationCheckPath();
+            }
+
+            @Override
+            public String getCustomOcspUrl()
+            {
+                return getOcspCustomRevocationCheckUrl();
             }
         };
     }

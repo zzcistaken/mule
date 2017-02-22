@@ -16,6 +16,7 @@ import static org.junit.Assert.assertTrue;
 import org.mule.tck.junit4.FunctionalTestCase;
 import org.mule.transport.ssl.api.TlsContextFactory;
 import org.mule.transport.ssl.api.TlsContextKeyStoreConfiguration;
+import org.mule.transport.ssl.api.TlsContextRevocationCheckConfiguration;
 import org.mule.transport.ssl.api.TlsContextTrustStoreConfiguration;
 
 import org.junit.Test;
@@ -26,7 +27,7 @@ public class TlsNamespaceHandlerTestCase extends FunctionalTestCase
     private static final String PASSWORD = "mulepassword";
     private static final String ALIAS = "muleserver";
     private static final String TYPE = "jks";
-    private static final String ALGORITHM = "SunX509";
+    private static final String ALGORITHM = "PKIX";
 
     @Override
     protected String getConfigFile()
@@ -106,5 +107,31 @@ public class TlsNamespaceHandlerTestCase extends FunctionalTestCase
     }
 
 
+    @Test
+    public void testTlsContextRevocationCheckStandard() throws Exception
+    {
+        TlsContextFactory tlsContextFactory = muleContext.getRegistry().get("tlsContextStandardRC");
+        TlsContextRevocationCheckConfiguration revocationCheckConfig = tlsContextFactory.getRevocationCheckConfiguration();
 
+        assertThat(revocationCheckConfig.getStandardOcsp(), is(true));
+        assertThat(revocationCheckConfig.getStandardCrldp(), is(false));
+    }
+
+    @Test
+    public void testTlsContextRevocationCrlFile() throws Exception
+    {
+        TlsContextFactory tlsContextFactory = muleContext.getRegistry().get("tlsContextCrlFile");
+        TlsContextRevocationCheckConfiguration revocationCheckConfig = tlsContextFactory.getRevocationCheckConfiguration();
+
+        assertThat(revocationCheckConfig.getCustomCrlFile(), equalTo("my/path.crl"));
+    }
+
+    @Test
+    public void testTlsContextRevocationCustomOcsp() throws Exception
+    {
+        TlsContextFactory tlsContextFactory = muleContext.getRegistry().get("tlsContextCustomOcsp");
+        TlsContextRevocationCheckConfiguration revocationCheckConfig = tlsContextFactory.getRevocationCheckConfiguration();
+
+        assertThat(revocationCheckConfig.getCustomOcspUrl(), equalTo("http://myhost.com/"));
+    }
 }

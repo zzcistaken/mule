@@ -137,23 +137,43 @@
         </xsd:annotation>
     </xsd:element>
 
+    <xsd:element name="standard-revocation-check" type="tlsContextStandardRevocationCheckType">
+        <xsd:annotation>
+            <xsd:documentation>
+                The standard certificate revocation check provided by the JVM. It reads the OCSP and CRLDP fields in each certificate (when present and enabled) and validates accordingly.
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+
+    <xsd:element name="crl-file-revocation-check" type="tlsContextCrlFileRevocationCheckType">
+        <xsd:annotation>
+            <xsd:documentation>
+                Custom certificate validation through a local path to a CRL (ignores CRLDP or OCSP mentioned in certificates)..
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+
+    <xsd:element name="custom-ocsp-revocation-check" type="tlsContextCustomOcspRevocationCheckType">
+        <xsd:annotation>
+            <xsd:documentation>
+                Custom certificate validation trough a specific OCSP server (ignores CRLDP or OCSP mentioned in certificates).
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+
     <xsd:complexType name="tlsContextType">
         <xsd:complexContent>
             <xsd:extension base="mule:abstractExtensionType">
-                <xsd:choice minOccurs="1">
-                    <xsd:sequence>
-                        <xsd:element ref="trust-store" minOccurs="1" maxOccurs="1" />
-                        <xsd:element ref="key-store" minOccurs="0" maxOccurs="1" />
-                    </xsd:sequence>
-                    <xsd:sequence>
-                        <xsd:element ref="trust-store" minOccurs="0" maxOccurs="1" />
-                        <xsd:element ref="key-store" minOccurs="1" maxOccurs="1" />
-                    </xsd:sequence>
-                    <xsd:sequence>
-                        <xsd:element ref="trust-store" minOccurs="1" maxOccurs="1" />
-                        <xsd:element ref="key-store" minOccurs="1" maxOccurs="1" />
-                    </xsd:sequence>
-                </xsd:choice>
+                <xsd:sequence minOccurs="1">
+                    <xsd:element ref="trust-store" minOccurs="0" maxOccurs="1" />
+                    <xsd:element ref="key-store" minOccurs="0" maxOccurs="1" />
+                    <xsd:choice minOccurs="0" maxOccurs="1">
+                        <xsd:element ref="standard-revocation-check"/>
+                        <xsd:element ref="crl-file-revocation-check"/>
+                        <xsd:element ref="custom-ocsp-revocation-check"/>
+                    </xsd:choice>
+                </xsd:sequence>
+
                 <xsd:attribute name="name" type="xsd:string">
                     <xsd:annotation>
                         <xsd:documentation>
@@ -178,7 +198,6 @@
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>
-
 
     <xsd:complexType name="tlsContextTrustStoreType">
         <xsd:attribute name="path" type="xsd:string">
@@ -217,7 +236,6 @@
             </xsd:annotation>
         </xsd:attribute>
     </xsd:complexType>
-
 
     <xsd:complexType name="tlsContextKeyStoreType">
         <xsd:attribute name="path" type="xsd:string">
@@ -260,6 +278,44 @@
             <xsd:annotation>
                 <xsd:documentation>
                     The algorithm used by the key store.
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
+
+    <xsd:complexType name="tlsContextStandardRevocationCheckType">
+        <xsd:attribute name="ocsp" type="xsd:boolean">
+            <xsd:annotation>
+                <xsd:documentation>
+                    Enable verification through OCSP servers.
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="crldp" type="xsd:boolean">
+            <xsd:annotation>
+                <xsd:documentation>
+                    Enable verification through CRL distribution points.
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
+
+    <xsd:complexType name="tlsContextCrlFileRevocationCheckType">
+        <xsd:attribute name="path" type="xsd:string">
+            <xsd:annotation>
+                <xsd:documentation>
+                    The path to a CRL (Certificate Revocation List) file to be used for this trust store.
+                    A certificate mentioned there will not be accepted for authentication.
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
+
+    <xsd:complexType name="tlsContextCustomOcspRevocationCheckType">
+        <xsd:attribute name="url" type="xsd:string">
+            <xsd:annotation>
+                <xsd:documentation>
+                    The URL of the OCSP server to use for certificate verification.
                 </xsd:documentation>
             </xsd:annotation>
         </xsd:attribute>
