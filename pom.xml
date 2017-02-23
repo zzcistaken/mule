@@ -104,6 +104,8 @@
         <module>tests</module>
         <module>extensions</module>
         <module>compatibility</module>
+        <module>bom</module>
+        <module>embedded</module>
     </modules>
 
     <properties>
