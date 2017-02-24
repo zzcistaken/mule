@@ -17,8 +17,7 @@ import java.util.Set;
  * Determines if a given class or resource is exported in a plugin classloader
  */
 // TODO MULE-11882 - Consolidate classloading isolation
-public class ClassLoaderFilter
-{
+public class ClassLoaderFilter {
 
   private static final String EMPTY_PACKAGE = "";
   private static final char RESOURCE_SEPARATOR = '/';

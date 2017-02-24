@@ -42,12 +42,12 @@ public interface EmbeddedContainerFactory {
       List<URL> services = classLoaderFactory.getServices(muleVersion);
       ContainerInfo containerInfo = new ContainerInfo(muleVersion, containerBaseFolder, services);
 
-      // This needs to have as parent the classloader of the container. The class loader of the container will have as parent a
-      // filtered version of the launcher container
-      ClassLoader embeddedControllerBootstrapClassLoader = createEmbeddedImplClassLoader(containerModulesClassLoader, repository, muleVersion);
+      ClassLoader embeddedControllerBootstrapClassLoader =
+          createEmbeddedImplClassLoader(containerModulesClassLoader, repository, muleVersion);
 
       try {
-        Class<?> controllerClass = embeddedControllerBootstrapClassLoader.loadClass("org.mule.runtime.module.embedded.impl.EmbeddedController");
+        Class<?> controllerClass =
+            embeddedControllerBootstrapClassLoader.loadClass("org.mule.runtime.module.embedded.impl.EmbeddedController");
 
         Constructor<?> constructor = controllerClass.getConstructor(byte[].class, byte[].class);
         ByteArrayOutputStream containerOutputStream = new ByteArrayOutputStream(512);

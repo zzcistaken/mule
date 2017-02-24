@@ -20,8 +20,7 @@ import java.util.Set;
  * @since 4.0
  */
 // TODO MULE-11882 - Consolidate classloading isolation
-public class JreUrlsDiscoverer
-{
+public class JreUrlsDiscoverer {
 
   protected static final String JRE_PACKAGES_PROPERTIES = "jre-packages.properties";
   public static final String UNABLE_TO_DETERMINE_JRE_PACKAGES_ERROR = "Unable to determine packages exported by the JRE";
