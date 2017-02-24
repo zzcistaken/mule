@@ -43,7 +43,7 @@ public class MavenContainerClassLoaderFactory {
    * @param version Maven version. Not null.
    * @return a {@link ClassLoader} Container.
    */
-  public ClassLoader create(String version) throws ArtifactResolutionException {
+  public ClassLoader create(String version, ClassLoader parentClassLoader) throws ArtifactResolutionException {
     Artifact defaultArtifact = getContainerBomArtifact(version);
 
     Predicate<Dependency> zipDependencyFilter =
@@ -52,7 +52,7 @@ public class MavenContainerClassLoaderFactory {
         repository.assemblyDependenciesForArtifact(defaultArtifact, zipDependencyFilter);
     List<URL> urls = loadUrls(nlg);
 
-    return new URLClassLoader(urls.toArray(new URL[0]));
+    return new URLClassLoader(urls.toArray(new URL[0]), parentClassLoader);
   }
 
   public List<URL> getServices(String version) {

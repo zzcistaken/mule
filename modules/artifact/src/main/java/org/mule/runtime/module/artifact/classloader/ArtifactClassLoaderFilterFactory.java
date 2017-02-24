@@ -15,7 +15,8 @@ import java.util.Set;
 /**
  * Creates {@link DefaultArtifactClassLoaderFilter} instances
  */
-public class ArtifactClassLoaderFilterFactory implements ClassLoaderFilterFactory {
+public class ArtifactClassLoaderFilterFactory implements ClassLoaderFilterFactory
+{
 
   private static final String PACKAGE_SEPARATOR = "/";
 

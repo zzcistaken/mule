@@ -11,6 +11,7 @@ import static org.mule.runtime.module.embedded.internal.MavenUtils.loadUrls;
 import static org.mule.runtime.module.embedded.internal.Serializer.serialize;
 import org.mule.runtime.module.embedded.internal.MavenContainerClassLoaderFactory;
 import org.mule.runtime.module.embedded.internal.Repository;
+import org.mule.runtime.module.embedded.internal.classloading.JdkOnlyClassLoader;
 
 import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Constructor;
@@ -30,18 +31,23 @@ import org.eclipse.aether.util.graph.visitor.PreorderNodeListGenerator;
 public interface EmbeddedContainerFactory {
 
   static EmbeddedContainer create(String muleVersion, URL containerBaseFolder, ArtifactInfo application) {
-    // TODO(pablo.kraan): embedded - this is not a "factory". Rename/split it
     try {
       Repository repository = new Repository();
+
+      JdkOnlyClassLoader jdkOnlyClassLoader = new JdkOnlyClassLoader();
+
       MavenContainerClassLoaderFactory classLoaderFactory = new MavenContainerClassLoaderFactory(repository);
-      ClassLoader parentClassLoader = classLoaderFactory.create(muleVersion);
+      ClassLoader containerModulesClassLoader = classLoaderFactory.create(muleVersion, jdkOnlyClassLoader);
+
       List<URL> services = classLoaderFactory.getServices(muleVersion);
       ContainerInfo containerInfo = new ContainerInfo(muleVersion, containerBaseFolder, services);
 
-      ClassLoader classLoader = createEmbeddedImplClassLoader(parentClassLoader, repository, muleVersion);
+      // This needs to have as parent the classloader of the container. The class loader of the container will have as parent a
+      // filtered version of the launcher container
+      ClassLoader embeddedControllerBootstrapClassLoader = createEmbeddedImplClassLoader(containerModulesClassLoader, repository, muleVersion);
 
       try {
-        Class<?> controllerClass = classLoader.loadClass("org.mule.runtime.module.embedded.impl.EmbeddedController");
+        Class<?> controllerClass = embeddedControllerBootstrapClassLoader.loadClass("org.mule.runtime.module.embedded.impl.EmbeddedController");
 
         Constructor<?> constructor = controllerClass.getConstructor(byte[].class, byte[].class);
         ByteArrayOutputStream containerOutputStream = new ByteArrayOutputStream(512);

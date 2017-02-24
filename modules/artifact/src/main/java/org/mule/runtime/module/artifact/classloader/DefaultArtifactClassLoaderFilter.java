@@ -25,7 +25,8 @@ import java.util.stream.Collectors;
  * classes or subpackages from a blocked package.
  * </p>
  */
-public class DefaultArtifactClassLoaderFilter implements ArtifactClassLoaderFilter {
+public class DefaultArtifactClassLoaderFilter implements ArtifactClassLoaderFilter
+{
 
   public static final ArtifactClassLoaderFilter NULL_CLASSLOADER_FILTER =
       new DefaultArtifactClassLoaderFilter(Collections.EMPTY_SET, Collections.EMPTY_SET);
