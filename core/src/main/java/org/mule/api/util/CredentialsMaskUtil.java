@@ -13,6 +13,10 @@ import static java.util.regex.Pattern.compile;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * utils for masking credentials
+ * 
+ */
 public class CredentialsMaskUtil
 {
 
@@ -83,7 +87,7 @@ public class CredentialsMaskUtil
      * 
      * @param password password to be masked
      * 
-     * @return password masked
+     * @return password attribute masked
      */
     public static String maskPasswordAttribute(String password)
     {
