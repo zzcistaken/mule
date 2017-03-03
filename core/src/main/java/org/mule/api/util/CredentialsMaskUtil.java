@@ -14,7 +14,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * utils for masking credentials
+ * <code>CredentialsMaskUtil</code> provides utils for masking credentials
  * 
  */
 public class CredentialsMaskUtil
