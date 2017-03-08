@@ -23,9 +23,8 @@ import org.mule.runtime.api.metadata.DataType;
 import org.mule.runtime.api.metadata.DataTypeParamsBuilder;
 import org.mule.runtime.api.metadata.MediaType;
 import org.mule.runtime.extension.api.runtime.operation.Result;
-
-import java.io.IOException;
-import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.jms.Destination;
 import javax.jms.JMSException;
@@ -33,9 +32,8 @@ import javax.jms.Message;
 import javax.jms.Queue;
 import javax.jms.Session;
 import javax.jms.Topic;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.io.IOException;
+import java.util.Optional;
 
 /**
  * Factory class for creating an Operation {@link Result} based on a JMS {@link Message}
@@ -59,7 +57,7 @@ public class JmsResultFactory {
    * @throws JMSException
    */
   public Result<Object, JmsAttributes> createResult(Message jmsMessage, JmsSpecification specification, String contentType,
-                                                    String encoding, Optional<String> ackId)
+                                                    String encoding, String muleDefaultEncoding, Optional<String> ackId)
       throws IOException, JMSException {
 
     if (jmsMessage == null) {
@@ -80,7 +78,7 @@ public class JmsResultFactory {
     JmsMessageProperties jmsProperties = createJmsProperties(jmsMessage);
 
     return Result.<Object, JmsAttributes>builder()
-        .output(payload).mediaType(getMediaType(contentType, encoding))
+        .output(payload).mediaType(getMediaType(contentType, encoding, muleDefaultEncoding))
         .attributes(createJmsAttributes(jmsHeaders, jmsProperties, ackId))
         .build();
   }
@@ -109,7 +107,7 @@ public class JmsResultFactory {
     return new DefaultJmsProperties(getPropertiesMap(message));
   }
 
-  private MediaType getMediaType(String contentType, String encoding) {
+  private MediaType getMediaType(String contentType, String encoding, String muleDefaultEncoding) {
     DataTypeParamsBuilder builder = DataType.builder().mediaType(contentType);
     if (encoding != null) {
       builder.charset(forName(encoding));

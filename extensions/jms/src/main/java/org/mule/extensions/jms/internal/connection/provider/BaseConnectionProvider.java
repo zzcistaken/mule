@@ -39,16 +39,14 @@ import org.mule.runtime.extension.api.annotation.param.NullSafe;
 import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.Parameter;
 import org.mule.runtime.extension.api.annotation.param.ParameterGroup;
-
-import java.util.concurrent.atomic.AtomicBoolean;
+import org.slf4j.Logger;
 
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.ExceptionListener;
 import javax.jms.JMSException;
 import javax.jms.Session;
-
-import org.slf4j.Logger;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Base implementation of a {@link PoolingConnectionProvider} for {@link JmsConnection}s
