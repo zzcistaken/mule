@@ -62,7 +62,29 @@
             <classifier>mule-service</classifier>
             <scope>provided</scope>
         </dependency>
-    
+
+        <!-- Remove after fix MULE-11996 -->
+
+        <dependency>
+            <groupId>org.mule.modules</groupId>
+            <artifactId>mule-module-xml</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.modules</groupId>
+            <artifactId>mule-module-scripting</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.modules</groupId>
+            <artifactId>mule-module-management</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+
         <!-- Transports under test -->
         <dependency>
             <groupId>org.mule.transports</groupId>
