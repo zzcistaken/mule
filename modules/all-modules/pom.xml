@@ -52,16 +52,18 @@
             <artifactId>mule-module-jbossts</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.mule.modules</groupId>
-            <artifactId>mule-module-management</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.mule.modules</groupId>
-            <artifactId>mule-module-scripting</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+        <!-- Ignore due to MULE-11996 -->
+        <!--<dependency>-->
+            <!--<groupId>org.mule.modules</groupId>-->
+            <!--<artifactId>mule-module-management</artifactId>-->
+            <!--<version>${project.version}</version>-->
+        <!--</dependency>-->
+        <!-- Ignore due to MULE-11996 -->
+        <!--<dependency>-->
+            <!--<groupId>org.mule.modules</groupId>-->
+            <!--<artifactId>mule-module-scripting</artifactId>-->
+            <!--<version>${project.version}</version>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>org.mule.modules</groupId>
             <artifactId>mule-module-scripting-jruby</artifactId>
@@ -92,10 +94,11 @@
             <artifactId>mule-module-tooling-support</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.mule.modules</groupId>
-            <artifactId>mule-module-xml</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+        <!-- Ignore due to MULE-11996 -->
+        <!--<dependency>-->
+            <!--<groupId>org.mule.modules</groupId>-->
+            <!--<artifactId>mule-module-xml</artifactId>-->
+            <!--<version>${project.version}</version>-->
+        <!--</dependency>-->
     </dependencies>
 </project>

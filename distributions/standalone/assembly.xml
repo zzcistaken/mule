@@ -148,9 +148,9 @@
                 <include>org.mule.modules:mule-module-extensions-xml-support</include>
                 <include>org.mule.modules:mule-module-http</include>
                 <include>org.mule.modules:mule-module-jbossts</include>
-                <include>org.mule.modules:mule-module-management</include>
+                <!--<include>org.mule.modules:mule-module-management</include>-->
                 <include>org.mule.modules:mule-module-repository</include>
-                <include>org.mule.modules:mule-module-scripting</include>
+                <!--<include>org.mule.modules:mule-module-scripting</include>-->
                 <include>org.mule.modules:mule-module-scripting-jruby</include>
                 <include>org.mule.modules:mule-module-schedulers</include>
                 <include>org.mule.modules:mule-module-spring-config</include>
@@ -159,7 +159,7 @@
                 <include>org.mule.modules:mule-module-tls</include>
                 <include>org.mule.modules:mule-module-tomcat</include>
                 <include>org.mule.modules:mule-module-tooling-support</include>
-                <include>org.mule.modules:mule-module-xml</include>
+                <!--<include>org.mule.modules:mule-module-xml</include>-->
                 <include>org.mule.transports:mule-transport-sockets</include>
 
                 <!-- Shared libs -->
@@ -225,11 +225,11 @@
                 <exclude>org.mule.modules:mule-module-deployment-model-impl</exclude>
                 <exclude>org.mule.modules:mule-module-dsl-api</exclude>
                 <exclude>org.mule.modules:mule-module-service</exclude>
-                <exclude>org.mule.modules:mule-module-management</exclude>
+                <!--<exclude>org.mule.modules:mule-module-management</exclude>-->
                 <exclude>org.mule.modules:mule-module-oauth</exclude>
                 <exclude>org.mule.modules:mule-module-reboot</exclude>
                 <exclude>org.mule.modules:mule-module-repository</exclude>
-                <exclude>org.mule.modules:mule-module-scripting</exclude>
+                <!--<exclude>org.mule.modules:mule-module-scripting</exclude>-->
                 <exclude>org.mule.modules:mule-module-scripting-jruby</exclude>
                 <exclude>org.mule.modules:mule-module-schedulers</exclude>
                 <exclude>org.mule.modules:mule-module-spring-config</exclude>
@@ -238,7 +238,7 @@
                 <exclude>org.mule.modules:mule-module-tls</exclude>
                 <exclude>org.mule.modules:mule-module-tomcat</exclude>
                 <exclude>org.mule.modules:mule-module-tooling-support</exclude>
-                <exclude>org.mule.modules:mule-module-xml</exclude>
+                <!--<exclude>org.mule.modules:mule-module-xml</exclude>-->
                 <exclude>org.mule.transports:mule-transport-sockets</exclude>
 
                 <!-- lib/plugins (these artifacts are zip type) -->
@@ -267,7 +267,7 @@
                 <exclude>xalan:xalan</exclude>
 
                 <!-- Distributed separately in profiler pack -->
-                <exclude>com.yourkit:yjp-controller-api-redist</exclude>
+                <!--<exclude>com.yourkit:yjp-controller-api-redist</exclude>-->
 
             </excludes>
         </dependencySet>
