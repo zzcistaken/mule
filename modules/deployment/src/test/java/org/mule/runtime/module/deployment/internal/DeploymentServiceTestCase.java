@@ -1072,6 +1072,7 @@ public class DeploymentServiceTestCase extends AbstractMuleTestCase {
     deploymentService.start();
 
     assertDeploymentFailure(applicationDeploymentListener, appName);
+    reset(applicationDeploymentListener);
     assertAppsDir(new String[] {}, new String[] {appName}, true);
 
     final Map<URL, Long> startZombieMap = deploymentService.getZombieApplications();
@@ -1084,8 +1085,8 @@ public class DeploymentServiceTestCase extends AbstractMuleTestCase {
     org.apache.commons.io.FileUtils.deleteDirectory(new File(appsDir, app.getArtifactName()));
     assertAppFolderIsDeleted(appName);
     assertUndeploymentSuccess(applicationDeploymentListener, appName);
+    reset(applicationDeploymentListener);
 
-    assertNull(deploymentService.findApplication(appName));
     final Map<URL, Long> endZombieMap = deploymentService.getZombieApplications();
     assertEquals("Should not be any more zombie files present", 0, endZombieMap.size());
   }
