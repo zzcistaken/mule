@@ -141,6 +141,23 @@
             </exclusions>
         </dependency>
         <dependency>
+            <groupId>org.mule.services</groupId>
+            <artifactId>mule-service-tls</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+            <exclusions>
+                <!-- Runtime Dependencies-->
+                <exclusion>
+                    <groupId>org.mule.runtime</groupId>
+                    <artifactId>mule-service-tls-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.mule.runtime</groupId>
+                    <artifactId>mule-module-tls</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
             <artifactId>mule-service-weave</artifactId>
             <groupId>org.mule.services</groupId>
             <version>${weaveVersion}</version>

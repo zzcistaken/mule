@@ -8,7 +8,6 @@ package org.mule.test.module.http.functional;
 
 import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.startIfNeeded;
 import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.stopIfNeeded;
-
 import org.mule.extension.http.internal.temporary.HttpConnector;
 import org.mule.extension.socket.api.SocketsExtension;
 import org.mule.functional.junit4.ExtensionFunctionalTestCase;
@@ -18,6 +17,8 @@ import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.runtime.core.api.scheduler.SchedulerService;
 import org.mule.runtime.core.config.builders.AbstractConfigurationBuilder;
 import org.mule.service.http.api.HttpService;
+import org.mule.service.tls.api.TlsService;
+import org.mule.service.tls.impl.TlsServiceImplementation;
 import org.mule.services.http.impl.service.HttpServiceImplementation;
 import org.mule.tck.SimpleUnitTestSupportSchedulerService;
 
@@ -36,12 +37,14 @@ public abstract class AbstractTlsRestrictedProtocolsAndCiphersTestCase extends E
   // TODO - MULE-11119: Remove once the service is injected higher up on the hierarchy
   private SchedulerService schedulerService = new SimpleUnitTestSupportSchedulerService();
   private HttpService httpService = new HttpServiceImplementation(schedulerService);
+  private TlsService tlsService = new TlsServiceImplementation();
 
   @Override
   protected void addBuilders(List<ConfigurationBuilder> builders) {
     super.addBuilders(builders);
     try {
       startIfNeeded(httpService);
+      startIfNeeded(tlsService);
     } catch (MuleException e) {
       // do nothing
     }
@@ -50,6 +53,7 @@ public abstract class AbstractTlsRestrictedProtocolsAndCiphersTestCase extends E
       @Override
       protected void doConfigure(MuleContext muleContext) throws Exception {
         muleContext.getRegistry().registerObject(httpService.getName(), httpService);
+        muleContext.getRegistry().registerObject(tlsService.getName(), tlsService);
       }
     });
   }

@@ -59,6 +59,12 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>org.mule.runtime</groupId>
+            <artifactId>mule-service-tls-api</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>org.mule.services</groupId>
             <artifactId>mule-service-http</artifactId>
             <version>${project.version}</version>
@@ -77,6 +83,13 @@
         <dependency>
             <groupId>org.mule.services</groupId>
             <artifactId>mule-service-scheduler</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+            <classifier>mule-service</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.services</groupId>
+            <artifactId>mule-service-tls</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
             <classifier>mule-service</classifier>

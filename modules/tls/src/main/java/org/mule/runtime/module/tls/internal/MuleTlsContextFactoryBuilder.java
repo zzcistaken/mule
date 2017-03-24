@@ -6,56 +6,108 @@
  */
 package org.mule.runtime.module.tls.internal;
 
-import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
+import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.api.tls.TlsContextFactory;
 import org.mule.runtime.api.tls.TlsContextFactoryBuilder;
-import org.mule.runtime.core.api.MuleContext;
-import org.mule.runtime.core.api.config.MuleProperties;
-import org.mule.runtime.core.api.context.MuleContextAware;
-import org.mule.runtime.api.lifecycle.Initialisable;
-import org.mule.runtime.api.lifecycle.InitialisationException;
-import org.mule.runtime.module.tls.api.DefaultTlsContextFactoryBuilder;
 
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.io.IOException;
 
-@DefaultTlsContextFactoryBuilder
-public class MuleTlsContextFactoryBuilder implements TlsContextFactoryBuilder, Initialisable, MuleContextAware {
+public class MuleTlsContextFactoryBuilder implements TlsContextFactoryBuilder {
 
-  private TlsContextFactory defaultTlsContextFactory;
-  private MuleContext muleContext;
-  private final AtomicBoolean initialised = new AtomicBoolean(false);
+  private DefaultTlsContextFactory tlsContextFactory = new DefaultTlsContextFactory();
 
-  /**
-   * Creates a default {@link TlsContextFactory} and registers it under key
-   * {@link MuleProperties#DEFAULT_TLS_CONTEXT_FACTORY_REGISTRY_KEY}
-   *
-   * @throws InitialisationException if the {@link #defaultTlsContextFactory} could not be created or registered
-   */
   @Override
-  public void initialise() throws InitialisationException {
-    if (!initialised.compareAndSet(false, true)) {
-      return;
-    }
-
+  public TlsContextFactory build() {
     try {
-      defaultTlsContextFactory = new DefaultTlsContextFactory();
-      muleContext.getRegistry().registerObject(MuleProperties.DEFAULT_TLS_CONTEXT_FACTORY_REGISTRY_KEY, defaultTlsContextFactory);
-    } catch (Exception e) {
-      throw new InitialisationException(createStaticMessage("Failed to create default "
-          + TlsContextFactory.class.getSimpleName()), e, this);
+      tlsContextFactory.initialise();
+    } catch (InitialisationException e) {
+      //TODO throw meaningful exception
     }
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public TlsContextFactory buildDefault() {
-    return defaultTlsContextFactory;
+    return tlsContextFactory;
   }
 
   @Override
-  public void setMuleContext(MuleContext muleContext) {
-    this.muleContext = muleContext;
+  public TlsContextFactoryBuilder withName(String name) {
+    tlsContextFactory.setName(name);
+    return this;
   }
+
+  @Override
+  public TlsContextFactoryBuilder withEnabledProtocols(String protocols) {
+    tlsContextFactory.setEnabledProtocols(protocols);
+    return this;
+  }
+
+  @Override
+  public TlsContextFactoryBuilder witEnabledCipherSuites(String cipherSuites) {
+    tlsContextFactory.setEnabledCipherSuites(cipherSuites);
+    return null;
+  }
+
+  @Override
+  public TlsContextFactoryBuilder withTrustStorePath(String path) throws IOException {
+    tlsContextFactory.setTrustStorePath(path);
+    return this;
+  }
+
+  @Override
+  public TlsContextFactoryBuilder withTrustStorePassword(String password) {
+    tlsContextFactory.setTrustStorePassword(password);
+    return this;
+  }
+
+  @Override
+  public TlsContextFactoryBuilder withTrustStoreType(String type) {
+    tlsContextFactory.setTrustStoreType(type);
+    return this;
+  }
+
+  @Override
+  public TlsContextFactoryBuilder withInsecureTrustStore(boolean insecure) {
+    tlsContextFactory.setTrustStoreInsecure(insecure);
+    return this;
+  }
+
+  @Override
+  public TlsContextFactoryBuilder withTrustStoreAlgorithm(String algorithm) {
+    tlsContextFactory.setTrustManagerAlgorithm(algorithm);
+    return this;
+  }
+
+  @Override
+  public TlsContextFactoryBuilder withKeyStorePath(String path) throws IOException {
+    tlsContextFactory.setKeyStorePath(path);
+    return this;
+  }
+
+  @Override
+  public TlsContextFactoryBuilder withKeyStorePassword(String password) {
+    tlsContextFactory.setKeyManagerPassword(password);
+    return this;
+  }
+
+  @Override
+  public TlsContextFactoryBuilder withKeyAlias(String alias) {
+    tlsContextFactory.setKeyAlias(alias);
+    return this;
+  }
+
+  @Override
+  public TlsContextFactoryBuilder withKeyPassword(String password) {
+    tlsContextFactory.setKeyManagerPassword(password);
+    return this;
+  }
+
+  @Override
+  public TlsContextFactoryBuilder withKeyStoreType(String type) {
+    tlsContextFactory.setKeyStoreType(type);
+    return this;
+  }
+
+  @Override
+  public TlsContextFactoryBuilder withKeyStoreAlgorithm(String algorithm) {
+    tlsContextFactory.setKeyManagerAlgorithm(algorithm);
+    return this;
+  }
+
 }

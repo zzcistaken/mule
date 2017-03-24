@@ -159,6 +159,7 @@
 /mule-standalone-${productVersion}/lib/mule/mule-service-http-api-${productVersion}.jar
 /mule-standalone-${productVersion}/lib/mule/mule-service-oauth-api-${productVersion}.jar
 /mule-standalone-${productVersion}/lib/mule/mule-service-soap-api-${productVersion}.jar
+/mule-standalone-${productVersion}/lib/mule/mule-service-tls-api-${productVersion}.jar
 
 #
 # /services
@@ -168,6 +169,7 @@
 /mule-standalone-${productVersion}/services/mule-service-http-${productVersion}.zip
 /mule-standalone-${productVersion}/services/mule-service-oauth-${productVersion}.zip
 /mule-standalone-${productVersion}/services/mule-service-soap-${productVersion}.zip
+/mule-standalone-${productVersion}/services/mule-service-tls-${productVersion}.zip
 /mule-standalone-${productVersion}/services/mule-service-weave-4.0.0-+
 #
 # /lib/opt
