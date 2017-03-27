@@ -11,7 +11,6 @@
 	<name>Integration Tests</name>
 	<description>Tests which ensure that Mule sub projects work well together.</description>
 	<packaging>jar</packaging>
-
     <properties>
         <skipExportTests>false</skipExportTests>
         <skipTests>${skipIntegrationTests}</skipTests>
