@@ -19,13 +19,15 @@
         <notification event="MESSAGE-PROCESSOR"/>
     </notifications>
 
-
-    <flow name="pollfoo">
+    <flow name="poll-with-flow-ref">
         <poll doc:name="pollName">
-            <fixed-frequency-scheduler frequency="2000"/>
-            <logger message="inner processor testing poll execution notification " />
+            <fixed-frequency-scheduler frequency="1" timeUnit="MINUTES"/>
+            <flow-ref name="globalSub_Flow" doc:name="globalSub_Flow"/>
         </poll>
-        <logger level="ERROR" message="testing poll execution notification " />
+        <logger message="test completed" level="INFO" doc:name="Logger"/>
     </flow>
-
+    <sub-flow name="globalSub_Flow">
+        <logger message="inside start &gt;&gt; globalsub_flow" level="INFO" doc:name="Logger"/>
+        <logger message="End  &gt;&gt; globalsub_flow" level="INFO" doc:name="Logger"/>
+    </sub-flow>
 </mule>

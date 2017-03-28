@@ -24,7 +24,7 @@ import javax.xml.namespace.QName;
 
 import org.junit.Test;
 
-public class PollScheduleNotificationTestCase extends FunctionalTestCase
+public class PollScheduleNotificationWithFlowRefTestCase extends FunctionalTestCase
 {
 
     public static final QName NAME = new QName("http://www.mulesoft.org/schema/mule/documentation", "name");
@@ -33,7 +33,7 @@ public class PollScheduleNotificationTestCase extends FunctionalTestCase
     @Override
     protected String getConfigFile()
     {
-        return "org/mule/test/integration/schedule/poll-notifications-config.xml";
+        return "org/mule/test/integration/schedule/poll-notifications-with-flow-ref-config.xml";
     }
 
     @Test
@@ -48,9 +48,9 @@ public class PollScheduleNotificationTestCase extends FunctionalTestCase
             @Override
             public boolean isSatisfied()
             {
-                //For every execution of the poll atleast 2 notifications should be generated. One for the logger inside the poll, and another for the one outside of it
+                //For every execution of the poll atleast 3 notifications should be generated. Two for the loggers inside the flow referenced inside the poll , and another for the one outside of it
                 int pollExecutions = listener.getNotifications().size();
-                return myProcessorsListener.getNotifications().size() >= 2 * pollExecutions && pollExecutions > 1 && "pollName".equals(listener.getNotifications().get(0));
+                return myProcessorsListener.getNotifications().size() >= 3 * pollExecutions && pollExecutions > 1 && "pollName".equals(listener.getNotifications().get(0));
             }
 
             @Override
