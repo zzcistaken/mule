@@ -76,7 +76,7 @@ public class ExpressionLanguageEnrichmentTestCase extends AbstractELTestCase {
     Event event = Event.builder(context).message(of("foo")).build();
     Event.Builder eventBuilder = Event.builder(event);
     expressionLanguage.enrich("message.outboundProperties.foo", event, eventBuilder, flowConstruct, "bar");
-    assertThat(((InternalMessage) eventBuilder.build().getMessage()).getOutboundProperty( "foo"), is("bar"));
+    assertThat(((InternalMessage) eventBuilder.build().getMessage()).getOutboundProperty("foo"), is("bar"));
   }
 
   @Test

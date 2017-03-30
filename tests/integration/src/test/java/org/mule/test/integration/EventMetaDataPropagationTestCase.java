@@ -95,7 +95,7 @@ public class EventMetaDataPropagationTestCase extends AbstractIntegrationTestCas
       assertTrue(o instanceof Apple);
       assertEquals(12345.6, 12345.6, msg.getOutboundProperty("doubleParam", 0d));
       assertEquals(12345, msg.getOutboundProperty("integerParam", 0).intValue());
-      assertEquals(123456789, msg.getOutboundProperty( "longParam", 0L).longValue());
+      assertEquals(123456789, msg.getOutboundProperty("longParam", 0L).longValue());
       assertEquals(Boolean.TRUE, msg.getOutboundProperty("booleanParam", Boolean.FALSE));
       return msg;
     }
