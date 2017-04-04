@@ -23,6 +23,7 @@
 
     <modules>
         <module>all-extensions</module>
+        <module>falsoSalesforce-extension</module>
         <module>db</module>
         <module>file</module>
         <module>ftp</module>
