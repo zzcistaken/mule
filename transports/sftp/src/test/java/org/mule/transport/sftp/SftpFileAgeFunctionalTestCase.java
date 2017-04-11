@@ -18,6 +18,7 @@ import org.mule.construct.Flow;
 import org.mule.tck.junit4.rule.SystemProperty;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -57,6 +58,10 @@ public class SftpFileAgeFunctionalTestCase extends AbstractSftpTestCase
     @Override
     public void doSetUpBeforeMuleContextCreation() throws Exception
     {
+        System.out.println("SftpFileAgeFunctionalTestCase.doSetUpBeforeMuleContextCreation");
+        if (new File(INBOUND_LOW_AGE).exists()) {
+            System.out.println(INBOUND_LOW_AGE + " exists before setup");
+        }
         super.doSetUpBeforeMuleContextCreation();
         sftpClient.mkdir(INBOUND_LOW_AGE);
         sftpClient.mkdir(INBOUND_HIGH_AGE);
@@ -65,11 +70,14 @@ public class SftpFileAgeFunctionalTestCase extends AbstractSftpTestCase
     @Override
     protected void doTearDownAfterMuleContextDispose() throws Exception
     {
-        super.doTearDownAfterMuleContextDispose();
         sftpClient.changeWorkingDirectory("..");
         sftpClient.recursivelyDeleteDirectory(INBOUND_HIGH_AGE);
         sftpClient.recursivelyDeleteDirectory(INBOUND_LOW_AGE);
         sftpClient.disconnect();
+        if (new File(INBOUND_LOW_AGE).exists()) {
+            System.out.println(INBOUND_LOW_AGE + " exists after tear down");
+        }
+        super.doTearDownAfterMuleContextDispose();
     }
 
     @Test
