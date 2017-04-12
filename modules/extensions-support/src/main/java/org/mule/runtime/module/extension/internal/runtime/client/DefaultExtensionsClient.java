@@ -8,7 +8,12 @@ package org.mule.runtime.module.extension.internal.runtime.client;
 
 import static java.lang.String.format;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
+import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.disposeIfNeeded;
+import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.initialiseIfNeeded;
+import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.startIfNeeded;
+import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.stopIfNeeded;
 import static org.mule.runtime.module.extension.internal.util.MuleExtensionUtils.getInitialiserEvent;
+import static org.slf4j.LoggerFactory.getLogger;
 import static reactor.core.publisher.Mono.from;
 import static reactor.core.publisher.Mono.just;
 import org.mule.runtime.api.exception.MuleException;
@@ -43,6 +48,8 @@ import java.util.concurrent.CompletableFuture;
 
 import javax.inject.Inject;
 
+import org.slf4j.Logger;
+
 
 /**
  * This is the default implementation for a {@link ExtensionsClient}, it uses the {@link ExtensionManager}
@@ -55,6 +62,8 @@ import javax.inject.Inject;
  * @since 4.0
  */
 public final class DefaultExtensionsClient implements ExtensionsClient {
+
+  private static final Logger LOGGER = getLogger(DefaultExtensionsClient.class);
 
   @Inject
   private MuleContext muleContext;
@@ -112,11 +121,13 @@ public final class DefaultExtensionsClient implements ExtensionsClient {
           .setParameters(resolvedParams)
           .build();
 
-      processor.initialise();
-      processor.start();
+      initialiseIfNeeded(processor);
+      startIfNeeded(processor);
       return processor;
     } catch (Exception e) {
-      throw new MuleRuntimeException(createStaticMessage("Could not create Operation Message Processor"), e);
+      throw new MuleRuntimeException(createStaticMessage(format("Could not create Operation Message Processor named '%s' for extension '%s'",
+                                                                operationName, extensionName)),
+                                     e);
     }
   }
 
@@ -176,8 +187,8 @@ public final class DefaultExtensionsClient implements ExtensionsClient {
 
   private void disposeProcessor(OperationMessageProcessor processor) {
     try {
-      processor.stop();
-      processor.dispose();
+      stopIfNeeded(processor);
+      disposeIfNeeded(processor, LOGGER);
     } catch (MuleException e) {
       throw new MuleRuntimeException(createStaticMessage("Error while disposing the executing operation"), e);
     }

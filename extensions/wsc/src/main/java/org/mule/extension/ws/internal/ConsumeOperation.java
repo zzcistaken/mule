@@ -19,9 +19,11 @@ import org.mule.extension.ws.internal.metadata.MessageBuilderResolver;
 import org.mule.extension.ws.internal.metadata.OperationKeysResolver;
 import org.mule.extension.ws.internal.metadata.WscAttributesResolver;
 import org.mule.runtime.api.message.Message;
+import org.mule.runtime.api.meta.model.ExecutionType;
 import org.mule.runtime.core.message.PartAttributes;
 import org.mule.runtime.extension.api.annotation.OnException;
 import org.mule.runtime.extension.api.annotation.error.Throws;
+import org.mule.runtime.extension.api.annotation.execution.Execution;
 import org.mule.runtime.extension.api.annotation.metadata.MetadataKeyId;
 import org.mule.runtime.extension.api.annotation.metadata.OutputResolver;
 import org.mule.runtime.extension.api.annotation.metadata.TypeResolver;
@@ -131,5 +133,7 @@ public class ConsumeOperation {
     return soapHeaders.build();
   }
 
-
+  public String ble(String bla, @Connection SoapClient connection) {
+    return bla;
+  }
 }

@@ -42,14 +42,19 @@ public class SoapCxfClientFactory implements SoapClientFactory {
     WsdlIntrospecter introspecter = getIntrospecter(config);
     XmlTypeLoader xmlTypeLoader = new XmlTypeLoader(introspecter.getSchemas());
     Client client = CxfClientProvider.getClient(config);
-    MessageDispatcher dispatcher =
-        createDispatcher(config.getAddress() != null ? config.getAddress() : findAddress(introspecter));
+
+    String address = config.getAddress() != null ? config.getAddress() : findAddress(introspecter);
+    MessageDispatcher dispatcher = config.getDispatcher() == null
+        ? createDispatcher(address)
+        : config.getDispatcher();
+
     return new SoapCxfClient(client,
                              introspecter,
                              xmlTypeLoader,
                              dispatcher,
                              config.getVersion(),
-                             config.isMtomEnabled());
+                             config.isMtomEnabled(),
+                             address);
   }
 
   private WsdlIntrospecter getIntrospecter(SoapClientConfiguration config) throws ConnectionException {
@@ -67,7 +72,7 @@ public class SoapCxfClientFactory implements SoapClientFactory {
   private MessageDispatcher createDispatcher(String address) throws ConnectionException {
     String protocol = address.substring(0, address.indexOf("://"));
     if (protocol.startsWith("http")) {
-      return DefaultHttpMessageDispatcher.create(address, httpService);
+      return DefaultHttpMessageDispatcher.create(httpService);
     }
     throw new IllegalArgumentException(format("cannot create a dispatcher for protocol [%s]", protocol));
   }

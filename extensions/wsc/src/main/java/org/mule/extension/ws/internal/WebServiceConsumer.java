@@ -6,7 +6,11 @@
  */
 package org.mule.extension.ws.internal;
 
+import org.mule.extension.ws.api.dispatcher.AbstractWscMessageDispatcher;
+import org.mule.extension.ws.api.dispatcher.HttpMessageDispatcher;
+import org.mule.extension.ws.api.dispatcher.JmsMessageDispatcher;
 import org.mule.extension.ws.api.exception.WscErrors;
+import org.mule.extension.ws.internal.connection.WscConnectionProvider;
 import org.mule.extension.ws.internal.security.SecurityStrategyAdapter;
 import org.mule.extension.ws.internal.security.WssDecryptSecurityStrategy;
 import org.mule.extension.ws.internal.security.WssEncryptSecurityStrategy;
@@ -14,7 +18,6 @@ import org.mule.extension.ws.internal.security.WssSignSecurityStrategy;
 import org.mule.extension.ws.internal.security.WssTimestampSecurityStrategy;
 import org.mule.extension.ws.internal.security.WssUsernameTokenSecurityStrategy;
 import org.mule.extension.ws.internal.security.WssVerifySignatureSecurityStrategy;
-import org.mule.extension.ws.internal.connection.WscConnectionProvider;
 import org.mule.runtime.extension.api.annotation.Extension;
 import org.mule.runtime.extension.api.annotation.Operations;
 import org.mule.runtime.extension.api.annotation.SubTypeMapping;
@@ -35,6 +38,7 @@ import org.mule.runtime.extension.api.annotation.param.Parameter;
 @SubTypeMapping(baseType = SecurityStrategyAdapter.class,
     subTypes = {WssDecryptSecurityStrategy.class, WssEncryptSecurityStrategy.class, WssSignSecurityStrategy.class,
         WssUsernameTokenSecurityStrategy.class, WssTimestampSecurityStrategy.class, WssVerifySignatureSecurityStrategy.class})
+@SubTypeMapping(baseType = AbstractWscMessageDispatcher.class, subTypes = {HttpMessageDispatcher.class, JmsMessageDispatcher.class})
 @Extension(name = "Web Service Consumer")
 @Xml(prefix = "wsc")
 public class WebServiceConsumer {

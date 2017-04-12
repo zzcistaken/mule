@@ -52,7 +52,6 @@ import org.mule.runtime.extension.api.runtime.operation.Result;
 import org.mule.runtime.extension.api.runtime.source.Source;
 import org.mule.runtime.extension.api.runtime.source.SourceCallback;
 import org.mule.runtime.extension.api.runtime.source.SourceCallbackContext;
-import org.slf4j.Logger;
 
 import javax.inject.Inject;
 import javax.jms.Destination;
@@ -60,6 +59,8 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Queue;
 import javax.jms.Topic;
+
+import org.slf4j.Logger;
 
 /**
  * JMS Subscriber for {@link Destination}s, allows to listen
@@ -208,7 +209,7 @@ public class JmsListener extends Source<Object, JmsAttributes> {
   public void onSuccess(@Optional @NullSafe JmsListenerResponseBuilder response,
                         SourceCallbackContext callbackContext) {
     jmsLock.unlock();
-    Destination replyTo = callbackContext.getVariable(REPLY_TO_DESTINATION);
+      Destination replyTo = callbackContext.getVariable(REPLY_TO_DESTINATION);
     if (replyTo != null) {
       doReply(response.getMessageBuilder(), response.getOverrides(), callbackContext, replyTo);
     }

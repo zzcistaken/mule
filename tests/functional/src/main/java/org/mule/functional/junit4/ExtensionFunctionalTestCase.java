@@ -44,7 +44,7 @@ import org.apache.commons.io.FileUtils;
  * <p/>
  * In this way, the user experience is greatly simplified when running the test either through an IDE or build tool such as maven
  * or gradle.
- * <p/>
+ * <p/>                                                                    x
  * Since this class extends {@link FunctionalTestCase}, a new {@link MuleContext} is created per each test. That also means that a
  * new {@link ExtensionManager} is created per test.
  *

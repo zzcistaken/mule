@@ -59,7 +59,7 @@ import javax.jms.ConnectionFactory;
 @SubTypeMapping(
     baseType = JndiNameResolver.class, subTypes = {SimpleJndiNameResolver.class, CachedJndiNameResolver.class})
 @ErrorTypes(JmsErrors.class)
-@Export(classes = {ConnectionFactory.class})
+@Export(classes = {ConnectionFactory.class, JmsSessionManager.class})
 @OnException(JmsExceptionHandler.class)
 public class JmsExtension {
 

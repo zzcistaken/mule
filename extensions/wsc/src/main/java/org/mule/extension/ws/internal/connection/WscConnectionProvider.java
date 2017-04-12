@@ -6,17 +6,19 @@
  */
 package org.mule.extension.ws.internal.connection;
 
+import org.mule.extension.ws.api.dispatcher.AbstractWscMessageDispatcher;
 import org.mule.extension.ws.internal.security.SecurityStrategyAdapter;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.api.connection.ConnectionProvider;
 import org.mule.runtime.api.connection.ConnectionValidationResult;
 import org.mule.runtime.api.connection.PoolingConnectionProvider;
+import org.mule.runtime.core.api.extension.ExtensionManager;
 import org.mule.runtime.extension.api.annotation.param.NullSafe;
 import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.Parameter;
+import org.mule.runtime.extension.api.client.ExtensionsClient;
 import org.mule.services.soap.api.SoapService;
 import org.mule.services.soap.api.SoapVersion;
-import org.mule.services.soap.api.client.MessageDispatcher;
 import org.mule.services.soap.api.client.SoapClient;
 import org.mule.services.soap.api.client.SoapClientConfiguration;
 
@@ -34,6 +36,12 @@ public class WscConnectionProvider implements PoolingConnectionProvider<SoapClie
 
   @Inject
   private SoapService soapService;
+
+  @Inject
+  private ExtensionManager extensionManager;
+
+  @Inject
+  private ExtensionsClient extensionsClient;
 
   /**
    * The WSDL file URL remote or local.
@@ -88,13 +96,16 @@ public class WscConnectionProvider implements PoolingConnectionProvider<SoapClie
 
   @Parameter
   @Optional
-  private MessageDispatcher messageDispatcher;
+  private AbstractWscMessageDispatcher messageDispatcher;
 
   /**
    * {@inheritDoc}
    */
   @Override
   public SoapClient connect() throws ConnectionException {
+    if (messageDispatcher != null) {
+      messageDispatcher.configure(extensionManager, extensionsClient);
+    }
     return soapService.getClientFactory().create(new SoapClientConfiguration(wsdlLocation, address,
                                                                              service,
                                                                              port,

@@ -6,7 +6,13 @@
       http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd">
 
     <flow name="subscriber">
-        <jms:listener config-ref="config" destination="#[destination]"/>
+        <jms:listener config-ref="config" destination="#[destination]">
+            <jms:response>
+                <jms:message-builder replyTo="asdasd">
+
+                </jms:message-builder>
+            </jms:response>
+        </jms:listener>
         <component class="org.mule.extensions.jms.test.JmsMessageStorage"/>
     </flow>
 

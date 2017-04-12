@@ -38,10 +38,8 @@ import java.util.concurrent.TimeoutException;
 public final class DefaultHttpMessageDispatcher implements MessageDispatcher {
 
   private final HttpClient client;
-  private final String address;
 
-  DefaultHttpMessageDispatcher(String address, HttpClient client) {
-    this.address = address;
+  DefaultHttpMessageDispatcher(HttpClient client) {
     this.client = client;
   }
 
@@ -56,7 +54,7 @@ public final class DefaultHttpMessageDispatcher implements MessageDispatcher {
    * Dispatches a Soap message through http adding the SoapAction header, if required, and the content-type.
    */
   @Override
-  public DispatcherResponse dispatch(InputStream message, Map<String, String> properties) {
+  public DispatcherResponse dispatch(String address, InputStream message, Map<String, String> properties) {
 
     ParameterMap parameters = new ParameterMap();
     parameters.putAll(properties);
@@ -94,14 +92,14 @@ public final class DefaultHttpMessageDispatcher implements MessageDispatcher {
    * @param httpService the configured {@link HttpService} used to create the http client.
    * @return a new {@link DefaultHttpMessageDispatcher} default instance.
    */
-  public static DefaultHttpMessageDispatcher create(String address, HttpService httpService) {
-    String ownerName = format("wsc-default:[%s]", address);
+  public static DefaultHttpMessageDispatcher create(HttpService httpService) {
+    //String ownerName = format("wsc-default:[%s]", address);
     HttpClientFactory clientFactory = httpService.getClientFactory();
     HttpClient client = clientFactory.create(new HttpClientConfiguration.Builder()
-        .setThreadNamePrefix(ownerName)
-        .setOwnerName(ownerName)
+        //.setThreadNamePrefix(ownerName)
+        //.setOwnerName(ownerName)
         .build());
     client.start();
-    return new DefaultHttpMessageDispatcher(address, client);
+    return new DefaultHttpMessageDispatcher(client);
   }
 }

@@ -39,8 +39,8 @@ import org.junit.Rule;
 import org.junit.runners.Parameterized;
 
 @RunnerDelegateTo(Parameterized.class)
-@ArtifactClassLoaderRunnerConfig(plugins = {"org.mule.modules:mule-module-sockets", "org.mule.modules:mule-module-http-ext",
-    "org.mule.modules:mule-module-wsc"},
+@ArtifactClassLoaderRunnerConfig(plugins = {"org.mule.modules:mule-module-sockets", "org.mule.modules:mule-module-http-ext", "org.mule.modules:mule-module-jms",
+    "org.mule.modules:mule-module-wsc"}, testInclusions = "",
     providedInclusions = {"org.mule.modules:mule-module-sockets"})
 public abstract class AbstractSoapServiceTestCase extends MuleArtifactFunctionalTestCase {
 

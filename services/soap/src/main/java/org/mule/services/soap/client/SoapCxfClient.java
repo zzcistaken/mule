@@ -78,6 +78,7 @@ public class SoapCxfClient implements SoapClient {
   public static final String MULE_HEADERS_KEY = "mule.wsc.headers";
   public static final String MULE_SOAP_ACTION = "mule.wsc.soap.action";
   public static final String MULE_WSC_ENCODING = "mule.wsc.encoding";
+  public static final String MULE_WSC_ADDRESS = "mule.wsc.address";
 
   private final SoapRequestGenerator requestGenerator;
   private final SoapResponseGenerator responseGenerator;
@@ -88,13 +89,15 @@ public class SoapCxfClient implements SoapClient {
   private final MessageDispatcher dispatcher;
   private final SoapVersion version;
   private final boolean isMtom;
+  private final String address;
 
   SoapCxfClient(Client client,
                 WsdlIntrospecter introspecter,
                 XmlTypeLoader typeLoader,
                 MessageDispatcher dispatcher,
                 SoapVersion version,
-                boolean isMtom) {
+                boolean isMtom,
+                String address) {
 
     this.client = client;
     this.introspecter = introspecter;
@@ -102,6 +105,7 @@ public class SoapCxfClient implements SoapClient {
     this.dispatcher = dispatcher;
     this.version = version;
     this.isMtom = isMtom;
+    this.address = address;
     // TODO: MULE-10889 -> instead of creating this enrichers, interceptors that works with the live stream would be ideal
     this.requestGenerator = new SoapRequestGenerator(getRequestEnricher(isMtom), introspecter, loader);
     this.responseGenerator = new SoapResponseGenerator(getResponseEnricher(isMtom));
@@ -214,6 +218,7 @@ public class SoapCxfClient implements SoapClient {
     }
 
     props.put(WSC_DISPATCHER, dispatcher);
+    props.put(MULE_WSC_ADDRESS, address);
 
     Map<String, Object> ctx = new HashMap<>();
     ctx.put(Client.REQUEST_CONTEXT, props);

@@ -29,5 +29,5 @@ public interface MessageDispatcher extends Initialisable, Disposable {
    *
    * @return a {@link SoapResponse} with the content returned by the transport and it's corresponding Content-Type.
    */
-  DispatcherResponse dispatch(InputStream message, Map<String, String> properties);
+  DispatcherResponse dispatch(String address, InputStream message, Map<String, String> properties);
 }

@@ -11,14 +11,16 @@ import static org.slf4j.LoggerFactory.getLogger;
 import org.mule.extensions.jms.api.config.AckMode;
 import org.mule.extensions.jms.api.source.JmsListener;
 import org.mule.extensions.jms.api.source.JmsListenerLock;
-import org.slf4j.Logger;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Session;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+
+import org.slf4j.Logger;
 
 /**
  * Manager that takes the responsibility of register the session information to be able to execute a manual
@@ -31,6 +33,10 @@ public class JmsSessionManager {
 
   private static final Logger LOGGER = getLogger(JmsSessionManager.class);
   private final Map<String, SessionInformation> pendingSessions = new HashMap<>();
+
+  public JmsSessionManager(){
+    String adas = "asdasd";
+  }
 
   /**
    * Registers the {@link Message} to the {@link Session} using the {@code ackId} in order to being

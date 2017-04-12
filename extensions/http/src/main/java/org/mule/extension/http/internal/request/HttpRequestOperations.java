@@ -160,7 +160,7 @@ public class HttpRequestOperations implements Initialisable, Disposable {
 
   @Override
   public void initialise() throws InitialisationException {
-    this.scheduler = schedulerService.ioScheduler();
+    //this.scheduler = schedulerService.ioScheduler();
   }
 
   @Override

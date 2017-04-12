@@ -109,6 +109,21 @@
             <scope>provided</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.mule.modules</groupId>
+            <artifactId>mule-module-http-ext</artifactId>
+            <version>${project.version}</version>
+            <classifier>mule-plugin</classifier>
+        </dependency>
+
+        <!--TODO REMOVE-->
+        <dependency>
+            <groupId>org.mule.modules</groupId>
+            <artifactId>mule-module-jms</artifactId>
+            <version>${project.version}</version>
+            <classifier>mule-plugin</classifier>
+        </dependency>
+
         <!--TODO: MULE-10837-->
         <dependency>
             <groupId>org.mule.runtime</groupId>

@@ -15,6 +15,7 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNull.nullValue;
 import static org.mule.extensions.jms.api.destination.DestinationType.QUEUE;
 import static org.mule.functional.junit4.matchers.MessageMatchers.hasPayload;
+import org.mule.extensions.jms.JmsSessionManager;
 import org.mule.extensions.jms.api.destination.JmsDestination;
 import org.mule.extensions.jms.api.message.JmsAttributes;
 import org.mule.extensions.jms.test.JmsAbstractTestCase;

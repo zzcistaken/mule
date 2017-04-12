@@ -16,6 +16,7 @@ import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.core.IsNull.nullValue;
 import static org.mule.extensions.jms.test.JmsMessageStorage.cleanUpQueue;
 import static org.slf4j.LoggerFactory.getLogger;
+import org.mule.extensions.jms.JmsSessionManager;
 import org.mule.extensions.jms.api.destination.JmsDestination;
 import org.mule.extensions.jms.api.message.JmsAttributes;
 import org.mule.extensions.jms.api.message.JmsHeaders;
@@ -25,14 +26,14 @@ import org.mule.runtime.api.message.Message;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
 
+import java.util.Map;
+
 import org.junit.Rule;
 import org.slf4j.Logger;
 import ru.yandex.qatools.allure.annotations.Features;
 
-import java.util.Map;
-
 @Features("JMS Extension")
-@ArtifactClassLoaderRunnerConfig(testInclusions = {"org.apache.activemq:artemis-jms-client"})
+@ArtifactClassLoaderRunnerConfig(testInclusions = {"org.apache.activemq:artemis-jms-client"}, exportPluginClasses = {JmsSessionManager.class})
 public abstract class JmsAbstractTestCase extends MuleArtifactFunctionalTestCase {
 
   private static final Logger LOGGER = getLogger(JmsAbstractTestCase.class);

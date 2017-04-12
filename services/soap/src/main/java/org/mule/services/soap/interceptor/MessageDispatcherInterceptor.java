@@ -12,6 +12,7 @@ import static org.apache.cxf.message.Message.CONTENT_TYPE;
 import static org.apache.cxf.message.Message.ENCODING;
 import static org.apache.cxf.phase.Phase.SEND_ENDING;
 import static org.mule.services.soap.client.SoapCxfClient.MULE_SOAP_ACTION;
+import static org.mule.services.soap.client.SoapCxfClient.MULE_WSC_ADDRESS;
 import static org.mule.services.soap.client.SoapCxfClient.MULE_WSC_ENCODING;
 import static org.mule.services.soap.client.SoapCxfClient.WSC_DISPATCHER;
 import org.mule.services.soap.api.client.DispatcherResponse;
@@ -56,7 +57,8 @@ public class MessageDispatcherInterceptor extends AbstractPhaseInterceptor<Messa
   public void handleMessage(Message message) throws Fault {
     Exchange exchange = message.getExchange();
 
-    String encoding = (String) message.getExchange().get(MULE_WSC_ENCODING);
+    String encoding = (String) exchange.get(MULE_WSC_ENCODING);
+    String address = (String) exchange.get(MULE_WSC_ADDRESS);
 
     // Performs all the remaining interceptions before sending.
     message.getInterceptorChain().doIntercept(message);
@@ -67,7 +69,7 @@ public class MessageDispatcherInterceptor extends AbstractPhaseInterceptor<Messa
     Map<String, String> props = buildProperties(message);
     MessageDispatcher dispatcher = (MessageDispatcher) exchange.get(WSC_DISPATCHER);
     OutputStream content = message.getContent(OutputStream.class);
-    DispatcherResponse response = dispatcher.dispatch(new ByteArrayInputStream(content.toString().getBytes()), props);
+    DispatcherResponse response = dispatcher.dispatch(address, new ByteArrayInputStream(content.toString().getBytes()), props);
 
     // This needs to be set because we want the wsc closes the final stream,
     // otherwise cxf will close it too early when handling message in the StaxInEndingInterceptor.

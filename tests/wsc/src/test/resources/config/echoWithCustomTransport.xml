@@ -1,0 +1,45 @@
+<mule xmlns:wsc="http://www.mulesoft.org/schema/mule/wsc"
+      xmlns:httpn="http://www.mulesoft.org/schema/mule/httpn"
+      xmlns:jms="http://www.mulesoft.org/schema/mule/jms"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+          http://www.mulesoft.org/schema/mule/httpn http://www.mulesoft.org/schema/mule/httpn/current/mule-httpn.xsd
+          http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd
+          http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/current/mule-wsc.xsd">
+
+    <wsc:config name="config">
+        <wsc:connection wsdlLocation="http://localhost:${servicePort}/server?wsdl" service="TestService" port="TestPort"
+                        soapVersion="${soapVersion}" address="#[destination]">
+            <reconnect blocking="false"/>
+            <wsc:message-dispatcher>
+                <wsc:jms-message-dispatcher configName="jms-config"/>
+                <!--<wsc:http-message-dispatcher configName="requester"/>-->
+            </wsc:message-dispatcher>
+        </wsc:connection>
+    </wsc:config>
+
+    <httpn:request-config name="requester" >
+        <httpn:request-connection host="localhost" port="#[mel:flowVars.servicePort]" protocol="HTTP"/>
+    </httpn:request-config>
+
+    <jms:config name="jms-config">
+        <jms:active-mq-connection/>
+    </jms:config>
+    
+    <flow name="jms-receive">
+        <jms:listener config-ref="jms-config" destination="ble">
+            <jms:response/>
+        </jms:listener>
+        <set-payload value="#[mel:flowVars.echo]"/>
+    </flow>
+
+    <flow name="echoOperation">
+        <wsc:consume config-ref="config" operation="echo">
+            <wsc:message>
+                <wsc:body>#[payload]</wsc:body>
+            </wsc:message>
+        </wsc:consume>
+        <object-to-string-transformer/>
+    </flow>
+</mule>
