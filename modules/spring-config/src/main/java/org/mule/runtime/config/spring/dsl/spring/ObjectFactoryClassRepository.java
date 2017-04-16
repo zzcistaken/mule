@@ -7,12 +7,10 @@
 package org.mule.runtime.config.spring.dsl.spring;
 
 import static org.springframework.cglib.proxy.Enhancer.registerStaticCallbacks;
+
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.dsl.api.component.ComponentBuildingDefinition;
 import org.mule.runtime.dsl.api.component.ObjectFactory;
-
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -25,6 +23,9 @@ import org.springframework.beans.factory.SmartFactoryBean;
 import org.springframework.cglib.proxy.Callback;
 import org.springframework.cglib.proxy.Enhancer;
 import org.springframework.cglib.proxy.MethodInterceptor;
+
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 /**
  * Repository for storing the dynamic class generated to mimic {@link org.springframework.beans.factory.FactoryBean} from an
@@ -94,6 +95,7 @@ public class ObjectFactoryClassRepository {
     enhancer.setInterfaces(new Class[] {SmartFactoryBean.class});
     enhancer.setSuperclass(objectFactoryType);
     enhancer.setCallbackType(MethodInterceptor.class);
+    enhancer.setClassLoader(createdObjectType.getClassLoader());
     enhancer.setUseCache(false);
     Class factoryBeanClass = enhancer.createClass();
     createdClasses.add(factoryBeanClass);
