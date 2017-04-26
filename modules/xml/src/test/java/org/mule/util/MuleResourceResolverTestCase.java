@@ -89,7 +89,7 @@ public class MuleResourceResolverTestCase extends AbstractMuleTestCase
     public void testsExistentFileSystemResourceWithBaseUri() throws IOException
     {
         File file = temporaryFolder.newFile(UUID.getUUID());
-        LSInput outcome = resolver.resolveResource(IDENTIFIER_TYPE, IDENTIFIER_NAMESPACE, IDENTIFIER_PUBLIC_ID, file.getName(), file.getPath());
+        LSInput outcome = resolver.resolveResource(IDENTIFIER_TYPE, IDENTIFIER_NAMESPACE, IDENTIFIER_PUBLIC_ID, file.getName(), file.toURI().getPath());
         assertThat(outcome, is(not(nullValue())));
         assertThat(outcome.getBaseURI(), is(not(nullValue())));
         assertCommon(outcome);

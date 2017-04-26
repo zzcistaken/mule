@@ -269,9 +269,10 @@ public class QueuePersistenceObjectStore<T extends Serializable> extends Abstrac
 
     protected void serialize(T value, File outputFile) throws ObjectStoreException
     {
+        FileOutputStream out = null;
         try
         {
-            FileOutputStream out = new FileOutputStream(outputFile);
+            out = new FileOutputStream(outputFile);
             out.write(muleContext.getObjectSerializer().serialize(value));
             out.flush();
         }
@@ -286,6 +287,20 @@ public class QueuePersistenceObjectStore<T extends Serializable> extends Abstrac
         catch (IOException e)
         {
             throw new MuleRuntimeException(MessageFactory.createStaticMessage("Could not write to file"), e);
+        }
+        finally
+        {
+            if (out != null)
+            {
+                try
+                {
+                    out.close();
+                }
+                catch (Exception e)
+                {
+                    logger.warn("error closing opened stream" + out);
+                }
+            }
         }
     }
 

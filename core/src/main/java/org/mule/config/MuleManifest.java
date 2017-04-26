@@ -184,8 +184,9 @@ public class MuleManifest
 
         URL getManifestTestJarURL() throws IOException
         {
-            String pathSeparator = System.getProperty("file.separator");
-            String testManifestPath = "core" + pathSeparator + "target" + pathSeparator + "test-classes";
+            /*Since at this point we're dealing with URLs and not file paths we don't need to have a path separator
+            * platform dependent */
+            String testManifestPath = "core/target/test-classes";
             Enumeration<URL> e = MuleConfiguration.class.getClassLoader().getResources("META-INF/MANIFEST.MF");
             while (e.hasMoreElements())
             {

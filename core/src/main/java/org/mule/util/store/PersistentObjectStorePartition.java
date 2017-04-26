@@ -255,12 +255,12 @@ public class PersistentObjectStorePartition<T extends Serializable>
 
     private void moveToCorruptedFilesFolder(File file) throws IOException
     {
-        String workingDirectory = (new File(muleContext.getConfiguration().getWorkingDirectory()))
-                .toPath().normalize().toString();
+        String workingDirectory = muleContext.getConfiguration().getWorkingDirectory();
+        String normalizedWorkingDir = (new File(workingDirectory)).toPath().normalize().toString();
 
-        String diffFolder = file.getAbsolutePath().split(workingDirectory)[1];
-        File corruptedFile = new File(muleContext.getConfiguration().getWorkingDirectory()
-                                      + File.separator + CORRUPTED_FOLDER + diffFolder);
+
+        String diffFolder = file.getAbsolutePath().substring(normalizedWorkingDir.length());
+        File corruptedFile = new File(workingDirectory + File.separator + CORRUPTED_FOLDER + diffFolder);
         moveFileToDirectory(file, corruptedFile.getParentFile(), true);
     }
 
@@ -426,9 +426,11 @@ public class PersistentObjectStorePartition<T extends Serializable>
     protected StoreValue<T> deserialize(File file) throws ObjectStoreException
     {
         ObjectInputStream objectInputStream = null;
+        FileInputStream inputStream = null;
         try
         {
-            objectInputStream = new ObjectInputStream(new FileInputStream(file));
+            inputStream = new FileInputStream(file);
+            objectInputStream = new ObjectInputStream(inputStream);
             StoreValue<T> storedValue = serializer.deserialize(objectInputStream);
             if (storedValue.getValue() instanceof DeserializationPostInitialisable)
             {
@@ -446,6 +448,18 @@ public class PersistentObjectStorePartition<T extends Serializable>
         }
         finally
         {
+            if (inputStream != null)
+            {
+                try
+                {
+                    inputStream.close();
+                }
+                catch (Exception e)
+                {
+                    logger.warn("error closing opened file " + file.getAbsolutePath());
+                }
+            }
+
             if (objectInputStream != null)
             {
                 try
