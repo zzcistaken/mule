@@ -30,6 +30,7 @@ import static org.mule.runtime.extension.internal.dsl.syntax.DslSyntaxUtils.getI
 import static org.mule.runtime.extension.internal.dsl.syntax.DslSyntaxUtils.isExtensible;
 import static org.mule.runtime.internal.dsl.DslConstants.CONFIG_ATTRIBUTE_NAME;
 import static org.mule.runtime.internal.dsl.DslConstants.CORE_PREFIX;
+import static org.mule.runtime.internal.dsl.DslConstants.EE_PREFIX;
 import static org.mule.runtime.internal.dsl.DslConstants.FLOW_ELEMENT_IDENTIFIER;
 import static org.mule.runtime.internal.dsl.DslConstants.KEY_ATTRIBUTE_NAME;
 import static org.mule.runtime.internal.dsl.DslConstants.NAME_ATTRIBUTE_NAME;
@@ -38,8 +39,8 @@ import static org.mule.runtime.internal.dsl.DslConstants.RECONNECT_ELEMENT_IDENT
 import static org.mule.runtime.internal.dsl.DslConstants.RECONNECT_FOREVER_ELEMENT_IDENTIFIER;
 import static org.mule.runtime.internal.dsl.DslConstants.REDELIVERY_POLICY_ELEMENT_IDENTIFIER;
 import static org.mule.runtime.internal.dsl.DslConstants.TLS_CONTEXT_ELEMENT_IDENTIFIER;
+import static org.mule.runtime.internal.dsl.DslConstants.TRANSFORM_OPERATION;
 import static org.mule.runtime.internal.dsl.DslConstants.VALUE_ATTRIBUTE_NAME;
-
 import org.mule.metadata.api.model.ArrayType;
 import org.mule.metadata.api.model.MetadataType;
 import org.mule.metadata.api.model.ObjectType;
@@ -267,6 +268,11 @@ public class DefaultXmlArtifactDeclarationLoader implements XmlArtifactDeclarati
 
     String namespace = getNamespace(line);
     ExtensionModel extensionModel = extensionsByNamespace.get(namespace);
+
+    if (extensionModel == null && EE_PREFIX.equals(namespace)) {
+      extensionModel = extensionsByNamespace.get(CORE_PREFIX);
+    }
+
     if (extensionModel == null) {
       throw new MuleRuntimeException(createStaticMessage("Missing Extension model in the context for namespace [" + namespace
           + "]"));
@@ -283,7 +289,11 @@ public class DefaultXmlArtifactDeclarationLoader implements XmlArtifactDeclarati
 
       @Override
       protected void onOperation(HasOperationModels owner, OperationModel model) {
-        declareComponent(model, e -> e.newOperation(model.getName()));
+        if (!model.getName().equals(TRANSFORM_OPERATION)) {
+          declareComponent(model, e -> e.newOperation(model.getName()));
+        } else {
+          declareTransform(model, e -> e.newOperation(model.getName()));
+        }
       }
 
       @Override
@@ -347,6 +357,32 @@ public class DefaultXmlArtifactDeclarationLoader implements XmlArtifactDeclarati
           }
 
           declareParameterizedComponent(model, elementDsl, declarer, line.getConfigAttributes(), line.getChildren());
+          declarationConsumer.accept((ComponentElementDeclaration) declarer.getDeclaration());
+          stop();
+        }
+      }
+
+      private void declareTransform(ComponentModel model,
+                                    Function<ElementDeclarer, ComponentElementDeclarer> declarerProvider) {
+        final DslElementSyntax elementDsl = dsl.resolve(model);
+        if (elementDsl.getElementName().equals(line.getIdentifier())) {
+          ComponentElementDeclarer declarer = declarerProvider.apply(extensionElementsDeclarer);
+          model.getParameterGroupModels().stream()
+              .filter(ParameterGroupModel::isShowInDsl)
+              .forEach(group -> elementDsl.getChild(group.getName())
+                  .ifPresent(groupDsl -> line.getChildren().stream()
+                      .filter(c -> c.getIdentifier().equals(groupDsl.getElementName()))
+                      .findFirst()
+                      .ifPresent(groupConfig -> {
+                        ParameterObjectValue.Builder builder = ElementDeclarer.newObjectValue();
+                        copyExplicitAttributes(groupConfig.getConfigAttributes(), builder);
+
+                        // add DW script text content to script parameter
+                        if (groupConfig.getTextContent() != null) {
+                          builder.withParameter("script", ParameterSimpleValue.of(groupConfig.getTextContent()));
+                        }
+                        declarer.withParameter(group.getName(), builder.build());
+                      })));
           declarationConsumer.accept((ComponentElementDeclaration) declarer.getDeclaration());
           stop();
         }
