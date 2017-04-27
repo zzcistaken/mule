@@ -26,6 +26,7 @@ import org.mule.config.i18n.CoreMessages;
 import org.mule.config.i18n.Message;
 import org.mule.config.i18n.MessageFactory;
 import org.mule.util.FileUtils;
+import org.mule.util.IOUtils;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -256,8 +257,7 @@ public class PersistentObjectStorePartition<T extends Serializable>
     private void moveToCorruptedFilesFolder(File file) throws IOException
     {
         String workingDirectory = muleContext.getConfiguration().getWorkingDirectory();
-        String normalizedWorkingDir = (new File(workingDirectory)).toPath().normalize().toString();
-
+        String normalizedWorkingDir = new File(workingDirectory).toPath().normalize().toString();
 
         String diffFolder = file.getAbsolutePath().substring(normalizedWorkingDir.length());
         File corruptedFile = new File(workingDirectory + File.separator + CORRUPTED_FOLDER + diffFolder);
@@ -448,29 +448,8 @@ public class PersistentObjectStorePartition<T extends Serializable>
         }
         finally
         {
-            if (inputStream != null)
-            {
-                try
-                {
-                    inputStream.close();
-                }
-                catch (Exception e)
-                {
-                    logger.warn("error closing opened file " + file.getAbsolutePath());
-                }
-            }
-
-            if (objectInputStream != null)
-            {
-                try
-                {
-                    objectInputStream.close();
-                }
-                catch (Exception e)
-                {
-                    logger.warn("error closing opened file " + file.getAbsolutePath());
-                }
-            }
+            IOUtils.closeQuietly(inputStream);
+            IOUtils.closeQuietly(objectInputStream);
         }
     }
 
