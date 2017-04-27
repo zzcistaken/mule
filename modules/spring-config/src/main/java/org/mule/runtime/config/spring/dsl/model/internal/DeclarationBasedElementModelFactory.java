@@ -7,7 +7,6 @@
 package org.mule.runtime.config.spring.dsl.model.internal;
 
 import static java.lang.String.format;
-import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Stream.concat;
 import static java.util.stream.Stream.of;
@@ -130,7 +129,15 @@ class DeclarationBasedElementModelFactory {
           checkArgument(declaration instanceof OperationElementDeclaration,
                         format("Found an Operation with the given name, but expected a '%s'",
                                declaration.getClass().getName()));
-          elementModel.set(createComponentElement(model, (OperationElementDeclaration) declaration));
+          //if (model.getName().equals(TRANSFORM_OPERATION)) {
+          //  elementModel.set(createTransformElement(model, (OperationElementDeclaration) declaration));
+          //} else {
+          //  elementModel.set(createComponentElement(model, (OperationElementDeclaration) declaration));
+
+          //}
+            elementModel.set(createComponentElement(model, (OperationElementDeclaration) declaration));
+
+
           stop();
         }
       }
@@ -209,6 +216,54 @@ class DeclarationBasedElementModelFactory {
     DslElementModel.Builder<? extends ComponentModel> element =
         createParameterizedElementModel(model, configDsl, componentDeclaration, configuration);
     return element.withConfig(configuration.build()).build();
+  }
+
+  private DslElementModel<? extends ComponentModel> createTransformElement(ComponentModel model,
+                                                                           ComponentElementDeclaration componentDeclaration) {
+    DslElementSyntax configDsl = dsl.resolve(model);
+    ComponentConfiguration.Builder configuration = ComponentConfiguration.builder()
+        .withIdentifier(asIdentifier(configDsl));
+
+    DslElementModel.Builder<ComponentModel> parentElement = DslElementModel.<ComponentModel>builder()
+            .withModel(model)
+            .withDsl(configDsl);
+
+    model.getParameterGroupModels().stream()
+            .filter(ParameterGroupModel::isShowInDsl)
+            .forEach(group -> {
+                configDsl.getChild(group.getName())
+                        .ifPresent(groupDsl -> {
+                            DslElementModel.Builder<ParameterGroupModel> groupElementBuilder = DslElementModel.<ParameterGroupModel>builder()
+                                    .withModel(group)
+                                    .withDsl(groupDsl);
+
+                            ComponentConfiguration.Builder groupBuilder = ComponentConfiguration.builder().withIdentifier(asIdentifier(groupDsl));
+
+                            group.getParameterModels()
+                                    .forEach(paramModel -> groupDsl.getContainedElement(paramModel.getName())
+                                                .ifPresent(paramDsl -> {
+                                                    Optional<ParameterElementDeclaration> declared = componentDeclaration.getParameters().stream()
+                                                            .filter(d -> d.getName().equals(paramModel.getName()))
+                                                            .findFirst();
+
+                                                    if (declared.isPresent()) {
+                                                        //configuredParameters.add(declared.get().getName());
+                                                        addParameter(declared.get().getName(), declared.get().getValue(), paramModel, paramDsl, groupBuilder, parentElement);
+                                                    } else {
+                                                        getDefaultValue(paramModel)
+                                                                .ifPresent(value -> createSimpleParameter(value, paramDsl, groupBuilder, parentElement, paramModel, false));
+                                                    }
+                                                }));
+
+                            ComponentConfiguration groupConfig = groupBuilder.build();                      
+                            groupElementBuilder.withConfig(groupConfig);
+
+                            configuration.withNestedComponent(groupConfig);
+                            parentElement.containing(groupElementBuilder.build());
+                        });
+            });
+
+    return parentElement.withConfig(configuration.build()).build();
   }
 
   private DslElementModel<? extends ComponentModel> createRouterElement(RouterModel model,
@@ -382,7 +437,7 @@ class DeclarationBasedElementModelFactory {
                   .findFirst();
 
               if (declared.isPresent()) {
-                addParameter(declared.get(), paramModel, paramDsl, parentConfig, parentElement);
+                addParameter(declared.get().getName(), declared.get().getValue(), paramModel, paramDsl, parentConfig, parentElement);
                 configuredParameters.add(declared.get().getName());
               } else {
                 getDefaultValue(paramModel)
@@ -390,16 +445,17 @@ class DeclarationBasedElementModelFactory {
               }
             }));
 
-    if (parameterDeclarations.size() > configuredParameters.size()) {
-      String missing = parameterDeclarations.stream()
-          .filter(p -> !configuredParameters.contains(p.getName()))
-          .map(ElementDeclaration::getName)
-          .collect(joining(","));
-
-      throw new IllegalArgumentException(
-                                         format("The parameters [%s] were declared but they do not exist in the associated model",
-                                                missing));
-    }
+    // TODO VALIDATE
+    //if (parameterDeclarations.size() > configuredParameters.size()) {
+    //  String missing = parameterDeclarations.stream()
+    //      .filter(p -> !configuredParameters.contains(p.getName()))
+    //      .map(ElementDeclaration::getName)
+    //      .collect(joining(","));
+    //
+    //  throw new IllegalArgumentException(
+    //                                     format("The parameters [%s] were declared but they do not exist in the associated model",
+    //                                            missing));
+    //}
   }
 
   private <T extends ParameterizedModel> void addInlineGroupElement(ParameterGroupModel group,
@@ -415,8 +471,36 @@ class DeclarationBasedElementModelFactory {
 
           ComponentConfiguration.Builder groupBuilder = ComponentConfiguration.builder().withIdentifier(asIdentifier(groupDsl));
 
-          addAllDeclaredParameters(group.getParameterModels(), declaration.getParameters(), groupDsl, groupBuilder,
-                                   groupElementBuilder);
+
+            Optional<ParameterElementDeclaration> groupDeclaration = declaration.getParameters().stream()
+                    .filter(p -> p.getName().equals(group.getName())).findFirst();
+
+            groupDeclaration.ifPresent(g -> {
+                g.getValue().accept(new ParameterValueVisitor() {
+                    @Override
+                    public void visitObjectValue(ParameterObjectValue objectValue) {
+                        Map<String, ParameterValue> parameters = objectValue.getParameters();
+
+                        group.getParameterModels().forEach(p -> {
+                            ParameterValue parameterValue = parameters.get(p.getName());
+
+                            if (parameterValue != null){
+                                groupDsl.getContainedElement(p.getName())
+                                        .ifPresent(paramDsl -> {
+                                            addParameter(p.getName(), parameterValue, p, paramDsl, groupBuilder, groupElementBuilder);
+                                        });
+                            }
+
+                        });
+
+
+                    }
+                });
+
+            });
+
+            //addAllDeclaredParameters(group.getParameterModels(), declaration.getParameters(), groupDsl, groupBuilder,
+            //                       groupElementBuilder);
 
           ComponentConfiguration groupConfig = groupBuilder.build();
           groupElementBuilder.withConfig(groupConfig);
@@ -426,18 +510,18 @@ class DeclarationBasedElementModelFactory {
         });
   }
 
-  private void addParameter(ParameterElementDeclaration parameter,
+  private void addParameter(String parameterName, ParameterValue value,
                             ParameterModel parameterModel,
                             DslElementSyntax paramDsl,
                             final ComponentConfiguration.Builder parentConfig,
                             final DslElementModel.Builder parentElement) {
 
     if (isInfrastructure(parameterModel)) {
-      infrastructureDelegate.addParameter(parameter, parameterModel, paramDsl, parentConfig, parentElement);
+      infrastructureDelegate.addParameter(parameterName, value, parameterModel, paramDsl, parentConfig, parentElement);
       return;
     }
 
-    parameter.getValue().accept(new ParameterValueVisitor() {
+      value.accept(new ParameterValueVisitor() {
 
       @Override
       public void visitSimpleValue(String value) {

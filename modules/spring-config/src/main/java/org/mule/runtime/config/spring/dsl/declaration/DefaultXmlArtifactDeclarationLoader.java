@@ -367,6 +367,8 @@ public class DefaultXmlArtifactDeclarationLoader implements XmlArtifactDeclarati
         final DslElementSyntax elementDsl = dsl.resolve(model);
         if (elementDsl.getElementName().equals(line.getIdentifier())) {
           ComponentElementDeclarer declarer = declarerProvider.apply(extensionElementsDeclarer);
+          copyExplicitAttributes(line.getConfigAttributes(), declarer);
+
           model.getParameterGroupModels().stream()
               .filter(ParameterGroupModel::isShowInDsl)
               .forEach(group -> elementDsl.getChild(group.getName())
@@ -374,6 +376,23 @@ public class DefaultXmlArtifactDeclarationLoader implements XmlArtifactDeclarati
                       .filter(c -> c.getIdentifier().equals(groupDsl.getElementName()))
                       .findFirst()
                       .ifPresent(groupConfig -> {
+                      //  copyExplicitAttributes(groupConfig.getConfigAttributes(), declarer);
+                      //  if (groupConfig.getTextContent() != null) {
+                      //    declarer.withParameter("script", ParameterSimpleValue.of(groupConfig.getTextContent()));
+                      //  }
+                      //
+                      ////  group.getParameterModels()
+                      ////          .forEach(param -> groupDsl.getChild(param.getName())
+                      ////                  .ifPresent(paramDsl -> {
+                      ////                      line.getChildren().stream()
+                      ////                              .filter(c -> c.getIdentifier().equals(paramDsl.getElementName()))
+                      ////                              .findFirst()
+                      ////                              .ifPresent(paramConfig -> param.getType()
+                      ////                                      .accept(getParameterDeclarerVisitor(paramConfig, paramDsl,
+                      ////                                                                          value -> declarer.withParameter(param.getName(), value))));
+                      ////                    }
+                      ////                  }));
+                      ////})));
                         ParameterObjectValue.Builder builder = ElementDeclarer.newObjectValue();
                         copyExplicitAttributes(groupConfig.getConfigAttributes(), builder);
 
@@ -384,10 +403,12 @@ public class DefaultXmlArtifactDeclarationLoader implements XmlArtifactDeclarati
                         declarer.withParameter(group.getName(), builder.build());
                       })));
           declarationConsumer.accept((ComponentElementDeclaration) declarer.getDeclaration());
+          //ArtifactDeclarationJsonSerializer serializer = ArtifactDeclarationJsonSerializer.getDefault(true);
+          //String json = serializer.serialize(new ArtifactDeclarer(new ArtifactDeclaration()).withGlobalElement(newFlow().withComponent((ComponentElementDeclaration) declarer.getDeclaration()).getDeclaration()).getDeclaration());
+          //System.out.println(json);
           stop();
         }
       }
-
     };
   }
 

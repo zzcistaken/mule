@@ -28,8 +28,12 @@ import static org.mule.runtime.internal.dsl.DslConstants.POOLING_PROFILE_ELEMENT
 import static org.mule.runtime.internal.dsl.DslConstants.RECONNECT_ELEMENT_IDENTIFIER;
 import static org.mule.runtime.internal.dsl.DslConstants.RECONNECT_FOREVER_ELEMENT_IDENTIFIER;
 import static org.mule.runtime.internal.dsl.DslConstants.REDELIVERY_POLICY_ELEMENT_IDENTIFIER;
+import static org.mule.runtime.internal.dsl.DslConstants.SET_ATTRIBUTES;
+import static org.mule.runtime.internal.dsl.DslConstants.SET_PAYLOAD;
+import static org.mule.runtime.internal.dsl.DslConstants.SET_VARIABLE;
 import static org.mule.runtime.internal.dsl.DslConstants.TLS_CONTEXT_ELEMENT_IDENTIFIER;
 import static org.mule.runtime.internal.dsl.DslConstants.TLS_PREFIX;
+import static org.mule.runtime.internal.dsl.DslConstants.TRANSFORM_OPERATION;
 import org.mule.metadata.api.model.MetadataType;
 import org.mule.runtime.api.meta.model.ComponentModel;
 import org.mule.runtime.api.meta.model.config.ConfigurationModel;
@@ -41,8 +45,11 @@ import org.mule.runtime.dsl.api.component.config.ComponentConfiguration;
 import org.mule.runtime.extension.api.dsl.syntax.DslElementSyntax;
 import org.mule.runtime.extension.api.util.ExtensionModelUtils;
 
+import com.google.common.collect.ImmutableSet;
+
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
@@ -68,6 +75,7 @@ public class DefaultXmlDslElementModelConverter implements XmlDslElementModelCon
                                                                   REDELIVERY_POLICY_PARAMETER_NAME,
                                                                   TARGET_PARAMETER_NAME);
 
+  private static final Set<String> CHILDLESS_COMPONENTS = ImmutableSet.of(SET_PAYLOAD, SET_ATTRIBUTES, SET_VARIABLE);
   private final Document doc;
 
   public DefaultXmlDslElementModelConverter(Document owner) {
@@ -124,8 +132,19 @@ public class DefaultXmlDslElementModelConverter implements XmlDslElementModelCon
         });
 
     if (parentNode != element) {
+      useTextInsteadOfChild(element, parentNode);
       parentNode.appendChild(element);
     }
+  }
+
+  private void useTextInsteadOfChild(Element element, Element parentNode) {
+    if (CHILDLESS_COMPONENTS.contains(element.getNodeName()) && isEETransform(parentNode)) {
+      element.setTextContent(element.getFirstChild().getTextContent());
+    }
+  }
+
+  private boolean isEETransform(Element parentNode) {
+    return parentNode.getNamespaceURI().equals(CORE_NAMESPACE) && parentNode.getNodeName().equals(TRANSFORM_OPERATION);
   }
 
   private Element createElement(DslElementSyntax dsl, Optional<ComponentConfiguration> configuration) {
