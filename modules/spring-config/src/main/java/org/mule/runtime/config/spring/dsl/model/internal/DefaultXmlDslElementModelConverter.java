@@ -93,6 +93,9 @@ public class DefaultXmlDslElementModelConverter implements XmlDslElementModelCon
 
     DslElementSyntax dsl = elementModel.getDsl();
     Element componentRoot = createElement(dsl, elementModel.getConfiguration());
+    if (isEETransform(componentRoot)) {
+      return populateEETransform(elementModel);
+    }
     writeApplicationElement(componentRoot, elementModel, componentRoot);
 
     return componentRoot;
@@ -105,7 +108,6 @@ public class DefaultXmlDslElementModelConverter implements XmlDslElementModelCon
   }
 
   private void writeApplicationElement(Element element, DslElementModel<?> elementModel, Element parentNode) {
-
     populateInfrastructureConfiguration(element, elementModel);
 
     if (elementModel.getContainedElements().isEmpty() && elementModel.getValue().isPresent()) {
@@ -132,7 +134,6 @@ public class DefaultXmlDslElementModelConverter implements XmlDslElementModelCon
         });
 
     if (parentNode != element) {
-      useTextInsteadOfChild(element, parentNode);
       parentNode.appendChild(element);
     }
   }
@@ -241,6 +242,21 @@ public class DefaultXmlDslElementModelConverter implements XmlDslElementModelCon
             }));
   }
 
+  private Element populateEETransform(DslElementModel<?> elementModel) {
+    Element transform = doc.createElementNS(EE_NAMESPACE, EE_PREFIX + ":" + TRANSFORM_OPERATION);
+    elementModel.getContainedElements().forEach(e -> {
+      if (e.getContainedElements().isEmpty() && e.getValue().isPresent()) {
+        transform.setAttribute(e.getDsl().getAttributeName(), (String) e.getValue().get());
+      } else {
+        Optional<ComponentConfiguration> config = e.getConfiguration();
+        config.ifPresent(c -> {
+          transform.appendChild(createTextChildElement(c));
+        });
+      }
+    });
+    return transform;
+  }
+
   private Element createTLS(ComponentConfiguration config) {
     String namespaceURI = "http://www.mulesoft.org/schema/mule/tls";
     String tlsSchemaLocation = "http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd";
@@ -262,6 +278,19 @@ public class DefaultXmlDslElementModelConverter implements XmlDslElementModelCon
     Element nested = doc.createElementNS(namespaceURI, EE_PREFIX + ":" + config.getIdentifier().getName());
     config.getParameters().forEach(nested::setAttribute);
     config.getNestedComponents().forEach(inner -> nested.appendChild(clone(inner)));
+    return nested;
+  }
+
+  private Element createTextChildElement(ComponentConfiguration config) {
+    String namespaceURI = EE_NAMESPACE;
+    String eeSchemaLocation = buildSchemaLocation(EE_PREFIX, EE_NAMESPACE);
+
+    addSchemaLocationIfNeeded(EE_PREFIX, namespaceURI, eeSchemaLocation);
+
+    Element nested = doc.createElementNS(namespaceURI, EE_PREFIX + ":" + config.getIdentifier().getName());
+    config.getParameters().forEach(nested::setAttribute);
+    config.getNestedComponents().stream()
+        .filter(inner -> inner.getValue().isPresent()).forEach(inner -> nested.setTextContent(inner.getValue().get()));
     return nested;
   }
 
