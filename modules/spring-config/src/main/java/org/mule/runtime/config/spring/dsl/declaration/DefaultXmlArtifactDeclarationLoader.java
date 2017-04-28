@@ -11,6 +11,7 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static org.mule.metadata.api.utils.MetadataTypeUtils.getLocalPart;
 import static org.mule.runtime.api.app.declaration.fluent.ElementDeclarer.forExtension;
+import static org.mule.runtime.api.app.declaration.fluent.ElementDeclarer.newFlow;
 import static org.mule.runtime.api.app.declaration.fluent.ElementDeclarer.newObjectValue;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 import static org.mule.runtime.config.spring.XmlConfigurationDocumentLoader.noValidationDocumentLoader;
@@ -63,6 +64,7 @@ import org.mule.runtime.api.app.declaration.fluent.RouteElementDeclarer;
 import org.mule.runtime.api.app.declaration.fluent.RouterElementDeclarer;
 import org.mule.runtime.api.app.declaration.fluent.ScopeElementDeclarer;
 import org.mule.runtime.api.app.declaration.fluent.TopLevelParameterDeclarer;
+import org.mule.runtime.api.app.declaration.serialization.ArtifactDeclarationJsonSerializer;
 import org.mule.runtime.api.dsl.DslResolvingContext;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.api.meta.model.ComponentModel;
@@ -250,7 +252,7 @@ public class DefaultXmlArtifactDeclarationLoader implements XmlArtifactDeclarati
   }
 
   private void declareFlow(ConfigLine configLine, ArtifactDeclarer artifactDeclarer) {
-    final FlowElementDeclarer flow = ElementDeclarer.newFlow().withRefName(getDeclaredName(configLine));
+    final FlowElementDeclarer flow = newFlow().withRefName(getDeclaredName(configLine));
     copyExplicitAttributes(configLine.getConfigAttributes(), flow);
 
     configLine.getChildren().forEach(line -> {
@@ -369,30 +371,15 @@ public class DefaultXmlArtifactDeclarationLoader implements XmlArtifactDeclarati
           ComponentElementDeclarer declarer = declarerProvider.apply(extensionElementsDeclarer);
           copyExplicitAttributes(line.getConfigAttributes(), declarer);
 
+          // handle set-payload and set-attributes
           model.getParameterGroupModels().stream()
+              .filter(g -> !g.getName().equals("setVariable"))
               .filter(ParameterGroupModel::isShowInDsl)
               .forEach(group -> elementDsl.getChild(group.getName())
                   .ifPresent(groupDsl -> line.getChildren().stream()
                       .filter(c -> c.getIdentifier().equals(groupDsl.getElementName()))
                       .findFirst()
                       .ifPresent(groupConfig -> {
-                      //  copyExplicitAttributes(groupConfig.getConfigAttributes(), declarer);
-                      //  if (groupConfig.getTextContent() != null) {
-                      //    declarer.withParameter("script", ParameterSimpleValue.of(groupConfig.getTextContent()));
-                      //  }
-                      //
-                      ////  group.getParameterModels()
-                      ////          .forEach(param -> groupDsl.getChild(param.getName())
-                      ////                  .ifPresent(paramDsl -> {
-                      ////                      line.getChildren().stream()
-                      ////                              .filter(c -> c.getIdentifier().equals(paramDsl.getElementName()))
-                      ////                              .findFirst()
-                      ////                              .ifPresent(paramConfig -> param.getType()
-                      ////                                      .accept(getParameterDeclarerVisitor(paramConfig, paramDsl,
-                      ////                                                                          value -> declarer.withParameter(param.getName(), value))));
-                      ////                    }
-                      ////                  }));
-                      ////})));
                         ParameterObjectValue.Builder builder = ElementDeclarer.newObjectValue();
                         copyExplicitAttributes(groupConfig.getConfigAttributes(), builder);
 
@@ -402,10 +389,39 @@ public class DefaultXmlArtifactDeclarationLoader implements XmlArtifactDeclarati
                         }
                         declarer.withParameter(group.getName(), builder.build());
                       })));
+
+          // handle set-variable
+          model.getParameterGroupModels().stream().filter(g -> g.getName().equals("setVariable")).findFirst().ifPresent(group -> {
+            ParameterObjectValue.Builder setVariablesListBuilder = ElementDeclarer.newObjectValue();
+            elementDsl.getChild(group.getName())
+                .ifPresent(groupDsl -> line.getChildren().stream()
+                    .filter(c -> c.getIdentifier().equals(groupDsl.getElementName()))
+                    .forEach(groupConfig -> {
+                      ParameterObjectValue.Builder objectBuilder = ElementDeclarer.newObjectValue();
+
+                      // add resource if exists
+                      groupConfig.getConfigAttributes().values().stream()
+                          .filter(a -> a.getName().equals("resource"))
+                          .findFirst()
+                          .ifPresent(a -> objectBuilder.withParameter(a.getName(), ParameterSimpleValue.of(a.getValue())));
+
+                      // add DW script text content to script parameter
+                      if (groupConfig.getTextContent() != null) {
+                        objectBuilder.withParameter("script", ParameterSimpleValue.of(groupConfig.getTextContent()));
+                      }
+
+                      // add parameter named with the variable's name
+                      groupConfig.getConfigAttributes().values().stream()
+                          .filter(a -> a.getName().equals("variableName"))
+                          .findFirst().ifPresent(a -> setVariablesListBuilder.withParameter(a.getValue(), objectBuilder.build()));
+
+                    }));
+            declarer.withParameter(group.getName(), setVariablesListBuilder.build());
+          });
           declarationConsumer.accept((ComponentElementDeclaration) declarer.getDeclaration());
-          //ArtifactDeclarationJsonSerializer serializer = ArtifactDeclarationJsonSerializer.getDefault(true);
-          //String json = serializer.serialize(new ArtifactDeclarer(new ArtifactDeclaration()).withGlobalElement(newFlow().withComponent((ComponentElementDeclaration) declarer.getDeclaration()).getDeclaration()).getDeclaration());
-          //System.out.println(json);
+          ArtifactDeclarationJsonSerializer serializer = ArtifactDeclarationJsonSerializer.getDefault(true);
+          String json = serializer.serialize(new ArtifactDeclarer(new ArtifactDeclaration()).withGlobalElement(newFlow().withComponent((ComponentElementDeclaration) declarer.getDeclaration()).getDeclaration()).getDeclaration());
+          System.out.println(json);
           stop();
         }
       }

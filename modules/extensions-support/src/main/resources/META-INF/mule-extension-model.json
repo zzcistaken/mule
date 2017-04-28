@@ -1012,7 +1012,7 @@
                 "password": false,
                 "text": false,
                 "query": false,
-                "order": 3
+                "order": 2
               },
               "name": "resource",
               "displayModel": {
@@ -1041,6 +1041,49 @@
             {
               "type": {
                 "format": "java",
+                "type": "Object",
+                "annotations": {
+                  "typeId": "java.lang.Object",
+                  "classInformation": {
+                    "hasDefaultConstructor": true,
+                    "isInterface": false,
+                    "isInstantiable": true,
+                    "isAbstract": false,
+                    "isFinal": false,
+                    "implementedInterfaces": [],
+                    "parent": "",
+                    "genericTypes": []
+                  },
+                  "typeAlias": {
+                    "value": "Object"
+                  }
+                },
+                "fields": []
+              },
+              "hasDynamicType": false,
+              "required": false,
+              "isConfigOverride": false,
+              "expressionSupport": "SUPPORTED",
+              "defaultValue": "#[payload]",
+              "role": "PRIMARY_CONTENT",
+              "dslConfiguration": {
+                "allowsInlineDefinition": true,
+                "allowsReferences": false,
+                "allowTopLevelDefinition": false
+              },
+              "layoutModel": {
+                "password": false,
+                "text": false,
+                "query": false,
+                "order": 1
+              },
+              "name": "script",
+              "description": "Modifies the payload of the message according to the provided value",
+              "modelProperties": {}
+            },
+            {
+              "type": {
+                "format": "java",
                 "type": "String",
                 "annotations": {
                   "typeId": "java.lang.String"
@@ -1052,6 +1095,142 @@
               "expressionSupport": "NOT_SUPPORTED",
               "role": "BEHAVIOUR",
               "dslConfiguration": {
+                "allowsInlineDefinition": false,
+                "allowsReferences": false,
+                "allowTopLevelDefinition": false
+              },
+              "layoutModel": {
+                "password": false,
+                "text": false,
+                "query": false,
+                "order": 2
+              },
+              "name": "resource",
+              "displayModel": {
+                "displayName": "Resource"
+              },
+              "description": "The name of a variable on which the operation\u0027s output will be placed",
+              "modelProperties": {}
+            }
+          ],
+          "exclusiveParametersModels": [
+            {
+              "exclusiveParameterNames": [
+                "resource",
+                "script"
+              ],
+              "isOneRequired": true
+            }
+          ],
+          "showInDsl": true,
+          "name": "setAttributes",
+          "description": "",
+          "modelProperties": {}
+        },
+        {
+          "parameters": [
+            {
+              "type": {
+                "format": "java",
+                "type": "Object",
+                "annotations": {
+                  "typeId": "java.util.Map",
+                  "classInformation": {
+                    "hasDefaultConstructor": false,
+                    "isInterface": true,
+                    "isInstantiable": false,
+                    "isAbstract": true,
+                    "isFinal": false,
+                    "implementedInterfaces": [],
+                    "parent": "",
+                    "genericTypes": [
+                      "java.lang.String",
+                      "java.lang.Object"
+                    ]
+                  }
+                },
+                "open": {
+                    "format": "java",
+                    "type": "Object",
+                    "annotations": {
+                      "typeId": "java.lang.Object",
+                      "classInformation": {
+                        "hasDefaultConstructor": true,
+                        "isInterface": false,
+                        "isInstantiable": true,
+                        "isAbstract": false,
+                        "isFinal": false,
+                        "implementedInterfaces": [],
+                        "parent": "",
+                        "genericTypes": []
+                      },
+                      "typeAlias": {
+                        "value": "Variable"
+                      }
+                    },
+                    "fields": [
+                      {
+                        "key": {
+                          "name": "resource"
+                        },
+                        "model": {
+                          "type": "String",
+                          "annotations": {
+                            "typeId": "java.lang.String"
+                          }
+                        },
+                        "annotations": {
+                          "parameterPurpose": {
+                            "role": "BEHAVIOUR"
+                          },
+                          "expressionSupport": {
+                            "value": "SUPPORTED"
+                          }
+                        }
+                      },
+                      {
+                        "key": {
+                          "name": "script"
+                        },
+                        "model": {
+                          "type": "Object",
+                          "annotations": {
+                            "typeId": "java.lang.Object",
+                            "classInformation": {
+                              "hasDefaultConstructor": true,
+                              "isInterface": false,
+                              "isInstantiable": true,
+                              "isAbstract": false,
+                              "isFinal": false,
+                              "implementedInterfaces": [],
+                              "parent": "",
+                              "genericTypes": []
+                            },
+                            "typeAlias": {
+                              "value": "Object"
+                            }
+                          },
+                          "fields": []
+                        },
+                        "annotations": {
+                          "parameterPurpose": {
+                            "role": "CONTENT"
+                          },
+                          "expressionSupport": {
+                            "value": "SUPPORTED"
+                          }
+                        }
+                      }
+                    ]
+                },
+                "fields": []
+              },
+              "hasDynamicType": false,
+              "required": false,
+              "isConfigOverride": false,
+              "expressionSupport": "SUPPORTED",
+              "role": "BEHAVIOUR",
+              "dslConfiguration": {
                 "allowsInlineDefinition": true,
                 "allowsReferences": true,
                 "allowTopLevelDefinition": false
@@ -1060,19 +1239,16 @@
                 "password": false,
                 "text": false,
                 "query": false,
-                "tabName": "Advanced"
+                "order": 3
               },
-              "name": "target",
-              "displayModel": {
-                "displayName": "Target Variable"
-              },
-              "description": "The name of a variable on which the operation\u0027s output will be placed",
+              "name": "setVariables",
+              "description": "",
               "modelProperties": {}
             }
           ],
           "exclusiveParametersModels": [],
-          "showInDsl": false,
-          "name": "Output",
+          "showInDsl": true,
+          "name": "setVariable",
           "description": "",
           "modelProperties": {}
         }

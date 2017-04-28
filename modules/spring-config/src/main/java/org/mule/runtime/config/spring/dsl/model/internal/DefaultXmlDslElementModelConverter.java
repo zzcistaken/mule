@@ -35,6 +35,7 @@ import static org.mule.runtime.internal.dsl.DslConstants.TLS_CONTEXT_ELEMENT_IDE
 import static org.mule.runtime.internal.dsl.DslConstants.TLS_PREFIX;
 import static org.mule.runtime.internal.dsl.DslConstants.TRANSFORM_OPERATION;
 import org.mule.metadata.api.model.MetadataType;
+import org.mule.runtime.api.component.ComponentIdentifier;
 import org.mule.runtime.api.meta.model.ComponentModel;
 import org.mule.runtime.api.meta.model.config.ConfigurationModel;
 import org.mule.runtime.api.meta.model.parameter.ParameterModel;
@@ -248,10 +249,17 @@ public class DefaultXmlDslElementModelConverter implements XmlDslElementModelCon
       if (e.getContainedElements().isEmpty() && e.getValue().isPresent()) {
         transform.setAttribute(e.getDsl().getAttributeName(), (String) e.getValue().get());
       } else {
-        Optional<ComponentConfiguration> config = e.getConfiguration();
-        config.ifPresent(c -> {
-          transform.appendChild(createTextChildElement(c));
-        });
+        if (((ComponentIdentifier) e.getIdentifier().get()).getName().equals(SET_VARIABLE)) {
+          e.getContainedElements().forEach(setVariable -> {
+            ((DslElementModel) setVariable).getConfiguration().ifPresent(c -> {
+              transform.appendChild(createTextChildElement((ComponentConfiguration) c));
+            });
+          });
+        } else {
+          e.getConfiguration().ifPresent(c -> {
+            transform.appendChild(createTextChildElement((ComponentConfiguration) c));
+          });
+        }
       }
     });
     return transform;
