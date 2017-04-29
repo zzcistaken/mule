@@ -133,11 +133,12 @@ public class FakeMuleServer {
   }
 
   public void stop() throws MuleException {
-    deploymentService.stop();
-    serviceManager.stop();
-    extensionModelLoaderManager.stop();
-    coreExtensionManager.stop();
-    coreExtensionManager.dispose();
+    containerClassLoader.dispose();
+    // deploymentService.stop();
+    // serviceManager.stop();
+    // extensionModelLoaderManager.stop();
+    // coreExtensionManager.stop();
+    // coreExtensionManager.dispose();
   }
 
   public void start() throws IOException, MuleException {

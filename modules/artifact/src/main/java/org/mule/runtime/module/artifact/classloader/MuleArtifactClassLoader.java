@@ -12,6 +12,8 @@ import static java.lang.System.identityHashCode;
 import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 import static org.mule.runtime.api.util.Preconditions.checkArgument;
+import static org.slf4j.LoggerFactory.getLogger;
+
 import org.mule.runtime.core.util.IOUtils;
 import org.mule.runtime.module.artifact.descriptor.ArtifactDescriptor;
 
@@ -19,6 +21,8 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.slf4j.Logger;
 
 /**
  * Abstract implementation of the ArtifactClassLoader interface, that manages shutdown listeners.
@@ -28,6 +32,8 @@ public class MuleArtifactClassLoader extends FineGrainedControlClassLoader imple
   static {
     registerAsParallelCapable();
   }
+
+  private static final Logger LOGGER = getLogger(MuleArtifactClassLoader.class);
 
   private static final String DEFAULT_RESOURCE_RELEASER_CLASS_LOCATION =
       "/org/mule/module/artifact/classloader/DefaultResourceReleaser.class";
@@ -86,7 +92,7 @@ public class MuleArtifactClassLoader extends FineGrainedControlClassLoader imple
     try {
       createResourceReleaserInstance().release();
     } catch (Exception e) {
-      logger.error("Cannot create resource releaser instance", e);
+      LOGGER.error("Cannot create resource releaser instance", e);
     }
     super.dispose();
     shutdownListeners();
@@ -97,7 +103,7 @@ public class MuleArtifactClassLoader extends FineGrainedControlClassLoader imple
       try {
         listener.execute();
       } catch (Exception e) {
-        logger.error("Error executing shutdown listener", e);
+        LOGGER.error("Error executing shutdown listener", e);
       }
     }
 

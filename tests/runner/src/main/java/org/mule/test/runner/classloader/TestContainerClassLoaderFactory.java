@@ -20,8 +20,6 @@ import org.mule.runtime.module.artifact.classloader.ClassLoaderLookupPolicy;
 import org.mule.runtime.module.artifact.classloader.MuleArtifactClassLoader;
 import org.mule.runtime.module.artifact.descriptor.ArtifactDescriptor;
 
-import com.google.common.collect.ImmutableSet;
-
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.URL;
@@ -29,6 +27,8 @@ import java.net.URLClassLoader;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+
+import com.google.common.collect.ImmutableSet;
 
 /**
  * Extends the default {@link ContainerClassLoaderFactory} for testing in order to add boot packages and build a
@@ -103,10 +103,9 @@ public class TestContainerClassLoaderFactory extends ContainerClassLoaderFactory
   protected ArtifactClassLoader createArtifactClassLoader(final ClassLoader parentClassLoader, final List<MuleModule> muleModules,
                                                           final ClassLoaderLookupPolicy containerLookupPolicy,
                                                           ArtifactDescriptor artifactDescriptor) {
-    final ArtifactDescriptor containerDescriptor = new ArtifactDescriptor("mule");
 
     containerClassLoader =
-        new MuleArtifactClassLoader(containerDescriptor.getName(), containerDescriptor, urls, parentClassLoader,
+        new MuleArtifactClassLoader(artifactDescriptor.getName(), artifactDescriptor, urls, parentClassLoader,
                                     containerLookupPolicy);
 
     return createContainerFilteringClassLoader(withContextClassLoader(classLoader,

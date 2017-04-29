@@ -17,6 +17,8 @@ import static java.util.stream.Collectors.joining;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 import static org.mule.runtime.api.util.Preconditions.checkNotNull;
+import static org.slf4j.LoggerFactory.getLogger;
+
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.core.registry.SpiServiceRegistry;
@@ -31,7 +33,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Implementation of {@link MuleExtensionModelLoaderManager} that uses SPI to look for the {@link ExtensionModelLoader} available
@@ -41,7 +42,7 @@ import org.slf4j.LoggerFactory;
  */
 public class MuleExtensionModelLoaderManager implements ExtensionModelLoaderManager {
 
-  protected final Logger logger = LoggerFactory.getLogger(this.getClass());
+  private static final Logger LOGGER = getLogger(MuleExtensionModelLoaderManager.class);
 
   private final ArtifactClassLoader containerClassLoader;
   private final Map<String, ExtensionModelLoader> extensionModelLoaders = newHashMap();
@@ -97,8 +98,8 @@ public class MuleExtensionModelLoaderManager implements ExtensionModelLoaderMana
 
     extensionModelLoaders.stream()
         .forEach(extensionModelLoader -> this.extensionModelLoaders.put(extensionModelLoader.getId(), extensionModelLoader));
-    if (logger.isDebugEnabled()) {
-      logger.debug("ExtensionModelLoader registered identifiers: {}", printExtensionModelLoaderIDs());
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("ExtensionModelLoader registered identifiers: {}", printExtensionModelLoaderIDs());
     }
   }
 

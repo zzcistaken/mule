@@ -18,6 +18,7 @@ import static org.mule.runtime.container.internal.ContainerClassLoaderFactory.SY
 import static org.mule.runtime.core.api.config.MuleProperties.MULE_LOG_VERBOSE_CLASSLOADING;
 import static org.mule.runtime.deployment.model.internal.AbstractArtifactClassLoaderBuilder.getArtifactPluginId;
 import static org.mule.runtime.module.artifact.classloader.ParentFirstLookupStrategy.PARENT_FIRST;
+
 import org.mule.runtime.container.api.MuleModule;
 import org.mule.runtime.container.internal.ContainerClassLoaderFactory;
 import org.mule.runtime.container.internal.ContainerClassLoaderFilterFactory;
@@ -25,6 +26,8 @@ import org.mule.runtime.container.internal.ContainerModuleDiscoverer;
 import org.mule.runtime.container.internal.ContainerOnlyLookupStrategy;
 import org.mule.runtime.container.internal.DefaultModuleRepository;
 import org.mule.runtime.container.internal.MuleClassLoaderLookupPolicy;
+import org.mule.runtime.deployment.model.api.application.ApplicationDescriptor;
+import org.mule.runtime.deployment.model.api.plugin.ArtifactPluginDescriptor;
 import org.mule.runtime.deployment.model.internal.application.MuleApplicationClassLoader;
 import org.mule.runtime.deployment.model.internal.nativelib.DefaultNativeLibraryFinderFactory;
 import org.mule.runtime.module.artifact.classloader.ArtifactClassLoader;
@@ -43,6 +46,7 @@ import org.mule.runtime.module.artifact.descriptor.ArtifactDescriptor;
 import org.mule.runtime.module.artifact.util.FileJarExplorer;
 import org.mule.runtime.module.artifact.util.JarExplorer;
 import org.mule.runtime.module.artifact.util.JarInfo;
+import org.mule.runtime.module.service.ServiceDescriptor;
 import org.mule.test.runner.api.ArtifactClassLoaderHolder;
 import org.mule.test.runner.api.ArtifactUrlClassification;
 import org.mule.test.runner.api.ArtifactsUrlClassification;
@@ -107,6 +111,7 @@ public class IsolatedClassLoaderFactory {
     DefaultModuleRepository moduleRepository =
         new DefaultModuleRepository(new ContainerModuleDiscoverer(ContainerClassLoaderFactory.class.getClassLoader()));
 
+    ApplicationDescriptor appDescriptor = new ApplicationDescriptor("app");
     try (final TestContainerClassLoaderFactory testContainerClassLoaderFactory =
         new TestContainerClassLoaderFactory(extraBootPackages, artifactsUrlClassification.getContainerUrls().toArray(new URL[0]),
                                             moduleRepository)) {
@@ -121,7 +126,7 @@ public class IsolatedClassLoaderFactory {
                                                               artifactsUrlClassification);
 
       regionClassLoader =
-          new RegionClassLoader("Region", new ArtifactDescriptor("Region"), containerClassLoader.getClassLoader(),
+          new RegionClassLoader("Region", appDescriptor, containerClassLoader.getClassLoader(),
                                 childClassLoaderLookupPolicy);
 
 
@@ -139,7 +144,7 @@ public class IsolatedClassLoaderFactory {
 
           MuleArtifactClassLoader pluginCL =
               new MuleArtifactClassLoader(artifactId,
-                                          new ArtifactDescriptor(pluginUrlClassification.getName()),
+                                          new ArtifactPluginDescriptor(pluginUrlClassification.getName()),
                                           pluginUrlClassification.getUrls().toArray(new URL[0]),
                                           regionClassLoader,
                                           pluginLookupPolicyGenerator.createLookupPolicy(pluginUrlClassification,
@@ -167,7 +172,7 @@ public class IsolatedClassLoaderFactory {
 
     ArtifactClassLoader appClassLoader =
         createApplicationArtifactClassLoader(regionClassLoader, appLookupPolicy, artifactsUrlClassification,
-                                             pluginsArtifactClassLoaders);
+                                             pluginsArtifactClassLoaders, appDescriptor);
 
     regionClassLoader.addClassLoader(appClassLoader,
                                      new DefaultArtifactClassLoaderFilter(testJarInfo.getPackages(), testJarInfo.getResources()));
@@ -227,7 +232,7 @@ public class IsolatedClassLoaderFactory {
 
       MuleArtifactClassLoader artifactClassLoader =
           new MuleArtifactClassLoader(serviceUrlClassification.getName(),
-                                      new ArtifactDescriptor(serviceUrlClassification.getName()),
+                                      new ServiceDescriptor(serviceUrlClassification.getName()),
                                       serviceUrlClassification.getUrls().toArray(new URL[0]), parent,
                                       childClassLoaderLookupPolicy);
       servicesArtifactClassLoaders.add(artifactClassLoader);
@@ -418,15 +423,17 @@ public class IsolatedClassLoaderFactory {
    * @param childClassLoaderLookupPolicy look policy to be used
    * @param artifactsUrlClassification the url classifications to get plugins urls
    * @param pluginsArtifactClassLoaders the classloaders of the plugins used by the application
+   * @param appDescriptor
    * @return the {@link ArtifactClassLoader} to be used for running the test
    */
   protected ArtifactClassLoader createApplicationArtifactClassLoader(ClassLoader parent,
                                                                      ClassLoaderLookupPolicy childClassLoaderLookupPolicy,
                                                                      ArtifactsUrlClassification artifactsUrlClassification,
-                                                                     List<ArtifactClassLoader> pluginsArtifactClassLoaders) {
+                                                                     List<ArtifactClassLoader> pluginsArtifactClassLoaders,
+                                                                     ApplicationDescriptor appDescriptor) {
     logClassLoaderUrls("APP", artifactsUrlClassification.getApplicationUrls());
-    return new MuleApplicationClassLoader("app", new ArtifactDescriptor("app"), parent,
-                                          new DefaultNativeLibraryFinderFactory().create("app"),
+    return new MuleApplicationClassLoader(appDescriptor.getName(), appDescriptor, parent,
+                                          new DefaultNativeLibraryFinderFactory().create(appDescriptor.getName()),
                                           artifactsUrlClassification.getApplicationUrls(),
                                           childClassLoaderLookupPolicy, pluginsArtifactClassLoaders);
   }

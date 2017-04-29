@@ -25,6 +25,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+
 import sun.misc.CompoundEnumeration;
 
 /**
@@ -50,6 +52,8 @@ public class RegionClassLoader extends MuleDeployableArtifactClassLoader {
   static {
     registerAsParallelCapable();
   }
+
+  private static final Logger LOGGER = getLogger(RegionClassLoader.class);
 
   private final List<RegionMemberClassLoader> registeredClassLoaders = new ArrayList<>();
   private final Map<String, ArtifactClassLoader> packageMapping = new HashMap<>();
@@ -239,10 +243,10 @@ public class RegionClassLoader extends MuleDeployableArtifactClassLoader {
       classLoader.dispose();
     } catch (Exception e) {
       final String message = "Error disposing classloader for '{}'. This can cause a memory leak";
-      if (logger.isDebugEnabled()) {
-        logger.debug(message, classLoader.getArtifactId(), e);
+      if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug(message, getArtifactDescriptor().getName(), e);
       } else {
-        logger.error(message, classLoader.getArtifactId());
+        LOGGER.error(message, getArtifactDescriptor().getName());
       }
     }
   }

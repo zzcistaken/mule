@@ -8,6 +8,7 @@ package org.mule.runtime.deployment.model.internal.domain;
 
 import static org.mule.runtime.container.api.MuleFoldersUtil.getDomainFolder;
 import static org.mule.runtime.deployment.model.internal.domain.DomainClassLoaderFactory.getDomainId;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import org.mule.runtime.module.artifact.classloader.ArtifactClassLoader;
 import org.mule.runtime.module.artifact.classloader.ClassLoaderLookupPolicy;
@@ -20,6 +21,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
+import org.slf4j.Logger;
+
 /**
  * Defines a {@link MuleArtifactClassLoader} for a domain artifact.
  */
@@ -28,6 +31,8 @@ public class MuleSharedDomainClassLoader extends MuleArtifactClassLoader impleme
   static {
     registerAsParallelCapable();
   }
+
+  private static final Logger LOGGER = getLogger(MuleSharedDomainClassLoader.class);
 
   public MuleSharedDomainClassLoader(ArtifactDescriptor artifactDescriptor, ClassLoader parent,
                                      ClassLoaderLookupPolicy lookupPolicy, List<URL> urls) {
@@ -43,7 +48,7 @@ public class MuleSharedDomainClassLoader extends MuleArtifactClassLoader impleme
         try {
           resource = file.toURI().toURL();
         } catch (MalformedURLException e) {
-          logger.debug("Failure looking for resource", e);
+          LOGGER.debug("Failure looking for resource", e);
         }
       }
     }
