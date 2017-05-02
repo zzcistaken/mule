@@ -981,6 +981,13 @@
                         },
                         "expressionSupport": {
                           "value": "SUPPORTED"
+                        },
+                        "layout": {
+                          "layoutModel": {
+                            "password": false,
+                            "text": false,
+                            "query": false
+                          }
                         }
                       }
                     },
@@ -1000,6 +1007,13 @@
                         },
                         "expressionSupport": {
                           "value": "SUPPORTED"
+                        },
+                        "layout": {
+                          "layoutModel": {
+                            "password": false,
+                            "text": false,
+                            "query": false
+                          }
                         }
                       }
                     },
@@ -1052,7 +1066,7 @@
               "displayModel": {
                 "displayName": "Set Variables"
               },
-              "description": "The name of a variable on which the operation\u0027s output will be placed",
+              "description": "Sets a list of variables in which each one has a name and a content",
               "modelProperties": {}
             }
           ],
@@ -1135,7 +1149,7 @@
               "displayModel": {
                 "displayName": "Resource"
               },
-              "description": "The name of a variable on which the operation\u0027s output will be placed",
+              "description": "The name of the resource which contains a defined transformation",
               "modelProperties": {}
             }
           ],
@@ -1226,7 +1240,7 @@
               "displayModel": {
                 "displayName": "Resource"
               },
-              "description": "The name of a variable on which the operation\u0027s output will be placed",
+              "description": "The name of the resource which contains a defined transformation",
               "modelProperties": {}
             }
           ],
@@ -1241,7 +1255,7 @@
           ],
           "showInDsl": true,
           "name": "setAttributes",
-          "description": "",
+          "description": "Modifies the attributes of the message according to the provided value",
           "modelProperties": {}
         }
       ],

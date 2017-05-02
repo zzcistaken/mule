@@ -21,9 +21,10 @@ public class MuleExtensionModelProvider {
 
   private static final String MODEL_JSON = "META-INF/mule-extension-model.json";
   private static final String JSON = IOUtils.toString(MuleExtensionModelProvider.class.getClassLoader()
-                                                                      .getResourceAsStream(MODEL_JSON));
-  private static final ExtensionModel EXTENSION_MODEL = withContextClassLoader(ExtensionTypeAnnotationsRegistry.class.getClassLoader(),
-                                                                               () -> new ExtensionModelJsonSerializer(false).deserialize(JSON));
+      .getResourceAsStream(MODEL_JSON));
+  private static final ExtensionModel EXTENSION_MODEL =
+      withContextClassLoader(ExtensionTypeAnnotationsRegistry.class.getClassLoader(),
+                             () -> new ExtensionModelJsonSerializer(false).deserialize(JSON));
 
 
   /**
