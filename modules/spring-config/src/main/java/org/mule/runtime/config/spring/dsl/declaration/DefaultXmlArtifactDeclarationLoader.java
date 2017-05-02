@@ -40,7 +40,7 @@ import static org.mule.runtime.internal.dsl.DslConstants.RECONNECT_ELEMENT_IDENT
 import static org.mule.runtime.internal.dsl.DslConstants.RECONNECT_FOREVER_ELEMENT_IDENTIFIER;
 import static org.mule.runtime.internal.dsl.DslConstants.REDELIVERY_POLICY_ELEMENT_IDENTIFIER;
 import static org.mule.runtime.internal.dsl.DslConstants.TLS_CONTEXT_ELEMENT_IDENTIFIER;
-import static org.mule.runtime.internal.dsl.DslConstants.TRANSFORM_OPERATION;
+import static org.mule.runtime.internal.dsl.DslConstants.TRANSFORM_IDENTIFIER;
 import static org.mule.runtime.internal.dsl.DslConstants.VALUE_ATTRIBUTE_NAME;
 import org.mule.metadata.api.model.ArrayType;
 import org.mule.metadata.api.model.MetadataType;
@@ -291,7 +291,7 @@ public class DefaultXmlArtifactDeclarationLoader implements XmlArtifactDeclarati
 
       @Override
       protected void onOperation(HasOperationModels owner, OperationModel model) {
-        if (!model.getName().equals(TRANSFORM_OPERATION)) {
+        if (!model.getName().equals(TRANSFORM_IDENTIFIER)) {
           declareComponent(model, e -> e.newOperation(model.getName()));
         } else {
           declareTransform(model, e -> e.newOperation(model.getName()));
@@ -394,7 +394,6 @@ public class DefaultXmlArtifactDeclarationLoader implements XmlArtifactDeclarati
           model.getAllParameterModels().stream().filter(g -> g.getName().equals("setVariable")).findFirst().ifPresent(group -> {
             ParameterObjectValue.Builder generalGroup = ElementDeclarer.newObjectValue();
             ParameterListValue.Builder setVariablesListBuilder = ElementDeclarer.newListValue();
-            //elementDsl.getChild("setVariable")
             elementDsl.getChild("General").get().getChild("setVariable")
                 .ifPresent(groupDsl -> line.getChildren().stream()
                     .filter(c -> c.getIdentifier().equals(groupDsl.getElementName()))

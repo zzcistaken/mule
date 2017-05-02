@@ -28,12 +28,9 @@ import static org.mule.runtime.internal.dsl.DslConstants.POOLING_PROFILE_ELEMENT
 import static org.mule.runtime.internal.dsl.DslConstants.RECONNECT_ELEMENT_IDENTIFIER;
 import static org.mule.runtime.internal.dsl.DslConstants.RECONNECT_FOREVER_ELEMENT_IDENTIFIER;
 import static org.mule.runtime.internal.dsl.DslConstants.REDELIVERY_POLICY_ELEMENT_IDENTIFIER;
-import static org.mule.runtime.internal.dsl.DslConstants.SET_ATTRIBUTES;
-import static org.mule.runtime.internal.dsl.DslConstants.SET_PAYLOAD;
-import static org.mule.runtime.internal.dsl.DslConstants.SET_VARIABLE;
 import static org.mule.runtime.internal.dsl.DslConstants.TLS_CONTEXT_ELEMENT_IDENTIFIER;
 import static org.mule.runtime.internal.dsl.DslConstants.TLS_PREFIX;
-import static org.mule.runtime.internal.dsl.DslConstants.TRANSFORM_OPERATION;
+import static org.mule.runtime.internal.dsl.DslConstants.TRANSFORM_IDENTIFIER;
 import org.mule.metadata.api.model.MetadataType;
 import org.mule.runtime.api.component.ComponentIdentifier;
 import org.mule.runtime.api.meta.model.ComponentModel;
@@ -46,11 +43,9 @@ import org.mule.runtime.dsl.api.component.config.ComponentConfiguration;
 import org.mule.runtime.extension.api.dsl.syntax.DslElementSyntax;
 import org.mule.runtime.extension.api.util.ExtensionModelUtils;
 
-import com.google.common.collect.ImmutableSet;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
@@ -139,7 +134,8 @@ public class DefaultXmlDslElementModelConverter implements XmlDslElementModelCon
   }
 
   private boolean isEETransform(Element parentNode) {
-    return parentNode.getNamespaceURI().equals(CORE_NAMESPACE) && parentNode.getNodeName().equals(TRANSFORM_OPERATION);
+    // TODO EE-5398: Update transform namespace to ee
+    return parentNode.getNamespaceURI().equals(CORE_NAMESPACE) && parentNode.getNodeName().equals(TRANSFORM_IDENTIFIER);
   }
 
   private Element createElement(DslElementSyntax dsl, Optional<ComponentConfiguration> configuration) {
@@ -237,30 +233,24 @@ public class DefaultXmlDslElementModelConverter implements XmlDslElementModelCon
   }
 
   private Element populateEETransform(DslElementModel<?> elementModel) {
-    Element transform = doc.createElementNS(EE_NAMESPACE, EE_PREFIX + ":" + TRANSFORM_OPERATION);
+    Element transform = doc.createElementNS(EE_NAMESPACE, EE_PREFIX + ":" + TRANSFORM_IDENTIFIER);
     // write set-payload and set-attributes
     elementModel.getContainedElements().stream()
         .filter(e -> !((ComponentIdentifier) e.getIdentifier().get()).getName().equals("general")).forEach(e -> {
-      if (e.getContainedElements().isEmpty() && e.getValue().isPresent()) {
-        transform.setAttribute(e.getDsl().getAttributeName(), (String) e.getValue().get());
-      } else {
-          e.getConfiguration().ifPresent(c -> {
-            transform.appendChild(createTextChildElement((ComponentConfiguration) c));
-          });
+          if (e.getContainedElements().isEmpty() && e.getValue().isPresent()) {
+            transform.setAttribute(e.getDsl().getAttributeName(), (String) e.getValue().get());
+          } else {
+            e.getConfiguration().ifPresent(c -> transform.appendChild(createTextChildElement((ComponentConfiguration) c)));
           }
         });
 
     // write set-variable
     elementModel.getContainedElements().stream()
-        .filter(e -> ((ComponentIdentifier) e.getIdentifier().get()).getName().equals("general")).forEach(e -> {
-          e.getContainedElements().stream().findFirst().ifPresent(setVariableElement -> {
-            ((DslElementModel) setVariableElement).getContainedElements().stream().forEach(setVariable -> {
-              ((DslElementModel) setVariable).getConfiguration().ifPresent(c -> {
-                transform.appendChild(createTextChildElement((ComponentConfiguration) c));
-              });
-            });
-          });
-        });
+        .filter(e -> ((ComponentIdentifier) e.getIdentifier().get()).getName().equals("general"))
+        .forEach(e -> e.getContainedElements().stream().findFirst()
+            .ifPresent(setVariableElement -> ((DslElementModel) setVariableElement).getContainedElements().stream()
+                .forEach(setVariable -> ((DslElementModel) setVariable).getConfiguration()
+                    .ifPresent(c -> transform.appendChild(createTextChildElement((ComponentConfiguration) c))))));
     return transform;
   }
 

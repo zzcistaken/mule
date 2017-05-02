@@ -131,12 +131,6 @@ class DeclarationBasedElementModelFactory {
           checkArgument(declaration instanceof OperationElementDeclaration,
                         format("Found an Operation with the given name, but expected a '%s'",
                                declaration.getClass().getName()));
-          //if (model.getName().equals(TRANSFORM_OPERATION)) {
-          //  elementModel.set(createTransformElement(model, (OperationElementDeclaration) declaration));
-          //} else {
-          //  elementModel.set(createComponentElement(model, (OperationElementDeclaration) declaration));
-          //
-          //}
           elementModel.set(createComponentElement(model, (OperationElementDeclaration) declaration));
 
 
@@ -219,96 +213,7 @@ class DeclarationBasedElementModelFactory {
         createParameterizedElementModel(model, configDsl, componentDeclaration, configuration);
     return element.withConfig(configuration.build()).build();
   }
-
-  private DslElementModel<? extends ComponentModel> createTransformElement(ComponentModel model,
-                                                                           ComponentElementDeclaration componentDeclaration) {
-    DslElementSyntax configDsl = dsl.resolve(model);
-    ComponentConfiguration.Builder configuration = ComponentConfiguration.builder()
-        .withIdentifier(asIdentifier(configDsl));
-
-    DslElementModel.Builder<ComponentModel> parentElement = DslElementModel.<ComponentModel>builder()
-            .withModel(model)
-            .withDsl(configDsl);
-
-    model.getParameterGroupModels().stream()
-            .filter(ParameterGroupModel::isShowInDsl)
-        .filter(g -> !g.getName().equals("General"))
-            .forEach(group -> {
-                configDsl.getChild(group.getName())
-                        .ifPresent(groupDsl -> {
-                            DslElementModel.Builder<ParameterGroupModel> groupElementBuilder = DslElementModel.<ParameterGroupModel>builder()
-                                    .withModel(group)
-                                    .withDsl(groupDsl);
-
-                            ComponentConfiguration.Builder groupBuilder = ComponentConfiguration.builder().withIdentifier(asIdentifier(groupDsl));
-
-                            group.getParameterModels()
-                                    .forEach(paramModel -> groupDsl.getContainedElement(paramModel.getName())
-                                                .ifPresent(paramDsl -> {
-                                                    Optional<ParameterElementDeclaration> declared = componentDeclaration.getParameters().stream()
-                                                            .filter(d -> d.getName().equals(paramModel.getName()))
-                                                            .findFirst();
-
-                                                    if (declared.isPresent()) {
-                                                        //configuredParameters.add(declared.get().getName());
-                                                        addParameter(declared.get().getName(), declared.get().getValue(), paramModel, paramDsl, groupBuilder, parentElement);
-                                                    } else {
-                                                        getDefaultValue(paramModel)
-                                                                .ifPresent(value -> createSimpleParameter(value, paramDsl, groupBuilder, parentElement, paramModel, false));
-                                                    }
-                                                }));
-
-                            ComponentConfiguration groupConfig = groupBuilder.build();                      
-                            groupElementBuilder.withConfig(groupConfig);
-
-                            configuration.withNestedComponent(groupConfig);
-                            parentElement.containing(groupElementBuilder.build());
-                        });
-            });
-
-    model.getParameterGroupModels().stream()
-        .filter(ParameterGroupModel::isShowInDsl)
-        .filter(g -> g.getName().equals("General"))
-        .findFirst()
-        .ifPresent(group -> {
-          configDsl.getChild(group.getName())
-              .ifPresent(groupDsl -> {
-                DslElementModel.Builder<ParameterGroupModel> groupElementBuilder = DslElementModel.<ParameterGroupModel>builder()
-                    .withModel(group)
-                    .withDsl(groupDsl);
-
-                ComponentConfiguration.Builder groupBuilder =
-                    ComponentConfiguration.builder().withIdentifier(asIdentifier(groupDsl));
-
-                group.getParameterModels()
-                    .forEach(paramModel -> groupDsl.getContainedElement(paramModel.getName())
-                        .ifPresent(paramDsl -> {
-                          Optional<ParameterElementDeclaration> declared = componentDeclaration.getParameters().stream()
-                              .filter(d -> d.getName().equals(paramModel.getName()))
-                              .findFirst();
-
-                          if (declared.isPresent()) {
-                            // configuredParameters.add(declared.get().getName());
-                            addParameter(declared.get().getName(), declared.get().getValue(), paramModel, paramDsl, groupBuilder,
-                                         parentElement);
-                          } else {
-                            getDefaultValue(paramModel)
-                                .ifPresent(value -> createSimpleParameter(value, paramDsl, groupBuilder, parentElement,
-                                                                          paramModel, false));
-                          }
-                        }));
-
-                ComponentConfiguration groupConfig = groupBuilder.build();
-                groupElementBuilder.withConfig(groupConfig);
-
-                configuration.withNestedComponent(groupConfig);
-                parentElement.containing(groupElementBuilder.build());
-              });
-        });
-
-    return parentElement.withConfig(configuration.build()).build();
-  }
-
+  
   private DslElementModel<? extends ComponentModel> createRouterElement(RouterModel model,
                                                                         RouterElementDeclaration routerDeclaration) {
     DslElementSyntax configDsl = dsl.resolve(model);
@@ -541,9 +446,6 @@ class DeclarationBasedElementModelFactory {
                 });
 
             });
-
-            //addAllDeclaredParameters(group.getParameterModels(), declaration.getParameters(), groupDsl, groupBuilder,
-            //                       groupElementBuilder);
 
           ComponentConfiguration groupConfig = groupBuilder.build();
           groupElementBuilder.withConfig(groupConfig);
