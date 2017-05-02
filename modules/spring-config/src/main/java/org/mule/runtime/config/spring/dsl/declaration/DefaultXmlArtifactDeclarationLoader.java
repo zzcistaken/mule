@@ -391,14 +391,16 @@ public class DefaultXmlArtifactDeclarationLoader implements XmlArtifactDeclarati
                       })));
 
           // handle set-variable
-          model.getParameterGroupModels().stream().filter(g -> g.getName().equals("setVariable")).findFirst().ifPresent(group -> {
-            ParameterObjectValue.Builder setVariablesListBuilder = ElementDeclarer.newObjectValue();
-            elementDsl.getChild(group.getName())
+          model.getAllParameterModels().stream().filter(g -> g.getName().equals("setVariable")).findFirst().ifPresent(group -> {
+            //ParameterObjectValue.Builder setVariablesListBuilder = ElementDeclarer.newObjectValue();
+            ParameterListValue.Builder setVariablesListBuilder = ElementDeclarer.newListValue();
+            elementDsl.getChild("setVariable")
                 .ifPresent(groupDsl -> line.getChildren().stream()
                     .filter(c -> c.getIdentifier().equals(groupDsl.getElementName()))
                     .forEach(groupConfig -> {
                       ParameterObjectValue.Builder objectBuilder = ElementDeclarer.newObjectValue();
 
+                      copyExplicitAttributes(groupConfig.getConfigAttributes(), objectBuilder);
                       // add resource if exists
                       groupConfig.getConfigAttributes().values().stream()
                           .filter(a -> a.getName().equals("resource"))
@@ -410,10 +412,12 @@ public class DefaultXmlArtifactDeclarationLoader implements XmlArtifactDeclarati
                         objectBuilder.withParameter("script", ParameterSimpleValue.of(groupConfig.getTextContent()));
                       }
 
-                      // add parameter named with the variable's name
-                      groupConfig.getConfigAttributes().values().stream()
-                          .filter(a -> a.getName().equals("variableName"))
-                          .findFirst().ifPresent(a -> setVariablesListBuilder.withParameter(a.getValue(), objectBuilder.build()));
+                      //// add parameter named with the variable's name
+                      //groupConfig.getConfigAttributes().values().stream()
+                      //    .filter(a -> a.getName().equals("variableName"))
+                      //    .findFirst().ifPresent(a -> setVariablesListBuilder.withValue(objectBuilder.build()));
+                      //
+                      setVariablesListBuilder.withValue(objectBuilder.build());
 
                     }));
             declarer.withParameter(group.getName(), setVariablesListBuilder.build());
