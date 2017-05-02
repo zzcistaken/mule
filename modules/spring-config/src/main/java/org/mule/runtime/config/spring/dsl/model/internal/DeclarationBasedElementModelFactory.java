@@ -20,6 +20,8 @@ import static org.mule.runtime.extension.api.util.ExtensionModelUtils.isContent;
 import static org.mule.runtime.extension.api.util.ExtensionModelUtils.isInfrastructure;
 import static org.mule.runtime.extension.internal.dsl.syntax.DslSyntaxUtils.getId;
 import static org.mule.runtime.internal.dsl.DslConstants.CONFIG_ATTRIBUTE_NAME;
+import static org.mule.runtime.internal.dsl.DslConstants.EE_NAMESPACE;
+import static org.mule.runtime.internal.dsl.DslConstants.EE_PREFIX;
 import static org.mule.runtime.internal.dsl.DslConstants.KEY_ATTRIBUTE_NAME;
 import static org.mule.runtime.internal.dsl.DslConstants.NAME_ATTRIBUTE_NAME;
 import static org.mule.runtime.internal.dsl.DslConstants.VALUE_ATTRIBUTE_NAME;
@@ -133,9 +135,9 @@ class DeclarationBasedElementModelFactory {
           //  elementModel.set(createTransformElement(model, (OperationElementDeclaration) declaration));
           //} else {
           //  elementModel.set(createComponentElement(model, (OperationElementDeclaration) declaration));
-
+          //
           //}
-            elementModel.set(createComponentElement(model, (OperationElementDeclaration) declaration));
+          elementModel.set(createComponentElement(model, (OperationElementDeclaration) declaration));
 
 
           stop();
@@ -230,6 +232,7 @@ class DeclarationBasedElementModelFactory {
 
     model.getParameterGroupModels().stream()
             .filter(ParameterGroupModel::isShowInDsl)
+        .filter(g -> !g.getName().equals("General"))
             .forEach(group -> {
                 configDsl.getChild(group.getName())
                         .ifPresent(groupDsl -> {
@@ -262,6 +265,46 @@ class DeclarationBasedElementModelFactory {
                             parentElement.containing(groupElementBuilder.build());
                         });
             });
+
+    model.getParameterGroupModels().stream()
+        .filter(ParameterGroupModel::isShowInDsl)
+        .filter(g -> g.getName().equals("General"))
+        .findFirst()
+        .ifPresent(group -> {
+          configDsl.getChild(group.getName())
+              .ifPresent(groupDsl -> {
+                DslElementModel.Builder<ParameterGroupModel> groupElementBuilder = DslElementModel.<ParameterGroupModel>builder()
+                    .withModel(group)
+                    .withDsl(groupDsl);
+
+                ComponentConfiguration.Builder groupBuilder =
+                    ComponentConfiguration.builder().withIdentifier(asIdentifier(groupDsl));
+
+                group.getParameterModels()
+                    .forEach(paramModel -> groupDsl.getContainedElement(paramModel.getName())
+                        .ifPresent(paramDsl -> {
+                          Optional<ParameterElementDeclaration> declared = componentDeclaration.getParameters().stream()
+                              .filter(d -> d.getName().equals(paramModel.getName()))
+                              .findFirst();
+
+                          if (declared.isPresent()) {
+                            // configuredParameters.add(declared.get().getName());
+                            addParameter(declared.get().getName(), declared.get().getValue(), paramModel, paramDsl, groupBuilder,
+                                         parentElement);
+                          } else {
+                            getDefaultValue(paramModel)
+                                .ifPresent(value -> createSimpleParameter(value, paramDsl, groupBuilder, parentElement,
+                                                                          paramModel, false));
+                          }
+                        }));
+
+                ComponentConfiguration groupConfig = groupBuilder.build();
+                groupElementBuilder.withConfig(groupConfig);
+
+                configuration.withNestedComponent(groupConfig);
+                parentElement.containing(groupElementBuilder.build());
+              });
+        });
 
     return parentElement.withConfig(configuration.build()).build();
   }
@@ -852,14 +895,29 @@ class DeclarationBasedElementModelFactory {
         .withIdentifier(asIdentifier(listDsl));
 
     final MetadataType itemType = listType.getType();
-    listDsl.getGeneric(itemType)
-        .ifPresent(itemDsl -> list.getValues()
-            .forEach(value -> createListItemConfig(itemType, value, itemDsl, listConfig, listElement)));
 
+    DslElementSyntax itemDsl =
+        listDsl.getGeneric(itemType).isPresent() ? listDsl.getGeneric(itemType).get() : createSetVariableDslElement();
+    list.getValues().forEach(value -> createListItemConfig(itemType, value, itemDsl, listConfig, listElement));
     ComponentConfiguration result = listConfig.build();
+
 
     parentConfig.withNestedComponent(result);
     parentElement.containing(listElement.withConfig(result).build());
+  }
+
+  private DslElementSyntax createSetVariableDslElement() {
+    return DslElementSyntaxBuilder.create().supportsChildDeclaration(true)
+        .withElementName("set-variable").withNamespace(EE_PREFIX, EE_NAMESPACE)
+        .supportsTopLevelDeclaration(false)
+        .containing("script", DslElementSyntaxBuilder.create()
+            .supportsAttributeDeclaration(false)
+            .supportsChildDeclaration(true)
+            .withElementName("script")
+            .withNamespace(EE_PREFIX, EE_NAMESPACE).build())
+        .containing("resource", DslElementSyntaxBuilder.create()
+            .supportsAttributeDeclaration(true).build())
+        .build();
   }
 
   private void createObject(ParameterObjectValue objectValue, DslElementSyntax objectDsl, Object model, ObjectType objectType,

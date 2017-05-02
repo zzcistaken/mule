@@ -373,7 +373,7 @@ public class DefaultXmlArtifactDeclarationLoader implements XmlArtifactDeclarati
 
           // handle set-payload and set-attributes
           model.getParameterGroupModels().stream()
-              .filter(g -> !g.getName().equals("setVariable"))
+              .filter(g -> !g.getName().equals("General"))
               .filter(ParameterGroupModel::isShowInDsl)
               .forEach(group -> elementDsl.getChild(group.getName())
                   .ifPresent(groupDsl -> line.getChildren().stream()
@@ -392,18 +392,19 @@ public class DefaultXmlArtifactDeclarationLoader implements XmlArtifactDeclarati
 
           // handle set-variable
           model.getAllParameterModels().stream().filter(g -> g.getName().equals("setVariable")).findFirst().ifPresent(group -> {
-            //ParameterObjectValue.Builder setVariablesListBuilder = ElementDeclarer.newObjectValue();
+            ParameterObjectValue.Builder generalGroup = ElementDeclarer.newObjectValue();
             ParameterListValue.Builder setVariablesListBuilder = ElementDeclarer.newListValue();
-            elementDsl.getChild("setVariable")
+            //elementDsl.getChild("setVariable")
+            elementDsl.getChild("General").get().getChild("setVariable")
                 .ifPresent(groupDsl -> line.getChildren().stream()
                     .filter(c -> c.getIdentifier().equals(groupDsl.getElementName()))
                     .forEach(groupConfig -> {
                       ParameterObjectValue.Builder objectBuilder = ElementDeclarer.newObjectValue();
 
                       copyExplicitAttributes(groupConfig.getConfigAttributes(), objectBuilder);
-                      // add resource if exists
+
+                      // add resource and variable name
                       groupConfig.getConfigAttributes().values().stream()
-                          .filter(a -> a.getName().equals("resource"))
                           .findFirst()
                           .ifPresent(a -> objectBuilder.withParameter(a.getName(), ParameterSimpleValue.of(a.getValue())));
 
@@ -412,16 +413,97 @@ public class DefaultXmlArtifactDeclarationLoader implements XmlArtifactDeclarati
                         objectBuilder.withParameter("script", ParameterSimpleValue.of(groupConfig.getTextContent()));
                       }
 
-                      //// add parameter named with the variable's name
-                      //groupConfig.getConfigAttributes().values().stream()
-                      //    .filter(a -> a.getName().equals("variableName"))
-                      //    .findFirst().ifPresent(a -> setVariablesListBuilder.withValue(objectBuilder.build()));
-                      //
                       setVariablesListBuilder.withValue(objectBuilder.build());
 
                     }));
-            declarer.withParameter(group.getName(), setVariablesListBuilder.build());
+            declarer.withParameter("General", generalGroup.withParameter("setVariable", setVariablesListBuilder.build()).build());
           });
+
+        //  ComponentElementDeclarer declarer = declarerProvider.apply(extensionElementsDeclarer);
+        //  copyExplicitAttributes(line.getConfigAttributes(), declarer);
+        //
+        //  // handle set-payload and set-attributes
+        //  line.getChildren().stream().filter(c -> !c.getIdentifier().equals("set-variable")).forEach( c -> {
+        //    ParameterObjectValue.Builder builder = ElementDeclarer.newObjectValue();
+        //    copyExplicitAttributes(c.getConfigAttributes(), builder);
+        //
+        //    // add DW script text content to script parameter
+        //    if (c.getTextContent() != null) {
+        //      builder.withParameter("script", ParameterSimpleValue.of(c.getTextContent()));
+        //    }
+        //    declarer.withParameter(c.getIdentifier(), builder.build());
+        //  });
+        //
+        //ParameterListValue.Builder setVariablesListBuilder = ElementDeclarer.newListValue();
+        //
+        //line.getChildren().stream().filter(c -> c.getIdentifier().equals("set-variable")).forEach( c -> {
+        //  ParameterObjectValue.Builder objectBuilder = ElementDeclarer.newObjectValue();
+        //
+        //  copyExplicitAttributes(c.getConfigAttributes(), objectBuilder);
+        //  // add resource if exists
+        //  c.getConfigAttributes().values().stream()
+        //          .filter(a -> a.getName().equals("resource"))
+        //          .findFirst()
+        //          .ifPresent(a -> objectBuilder.withParameter(a.getName(), ParameterSimpleValue.of(a.getValue())));
+        //
+        //  // add DW script text content to script parameter
+        //  if (c.getTextContent() != null) {
+        //    objectBuilder.withParameter("script", ParameterSimpleValue.of(c.getTextContent()));
+        //  }
+        //
+        //  setVariablesListBuilder.withValue(objectBuilder.build());
+        //});
+        //
+        //if (line.getChildren().stream().filter(c -> c.getIdentifier().equals("set-variable")).findAny().isPresent()){
+        //  ParameterObjectValue.Builder generalGroup = ElementDeclarer.newObjectValue();
+        //  declarer.withParameter("General", generalGroup.withParameter("setVariable", setVariablesListBuilder.build()).build());
+        //  //model.getParameterGroupModels().stream()
+        //  //        .filter(g -> !g.getName().equals("General"))
+        //  //        .filter(ParameterGroupModel::isShowInDsl)
+        //  //        .forEach(group -> elementDsl.getChild(group.getName())
+        //  //                .ifPresent(groupDsl -> line.getChildren().stream()
+        //  //                        .filter(c -> c.getIdentifier().equals(groupDsl.getElementName()))
+        //  //                        .findFirst()
+        //  //                        .ifPresent(groupConfig -> {
+        //  //                          ParameterObjectValue.Builder builder = ElementDeclarer.newObjectValue();
+        //  //                          copyExplicitAttributes(groupConfig.getConfigAttributes(), builder);
+        //  //
+        //  //                          // add DW script text content to script parameter
+        //  //                          if (groupConfig.getTextContent() != null) {
+        //  //                            builder.withParameter("script", ParameterSimpleValue.of(groupConfig.getTextContent()));
+        //  //                          }
+        //  //                          declarer.withParameter(group.getName(), builder.build());
+        //  //                        })));
+        //
+        //  // handle set-variable
+        //  //model.getAllParameterModels().stream().filter(g -> g.getName().equals("setVariable")).findFirst().ifPresent(group -> {
+        //  //  ParameterObjectValue.Builder generalGroup = ElementDeclarer.newObjectValue();
+        //  //  ParameterListValue.Builder setVariablesListBuilder = ElementDeclarer.newListValue();
+        //  //  //elementDsl.getChild("setVariable")
+        //  //  elementDsl.getChild("General").get().getChild("setVariable")
+        //  //          .ifPresent(groupDsl -> line.getChildren().stream()
+        //  //                  .filter(c -> c.getIdentifier().equals(groupDsl.getElementName()))
+        //  //                  .forEach(groupConfig -> {
+        //  //                    ParameterObjectValue.Builder objectBuilder = ElementDeclarer.newObjectValue();
+        //  //
+        //  //                    copyExplicitAttributes(groupConfig.getConfigAttributes(), objectBuilder);
+        //  //                    // add resource if exists
+        //  //                    groupConfig.getConfigAttributes().values().stream()
+        //  //                            .filter(a -> a.getName().equals("resource"))
+        //  //                            .findFirst()
+        //  //                            .ifPresent(a -> objectBuilder.withParameter(a.getName(), ParameterSimpleValue.of(a.getValue())));
+        //  //
+        //  //                    // add DW script text content to script parameter
+        //  //                    if (groupConfig.getTextContent() != null) {
+        //  //                      objectBuilder.withParameter("script", ParameterSimpleValue.of(groupConfig.getTextContent()));
+        //  //                    }
+        //  //
+        //  //                    setVariablesListBuilder.withValue(objectBuilder.build());
+        //  //
+        //  //                  }));
+        //  //  declarer.withParameter("General", generalGroup.withParameter("setVariable", setVariablesListBuilder.build()).build());
+        //  //});
+          
           declarationConsumer.accept((ComponentElementDeclaration) declarer.getDeclaration());
           ArtifactDeclarationJsonSerializer serializer = ArtifactDeclarationJsonSerializer.getDefault(true);
           String json = serializer.serialize(new ArtifactDeclarer(new ArtifactDeclaration()).withGlobalElement(newFlow().withComponent((ComponentElementDeclaration) declarer.getDeclaration()).getDeclaration()).getDeclaration());

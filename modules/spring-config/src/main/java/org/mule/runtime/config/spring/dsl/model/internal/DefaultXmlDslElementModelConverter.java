@@ -76,7 +76,6 @@ public class DefaultXmlDslElementModelConverter implements XmlDslElementModelCon
                                                                   REDELIVERY_POLICY_PARAMETER_NAME,
                                                                   TARGET_PARAMETER_NAME);
 
-  private static final Set<String> CHILDLESS_COMPONENTS = ImmutableSet.of(SET_PAYLOAD, SET_ATTRIBUTES, SET_VARIABLE);
   private final Document doc;
 
   public DefaultXmlDslElementModelConverter(Document owner) {
@@ -136,12 +135,6 @@ public class DefaultXmlDslElementModelConverter implements XmlDslElementModelCon
 
     if (parentNode != element) {
       parentNode.appendChild(element);
-    }
-  }
-
-  private void useTextInsteadOfChild(Element element, Element parentNode) {
-    if (CHILDLESS_COMPONENTS.contains(element.getNodeName()) && isEETransform(parentNode)) {
-      element.setTextContent(element.getFirstChild().getTextContent());
     }
   }
 
@@ -245,23 +238,29 @@ public class DefaultXmlDslElementModelConverter implements XmlDslElementModelCon
 
   private Element populateEETransform(DslElementModel<?> elementModel) {
     Element transform = doc.createElementNS(EE_NAMESPACE, EE_PREFIX + ":" + TRANSFORM_OPERATION);
-    elementModel.getContainedElements().forEach(e -> {
+    // write set-payload and set-attributes
+    elementModel.getContainedElements().stream()
+        .filter(e -> !((ComponentIdentifier) e.getIdentifier().get()).getName().equals("general")).forEach(e -> {
       if (e.getContainedElements().isEmpty() && e.getValue().isPresent()) {
         transform.setAttribute(e.getDsl().getAttributeName(), (String) e.getValue().get());
       } else {
-        if (((ComponentIdentifier) e.getIdentifier().get()).getName().equals(SET_VARIABLE)) {
-          e.getContainedElements().forEach(setVariable -> {
-            ((DslElementModel) setVariable).getConfiguration().ifPresent(c -> {
-              transform.appendChild(createTextChildElement((ComponentConfiguration) c));
-            });
-          });
-        } else {
           e.getConfiguration().ifPresent(c -> {
             transform.appendChild(createTextChildElement((ComponentConfiguration) c));
           });
-        }
-      }
-    });
+          }
+        });
+
+    // write set-variable
+    elementModel.getContainedElements().stream()
+        .filter(e -> ((ComponentIdentifier) e.getIdentifier().get()).getName().equals("general")).forEach(e -> {
+          e.getContainedElements().stream().findFirst().ifPresent(setVariableElement -> {
+            ((DslElementModel) setVariableElement).getContainedElements().stream().forEach(setVariable -> {
+              ((DslElementModel) setVariable).getConfiguration().ifPresent(c -> {
+                transform.appendChild(createTextChildElement((ComponentConfiguration) c));
+              });
+            });
+          });
+        });
     return transform;
   }
 

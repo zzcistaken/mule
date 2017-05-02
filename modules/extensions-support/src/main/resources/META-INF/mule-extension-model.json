@@ -960,17 +960,83 @@
                       "genericTypes": []
                     },
                     "typeAlias": {
-                      "value": "Object"
+                      "value": "setVariable"
                     }
                   },
-                  "fields": []
+                  "fields": [
+                    {
+                      "key": {
+                        "name": "variableName",
+                        "required": "true"
+                      },
+                      "model": {
+                        "type": "String",
+                        "annotations": {
+                          "typeId": "java.lang.String"
+                        }
+                      },
+                      "annotations": {
+                        "parameterPurpose": {
+                          "role": "BEHAVIOUR"
+                        },
+                        "expressionSupport": {
+                          "value": "SUPPORTED"
+                        }
+                      }
+                    },
+                    {
+                      "key": {
+                        "name": "resource"
+                      },
+                      "model": {
+                        "type": "String",
+                        "annotations": {
+                          "typeId": "java.lang.String"
+                        }
+                      },
+                      "annotations": {
+                        "parameterPurpose": {
+                          "role": "BEHAVIOUR"
+                        },
+                        "expressionSupport": {
+                          "value": "SUPPORTED"
+                        }
+                      }
+                    },
+                    {
+                      "key": {
+                        "name": "script"
+                      },
+                      "model": {
+                        "type": "String",
+                        "annotations": {
+                          "typeId": "java.lang.String"
+                        }
+                      },
+                      "annotations": {
+                        "parameterPurpose": {
+                          "role": "BEHAVIOUR"
+                        },
+                        "expressionSupport": {
+                          "value": "SUPPORTED"
+                        },
+                        "layout": {
+                          "layoutModel": {
+                            "password": false,
+                            "text": true,
+                            "query": false
+                          }
+                        }
+                      }
+                    }
+                  ]
                 }
               },
               "hasDynamicType": false,
               "required": false,
               "isConfigOverride": false,
               "expressionSupport": "NOT_SUPPORTED",
-              "role": "CONTENT",
+              "role": "BEHAVIOUR",
               "dslConfiguration": {
                 "allowsInlineDefinition": true,
                 "allowsReferences": false,
@@ -978,7 +1044,7 @@
               },
               "layoutModel": {
                 "password": false,
-                "text": false,
+                "text": true,
                 "query": false,
                 "order": 2
               },
@@ -991,7 +1057,7 @@
             }
           ],
           "exclusiveParametersModels": [],
-          "showInDsl": false,
+          "showInDsl": true,
           "name": "General",
           "description": "",
           "modelProperties": {}
