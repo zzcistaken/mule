@@ -240,18 +240,6 @@ public class HttpsConnector extends HttpConnector implements TlsDirectKeyStore,
         tls.setTrustManagerAlgorithm(trustManagerAlgorithm);
     }
 
-    @Override
-    public String getTrustStoreCrlFile()
-    {
-        return null;
-    }
-
-    @Override
-    public void setTrustStoreCrlFile(String trustStoreCrlFile)
-    {
-
-    }
-
     public void setTrustManagerFactory(TrustManagerFactory trustManagerFactory)
     {
         tls.setTrustManagerFactory(trustManagerFactory);

@@ -45,7 +45,7 @@
         <set-payload value="ok"/>
     </flow>
 
-    <!-- Add test for this one -->
+    <!-- TODO: add test for this one -->
     <flow name="testFlowServerPublic">
         <http:listener config-ref="serverPublicConfig" path="/crl" allowedMethods="GET"/>
         <parse-template location="tls/revocation_check/crl"/>
