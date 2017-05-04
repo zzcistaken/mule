@@ -6,7 +6,8 @@
  */
 package org.mule.runtime.config.spring.util;
 
-import org.mule.runtime.config.spring.parsers.AbstractMuleBeanDefinitionParser;
+import static org.mule.runtime.config.spring.parsers.generic.AutoIdUtils.ATTRIBUTE_ID;
+import static org.mule.runtime.config.spring.parsers.generic.AutoIdUtils.ATTRIBUTE_NAME;
 import org.mule.runtime.core.util.StringUtils;
 import org.mule.runtime.core.util.XMLUtils;
 
@@ -37,8 +38,8 @@ public class SpringXMLUtils extends XMLUtils {
   }
 
   public static String getNameOrId(Element element) {
-    String id = element.getAttribute(AbstractMuleBeanDefinitionParser.ATTRIBUTE_ID);
-    String name = element.getAttribute(AbstractMuleBeanDefinitionParser.ATTRIBUTE_NAME);
+    String id = element.getAttribute(ATTRIBUTE_ID);
+    String name = element.getAttribute(ATTRIBUTE_NAME);
     if (StringUtils.isBlank(id)) {
       if (StringUtils.isBlank(name)) {
         return "";

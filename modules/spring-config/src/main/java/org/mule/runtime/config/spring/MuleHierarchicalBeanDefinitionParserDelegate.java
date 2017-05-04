@@ -34,7 +34,6 @@ import static org.mule.runtime.internal.dsl.DslConstants.DOMAIN_NAMESPACE;
 import static org.mule.runtime.internal.dsl.DslConstants.DOMAIN_PREFIX;
 import static org.mule.runtime.internal.dsl.DslConstants.EE_DOMAIN_NAMESPACE;
 import static org.mule.runtime.internal.dsl.DslConstants.EE_DOMAIN_PREFIX;
-
 import org.mule.runtime.api.component.ComponentIdentifier;
 import org.mule.runtime.config.spring.dsl.model.ApplicationModel;
 import org.mule.runtime.config.spring.dsl.model.ComponentModel;
@@ -51,7 +50,6 @@ import com.google.common.collect.ImmutableList;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -70,13 +68,11 @@ import org.springframework.beans.factory.parsing.BeanComponentDefinition;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionReaderUtils;
-import org.springframework.beans.factory.support.ManagedMap;
 import org.springframework.beans.factory.xml.BeanDefinitionParserDelegate;
 import org.springframework.beans.factory.xml.DefaultBeanDefinitionDocumentReader;
 import org.springframework.beans.factory.xml.NamespaceHandler;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.beans.factory.xml.XmlReaderContext;
-import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -492,35 +488,10 @@ public class MuleHierarchicalBeanDefinitionParserDelegate extends BeanDefinition
     }
   }
 
-  public static void setFlag(BeanDefinition bean, String flag) {
-    bean.setAttribute(flag, Boolean.TRUE);
-  }
-
   public static boolean testFlag(BeanDefinition bean, String flag) {
     return null != bean && bean.hasAttribute(flag) && bean.getAttribute(flag) instanceof Boolean
         && ((Boolean) bean.getAttribute(flag)).booleanValue();
   }
 
-
-  /**
-   * Parse a map element.
-   */
-  public Map parseMapElement(Element mapEle, String mapElementTagName, String mapElementKeyAttributeName,
-                             String mapElementValueAttributeName) {
-    List<Element> entryEles = DomUtils.getChildElementsByTagName(mapEle, mapElementTagName);
-    ManagedMap<Object, Object> map = new ManagedMap<Object, Object>(entryEles.size());
-    map.setSource(extractSource(mapEle));
-    map.setMergeEnabled(parseMergeAttribute(mapEle));
-
-    for (Element entryEle : entryEles) {
-      // Extract key from attribute or sub-element.
-      Object key = buildTypedStringValueForMap(entryEle.getAttribute(mapElementKeyAttributeName), null, entryEle);
-      // Extract value from attribute or sub-element.
-      Object value = buildTypedStringValueForMap(entryEle.getAttribute(mapElementValueAttributeName), null, entryEle);
-      // Add final key and value to the Map.
-      map.put(key, value);
-    }
-    return map;
-  }
 
 }

@@ -24,17 +24,17 @@ import static org.mule.runtime.config.spring.dsl.model.ApplicationModel.SPRING_P
 import static org.mule.runtime.config.spring.dsl.processor.xml.XmlCustomAttributeHandler.from;
 import static org.mule.runtime.config.spring.dsl.spring.BeanDefinitionFactory.SPRING_PROTOTYPE_OBJECT;
 import static org.mule.runtime.config.spring.dsl.spring.PropertyComponentUtils.getPropertyValueFromPropertyComponent;
-import static org.mule.runtime.config.spring.parsers.AbstractMuleBeanDefinitionParser.processMetadataAnnotationsHelper;
 import static org.mule.runtime.deployment.model.internal.application.MuleApplicationClassLoader.resolveContextArtifactPluginClassLoaders;
 import static org.springframework.beans.factory.support.BeanDefinitionBuilder.genericBeanDefinition;
 import static org.springframework.beans.factory.support.BeanDefinitionBuilder.rootBeanDefinition;
-
 import org.mule.runtime.api.component.ComponentIdentifier;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.api.meta.AnnotatedObject;
 import org.mule.runtime.config.spring.dsl.model.ComponentModel;
 import org.mule.runtime.config.spring.dsl.processor.ObjectTypeVisitor;
 import org.mule.runtime.config.spring.dsl.processor.xml.XmlCustomAttributeHandler;
+import org.mule.runtime.config.spring.parsers.XmlMetadataAnnotations;
+import org.mule.runtime.core.api.execution.LocationExecutionContextProvider;
 import org.mule.runtime.core.api.routing.filter.Filter;
 import org.mule.runtime.core.api.security.SecurityFilter;
 import org.mule.runtime.core.processor.SecurityFilterMessageProcessor;
@@ -45,6 +45,7 @@ import org.mule.runtime.dsl.api.component.ComponentBuildingDefinition;
 import com.google.common.collect.ImmutableSet;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -168,6 +169,25 @@ public class CommonBeanDefinitionCreator extends BeanDefinitionCreator {
       }
     }
   }
+
+  private Map<QName, Object> processMetadataAnnotationsHelper(Element element, String configFileIdentifier,
+                                                              BeanDefinitionBuilder builder) {
+    Map annotations = new HashMap();
+    if (element == null) {
+      return annotations;
+    } else {
+      if (AnnotatedObject.class.isAssignableFrom(builder.getBeanDefinition().getBeanClass())) {
+        XmlMetadataAnnotations elementMetadata = (XmlMetadataAnnotations) element.getUserData("metadataAnnotations");
+        LocationExecutionContextProvider.addMetadataAnnotationsFromXml(annotations, configFileIdentifier,
+                                                                       elementMetadata.getLineNumber(),
+                                                                       elementMetadata.getElementString());
+        builder.getBeanDefinition().getPropertyValues().addPropertyValue("annotations", annotations);
+      }
+
+      return annotations;
+    }
+  }
+
 
 
   private Class<?> retrieveComponentType(final ComponentModel componentModel,
