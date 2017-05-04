@@ -59,10 +59,11 @@ import static org.mule.runtime.internal.dsl.DslConstants.POOLING_PROFILE_ELEMENT
 import static org.mule.runtime.internal.dsl.DslConstants.RECONNECT_ELEMENT_IDENTIFIER;
 import static org.mule.runtime.internal.dsl.DslConstants.RECONNECT_FOREVER_ELEMENT_IDENTIFIER;
 import static org.mule.runtime.internal.dsl.DslConstants.REDELIVERY_POLICY_ELEMENT_IDENTIFIER;
-
 import org.mule.runtime.api.config.PoolingProfile;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.api.util.DataUnit;
+import org.mule.runtime.config.spring.CustomEncryptionStrategyDelegate;
+import org.mule.runtime.config.spring.CustomSecurityProviderDelegate;
 import org.mule.runtime.config.spring.MuleConfigurationConfigurator;
 import org.mule.runtime.config.spring.NotificationConfig;
 import org.mule.runtime.config.spring.ServerNotificationManagerConfigurator;
@@ -200,6 +201,8 @@ import org.mule.runtime.core.routing.filters.logic.NotFilter;
 import org.mule.runtime.core.routing.filters.logic.OrFilter;
 import org.mule.runtime.core.routing.outbound.MulticastingRouter;
 import org.mule.runtime.core.routing.requestreply.SimpleAsyncRequestReplyRequester;
+import org.mule.runtime.core.security.PasswordBasedEncryptionStrategy;
+import org.mule.runtime.core.security.SecretKeyEncryptionStrategy;
 import org.mule.runtime.core.source.StartableCompositeMessageSource;
 import org.mule.runtime.core.source.scheduler.DefaultSchedulerMessageSource;
 import org.mule.runtime.core.source.scheduler.schedule.FixedFrequencyScheduler;
@@ -705,6 +708,33 @@ public class CoreComponentBuildingDefinitionProvider implements ComponentBuildin
         .withObjectFactoryType(EncryptionSecurityFilterObjectFactory.class)
         .withConstructorParameterDefinition(fromSimpleReferenceParameter("strategy-ref").build())
         .withIgnoredConfigurationParameter(NAME)
+        .build());
+
+    componentBuildingDefinitions.add(baseDefinition.copy().withIdentifier("custom-security-provider")
+        .withTypeDefinition(fromType(CustomSecurityProviderDelegate.class))
+        .withConstructorParameterDefinition(fromSimpleReferenceParameter("provider-ref").build())
+        .withConstructorParameterDefinition(fromSimpleParameter("name").build())
+        .build());
+
+    componentBuildingDefinitions.add(baseDefinition.copy().withIdentifier("custom-encryption-strategy")
+        .withTypeDefinition(fromType(CustomEncryptionStrategyDelegate.class))
+        .withConstructorParameterDefinition(fromSimpleReferenceParameter("strategy-ref").build())
+        .withConstructorParameterDefinition(fromSimpleParameter("name").build())
+        .build());
+
+    componentBuildingDefinitions.add(baseDefinition.copy().withIdentifier("secret-key-encryption-strategy")
+        .withTypeDefinition(fromType(SecretKeyEncryptionStrategy.class))
+        .withSetterParameterDefinition("name", fromSimpleParameter("name").build())
+        .withSetterParameterDefinition("key", fromSimpleParameter("key").build())
+        .withSetterParameterDefinition("keyFactory", fromSimpleReferenceParameter("keyFactory-ref").build())
+        .build());
+
+    componentBuildingDefinitions.add(baseDefinition.copy().withIdentifier("password-encryption-strategy")
+        .withTypeDefinition(fromType(PasswordBasedEncryptionStrategy.class))
+        .withSetterParameterDefinition("name", fromSimpleParameter("name").build())
+        .withSetterParameterDefinition("iterationCount", fromSimpleParameter("iterationCount").build())
+        .withSetterParameterDefinition("password", fromSimpleParameter("password").build())
+        .withSetterParameterDefinition("salt", fromSimpleParameter("salt").build())
         .build());
 
     componentBuildingDefinitions.add(baseDefinition.copy().withIdentifier("queue-profile")

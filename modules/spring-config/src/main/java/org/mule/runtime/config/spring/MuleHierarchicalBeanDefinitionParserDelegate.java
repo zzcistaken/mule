@@ -6,11 +6,12 @@
  */
 package org.mule.runtime.config.spring;
 
-import static java.lang.String.format;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static org.mule.runtime.api.component.ComponentIdentifier.builder;
+import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 import static org.mule.runtime.api.meta.AbstractAnnotatedObject.LOCATION_KEY;
+import static org.mule.runtime.config.spring.MissingParserProblemReporter.getMissingModuleOrExtensionMessage;
 import static org.mule.runtime.config.spring.MuleArtifactContext.INNER_BEAN_PREFIX;
 import static org.mule.runtime.config.spring.MuleArtifactContext.postProcessBeanDefinition;
 import static org.mule.runtime.config.spring.dsl.model.ApplicationModel.CONFIGURATION_IDENTIFIER;
@@ -35,6 +36,7 @@ import static org.mule.runtime.internal.dsl.DslConstants.DOMAIN_PREFIX;
 import static org.mule.runtime.internal.dsl.DslConstants.EE_DOMAIN_NAMESPACE;
 import static org.mule.runtime.internal.dsl.DslConstants.EE_DOMAIN_PREFIX;
 import org.mule.runtime.api.component.ComponentIdentifier;
+import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.config.spring.dsl.model.ApplicationModel;
 import org.mule.runtime.config.spring.dsl.model.ComponentModel;
 import org.mule.runtime.config.spring.dsl.spring.BeanDefinitionFactory;
@@ -80,12 +82,9 @@ import org.w3c.dom.NodeList;
 
 
 /**
- * This parser enables Mule to parse heirarchical bean structures using spring Namespace handling There are 4 base
- * DefinitionParsers supplied in Mule that most Parsers will extend from, these are
- * {@link org.mule.runtime.config.spring.parsers.AbstractChildDefinitionParser}
- * {@link org.mule.runtime.config.spring.parsers.AbstractMuleBeanDefinitionParser}
- * {@link org.mule.runtime.config.spring.parsers.generic.ChildDefinitionParser}
- * {@link org.mule.runtime.config.spring.parsers.generic.MuleOrphanDefinitionParser}
+ * This parser enables to parse hierarchical bean structures using spring Namespace handling.
+ * <p>
+ * Mule 4 includes a new parsing mechanism but this is still required since spring beans element must used this facility.
  */
 public class MuleHierarchicalBeanDefinitionParserDelegate extends BeanDefinitionParserDelegate {
 
@@ -194,9 +193,9 @@ public class MuleHierarchicalBeanDefinitionParserDelegate extends BeanDefinition
           if (!element.getLocalName().equals(MULE_ROOT_ELEMENT) && !element.getLocalName().equals(MULE_DOMAIN_ROOT_ELEMENT)
               && !element.getLocalName().equals(POLICY_ROOT_ELEMENT)) {
             if (handler == null) {
-              throw new NullPointerException(format("No namespace handler found for '%s' for Mule 3 parsing mechanism; OR "
-                  + "No componentModel found for element '%s' for Mule 4 parsing mechanism",
-                                                    element.getNamespaceURI(), element.getNodeName()));
+              throw new MuleRuntimeException(createStaticMessage(
+                                                                 getMissingModuleOrExtensionMessage(componentModel.getIdentifier()
+                                                                     .toString())));
             }
 
             ParserContext parserContext = new ParserContext(getReaderContext(), this, parent);
