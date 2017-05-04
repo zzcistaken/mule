@@ -13,7 +13,6 @@ import static org.codehaus.plexus.util.FileUtils.toFile;
 import static org.mule.maven.client.api.BundleScope.PROVIDED;
 import static org.mule.maven.client.api.MavenClientProvider.discoverProvider;
 import static org.mule.runtime.module.embedded.internal.Serializer.serialize;
-
 import org.mule.maven.client.api.BundleDependency;
 import org.mule.maven.client.api.BundleDescriptor;
 import org.mule.maven.client.api.MavenClient;
@@ -40,6 +39,7 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.codehaus.plexus.util.FileUtils;
 import org.eclipse.aether.resolution.ArtifactResolutionException;
 
 public class DefaultEmbeddedContainerBuilder implements EmbeddedContainer.EmbeddedContainerBuilder {
@@ -107,7 +107,7 @@ public class DefaultEmbeddedContainerBuilder implements EmbeddedContainer.Embedd
       }
 
       ClassLoader embeddedControllerBootstrapClassLoader =
-          createEmbeddedImplClassLoader(containerModulesClassLoader, mavenClient, muleVersion);
+          createEmbeddedImplClassLoader(containerBaseFolder, containerModulesClassLoader, mavenClient, muleVersion);
 
       try {
         Class<?> controllerClass =
@@ -206,7 +206,8 @@ public class DefaultEmbeddedContainerBuilder implements EmbeddedContainer.Embedd
     fileWrite(new File(configurationFolder, "mule-config.json"), muleConfigContent);
   }
 
-  private static ClassLoader createEmbeddedImplClassLoader(ClassLoader parentClassLoader, MavenClient mavenClient,
+  private static ClassLoader createEmbeddedImplClassLoader(URL containerBaseFolder, ClassLoader parentClassLoader,
+                                                           MavenClient mavenClient,
                                                            String muleVersion)
       throws ArtifactResolutionException, MalformedURLException {
 
@@ -224,6 +225,7 @@ public class DefaultEmbeddedContainerBuilder implements EmbeddedContainer.Embedd
         .collect(toList());
     embeddedUrls = new ArrayList<>(embeddedUrls);
     embeddedUrls.add(embeddedBundleImplDependency.getBundleUrl());
+    embeddedUrls.add(new File(FileUtils.toFile(containerBaseFolder), "conf/").toURI().toURL());
 
     URLClassLoader urlClassLoader = new URLClassLoader(embeddedUrls.toArray(new URL[embeddedUrls.size()]), parentClassLoader);
     return urlClassLoader;

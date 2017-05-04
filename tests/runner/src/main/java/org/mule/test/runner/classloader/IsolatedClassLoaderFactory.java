@@ -244,6 +244,9 @@ public class IsolatedClassLoaderFactory {
    */
   private JarInfo getTestJarInfo(ArtifactsUrlClassification artifactsUrlClassification) {
     URL testCodeUrl = artifactsUrlClassification.getApplicationUrls().get(0);
+    if (!testCodeUrl.getFile().contains("test-classes")) {
+      testCodeUrl = artifactsUrlClassification.getApplicationUrls().get(1);
+    }
     Set<String> productionPackages = getProductionCodePackages(testCodeUrl);
     JarInfo testJarInfo = getTestCodePackages(artifactsUrlClassification, testCodeUrl);
 
