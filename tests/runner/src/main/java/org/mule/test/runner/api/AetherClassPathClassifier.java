@@ -28,6 +28,7 @@ import static org.mule.runtime.deployment.model.api.plugin.ArtifactPluginDescrip
 import static org.mule.test.runner.api.ArtifactClassificationType.APPLICATION;
 import static org.mule.test.runner.api.ArtifactClassificationType.MODULE;
 import static org.mule.test.runner.api.ArtifactClassificationType.PLUGIN;
+import static org.mule.test.runner.classification.DefaultWorkspaceReader.isTestArtifact;
 import org.mule.runtime.extension.api.annotation.Extension;
 import org.mule.runtime.module.artifact.classloader.ArtifactClassLoader;
 import org.mule.test.runner.classification.PatternExclusionsDependencyFilter;
@@ -40,6 +41,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -753,10 +755,18 @@ public class AetherClassPathClassifier implements ClassPathClassifier {
                                                       List<PluginUrlClassification> pluginUrlClassifications,
                                                       ArtifactClassificationType rootArtifactType) {
     logger.debug("Building application classification");
+    List<Exclusion> excludeAll = new ArrayList<>();
+    excludeAll.add(new Exclusion("*", "*", "*", "*"));
     directDependencies =
         removeFromDependencies(directDependencies, serviceUrlClassifications, pluginUrlClassifications,
                                dependency -> dependency.getScope().equals(TEST),
-                               dependency -> dependency.setScope(COMPILE));
+                               dependency -> {
+            Dependency modifiedDependency = dependency.setScope(COMPILE);
+            if (isTestArtifact(modifiedDependency.getArtifact())) {
+              modifiedDependency = modifiedDependency.setExclusions(excludeAll);
+            }
+            return modifiedDependency;
+        });
 
     Artifact rootArtifact = context.getRootArtifact();
 
@@ -788,11 +798,11 @@ public class AetherClassPathClassifier implements ClassPathClassifier {
           + rootArtifact.getVersion());
     }
 
-    logger.debug("OR exclude: {}", context.getExcludedArtifacts());
+    logger.debug("AND exclude: {}", context.getExcludedArtifacts());
     exclusionsPatterns.addAll(context.getExcludedArtifacts());
 
     if (!context.getTestExclusions().isEmpty()) {
-      logger.debug("OR exclude application specific artifacts: {}", context.getTestExclusions());
+      logger.debug("AND exclude application specific artifacts: {}", context.getTestExclusions());
       exclusionsPatterns.addAll(context.getTestExclusions());
     }
 
