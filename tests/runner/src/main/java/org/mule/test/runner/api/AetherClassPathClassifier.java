@@ -761,12 +761,12 @@ public class AetherClassPathClassifier implements ClassPathClassifier {
         removeFromDependencies(directDependencies, serviceUrlClassifications, pluginUrlClassifications,
                                dependency -> dependency.getScope().equals(TEST),
                                dependency -> {
-            Dependency modifiedDependency = dependency.setScope(COMPILE);
-            if (isTestArtifact(modifiedDependency.getArtifact())) {
-              modifiedDependency = modifiedDependency.setExclusions(excludeAll);
-            }
-            return modifiedDependency;
-        });
+                                 Dependency modifiedDependency = dependency.setScope(COMPILE);
+                                 if (isTestArtifact(modifiedDependency.getArtifact())) {
+                                   modifiedDependency = modifiedDependency.setExclusions(excludeAll);
+                                 }
+                                 return modifiedDependency;
+                               });
 
     Artifact rootArtifact = context.getRootArtifact();
 
