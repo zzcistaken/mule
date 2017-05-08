@@ -11,7 +11,7 @@ import static java.util.Collections.emptyList;
 import static org.apache.maven.repository.internal.MavenRepositorySystemUtils.newSession;
 import static org.eclipse.aether.repository.RepositoryPolicy.CHECKSUM_POLICY_IGNORE;
 import static org.eclipse.aether.repository.RepositoryPolicy.UPDATE_POLICY_NEVER;
-import static org.eclipse.aether.util.artifact.JavaScopes.RUNTIME;
+import static org.eclipse.aether.util.artifact.JavaScopes.PROVIDED;
 import static org.eclipse.aether.util.artifact.JavaScopes.TEST;
 import org.mule.test.runner.classification.DefaultWorkspaceReader;
 import org.mule.test.runner.classification.LoggerRepositoryListener;
@@ -112,7 +112,7 @@ public class RepositorySystemFactory {
     session.setChecksumPolicy(CHECKSUM_POLICY_IGNORE);
 
     DependencySelector dependencySelector =
-        new AndDependencySelector(new ScopeDependencySelector(RUNTIME, TEST),
+        new AndDependencySelector(new ScopeDependencySelector(PROVIDED, TEST),
                                   new OptionalDependencySelector(),
                                   new ExclusionDependencySelector());
     session.setDependencySelector(dependencySelector);
