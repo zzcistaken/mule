@@ -16,6 +16,13 @@
     </properties>
 
     <dependencies>
+        <!-- mule-core does not expose this library and it is used from a test MP -->
+        <dependency>
+            <groupId>com.github.stephenc.eaio-uuid</groupId>
+            <artifactId>uuid</artifactId>
+            <version>3.4.0</version>
+        </dependency>
+
         <dependency>
             <groupId>org.eclipse.aether</groupId>
             <artifactId>aether-api</artifactId>
