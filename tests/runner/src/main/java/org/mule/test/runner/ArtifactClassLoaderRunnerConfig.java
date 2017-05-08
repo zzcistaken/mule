@@ -43,7 +43,7 @@ public @interface ArtifactClassLoaderRunnerConfig {
    * @return Maven artifacts to be excluded {@code provided} scope direct dependencies of the rootArtifact. In format
    *         {@code [groupId]:[artifactId]:[extension]:[classifier]:[version]}.
    */
-  String[] providedExclusions() default {};
+  //String[] providedExclusions() default {};
 
   /**
    * Runtime libraries in the format of {@code <groupId>:<artifactId>} to be added as shared libraries to
@@ -82,7 +82,6 @@ public @interface ArtifactClassLoaderRunnerConfig {
    */
   String[] testExclusions() default {};
 
-
   /**
    * Maven artifacts to be included from the {@code test} scope direct dependencies of the rootArtifact. In format
    * {@code [groupId]:[artifactId]:[extension]:[classifier]:[version]}.
@@ -90,6 +89,6 @@ public @interface ArtifactClassLoaderRunnerConfig {
    * @return Maven artifacts to be included from the {@code test} scope direct dependencies of the rootArtifact. In format
    *         {@code [groupId]:[artifactId]:[extension]:[classifier]:[version]}.
    */
-  String[] testInclusions() default {};
+  //String[] testInclusions() default {};
 
 }

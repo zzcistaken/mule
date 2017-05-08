@@ -828,24 +828,26 @@ public class AetherClassPathClassifier implements ClassPathClassifier {
                                                                          rootArtifact.getVersion()),
                                                      TEST);
 
-      DependencyFilter filter = null;
-      if (!context.getTestInclusions().isEmpty()) {
-        filter = new PatternInclusionsDependencyFilter(context.getTestInclusions());
-        logger.debug("Using filter for dependency graph to include: '{}'", context.getTestInclusions());
-      }
-      if (!exclusionsPatterns.isEmpty()) {
-        final PatternExclusionsDependencyFilter exclusionsDependencyFilter =
-            new PatternExclusionsDependencyFilter(exclusionsPatterns);
-        filter = filter == null ? exclusionsDependencyFilter : andFilter(filter, exclusionsDependencyFilter);
-      }
+      //DependencyFilter filter = null;
+      //if (!context.getTestInclusions().isEmpty()) {
+      //  filter = new PatternInclusionsDependencyFilter(context.getTestInclusions());
+      //  logger.debug("Using filter for dependency graph to include: '{}'", context.getTestInclusions());
+      //}
+      //if (!exclusionsPatterns.isEmpty()) {
+      //  final PatternExclusionsDependencyFilter exclusionsDependencyFilter =
+      //      new PatternExclusionsDependencyFilter(exclusionsPatterns);
+      //  //TODO!
+      //  filter = filter == null ? exclusionsDependencyFilter : andFilter(filter, exclusionsDependencyFilter);
+      //}
 
       rootTestDependency = rootTestDependency.setExclusions(exclusionsPatterns.stream().map(pattern -> {
         final DefaultArtifact artifact = new DefaultArtifact(pattern);
-        return new Exclusion(artifact.getGroupId(), artifact.getArtifactId(), artifact.getClassifier(), artifact.getExtension());
+        return new Exclusion(artifact.getGroupId(), artifact.getArtifactId(),
+                             artifact.getClassifier() != null ? artifact.getClassifier() : null, artifact.getExtension());
       }).collect(toList()));
 
       List<File> urls =
-          dependencyResolver.resolveDependencies(rootTestDependency, directDependencies, managedDependencies, filter);
+          dependencyResolver.resolveDependencies(rootTestDependency, directDependencies, managedDependencies, null);
       appFiles
           .addAll(urls);
     } catch (Exception e) {

@@ -99,10 +99,10 @@ public class ClassPathClassifierContext {
     this.excludedArtifacts.addAll(excludedArtifacts);
     this.extraBootPackages.addAll(extraBootPackages);
 
-    this.providedExclusions.addAll(providedExclusions);
+    //this.providedExclusions.addAll(providedExclusions);
 
     this.testExclusions.addAll(testExclusions);
-    this.testInclusions.addAll(testInclusions);
+    //this.testInclusions.addAll(testInclusions);
 
     this.sharedPluginLibCoordinates.addAll(sharedPluginLibCoordinates);
     this.exportPluginClasses.addAll(exportPluginClasses);

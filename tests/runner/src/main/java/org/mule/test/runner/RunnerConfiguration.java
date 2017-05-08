@@ -72,9 +72,9 @@ public class RunnerConfiguration {
     RunnerConfiguration runnerConfiguration = new RunnerConfiguration(klass);
     Class testClass = klass;
 
-    runnerConfiguration.providedExclusions = readAttribute(PROVIDED_EXCLUSIONS, testClass);
+    //runnerConfiguration.providedExclusions = readAttribute(PROVIDED_EXCLUSIONS, testClass);
     runnerConfiguration.testExclusions = readAttribute(TEST_EXCLUSIONS, testClass);
-    runnerConfiguration.testInclusions = readAttribute(TEST_INCLUSIONS, testClass);
+    //runnerConfiguration.testInclusions = readAttribute(TEST_INCLUSIONS, testClass);
 
     runnerConfiguration.exportPluginClasses = readAttribute(EXPORT_PLUGIN_CLASSES, testClass);
 
@@ -109,15 +109,15 @@ public class RunnerConfiguration {
 
     RunnerConfiguration that = (RunnerConfiguration) o;
 
-    if (!providedExclusions.equals(that.providedExclusions)) {
-      return false;
-    }
+    //if (!providedExclusions.equals(that.providedExclusions)) {
+    //  return false;
+    //}
     if (!testExclusions.equals(that.testExclusions)) {
       return false;
     }
-    if (!testInclusions.equals(that.testInclusions)) {
-      return false;
-    }
+    //if (!testInclusions.equals(that.testInclusions)) {
+    //  return false;
+    //}
     if (!exportPluginClasses.equals(that.exportPluginClasses)) {
       return false;
     }

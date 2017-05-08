@@ -24,7 +24,6 @@ import org.mule.functional.junit4.FlowRunner;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.api.message.Message;
 import org.mule.tck.junit4.rule.SystemProperty;
-import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
 
 import java.util.Map;
 
@@ -34,7 +33,7 @@ import org.slf4j.Logger;
 import ru.yandex.qatools.allure.annotations.Features;
 
 @Features(JMS_EXTENSION)
-@ArtifactClassLoaderRunnerConfig(testInclusions = {"org.apache.activemq:artemis-jms-client"})
+//@ArtifactClassLoaderRunnerConfig(testInclusions = {"org.apache.activemq:artemis-jms-client"})
 public abstract class JmsAbstractTestCase extends MuleArtifactFunctionalTestCase {
 
   private static final Logger LOGGER = getLogger(JmsAbstractTestCase.class);

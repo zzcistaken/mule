@@ -16,7 +16,8 @@ import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
  * @since 4.0
  */
 @ArtifactClassLoaderRunnerConfig(
-    testExclusions = {"org.mule.runtime:*:*:*:*", "com.mulesoft.mule.runtime:*:*:*:*", "com.mulesoft.licm:*:*:*:*"})
+    //testExclusions = {"org.mule.runtime:*:*:*:*", "com.mulesoft.mule.runtime:*:*:*:*", "com.mulesoft.licm:*:*:*:*"})
+    testExclusions = {"org.mule.runtime:*:*", "com.mulesoft.mule.runtime:*:*", "com.mulesoft.licm:*:*"})
 public abstract class MuleArtifactFunctionalTestCase extends ArtifactFunctionalTestCase {
 
 }
