@@ -19,6 +19,7 @@ import static org.mule.runtime.api.metadata.DataType.BOOLEAN;
 import static org.mule.runtime.api.metadata.DataType.OBJECT;
 import static org.mule.runtime.api.metadata.DataType.STRING;
 import static org.mule.runtime.api.metadata.DataType.fromObject;
+
 import org.mule.runtime.api.el.BindingContext;
 import org.mule.runtime.api.metadata.DataType;
 import org.mule.runtime.api.metadata.TypedValue;
@@ -47,7 +48,7 @@ public class AttributeEvaluatorTestCase extends AbstractMuleTestCase {
 
   @Test
   public void expressionValue() {
-    String attributeValue = "#[mel:eval:express]";
+    String attributeValue = "#[eval:express]";
     when(mockExpressionManager.isExpression(attributeValue)).thenReturn(true);
     AttributeEvaluator attributeEvaluator = new AttributeEvaluator(attributeValue);
     attributeEvaluator.initialize(mockExpressionManager);
@@ -57,7 +58,7 @@ public class AttributeEvaluatorTestCase extends AbstractMuleTestCase {
 
   @Test
   public void expressionValueNoEvaluator() {
-    String attributeValue = "#[mel:express]";
+    String attributeValue = "#[express]";
     when(mockExpressionManager.isExpression(attributeValue)).thenReturn(true);
     when(mockExpressionManager.isExpression(attributeValue)).thenReturn(true);
     AttributeEvaluator attributeEvaluator = new AttributeEvaluator(attributeValue);
@@ -68,7 +69,7 @@ public class AttributeEvaluatorTestCase extends AbstractMuleTestCase {
 
   @Test
   public void parse() {
-    AttributeEvaluator attributeEvaluator = new AttributeEvaluator("1#[mel:2]3#[mel:4]5");
+    AttributeEvaluator attributeEvaluator = new AttributeEvaluator("1#[2]3#[4]5");
     attributeEvaluator.initialize(mockExpressionManager);
     assertThat(attributeEvaluator.isParseExpression(), is(true));
     assertThat(attributeEvaluator.isExpression(), is(false));
@@ -76,7 +77,7 @@ public class AttributeEvaluatorTestCase extends AbstractMuleTestCase {
 
   @Test
   public void testParseStartsWithExpression() {
-    AttributeEvaluator attributeEvaluator = new AttributeEvaluator("#[mel:1]234#[mel:5]");
+    AttributeEvaluator attributeEvaluator = new AttributeEvaluator("#[1]234#[5]");
     attributeEvaluator.initialize(mockExpressionManager);
     assertThat(attributeEvaluator.isParseExpression(), is(true));
     assertThat(attributeEvaluator.isExpression(), is(false));
@@ -84,7 +85,7 @@ public class AttributeEvaluatorTestCase extends AbstractMuleTestCase {
 
   @Test
   public void parseStartsAndEndsWithExpression() {
-    AttributeEvaluator attributeEvaluator = new AttributeEvaluator("#[mel:1]#[mel:2]");
+    AttributeEvaluator attributeEvaluator = new AttributeEvaluator("#[1]#[2]");
     attributeEvaluator.initialize(mockExpressionManager);
     assertThat(attributeEvaluator.isParseExpression(), is(true));
     assertThat(attributeEvaluator.isExpression(), is(false));
@@ -92,7 +93,7 @@ public class AttributeEvaluatorTestCase extends AbstractMuleTestCase {
 
   @Test
   public void parenthesesInExpression() {
-    AttributeEvaluator attributeEvaluator = new AttributeEvaluator("#[mel:(1)]");
+    AttributeEvaluator attributeEvaluator = new AttributeEvaluator("#[(1)]");
     attributeEvaluator.initialize(mockExpressionManager);
     assertThat(attributeEvaluator.isParseExpression(), is(false));
     assertThat(attributeEvaluator.isExpression(), is(true));
@@ -100,7 +101,7 @@ public class AttributeEvaluatorTestCase extends AbstractMuleTestCase {
 
   @Test
   public void resolveStringWithObjectReturnValue() {
-    AttributeEvaluator attributeEvaluator = new AttributeEvaluator("#[mel:expression]");
+    AttributeEvaluator attributeEvaluator = new AttributeEvaluator("#[expression]");
     attributeEvaluator.initialize(mockExpressionManager);
     final String expectedValue = "hi";
     Object value = new StringBuilder(expectedValue);
@@ -111,7 +112,7 @@ public class AttributeEvaluatorTestCase extends AbstractMuleTestCase {
 
   @Test
   public void resolveIntegerWithNumericStringValue() {
-    AttributeEvaluator attributeEvaluator = new AttributeEvaluator("#[mel:expression]");
+    AttributeEvaluator attributeEvaluator = new AttributeEvaluator("#[expression]");
     attributeEvaluator.initialize(mockExpressionManager);
     final String expectedValue = "123";
     doReturn(new TypedValue<>(expectedValue, fromObject(expectedValue))).when(mockExpressionManager)
@@ -121,7 +122,7 @@ public class AttributeEvaluatorTestCase extends AbstractMuleTestCase {
 
   @Test
   public void resolveIntegerWithNumericValue() {
-    AttributeEvaluator attributeEvaluator = new AttributeEvaluator("#[mel:expression]");
+    AttributeEvaluator attributeEvaluator = new AttributeEvaluator("#[expression]");
     attributeEvaluator.initialize(mockExpressionManager);
     final long expectedValue = 1234L;
     doReturn(new TypedValue<>(expectedValue, fromObject(expectedValue))).when(mockExpressionManager)
@@ -131,7 +132,7 @@ public class AttributeEvaluatorTestCase extends AbstractMuleTestCase {
 
   @Test
   public void resolveBooleanWithBooleanStringValue() {
-    AttributeEvaluator attributeEvaluator = new AttributeEvaluator("#[mel:expression]");
+    AttributeEvaluator attributeEvaluator = new AttributeEvaluator("#[expression]");
     attributeEvaluator.initialize(mockExpressionManager);
     final String expectedValue = "true";
     doReturn(new TypedValue<>(expectedValue, fromObject(expectedValue))).when(mockExpressionManager)
@@ -141,7 +142,7 @@ public class AttributeEvaluatorTestCase extends AbstractMuleTestCase {
 
   @Test
   public void resolveBooleanWithBooleanValue() {
-    AttributeEvaluator attributeEvaluator = new AttributeEvaluator("#[mel:expression]");
+    AttributeEvaluator attributeEvaluator = new AttributeEvaluator("#[expression]");
     attributeEvaluator.initialize(mockExpressionManager);
     final Boolean expectedValue = true;
     doReturn(new TypedValue<>(expectedValue, fromObject(expectedValue))).when(mockExpressionManager)
@@ -151,7 +152,7 @@ public class AttributeEvaluatorTestCase extends AbstractMuleTestCase {
 
   @Test(expected = NumberFormatException.class)
   public void resolveIntegerWithNoNumericValue() {
-    AttributeEvaluator attributeEvaluator = new AttributeEvaluator("#[mel:expression]");
+    AttributeEvaluator attributeEvaluator = new AttributeEvaluator("#[expression]");
     attributeEvaluator.initialize(mockExpressionManager);
     doReturn(new TypedValue<>("abcd", fromObject("abcd"))).when(mockExpressionManager)
         .evaluate(anyString(), eq(INTEGER), any(BindingContext.class), any(Event.class));

@@ -20,6 +20,7 @@ import static org.mule.runtime.api.metadata.DataType.STRING;
 import static org.mule.runtime.api.metadata.MediaType.APPLICATION_XML;
 import static org.mule.runtime.core.util.SystemUtils.getDefaultEncoding;
 import static org.mule.tck.junit4.matcher.DataTypeMatcher.like;
+
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.api.message.Message;
@@ -50,9 +51,9 @@ public abstract class AbstractAddVariablePropertyProcessorTestCase extends Abstr
   public static final Charset ENCODING = US_ASCII;
   public static final String PLAIN_STRING_KEY = "someText";
   public static final String PLAIN_STRING_VALUE = "someValue";
-  public static final String EXPRESSION = "#[mel:string:someValue]";
+  public static final String EXPRESSION = "#['someValue']";
   public static final String EXPRESSION_VALUE = "expressionValueResult";
-  public static final String NULL_EXPRESSION = "#[mel:string:someValueNull]";
+  public static final String NULL_EXPRESSION = "#['someValueNull']";
   public static final Charset CUSTOM_ENCODING = UTF_8;
 
   private Event event;

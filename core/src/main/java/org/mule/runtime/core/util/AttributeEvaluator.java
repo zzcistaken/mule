@@ -12,6 +12,7 @@ import static org.mule.runtime.api.metadata.DataType.OBJECT;
 import static org.mule.runtime.api.metadata.DataType.STRING;
 import static org.mule.runtime.core.api.el.ExpressionManager.DEFAULT_EXPRESSION_POSTFIX;
 import static org.mule.runtime.core.api.el.ExpressionManager.DEFAULT_EXPRESSION_PREFIX;
+
 import org.mule.runtime.api.el.BindingContext;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.api.metadata.DataType;
@@ -27,8 +28,8 @@ import java.util.function.Function;
 import java.util.regex.Pattern;
 
 /**
- * This class acts as a wrapper for configuration attributes that support simple text, expression or regular expressions.
- * It can be extended to support other cases too.
+ * This class acts as a wrapper for configuration attributes that support simple text, expression or regular expressions. It can
+ * be extended to support other cases too.
  */
 public class AttributeEvaluator {
 
@@ -46,7 +47,7 @@ public class AttributeEvaluator {
    * Creates a new Attribute Evaluator instance with a given attribute value
    *
    * @param attributeValue the value for an attribute, this value can be treated as {@link AttributeType#EXPRESSION},
-   *                       {@link AttributeType#PARSE_EXPRESSION} or as a {@link AttributeType#STATIC_VALUE}
+   *        {@link AttributeType#PARSE_EXPRESSION} or as a {@link AttributeType#STATIC_VALUE}
    */
   public AttributeEvaluator(String attributeValue) {
     this(attributeValue, null);
@@ -56,9 +57,9 @@ public class AttributeEvaluator {
    * Creates a new Attribute Evaluator instance with a given attribute value and the expected {@link DataType}
    *
    * @param attributeValue the value for an attribute, this value can be treated as {@link AttributeType#EXPRESSION},
-   *                       {@link AttributeType#PARSE_EXPRESSION} or as a {@link AttributeType#STATIC_VALUE}
+   *        {@link AttributeType#PARSE_EXPRESSION} or as a {@link AttributeType#STATIC_VALUE}
    * @param expectedDataType specifies that the expression should be evaluated a coerced to the given expected {@link DataType}.
-   *                         This value will be ignored for {@link AttributeType#PARSE_EXPRESSION} and {@link AttributeType#STATIC_VALUE}
+   *        This value will be ignored for {@link AttributeType#PARSE_EXPRESSION} and {@link AttributeType#STATIC_VALUE}
    */
   public AttributeEvaluator(String attributeValue, DataType expectedDataType) {
     this.attributeValue = sanitize(attributeValue);
@@ -87,9 +88,18 @@ public class AttributeEvaluator {
   }
 
   private void configureExpressionAttribute(DataType expectedDataType) {
-    expressionResolver = expectedDataType != null && !BLACK_LIST_TYPES.contains(expectedDataType.getType())
-        ? event -> expressionManager.evaluate(this.attributeValue, expectedDataType, NULL_BINDING_CONTEXT, event)
-        : event -> expressionManager.evaluate(this.attributeValue, event);
+    if (expectedDataType == null) {
+      expressionResolver = event -> expressionManager.evaluate(this.attributeValue, event);
+    } else if (!BLACK_LIST_TYPES.contains(expectedDataType.getType())) {
+      expressionResolver =
+          event -> expressionManager.evaluate(this.attributeValue, expectedDataType, NULL_BINDING_CONTEXT, event);
+    } else {
+      expressionResolver = event -> {
+        final TypedValue evaluatedResult = expressionManager.evaluate(this.attributeValue, event);
+        return new TypedValue(evaluatedResult.getValue(),
+                              DataType.builder(expectedDataType).type(evaluatedResult.getDataType().getType()).build());
+      };
+    }
   }
 
   public AttributeEvaluator initialize(final ExtendedExpressionManager expressionManager) {
