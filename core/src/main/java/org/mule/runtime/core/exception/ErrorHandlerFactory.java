@@ -7,7 +7,14 @@
 package org.mule.runtime.core.exception;
 
 import static java.util.Collections.singletonList;
+import static reactor.core.publisher.Mono.from;
+import org.mule.runtime.api.exception.MuleException;
+import org.mule.runtime.api.message.Message;
+import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.MuleContext;
+import org.mule.runtime.core.api.processor.Processor;
+
+import org.reactivestreams.Publisher;
 
 /**
  * Factory object for {@link ErrorHandler}.
@@ -19,8 +26,25 @@ public class ErrorHandlerFactory {
   public ErrorHandler createDefault(MuleContext muleContext) {
     ErrorHandler errorHandler = new ErrorHandler();
     errorHandler.setMuleContext(muleContext);
-    errorHandler.setExceptionListeners(singletonList(new OnErrorPropagateHandler()));
+    OnErrorPropagateHandler onErrorPropagateHandler = new OnErrorPropagateHandler();
+    onErrorPropagateHandler.setMessageProcessors(singletonList(new PayloadNullifyingProcessor()));
+    errorHandler.setExceptionListeners(singletonList(onErrorPropagateHandler));
     return errorHandler;
   }
 
+  private static class PayloadNullifyingProcessor implements Processor {
+
+    @Override
+    public Event process(Event event) throws MuleException {
+      return Event.builder(event).message(Message.builder(event.getMessage()).payload(null).build()).build();
+    }
+
+    @Override
+    public Publisher<Event> apply(Publisher<Event> publisher) {
+      return from(publisher).map(
+                                 event -> Event.builder(event).message(Message.builder(event.getMessage()).payload(null).build())
+                                     .build());
+    }
+
+  }
 }
