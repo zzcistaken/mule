@@ -30,6 +30,53 @@
                     <skip>true</skip>
                 </configuration>
             </plugin>
+            <plugin>
+                <!-- this is a copy of mule-extensions pom file so we can add the dependency for sockets
+                    as workaround for failure:
+                    [INFO] --- maven-processor-plugin:2.2.4:process (process) @ mule-module-http-ext ---
+ERROR StatusLogger No log4j2 configuration file found. Using default configuration: logging only errors to the console. Set system property 'org.apache.logging.log4j.simplelog.StatusLogger.level' to TRACE to show Log4j2 internal initialization logging.
+[ERROR] diagnostic: error: java.lang.IllegalArgumentException: The Extension [Sockets] is not present in the current context
+  org.mule.runtime.api.exception.MuleRuntimeException: java.lang.IllegalArgumentException: The Extension [Sockets] is not present in the current context
+  	at org.mule.runtime.core.util.ClassUtils.withContextClassLoader(ClassUtils.java:943)
+  	at org.mule.runtime.module.
+  	                when running complete project reactor -->
+                <groupId>org.bsc.maven</groupId>
+                <artifactId>maven-processor-plugin</artifactId>
+                <version>2.2.4</version>
+                <executions>
+                    <execution>
+                        <id>process</id>
+                        <goals>
+                            <goal>process</goal>
+                        </goals>
+                        <phase>compile</phase>
+                        <configuration>
+                            <outputDirectory>target/classes/META-INF</outputDirectory>
+                            <processors>
+                                <processor>
+                                    org.mule.runtime.module.extension.internal.resources.ExtensionResourcesGeneratorAnnotationProcessor
+                                </processor>
+                            </processors>
+                            <options>
+                                <extension.version>${project.version}</extension.version>
+                            </options>
+                        </configuration>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.mule.runtime</groupId>
+                        <artifactId>mule-extensions-api</artifactId>
+                        <version>${muleExtensionsApiVersion}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.mule.modules</groupId>
+                        <artifactId>mule-module-sockets</artifactId>
+                        <version>${project.version}</version>
+                        <classifier>mule-plugin</classifier>
+                    </dependency>
+                </dependencies>
+            </plugin>
         </plugins>
     </build>
 
