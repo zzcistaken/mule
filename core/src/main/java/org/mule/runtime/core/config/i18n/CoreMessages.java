@@ -44,10 +44,6 @@ public class CoreMessages extends I18nMessageFactory {
     return factory.createMessage(BUNDLE_PATH, 3, date);
   }
 
-  public static I18nMessage agentsRunning() {
-    return factory.createMessage(BUNDLE_PATH, 4);
-  }
-
   public static I18nMessage notSet() {
     return factory.createMessage(BUNDLE_PATH, 5);
   }

@@ -9,10 +9,9 @@ package org.mule.runtime.module.launcher;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.sort;
 import static org.mule.runtime.container.api.MuleFoldersUtil.getServicesFolder;
-import static org.mule.runtime.core.api.config.MuleProperties.SYSTEM_PROPERTY_PREFIX;
 import static org.mule.runtime.container.api.MuleFoldersUtil.getUserLibFolder;
-import org.mule.runtime.core.api.MuleContext;
-import org.mule.runtime.core.api.agent.Agent;
+import static org.mule.runtime.core.api.config.MuleProperties.SYSTEM_PROPERTY_PREFIX;
+
 import org.mule.runtime.core.config.MuleManifest;
 import org.mule.runtime.core.config.i18n.CoreMessages;
 import org.mule.runtime.core.util.NetworkUtils;
@@ -23,7 +22,6 @@ import org.mule.runtime.core.util.StringUtils;
 import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.jar.Attributes;
@@ -96,23 +94,5 @@ public class MuleContainerStartupSplashScreen extends SplashScreen {
     System.getProperties().stringPropertyNames().stream().filter(property -> property.startsWith(SYSTEM_PROPERTY_PREFIX))
         .forEach(property -> muleProperties.put(property, System.getProperty(property)));
     listItems(muleProperties, "Mule system properties:");
-  }
-
-  @Override
-  protected void doFooter(MuleContext context) {
-    // Mule Agents
-    if (!body.isEmpty()) {
-      footer.add(" ");
-    }
-    // List agents
-    Collection<Agent> agents = context.getRegistry().lookupObjects(Agent.class);
-    if (agents.size() == 0) {
-      footer.add(CoreMessages.agentsRunning().getMessage() + " " + CoreMessages.none().getMessage());
-    } else {
-      footer.add(CoreMessages.agentsRunning().getMessage());
-      for (Agent agent : agents) {
-        footer.add("  " + agent.getDescription());
-      }
-    }
   }
 }
