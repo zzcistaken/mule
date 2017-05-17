@@ -12,6 +12,7 @@
         http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
 
     <regex-filter name="appleFilter" pattern="apple" />
+    <expression-filter name="veggieFilter"  expression="#[payload == 'veggie']"/>
 
     <flow name="without-default-route">
         <vm:inbound-endpoint path="without-default-route.in" exchange-pattern="request-response" />
@@ -45,6 +46,19 @@
             </when>
             <otherwise>
                 <outbound-endpoint ref="default-channel" />
+            </otherwise>
+        </choice>
+    </flow>
+
+    <flow name="with-filter-inside">
+        <vm:inbound-endpoint path="with-filter-inside.in" exchange-pattern="request-response" />
+        <choice>
+            <when expression="#[payload == 'fruit']">
+                <outbound-endpoint ref="fruit-channel" />
+                <filter ref="veggieFilter" />
+            </when>
+            <otherwise>
+                <outbound-endpoint ref="default-channel"/>
             </otherwise>
         </choice>
     </flow>

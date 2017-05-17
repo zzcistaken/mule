@@ -31,6 +31,7 @@ public class ChoiceRouterTestCase extends FunctionalTestCase
 {
     private static final String WITH_DEFAULT_ROUTE_CHANNEL = "vm://with-default-route.in";
     private static final String WITHOUT_DEFAULT_ROUTE_CHANNEL = "vm://without-default-route.in";
+    private static final String WITH_FILTER_INSIDE = "vm://with-filter-inside.in";
 
     public ChoiceRouterTestCase()
     {
@@ -119,6 +120,12 @@ public class ChoiceRouterTestCase extends FunctionalTestCase
     {
         MuleMessage result = muleContext.getClient().send(WITH_DEFAULT_ROUTE_CHANNEL, "car", null);
         assertEquals("car:default:default", result.getPayloadAsString());
+    }
+
+    @Test
+    public void filterInsideWhenShouldNotChangeWhenExpressionIfAlreadyDefined() throws Exception{
+        MuleMessage result = muleContext.getClient().send(WITH_FILTER_INSIDE, "fruit", null);
+        assertEquals("fruit:fruit:fruit", result.getPayloadAsString());
     }
 
     private ChoiceRouter findChoiceRouterInFlow(String flowName)
