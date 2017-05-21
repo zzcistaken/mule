@@ -6,6 +6,7 @@
  */
 package org.mule.runtime.core.exception;
 
+import static org.mule.runtime.api.util.Preconditions.checkArgument;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.exception.MessagingExceptionHandler;
@@ -15,6 +16,7 @@ public class MessagingExceptionHandlerToSystemAdapter implements MessagingExcept
   private MuleContext muleContext;
 
   public MessagingExceptionHandlerToSystemAdapter(MuleContext muleContext) {
+    checkArgument(muleContext != null, "muleContext cannot be null");
     this.muleContext = muleContext;
   }
 
