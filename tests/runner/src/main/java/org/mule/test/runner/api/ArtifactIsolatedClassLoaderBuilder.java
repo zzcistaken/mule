@@ -58,7 +58,6 @@ public class ArtifactIsolatedClassLoaderBuilder {
   private List<String> sharedPluginLibCoordinates = newArrayList();
   private List<Class> exportPluginClasses = newArrayList();
   private boolean extensionMetadataGenerationEnabled = false;
-  private List<String> providedInclusions = newArrayList();
   private List<URL> applicationUrls = newArrayList();
   private List<String> extraBootPackages;
 
