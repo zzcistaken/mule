@@ -195,7 +195,7 @@
         <jodaTimeVersion>2.9.1</jodaTimeVersion>
         <jschVersion>0.1.54</jschVersion>
         <junitVersion>4.12</junitVersion>
-        <log4jVersion>2.8.1</log4jVersion>
+        <log4jVersion>2.8.2</log4jVersion>
         <disruptorVersion>3.3.0</disruptorVersion>
         <maven.buildnumber.plugin.version>1.1</maven.buildnumber.plugin.version>
         <maven.surefire.plugin.version>2.18.1</maven.surefire.plugin.version>
@@ -214,13 +214,8 @@
         <rhinoVersion>1.7R4</rhinoVersion>
         <rhinoJsr223Version>1.1</rhinoJsr223Version>
         <saajVersion>1.3</saajVersion>
-<<<<<<< HEAD
-        <saxonVersion>9.6.0-7</saxonVersion>
-        <slf4jVersion>1.7.7</slf4jVersion>
-=======
         <saxonVersion>9.6.0-10</saxonVersion>
-        <slf4jVersion>1.7.24</slf4jVersion>
->>>>>>> 8caa3f0... MULE-12017: update log4j to version 2.8.1 to avoid JMS connection leaks (#4352)
+        <slf4jVersion>1.7.25</slf4jVersion>
         <smackVersion>3.4.1</smackVersion>
         <springOsgiVersion>1.0.2</springOsgiVersion>
         <springVersion>4.1.9.RELEASE</springVersion>

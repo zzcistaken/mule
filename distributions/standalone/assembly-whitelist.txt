@@ -79,14 +79,14 @@
 /mule-standalone-${productVersion}/lib/boot/wrapper-3.2.3.jar
 /mule-standalone-${productVersion}/lib/boot/wrapper-windows-x86-32.dll
 /mule-standalone-${productVersion}/lib/boot/disruptor-3.3.0.jar
-/mule-standalone-${productVersion}/lib/boot/jcl-over-slf4j-1.7.24.jar
-/mule-standalone-${productVersion}/lib/boot/log4j-1.2-api-2.8.1.jar
-/mule-standalone-${productVersion}/lib/boot/log4j-api-2.8.1.jar
-/mule-standalone-${productVersion}/lib/boot/log4j-core-2.8.1.jar
-/mule-standalone-${productVersion}/lib/boot/log4j-jcl-2.8.1.jar
-/mule-standalone-${productVersion}/lib/boot/log4j-slf4j-impl-2.8.1.jar
-/mule-standalone-${productVersion}/lib/boot/log4j-jul-2.8.1.jar
-/mule-standalone-${productVersion}/lib/boot/slf4j-api-1.7.24.jar
+/mule-standalone-${productVersion}/lib/boot/jcl-over-slf4j-1.7.25.jar
+/mule-standalone-${productVersion}/lib/boot/log4j-1.2-api-2.8.2.jar
+/mule-standalone-${productVersion}/lib/boot/log4j-api-2.8.2.jar
+/mule-standalone-${productVersion}/lib/boot/log4j-core-2.8.2.jar
+/mule-standalone-${productVersion}/lib/boot/log4j-jcl-2.8.2.jar
+/mule-standalone-${productVersion}/lib/boot/log4j-slf4j-impl-2.8.2.jar
+/mule-standalone-${productVersion}/lib/boot/log4j-jul-2.8.2.jar
+/mule-standalone-${productVersion}/lib/boot/slf4j-api-1.7.25.jar
 
 #
 # /lib/boot/exec
@@ -342,7 +342,7 @@
 /mule-standalone-${productVersion}/lib/opt/joni-2.1.9.jar
 /mule-standalone-${productVersion}/lib/opt/jopt-simple-4.6.jar
 /mule-standalone-${productVersion}/lib/opt/jruby-stdlib-1.7.24.jar
-/mule-standalone-${productVersion}/lib/opt/jsch-0.1.51.jar
+/mule-standalone-${productVersion}/lib/opt/jsch-0.1.54.jar
 /mule-standalone-${productVersion}/lib/opt/js-engine-1.1-jdk14.jar
 /mule-standalone-${productVersion}/lib/opt/json-schema-core-1.2.5.jar
 /mule-standalone-${productVersion}/lib/opt/json-schema-validator-2.2.6.jar
@@ -381,8 +381,8 @@
 /mule-standalone-${productVersion}/lib/opt/relaxngDatatype-20020414.jar
 /mule-standalone-${productVersion}/lib/opt/rhino-1.7R4.jar
 /mule-standalone-${productVersion}/lib/opt/rome-0.9.jar
-/mule-standalone-${productVersion}/lib/opt/Saxon-HE-9.6.0-7.jar
-/mule-standalone-${productVersion}/lib/opt/Saxon-HE-9.6.0-7-xqj.jar
+/mule-standalone-${productVersion}/lib/opt/Saxon-HE-9.6.0-10.jar
+/mule-standalone-${productVersion}/lib/opt/Saxon-HE-9.6.0-10-xqj.jar
 /mule-standalone-${productVersion}/lib/opt/signpost-core-1.2.1.2.jar
 /mule-standalone-${productVersion}/lib/opt/smack-3.4.1.jar
 /mule-standalone-${productVersion}/lib/opt/smackx-3.4.1.jar
@@ -428,7 +428,7 @@
 /mule-standalone-${productVersion}/lib/opt/xstream-1.4.9.jar
 /mule-standalone-${productVersion}/lib/opt/opensaml-2.6.1.jar
 /mule-standalone-${productVersion}/lib/opt/openws-1.5.1.jar
-/mule-standalone-${productVersion}/lib/opt/xmlbeans-2.3.0.jar
+/mule-standalone-${productVersion}/lib/opt/xmlbeans-2.3.2.jar
 /mule-standalone-${productVersion}/lib/opt/xmltooling-1.4.1.jar
 /mule-standalone-${productVersion}/lib/opt/xqj-api-1.0.jar
 /mule-standalone-${productVersion}/lib/opt/yagi-1.0.3.jar
@@ -437,7 +437,7 @@
 /mule-standalone-${productVersion}/lib/shared
 /mule-standalone-${productVersion}/lib/shared/README.txt
 /mule-standalone-${productVersion}/lib/user
-/mule-standalone-${productVersion}/lib/user/junit-4.11.jar
+/mule-standalone-${productVersion}/lib/user/junit-4.12.jar
 /mule-standalone-${productVersion}/lib/user/mule-tests-functional-${productVersion}.jar
 /mule-standalone-${productVersion}/lib/user/README.txt
 /mule-standalone-${productVersion}/lib/user/xmlunit-1.6.jar
