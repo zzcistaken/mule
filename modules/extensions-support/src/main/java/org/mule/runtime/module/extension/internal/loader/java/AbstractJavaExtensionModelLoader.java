@@ -6,45 +6,28 @@
  */
 package org.mule.runtime.module.extension.internal.loader.java;
 
-import static java.lang.String.format;
-import static java.util.Arrays.asList;
-import static java.util.Collections.unmodifiableList;
-import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.mule.runtime.core.api.util.ClassUtils.loadClass;
+import org.mule.runtime.core.api.util.ClassUtils;
+import org.mule.runtime.extension.api.annotation.privileged.DeclarationEnrichers;
 import org.mule.runtime.extension.api.loader.DeclarationEnricher;
 import org.mule.runtime.extension.api.loader.ExtensionLoadingContext;
 import org.mule.runtime.extension.api.loader.ExtensionModelLoader;
 import org.mule.runtime.extension.api.loader.ExtensionModelValidator;
-import org.mule.runtime.module.extension.internal.loader.enricher.ClassLoaderDeclarationEnricher;
-import org.mule.runtime.module.extension.internal.loader.enricher.ConfigNameDeclarationEnricher;
-import org.mule.runtime.module.extension.internal.loader.enricher.ConnectionDeclarationEnricher;
-import org.mule.runtime.module.extension.internal.loader.enricher.ExtensionsErrorsDeclarationEnricher;
-import org.mule.runtime.module.extension.internal.loader.enricher.DataTypeDeclarationEnricher;
-import org.mule.runtime.module.extension.internal.loader.enricher.DisplayDeclarationEnricher;
-import org.mule.runtime.module.extension.internal.loader.enricher.DynamicMetadataDeclarationEnricher;
-import org.mule.runtime.module.extension.internal.loader.enricher.ErrorsDeclarationEnricher;
-import org.mule.runtime.module.extension.internal.loader.enricher.ExtensionDescriptionsEnricher;
-import org.mule.runtime.module.extension.internal.loader.enricher.ImportedTypesDeclarationEnricher;
-import org.mule.runtime.module.extension.internal.loader.enricher.JavaConfigurationDeclarationEnricher;
-import org.mule.runtime.module.extension.internal.loader.enricher.JavaExportedTypesDeclarationEnricher;
-import org.mule.runtime.module.extension.internal.loader.enricher.JavaOAuthDeclarationEnricher;
-import org.mule.runtime.module.extension.internal.loader.enricher.JavaXmlDeclarationEnricher;
-import org.mule.runtime.module.extension.internal.loader.enricher.ParameterLayoutOrderDeclarationEnricher;
-import org.mule.runtime.module.extension.internal.loader.enricher.SubTypesDeclarationEnricher;
-import org.mule.runtime.module.extension.internal.loader.validation.ConfigurationModelValidator;
-import org.mule.runtime.module.extension.internal.loader.validation.ConnectionProviderModelValidator;
-import org.mule.runtime.module.extension.internal.loader.validation.ExportedTypesModelValidator;
-import org.mule.runtime.module.extension.internal.loader.validation.JavaSubtypesModelValidator;
-import org.mule.runtime.module.extension.internal.loader.validation.MetadataComponentModelValidator;
-import org.mule.runtime.module.extension.internal.loader.validation.NullSafeModelValidator;
-import org.mule.runtime.module.extension.internal.loader.validation.OAuthConnectionProviderModelValidator;
-import org.mule.runtime.module.extension.internal.loader.validation.OperationParametersTypeModelValidator;
-import org.mule.runtime.module.extension.internal.loader.validation.OperationReturnTypeModelValidator;
-import org.mule.runtime.module.extension.internal.loader.validation.ParameterGroupModelValidator;
-import org.mule.runtime.module.extension.internal.loader.validation.ParameterTypeModelValidator;
+import org.mule.runtime.module.extension.internal.loader.enricher.*;
+import org.mule.runtime.module.extension.internal.loader.validation.*;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.BiFunction;
+
+import static java.lang.String.format;
+import static java.util.Arrays.asList;
+import static java.util.Arrays.stream;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.unmodifiableList;
+import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.mule.runtime.core.api.util.ClassUtils.loadClass;
 
 public class AbstractJavaExtensionModelLoader extends ExtensionModelLoader {
 
@@ -106,6 +89,7 @@ public class AbstractJavaExtensionModelLoader extends ExtensionModelLoader {
   protected void configureContextBeforeDeclaration(ExtensionLoadingContext context) {
     context.addCustomValidators(customValidators);
     context.addCustomDeclarationEnrichers(customDeclarationEnrichers);
+    context.addCustomDeclarationEnrichers(getPrivilegedDeclarationEnrichers(context));
   }
 
   /**
@@ -119,16 +103,35 @@ public class AbstractJavaExtensionModelLoader extends ExtensionModelLoader {
     delegateFactory.apply(extensionType, version).declare(context);
   }
 
+  private Collection<DeclarationEnricher> getPrivilegedDeclarationEnrichers(ExtensionLoadingContext context) {
+    Class<?> extensionType = getExtensionType(context);
+    String declarationEnricherName = DeclarationEnrichers.class.getName();
+    try {
+      Class annotation = context.getExtensionClassLoader().loadClass(declarationEnricherName);
+      DeclarationEnrichers enrichers = extensionType.getAnnotation((Class<DeclarationEnrichers>) annotation);
+      return enrichers != null ? stream(enrichers.value()).map(this::instantiateOrFail).collect(toList()) : emptyList();
+    } catch (ClassNotFoundException e) {
+      return emptyList();
+    }
+  }
+
   private Class<?> getExtensionType(ExtensionLoadingContext context) {
     String type = context.<String>getParameter(TYPE_PROPERTY_NAME).get();
     if (isBlank(type)) {
       throw new IllegalArgumentException(format("Property '%s' has not been specified", TYPE_PROPERTY_NAME));
     }
-
     try {
       return loadClass(type, context.getExtensionClassLoader());
     } catch (ClassNotFoundException e) {
       throw new RuntimeException(format("Class '%s' cannot be loaded", type), e);
+    }
+  }
+
+  private <R> R instantiateOrFail(Class<R> clazz) {
+    try {
+      return ClassUtils.instantiateClass(clazz);
+    } catch (NoSuchMethodException | InstantiationException | InvocationTargetException | IllegalAccessException e) {
+      throw new IllegalArgumentException("Error instantiating class: [" + clazz + "].", e);
     }
   }
 }

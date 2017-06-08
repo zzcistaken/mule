@@ -6,6 +6,8 @@
  */
 package org.mule.runtime.module.extension.internal.loader.java;
 
+import org.mule.runtime.core.registry.SpiServiceRegistry;
+
 /**
  * Loads an extension by introspecting a class which uses the Extensions API annotations
  *
@@ -14,6 +16,8 @@ package org.mule.runtime.module.extension.internal.loader.java;
 public class DefaultJavaExtensionModelLoader extends AbstractJavaExtensionModelLoader {
 
   public static final String JAVA_LOADER_ID = "java";
+
+  private final SpiServiceRegistry serviceRegistry = new SpiServiceRegistry();
 
   public DefaultJavaExtensionModelLoader() {
     super(JAVA_LOADER_ID, DefaultJavaModelLoaderDelegate::new);
