@@ -1,0 +1,14 @@
+
+package mule;
+import org.mule.module.drools.DroolsTestCase.TestFact;
+global org.mule.module.bpm.MessageService mule;
+
+
+rule "Hello World"
+    dialect "mvel"
+    when
+        t : TestFact( description == "test")
+    then
+        System.out.println("Test");
+end
+
