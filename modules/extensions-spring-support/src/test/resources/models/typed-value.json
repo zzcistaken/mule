@@ -2495,8 +2495,7 @@
           "model": {
             "type": "String",
             "annotations": {
-              "typeId": "java.lang.String",
-              "org.mule.runtime.extension.api.declaration.type.annotation.TypedValueTypeAnnotation": {}
+              "typeId": "java.lang.String"
             }
           },
           "annotations": {
@@ -2637,8 +2636,7 @@
           "model": {
             "type": "String",
             "annotations": {
-              "typeId": "java.lang.String",
-              "org.mule.runtime.extension.api.declaration.type.annotation.TypedValueTypeAnnotation": {}
+              "typeId": "java.lang.String"
             }
           },
           "annotations": {
@@ -2704,8 +2702,7 @@
                 "model": {
                   "type": "String",
                   "annotations": {
-                    "typeId": "java.lang.String",
-                    "org.mule.runtime.extension.api.declaration.type.annotation.TypedValueTypeAnnotation": {}
+                    "typeId": "java.lang.String"
                   }
                 },
                 "annotations": {
@@ -2776,8 +2773,7 @@
           "model": {
             "type": "String",
             "annotations": {
-              "typeId": "java.lang.String",
-              "org.mule.runtime.extension.api.declaration.type.annotation.TypedValueTypeAnnotation": {}
+              "typeId": "java.lang.String"
             }
           },
           "annotations": {
@@ -2797,8 +2793,7 @@
           "model": {
             "type": "String",
             "annotations": {
-              "typeId": "java.lang.String",
-              "org.mule.runtime.extension.api.declaration.type.annotation.TypedValueTypeAnnotation": {}
+              "typeId": "java.lang.String"
             }
           },
           "annotations": {
@@ -2817,8 +2812,7 @@
           "model": {
             "type": "Number",
             "annotations": {
-              "typeId": "java.lang.Integer",
-              "org.mule.runtime.extension.api.declaration.type.annotation.TypedValueTypeAnnotation": {}
+              "typeId": "java.lang.Integer"
             }
           },
           "annotations": {
